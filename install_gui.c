@@ -38,7 +38,6 @@
 
 /******************************* Global vars **********************************/
 static GtkWidget *filew = NULL;
-static GtkWidget *clist;
 static GtkWidget *treeView;
 static GtkListStore *listStore;
 static int clist_row_selected;
@@ -53,7 +52,6 @@ enum {
 };
 
 /****************************** Prototypes ************************************/
-static int install_update_clist(void);
 static int install_update_listStore(void);
 /****************************** Main Code *************************************/
 static int install_remove_line(int deleted_line_num) {
@@ -229,7 +227,6 @@ static void cb_add(GtkWidget *widget, gpointer data) {
     }
 
     install_append_line(sel);
-    //install_update_clist();
     install_update_listStore();
 }
 
@@ -242,39 +239,6 @@ static void cb_remove(GtkWidget *widget, gpointer data) {
     install_update_listStore();
 }
 
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data) {
-    char fname[1000];
-    char *gtk_str;
-
-    clist_row_selected = row;
-
-    if (column == INST_SDCARD_COLUMN) {
-        /* Toggle display of SDCARD pixmap */
-        if (gtk_clist_get_text(GTK_CLIST(clist), row, column, NULL)) {
-            GdkPixmap *pixmap;
-            GdkBitmap *mask;
-            get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
-            gtk_clist_set_pixmap(GTK_CLIST(clist), row, column, pixmap, mask);
-
-            gtk_clist_get_text(GTK_CLIST(clist), row, INST_FNAME_COLUMN, &gtk_str);
-            fname[0] = '\001';
-            g_strlcpy(&fname[1], gtk_str, sizeof(fname) - 1);
-            install_modify_line(row, fname);
-
-        } else {
-            gtk_clist_set_text(GTK_CLIST(clist), row, column, "");
-            gtk_clist_get_text(GTK_CLIST(clist), row, INST_FNAME_COLUMN, &gtk_str);
-            g_strlcpy(&fname[0], gtk_str, sizeof(fname));
-            install_modify_line(row, fname);
-        }
-    }
-
-    return;
-}
 gboolean
 selectInstallRecordByRow (GtkTreeModel *model,
                    GtkTreePath  *path,
@@ -338,20 +302,17 @@ static int install_update_listStore(void) {
             new_line[1] = &line[0];
         }
 
-        //gtk_clist_append(GTK_CLIST(clist), new_line);
+
 
         /* Add SDCARD icon for files to be installed on SDCARD */
         if (sdcard_install) {
-          //  GdkPixmap *pixmap;
-          //  GdkBitmap *mask;
-          //  get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
-            get_pixbufs(PIXMAP_SDCARD, &sdCardColumnDisplay);
-          //  gtk_clist_set_pixmap(GTK_CLIST(clist), count, INST_SDCARD_COLUMN, pixmap, mask);
+          get_pixbufs(PIXMAP_SDCARD, &sdCardColumnDisplay);
+
         }
         gtk_list_store_append(listStore, &iter);
         gtk_list_store_set(listStore, &iter,
                            INSTALL_SDCARD_COLUMN_ENUM, sdCardColumnDisplay,
-                           INSTALL_FNAME_COLUMN_ENUM, line,
+                           INSTALL_FNAME_COLUMN_ENUM, new_line[1],
                            -1);
     }
     fclose(in);
@@ -365,134 +326,53 @@ static int install_update_listStore(void) {
         clist_row_selected = last_row_selected;
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectInstallRecordByRow, NULL);
     }
-   // gtk_clist_thaw(GTK_CLIST(clist));
-
     return EXIT_SUCCESS;
 }
-static int install_update_clist(void) {
-    FILE *in;
-    char line[1002];
-    char *Pc;
-    char *new_line[3];
-
-    int last_row_selected;
-    int count;
-    int len;
-    int sdcard_install;
-
-    new_line[0] = "";
-    new_line[1] = line;
-    new_line[2] = NULL;
-
-    last_row_selected = clist_row_selected;
-
-    in = jp_open_home_file(EPN".install", "r");
-    if (!in) {
-        return EXIT_FAILURE;
-    }
-
-    gtk_signal_disconnect_by_func(GTK_OBJECT(clist),
-                                  GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-    gtk_clist_freeze(GTK_CLIST(clist));
-    gtk_clist_clear(GTK_CLIST(clist));
-#ifdef __APPLE__
-    gtk_clist_thaw(GTK_CLIST(clist));
-    gtk_widget_hide(clist);
-    gtk_widget_show_all(clist);
-    gtk_clist_freeze(GTK_CLIST(clist));
-#endif
-
-    for (count = 0; !feof(in); count++) {
-        line[0] = '\0';
-        Pc = fgets(line, 1000, in);
-        if (!Pc) {
-            break;
-        }
-
-        /* Strip newline characters from end of string */
-        len = strlen(line);
-        if ((line[len - 1] == '\n') || (line[len - 1] == '\r')) line[len - 1] = '\0';
-        if ((line[len - 2] == '\n') || (line[len - 2] == '\r')) line[len - 2] = '\0';
-
-        sdcard_install = (line[0] == '\001');
-        /* Strip char indicating SDCARD install from start of string */
-        if (sdcard_install) {
-            new_line[1] = &line[1];
-        } else {
-            new_line[1] = &line[0];
-        }
-
-        gtk_clist_append(GTK_CLIST(clist), new_line);
-
-        /* Add SDCARD icon for files to be installed on SDCARD */
-        if (sdcard_install) {
-            GdkPixmap *pixmap;
-            GdkBitmap *mask;
-            get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
-            gtk_clist_set_pixmap(GTK_CLIST(clist), count, INST_SDCARD_COLUMN, pixmap, mask);
-        }
-    }
-    fclose(in);
-
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
-
-    if (last_row_selected > count - 1) {
-        last_row_selected = count - 1;
-    }
-    if (last_row_selected >= 0) {
-        clist_select_row(GTK_CLIST(clist), last_row_selected, INST_FNAME_COLUMN);
-    }
-    gtk_clist_thaw(GTK_CLIST(clist));
-
-    return EXIT_SUCCESS;
-}
-
-static gboolean handleInstallRowSelection(GtkTreeSelection *selection,
-                                          GtkTreeModel *model,
-                                          GtkTreePath *path,
-                                          gboolean path_currently_selected,
-                                          gpointer userdata) {
+void
+columnClicked (GtkTreeView       *tree_view,
+               GtkTreePath       *path,
+               GtkTreeViewColumn *column,
+               gpointer           user_data){
     GtkTreeIter iter;
+    column_selected = column->sort_column_id;
     char fname[1000];
     char *gtk_str;
-    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
-
+    if (gtk_tree_model_get_iter(GTK_TREE_MODEL(listStore), &iter, path)) {
         int *i = gtk_tree_path_get_indices(path);
-        clist_row_selected = i[0];
-
-
-        if (column_selected == INST_SDCARD_COLUMN) {
+        GdkPixbuf *sdCardColumnDisplay = NULL;
+        if (column_selected == INSTALL_SDCARD_COLUMN_ENUM) {
             /* Toggle display of SDCARD pixmap */
-            if (gtk_clist_get_text(GTK_CLIST(clist), i[0], column_selected, NULL)) {
-                GdkPixmap *pixmap;
-                GdkBitmap *mask;
-                get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
-                gtk_clist_set_pixmap(GTK_CLIST(clist), i[0], column_selected, pixmap, mask);
-
-                gtk_clist_get_text(GTK_CLIST(clist), i[0], INST_FNAME_COLUMN, &gtk_str);
+            gtk_tree_model_get(GTK_TREE_MODEL(listStore),&iter,INSTALL_SDCARD_COLUMN_ENUM,&sdCardColumnDisplay,
+                               INSTALL_FNAME_COLUMN_ENUM,&gtk_str,-1);
+            if (sdCardColumnDisplay == NULL) {
                 fname[0] = '\001';
                 g_strlcpy(&fname[1], gtk_str, sizeof(fname) - 1);
                 install_modify_line(i[0], fname);
 
             } else {
-                gtk_clist_set_text(GTK_CLIST(clist), i[0], column_selected, "");
-                gtk_clist_get_text(GTK_CLIST(clist), i[0], INST_FNAME_COLUMN, &gtk_str);
                 g_strlcpy(&fname[0], gtk_str, sizeof(fname));
                 install_modify_line(i[0], fname);
             }
+             install_update_listStore();
         }
+    }
+}
+static gboolean handleInstallRowSelection(GtkTreeSelection *selection,
+                                          GtkTreeModel *model,
+                                          GtkTreePath *path,
+                                          gboolean path_currently_selected,
+                                          gpointer userdata) {
+   GtkTreeIter iter;
+
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
+        int *i = gtk_tree_path_get_indices(path);
+        clist_row_selected = i[0];
     }
 
     return TRUE;
 }
 
-static void column_clicked_cb(GtkTreeViewColumn *column) {
-    column_selected = column->sort_column_id;
-    g_print("column was clicked\n");
 
-}
 
 int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     GtkWidget *scrolled_window;
@@ -540,7 +420,6 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
                        "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
 
-    clist = gtk_clist_new_with_titles(2, titles);
     listStore = gtk_list_store_new(INSTALL_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER,
                                    GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
@@ -553,6 +432,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
                                                                            "cell-background-set",
                                                                            INSTALL_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                            NULL);
+    gtk_tree_view_column_set_sort_column_id(sdColumn,INSTALL_SDCARD_COLUMN_ENUM);
     GtkCellRenderer *fileNameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *fileNameColumn = gtk_tree_view_column_new_with_attributes("Files to install",
                                                                                  fileNameRenderer,
@@ -562,6 +442,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
                                                                                  "cell-background-set",
                                                                                  INSTALL_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                  NULL);
+    gtk_tree_view_column_set_sort_column_id(fileNameColumn,INSTALL_FNAME_COLUMN_ENUM);
 
     gtk_tree_view_column_set_clickable(sdColumn, gtk_false());
     gtk_tree_view_column_set_clickable(fileNameColumn, gtk_false());
@@ -570,35 +451,27 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
 
-    gtk_widget_set_usize(GTK_WIDGET(clist), 0, 166);
-    gtk_clist_column_titles_passive(GTK_CLIST(clist));
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), INST_SDCARD_COLUMN, TRUE);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), sdColumn, INSTALL_SDCARD_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), fileNameColumn, INSTALL_FNAME_COLUMN_ENUM);
 
-    get_pixmaps(clist, PIXMAP_SDCARD, &pixmap, &mask);
+    get_pixmaps(treeView, PIXMAP_SDCARD, &pixmap, &mask);
 #ifdef __APPLE__
     mask = NULL;
 #endif
     pixmapwid = gtk_pixmap_new(pixmap, mask);
     gtk_tree_view_column_set_widget(sdColumn, pixmapwid);
     gtk_tree_view_column_set_alignment(sdColumn, GTK_JUSTIFY_CENTER);
-    gtk_clist_set_column_widget(GTK_CLIST(clist), INST_SDCARD_COLUMN, pixmapwid);
-    gtk_clist_set_column_justification(GTK_CLIST(clist), INST_SDCARD_COLUMN, GTK_JUSTIFY_CENTER);
-
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-
+    column_selected = -1;
     gtk_tree_selection_set_select_function(treeSelection, handleInstallRowSelection, NULL, NULL);
-    g_signal_connect (sdColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
-    g_signal_connect (fileNameColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
+    //todo: set this up to work on a single click once on gtk3.
+
+    g_signal_connect (treeView, "row-activated", G_CALLBACK(columnClicked), NULL);
+
 
     /* Scrolled Window for file list */
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
-    // gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(clist));
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 5);
@@ -635,7 +508,6 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_widget_hide(GTK_FILE_SELECTION(filew)->cancel_button);
     gtk_widget_hide(GTK_FILE_SELECTION(filew)->ok_button);
 
-    //install_update_clist();
     install_update_listStore();
     gtk_main();
 
