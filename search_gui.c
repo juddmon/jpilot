@@ -63,6 +63,8 @@ static int clist_row_selected;
 static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
                                GdkEventButton *event, gpointer data);
 
+void selectFirstRow(const GtkTreeView *treeView);
+
 enum {
     SEARCH_APP_NAME_COLUMN_ENUM = 0,
     SEARCH_TEXT_COLUMN_ENUM,
@@ -494,8 +496,8 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 
 static void cb_entry(GtkWidget *widget, gpointer data) {
     gchar *empty_line[] = {"", ""};
-    GtkWidget *clist;
     GtkListStore *listStore;
+    GtkTreeView *treeView;
     GtkTreeIter iter;
     const char *entry_text;
     int count = 0;
@@ -509,7 +511,8 @@ static void cb_entry(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "entry text = %s\n", entry_text);
 
-    listStore = data;
+    treeView = data;
+    listStore = GTK_LIST_STORE(gtk_tree_view_get_model(treeView));
     //gtk_clist_clear(GTK_CLIST(clist));
     gtk_list_store_clear(listStore);
     count += search_address_or_contacts(entry_text, listStore, &iter);
@@ -534,58 +537,72 @@ static void cb_entry(GtkWidget *widget, gpointer data) {
 
     /* Highlight the first row in the list of returned items.
      * This does NOT cause the main window to jump to the selected record. */
-    // clist_select_row(GTK_CLIST(clist), 0, 0);
 
     /* select the first record found */
-    // cb_clist_selection(clist, 0, 0, (GdkEventButton *) 1, NULL);
+    selectFirstRow(treeView);
 
     return;
+}
+
+void selectFirstRow(const GtkTreeView *treeView) {
+    GtkTreeSelection * selection = NULL;
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreePath  *path = NULL;
+    GtkTreeIter firstIter;
+    gtk_tree_model_get_iter_first(gtk_tree_view_get_model(treeView),&firstIter);
+    path = gtk_tree_model_get_path(gtk_tree_view_get_model(treeView),&firstIter);
+    gtk_tree_selection_select_path(selection, path);
+    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, SEARCH_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+    gtk_tree_path_free(path);
 }
 
 static void cb_search(GtkWidget *widget, gpointer data) {
     cb_entry(entry, data);
 }
 
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data) {
+static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata) {
+    GtkTreeIter iter;
     struct search_record *sr;
-
-    clist_row_selected = row;
-
-    if (!event) return;
-
-    sr = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-    if (sr == NULL) {
-        return;
-    }
-    switch (sr->app_type) {
-        case DATEBOOK:
-            glob_find_id = sr->unique_id;
-            cb_app_button(NULL, GINT_TO_POINTER(DATEBOOK));
-            break;
-        case ADDRESS:
-            glob_find_id = sr->unique_id;
-            cb_app_button(NULL, GINT_TO_POINTER(ADDRESS));
-            break;
-        case TODO:
-            glob_find_id = sr->unique_id;
-            cb_app_button(NULL, GINT_TO_POINTER(TODO));
-            break;
-        case MEMO:
-            glob_find_id = sr->unique_id;
-            cb_app_button(NULL, GINT_TO_POINTER(MEMO));
-            break;
-        default:
+    int row;
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
+        int * i = gtk_tree_path_get_indices ( path ) ;
+        clist_row_selected = i[0];
+        row = i[0];
+        gtk_tree_model_get(model, &iter, SEARCH_DATA_ENUM, &sr, -1);
+        if(sr == NULL){
+            return TRUE;
+        }switch (sr->app_type) {
+            case DATEBOOK:
+                glob_find_id = sr->unique_id;
+                cb_app_button(NULL, GINT_TO_POINTER(DATEBOOK));
+                break;
+            case ADDRESS:
+                glob_find_id = sr->unique_id;
+                cb_app_button(NULL, GINT_TO_POINTER(ADDRESS));
+                break;
+            case TODO:
+                glob_find_id = sr->unique_id;
+                cb_app_button(NULL, GINT_TO_POINTER(TODO));
+                break;
+            case MEMO:
+                glob_find_id = sr->unique_id;
+                cb_app_button(NULL, GINT_TO_POINTER(MEMO));
+                break;
+            default:
 #ifdef ENABLE_PLUGINS
-            /* Not one of the main 4 apps so it must be a plugin */
-            jp_logf(JP_LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
-            call_plugin_gui(sr->app_type, sr->unique_id);
+                /* Not one of the main 4 apps so it must be a plugin */
+                jp_logf(JP_LOG_DEBUG, "choosing search result from plugin %d\n", sr->app_type);
+                call_plugin_gui(sr->app_type, sr->unique_id);
 #endif
-            break;
+                break;
+        }
+
     }
+    return TRUE;
 }
 
 static gboolean cb_key_pressed_in_clist(GtkWidget *widget,
@@ -593,8 +610,6 @@ static gboolean cb_key_pressed_in_clist(GtkWidget *widget,
                                         gpointer data) {
     if (event->keyval == GDK_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-        cb_clist_selection(widget, clist_row_selected, 0, (GdkEventButton *) 1, NULL);
-
         return TRUE;
     }
 
@@ -603,7 +618,6 @@ static gboolean cb_key_pressed_in_clist(GtkWidget *widget,
 
 void cb_search_gui(GtkWidget *widget, gpointer data) {
     GtkWidget *scrolled_window;
-    GtkWidget *clist;
     GtkTreeView *treeView;
     GtkListStore *listStore;
     GtkWidget *label;
@@ -688,24 +702,18 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_tree_view_set_headers_visible(treeView, gtk_false());
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
+    gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleSearchRowSelection, NULL, NULL);
 
-    clist = gtk_clist_new(2);
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection),
-                       NULL);
-    gtk_signal_connect(GTK_OBJECT(clist), "key_press_event",
+
+    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        GTK_SIGNAL_FUNC(cb_key_pressed_in_clist),
                        NULL);
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 1, TRUE);
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
     gtk_signal_connect(GTK_OBJECT(entry), "activate",
                        GTK_SIGNAL_FUNC(cb_entry),
-                       listStore);
+                       treeView);
 
     hbox = gtk_hbutton_box_new();
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
@@ -716,12 +724,12 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     /* Search button */
     button = gtk_button_new_from_stock(GTK_STOCK_FIND);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_search), listStore);
+                       GTK_SIGNAL_FUNC(cb_search), treeView);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
     /* clicking on "Case Sensitive" also starts a search */
     gtk_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
-                       GTK_SIGNAL_FUNC(cb_search), listStore);
+                       GTK_SIGNAL_FUNC(cb_search), treeView);
 
     /* Done button */
     button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
