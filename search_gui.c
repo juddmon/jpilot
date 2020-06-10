@@ -573,6 +573,8 @@ void cb_search_gui(GtkWidget *widget, gpointer data)
 {
    GtkWidget *scrolled_window;
    GtkWidget *clist;
+   GtkTreeView *treeView;
+   GtkListStore *listStore;
    GtkWidget *label;
    GtkWidget *button;
    GtkWidget *vbox, *hbox;
