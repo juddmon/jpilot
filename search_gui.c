@@ -60,8 +60,6 @@ static GtkAccelGroup *accel_group = NULL;
 static int clist_row_selected;
 
 /****************************** Prototypes ************************************/
-static void cb_clist_selection(GtkWidget *clist, gint row, gint column,
-                               GdkEventButton *event, gpointer data);
 
 void selectFirstRow(const GtkTreeView *treeView);
 
