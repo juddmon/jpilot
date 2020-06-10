@@ -2017,7 +2017,7 @@ static int keyring_find(int unique_id) {
 
 static void cb_keyr_update_clist(GtkWidget *clist, int category) {
     // keyr_update_clist(clist, &export_keyring_list, category, FALSE);
-    // keyr_update_liststore(listStore, &export_keyring_list, keyr_category, TRUE);
+    // keyr_update_liststore(listStore, &export_keyring_list, keyr_category, FALSE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
