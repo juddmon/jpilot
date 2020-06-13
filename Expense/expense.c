@@ -235,7 +235,7 @@ int plugin_unpack_cai_from_ai(struct CategoryAppInfo *cai,
     jp_logf(JP_LOG_DEBUG, "unpack_expense_cai_from_ai\n");
 
     memset(&ai, 0, sizeof(ai));
-    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
+    r = unpack_ExpenseAppInfo(&ai, ai_raw, (size_t) len);
     if (r <= 0) {
         jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
         return EXIT_FAILURE;
@@ -252,14 +252,14 @@ int plugin_pack_cai_into_ai(struct CategoryAppInfo *cai,
 
     jp_logf(JP_LOG_DEBUG, "pack_expense_cai_into_ai\n");
 
-    r = unpack_ExpenseAppInfo(&ai, ai_raw, len);
+    r = unpack_ExpenseAppInfo(&ai, ai_raw, (size_t) len);
     if (r <= 0) {
         jp_logf(JP_LOG_DEBUG, "unpack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
         return EXIT_FAILURE;
     }
     memcpy(&(ai.category), cai, sizeof(struct CategoryAppInfo));
 
-    r = pack_ExpenseAppInfo(&ai, ai_raw, len);
+    r = pack_ExpenseAppInfo(&ai, ai_raw, (size_t) len);
     if (r <= 0) {
         jp_logf(JP_LOG_DEBUG, "pack_ExpenseAppInfo failed %s %d\n", __FILE__, __LINE__);
         return EXIT_FAILURE;
@@ -278,8 +278,8 @@ static gint sortDateColumn(GtkTreeModel *model,
     time_t time1, time2;
     switch (sortcol) {
         case EXPENSE_DATE_COLUMN_ENUM: {
-            gtk_tree_model_get(GTK_TREE_MODEL(listStore), left, EXPENSE_DATA_COLUMN_ENUM, &mexp1, -1);
-            gtk_tree_model_get(GTK_TREE_MODEL(listStore), right, EXPENSE_DATA_COLUMN_ENUM, &mexp2, -1);
+            gtk_tree_model_get(GTK_TREE_MODEL(model), left, EXPENSE_DATA_COLUMN_ENUM, &mexp1, -1);
+            gtk_tree_model_get(GTK_TREE_MODEL(model), right, EXPENSE_DATA_COLUMN_ENUM, &mexp2, -1);
             if(mexp1 == NULL && mexp2 == NULL){
                 ret = 0;
             } else if(mexp1 == NULL && mexp2 != NULL){
@@ -289,7 +289,7 @@ static gint sortDateColumn(GtkTreeModel *model,
             } else if (mexp1 != NULL && mexp2 != NULL) {
                 time1 = mktime(&(mexp1->ex.date));
                 time2 = mktime(&(mexp2->ex.date));
-                ret = (time1 - time2);
+                ret = (gint) (time1 - time2);
             }
         }
             break;
@@ -479,7 +479,7 @@ void plugin_version(int *major_version, int *minor_version) {
 
 static int static_plugin_get_name(char *name, int len) {
     jp_logf(JP_LOG_DEBUG, "Expense: plugin_get_name\n");
-    snprintf(name, len, "Expense %d.%d", PLUGIN_MAJOR, PLUGIN_MINOR);
+    snprintf(name, (size_t) len, "Expense %d.%d", PLUGIN_MAJOR, PLUGIN_MINOR);
     return EXIT_SUCCESS;
 }
 
@@ -493,7 +493,7 @@ int plugin_get_name(char *name, int len) {
  * This is the name that will show up in the plugins menu in J-Pilot.
  */
 int plugin_get_menu_name(char *name, int len) {
-    strncpy(name, _("Expense"), len);
+    strncpy(name, _("Expense"), (size_t) len);
     return EXIT_SUCCESS;
 }
 
@@ -503,7 +503,7 @@ int plugin_get_menu_name(char *name, int len) {
  * If this function is used then plugin_help must also be defined.
  */
 int plugin_get_help_name(char *name, int len) {
-    g_snprintf(name, len, _("About %s"), _("Expense"));
+    g_snprintf(name, (gulong) len, _("About %s"), _("Expense"));
     return EXIT_SUCCESS;
 }
 
@@ -512,7 +512,7 @@ int plugin_get_help_name(char *name, int len) {
  * This is the palm database that will automatically be synced.
  */
 int plugin_get_db_name(char *name, int len) {
-    strncpy(name, "ExpenseDB", len);
+    strncpy(name, "ExpenseDB", (size_t) len);
     return EXIT_SUCCESS;
 }
 
@@ -683,7 +683,7 @@ static void exp_clear_details(void) {
         gtk_check_menu_item_set_active
                 (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint) find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -723,7 +723,7 @@ addNewExpenseRecord (GtkTreeModel *model,
     if(i[0] == clist_row_selected){
         struct MyExpense *mexp = NULL;
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
-        addNewExpenseRecordToDataStructure(&mexp,data);
+        addNewExpenseRecordToDataStructure(mexp,data);
         return TRUE;
     }
     return FALSE;
@@ -763,8 +763,8 @@ void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
     }
 
     /* Grab details of record from widgets on right-hand side of screen */
-    ex.type = glob_detail_type;
-    ex.payment = glob_detail_payment;
+    ex.type = (enum ExpenseType) glob_detail_type;
+    ex.payment = (enum ExpensePayment) glob_detail_payment;
     ex.currency = position_to_currency_id(glob_detail_currency_pos);
 
     /* gtk_entry_get_text *does not* allocate memory */
@@ -786,9 +786,9 @@ void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
         ex.city = NULL;
     }
 
-    ex.date.tm_mon = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_mon)) - 1;;
-    ex.date.tm_mday = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_day));;
-    ex.date.tm_year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_year)) - 1900;;
+    ex.date.tm_mon = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_mon)) - 1;
+    ex.date.tm_mday = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_day));
+    ex.date.tm_year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner_year)) - 1900;
     ex.date.tm_hour = 12;
     ex.date.tm_min = 0;
     ex.date.tm_sec = 0;
@@ -832,7 +832,7 @@ void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
     for (i = 0; i < NUM_EXP_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(exp_cat_menu_item2[i])) {
             if (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[i])->active) {
-                br.attrib = sort_l[i].cat_num;
+                br.attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
         }
@@ -881,10 +881,8 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 static int display_record(struct MyExpense *mexp, int at_row, const char *dateformat, GtkTreeIter *iter) {
     char *Ptype;
     char date[12];
-    GdkColor color;
-    GdkColormap *colormap;
     GdkColor bgColor;
-    gboolean showBgColor = FALSE;
+    gboolean showBgColor;
     char *amount = "";
 
     jp_logf(JP_LOG_DEBUG, "Expense: display_record\n");
@@ -939,7 +937,7 @@ selectExpenseRecordByRow(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, EXPENSE_DATE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, gtk_tree_view_get_column(treeView,EXPENSE_DATE_COLUMN_ENUM), FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -957,7 +955,6 @@ static void display_records(void) {
     GList *records;
     GList *temp_list;
     buf_rec *br;
-    gchar *empty_line[] = {"", "", ""};
     const char *dateformat = date_formats[get_pref_int_default(PREF_SHORTDATE, 0)];
     GtkTreeIter iter;
 
@@ -1100,9 +1097,9 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 
     jp_edit_cats(widget, "ExpenseDB", &(ai.category));
 
-    size = pack_ExpenseAppInfo(&ai, (unsigned char *) buffer, 65535);
+    size = (size_t) pack_ExpenseAppInfo(&ai, (unsigned char *) buffer, 65535);
 
-    jp_pdb_file_write_app_block("ExpenseDB", buffer, size);
+    jp_pdb_file_write_app_block("ExpenseDB", buffer, (int) size);
 
     /* Force refresh and display of CATEGORY_ALL */
     plugin_gui_refresh(-1);
@@ -1133,7 +1130,7 @@ static void cb_category(GtkWidget *item, int selection) {
             } else {
                 gtk_check_menu_item_set_active
                         (GTK_CHECK_MENU_ITEM(exp_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
             }
 
             return;
@@ -1211,7 +1208,7 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
                     (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
         }
         gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+                                    (guint) find_menu_cat_pos(sorted_position));
 
         if (mexp->ex.type < MAX_EXPENSE_TYPES) {
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
@@ -1231,7 +1228,7 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
                                        (menu_item_currency[currency_position]), TRUE);
         gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mexp->ex.type);
         gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mexp->ex.payment);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), currency_position);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), (guint) currency_position);
 
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mexp->ex.date.tm_mon + 1);
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mexp->ex.date.tm_mday);
@@ -1297,6 +1294,8 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value) {
             break;
         case EXPENSE_CURRENCY:
             glob_detail_currency_pos = sel;
+            break;
+        default:
             break;
     }
 }
@@ -1414,7 +1413,7 @@ static void make_menus(void) {
     /* This gets the application specific data out of the database for us.
      * We still need to write a function to unpack it from its blob form. */
     jp_get_app_info("ExpenseDB", &buf, &buf_size);
-    unpack_ExpenseAppInfo(&exp_app_info, buf, buf_size);
+    unpack_ExpenseAppInfo(&exp_app_info, buf, (size_t) buf_size);
     if (buf) {
         free(buf);
     }
@@ -1422,13 +1421,13 @@ static void make_menus(void) {
     get_pref(PREF_CHAR_SET, &char_set, NULL);
 
     for (i = 1; i < NUM_EXP_CAT_ITEMS; i++) {
-        cat_name = charset_p2newj(exp_app_info.category.name[i], 31, char_set);
+        cat_name = charset_p2newj(exp_app_info.category.name[i], 31, (int) char_set);
         strcpy(sort_l[i - 1].Pcat, cat_name);
         free(cat_name);
         sort_l[i - 1].cat_num = i;
     }
     /* put reserved 'Unfiled' category at end of list */
-    cat_name = charset_p2newj(exp_app_info.category.name[0], 31, char_set);
+    cat_name = charset_p2newj(exp_app_info.category.name[0], 31, (int) char_set);
     strcpy(sort_l[NUM_EXP_CAT_ITEMS - 1].Pcat, cat_name);
     free(cat_name);
     sort_l[NUM_EXP_CAT_ITEMS - 1].cat_num = 0;
@@ -1470,7 +1469,7 @@ findExpenseRecord (GtkTreeModel *model,
             GtkTreeSelection * selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, EXPENSE_DATE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, gtk_tree_view_get_column(treeView,EXPENSE_DATE_COLUMN_ENUM), FALSE, 1.0, 0.0);
             return TRUE;
         }
     }
@@ -1497,7 +1496,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     struct tm *now;
     long ivalue;
     long show_tooltips;
-    char *titles[] = {"", "", ""};
     int i;
     int cycle_category = FALSE;
     int new_cat;
@@ -1535,7 +1533,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     pane = gtk_hpaned_new();
     get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
-    gtk_paned_set_position(GTK_PANED(pane), ivalue);
+    gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
@@ -1571,7 +1569,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     listStore = gtk_list_store_new(EXPENSE_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                    G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
-    treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
+    treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
     GtkCellRenderer *typeRenderer = gtk_cell_renderer_text_new();
     GtkCellRenderer *amountRenderer = gtk_cell_renderer_text_new();
@@ -1623,7 +1621,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Restore previous sorting configuration */
     get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
-    clist_col_selected = ivalue;
+    clist_col_selected = (int) ivalue;
 
     for (int x = 0; x < EXPENSE_NUM_COLS - 3; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
@@ -1648,7 +1646,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Delete, Copy, New, etc. buttons */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
-                  "Ctrl+D");
+                  "Ctrl+D")
     gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_delete),
                        GINT_TO_POINTER(DELETE_FLAG));
@@ -1879,7 +1877,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         } else {
             gtk_check_menu_item_set_active
                     (GTK_CHECK_MENU_ITEM(exp_cat_menu_item1[index]), TRUE);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
         }
     } else {
         exp_category = CATEGORY_ALL;
@@ -1984,7 +1982,7 @@ static int add_search_result(const char *line,
     if (!temp_sr) {
         return EXIT_FAILURE;
     }
-    temp_sr->unique_id = unique_id;
+    temp_sr->unique_id = (unsigned int) unique_id;
     temp_sr->line = strdup(line);
     temp_sr->next = *sr;
     *sr = temp_sr;
