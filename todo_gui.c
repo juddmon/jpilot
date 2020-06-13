@@ -2103,13 +2103,13 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown)
         {
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else
         {
             clist_row_selected = 0;
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRow, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
 
     }

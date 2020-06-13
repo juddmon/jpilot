@@ -260,6 +260,10 @@ struct sorted_cats
    char Pcat[32];
    int cat_num;
 };
+typedef struct {
+    int found;
+    char* textToSearch;
+} RestoreDataSearchElement;
 
 /* utils.c: The subroutines below are all from utils.c */
 
