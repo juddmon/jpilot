@@ -858,28 +858,7 @@ int cleanup_pc_files(void) {
 }
 
 /* returns 0 if not found, 1 if found */
-int clist_find_id(GtkWidget *clist,
-                  unsigned int unique_id,
-                  int *found_at) {
-    int i, found;
-    MyAddress *maddr;
 
-    *found_at = 0;
-
-    for (found = i = 0; i < GTK_CLIST(clist)->rows; i++) {
-        maddr = gtk_clist_get_row_data(GTK_CLIST(clist), i);
-        if (maddr < (MyAddress *) CLIST_MIN_DATA) {
-            break;
-        }
-        if (maddr->unique_id == unique_id) {
-            found = TRUE;
-            *found_at = i;
-            break;
-        }
-    }
-
-    return found;
-}
 
 /* Encapsulate GTK function to make it free all resources */
 void clist_clear(GtkCList *clist) {
@@ -3175,45 +3154,9 @@ GdkColor get_color(int r, int g, int b){
     return color;
 }
 
-void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b) {
-    GtkStyle *old_style, *new_style;
-    GdkColor color;
 
-    if ((old_style = gtk_widget_get_style(clist))) {
-        new_style = gtk_style_copy(old_style);
-    } else {
-        new_style = gtk_style_new();
-    }
 
-    color.red = r;
-    color.green = g;
-    color.blue = b;
-    color.pixel = 0;
 
-    new_style->base[GTK_STATE_NORMAL] = color;
-    gtk_clist_set_row_style(GTK_CLIST(clist), row, new_style);
-}
-
-void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b) {
-    GtkStyle *old_style, *new_style;
-    GdkColor fg_color;
-
-    if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
-        (old_style = gtk_widget_get_style(clist))) {
-        new_style = gtk_style_copy(old_style);
-    } else {
-        new_style = gtk_style_new();
-    }
-
-    fg_color.red = r;
-    fg_color.green = g;
-    fg_color.blue = b;
-    fg_color.pixel = 0;
-
-    new_style->fg[GTK_STATE_NORMAL] = fg_color;
-    new_style->fg[GTK_STATE_SELECTED] = fg_color;
-    gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
-}
 
 int setup_sync(unsigned int flags) {
     long num_backups;

@@ -348,11 +348,9 @@ int cal_dialog(GtkWindow *main_window,
                const char *title, int monday_is_fdow,
                int *mon, int *day, int *year);
 
-void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
 GdkColor get_color(int r, int g, int b);
 
-void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
@@ -368,9 +366,6 @@ void clist_select_row(GtkCList *clist,
                       int       row,
                       int       column);
 
-int clist_find_id(GtkWidget *clist,
-                  unsigned int unique_id,
-                  int *found_at);
 
 int check_copy_DBs_to_home(void);
 

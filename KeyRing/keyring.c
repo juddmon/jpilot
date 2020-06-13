@@ -2015,9 +2015,8 @@ static int keyring_find(int unique_id) {
     return EXIT_SUCCESS;
 }
 
-static void cb_keyr_update_clist(GtkWidget *clist, int category) {
-    // keyr_update_clist(clist, &export_keyring_list, category, FALSE);
-    // keyr_update_liststore(listStore, &export_keyring_list, keyr_category, FALSE);
+static void cb_keyr_update_clist(GtkWidget *treeView, int category) {
+    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), &export_keyring_list, category, FALSE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
@@ -2026,7 +2025,7 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
     set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
-static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     struct MyKeyRing *mkr;
     GList *list, *temp_list;
@@ -2145,68 +2144,74 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
+    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
+    list = gtk_tree_selection_get_selected_rows(selection,model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mkr) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
-                fprintf(out, "\"%s\",", utf);
-                g_free(utf);
-                str_to_csv_str(csv_text, mkr->kr.name);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.account);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.password);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.note);
-                fprintf(out, "\"%s\"\n", csv_text);
-                break;
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+            if (!mkr) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+                    fprintf(out, "\"%s\",", utf);
+                    g_free(utf);
+                    str_to_csv_str(csv_text, mkr->kr.name);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.account);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.password);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.note);
+                    fprintf(out, "\"%s\"\n", csv_text);
+                    break;
 
-            case EXPORT_TYPE_BFOLDERS:
-                str_to_csv_str(csv_text, mkr->kr.name);
-                fprintf(out, "\"%s\",", csv_text);
+                case EXPORT_TYPE_BFOLDERS:
+                    str_to_csv_str(csv_text, mkr->kr.name);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"\",");
+                    fprintf(out, "\"\",");
 
-                str_to_csv_str(csv_text, mkr->kr.account);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.password);
-                fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.account);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.password);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"\",\"\",\"\",\"\","
-                             "\"\",\"\",\"\",\"\","
-                             "\"\",\"\",");
+                    fprintf(out, "\"\",\"\",\"\",\"\","
+                                 "\"\",\"\",\"\",\"\","
+                                 "\"\",\"\",");
 
-                str_to_csv_str(csv_text, mkr->kr.note);
-                fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.note);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"KeyRing > ");
+                    fprintf(out, "\"KeyRing > ");
 
-                utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
-                fprintf(out, "%s\"\n", utf);
-                g_free(utf);
+                    utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+                    fprintf(out, "%s\"\n", utf);
+                    g_free(utf);
 
-                break;
+                    break;
 
-            case EXPORT_TYPE_TEXT:
-                fprintf(out, "#%d\n", i + 1);
-                fprintf(out, "Name: %s\n", mkr->kr.name);
-                fprintf(out, "Account: %s\n", mkr->kr.account);
-                fprintf(out, "Password: %s\n", mkr->kr.password);
-                fprintf(out, "Note: %s\n", mkr->kr.note);
-                break;
+                case EXPORT_TYPE_TEXT:
+                    fprintf(out, "#%d\n", i + 1);
+                    fprintf(out, "Name: %s\n", mkr->kr.name);
+                    fprintf(out, "Account: %s\n", mkr->kr.account);
+                    fprintf(out, "Password: %s\n", mkr->kr.password);
+                    fprintf(out, "Note: %s\n", mkr->kr.note);
+                    break;
 
-            case EXPORT_TYPE_KEEPASSX:
-                break;
+                case EXPORT_TYPE_KEEPASSX:
+                    break;
 
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -2227,35 +2232,39 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             g_free(utf);
 
             for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-                mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-                if (!mkr) {
-                    continue;
-                    jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+                GtkTreePath *path = temp_list->data;
+                GtkTreeIter iter;
+                if (gtk_tree_model_get_iter(model, &iter, path)) {
+                    gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+                    if (!mkr) {
+                        continue;
+                        jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+                    }
+                    if ((mkr->attrib & 0x0F) != cat) {
+                        continue;
+                    }
+                    fprintf(out, "   <entry>\n");
+                    str_to_keepass_str(csv_text, mkr->kr.name);
+                    fprintf(out, "    <title>%s</title>\n", csv_text);
+                    str_to_keepass_str(csv_text, mkr->kr.account);
+                    fprintf(out, "    <username>%s</username>\n", csv_text);
+                    str_to_keepass_str(csv_text, mkr->kr.password);
+                    fprintf(out, "    <password>%s</password>\n", csv_text);
+                    /* No keyring field for url */
+                    str_to_keepass_str(csv_text, mkr->kr.note);
+                    fprintf(out, "    <comment>%s</comment>\n", csv_text);
+                    fprintf(out, "    <icon>0</icon>\n");
+                    /* No keyring field for creation */
+                    /* No keyring field for lastaccess */
+                    /* lastmod */
+                    strftime(str1, sizeof(str1), "%Y-%m-%dT%H:%M:%S", &(mkr->kr.last_changed));
+                    fprintf(out, "    <lastmod>%s</lastmod>\n", str1);
+                    /* No keyring field for expire */
+                    fprintf(out, "    <expire>Never</expire>\n");
+                    fprintf(out, "   </entry>\n");
                 }
-                if ((mkr->attrib & 0x0F) != cat) {
-                    continue;
-                }
-                fprintf(out, "   <entry>\n");
-                str_to_keepass_str(csv_text, mkr->kr.name);
-                fprintf(out, "    <title>%s</title>\n", csv_text);
-                str_to_keepass_str(csv_text, mkr->kr.account);
-                fprintf(out, "    <username>%s</username>\n", csv_text);
-                str_to_keepass_str(csv_text, mkr->kr.password);
-                fprintf(out, "    <password>%s</password>\n", csv_text);
-                /* No keyring field for url */
-                str_to_keepass_str(csv_text, mkr->kr.note);
-                fprintf(out, "    <comment>%s</comment>\n", csv_text);
-                fprintf(out, "    <icon>0</icon>\n");
-                /* No keyring field for creation */
-                /* No keyring field for lastaccess */
-                /* lastmod */
-                strftime(str1, sizeof(str1), "%Y-%m-%dT%H:%M:%S", &(mkr->kr.last_changed));
-                fprintf(out, "    <lastmod>%s</lastmod>\n", str1);
-                /* No keyring field for expire */
-                fprintf(out, "    <expire>Never</expire>\n");
-                fprintf(out, "   </entry>\n");
+                fprintf(out, "  </group>\n");
             }
-            fprintf(out, "  </group>\n");
         }
 
         /* Write a footer to the KeePassX XML file */

@@ -643,7 +643,7 @@ int todo_import(GtkWidget *window) {
 
 
 
-static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyToDo *mtodo;
     GList *list, *temp_list;
@@ -739,131 +739,138 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
+    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
+    list = gtk_tree_selection_get_selected_rows(selection,model);
+
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mtodo) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"%s\",", csv_text);
-                g_free(utf);
-                fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1" : "0");
-                fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1" : "0");
-                if (mtodo->todo.indefinite) {
-                    fprintf(out, "\"\",");
-                } else {
-                    strftime(text, sizeof(text), "%Y/%02m/%02d", &(mtodo->todo.due));
-                    fprintf(out, "\"%s\",", text);
-                }
-                fprintf(out, "\"%d\",", mtodo->todo.priority);
-                fprintf(out, "\"%s\",", mtodo->todo.complete ? "1" : "0");
-                if (mtodo->todo.description) {
-                    str_to_csv_str(csv_text, mtodo->todo.description);
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+            if (!mtodo) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
                     fprintf(out, "\"%s\",", csv_text);
-                } else {
-                    fprintf(out, "\"\",");
-                }
-                if (mtodo->todo.note) {
-                    str_to_csv_str(csv_text, mtodo->todo.note);
-                    fprintf(out, "\"%s\"\n", csv_text);
-                } else {
-                    fprintf(out, "\"\",");
-                }
-                break;
-
-            case EXPORT_TYPE_TEXT:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
-                fprintf(out, _("Category: %s\n"), utf);
-                g_free(utf);
-
-                fprintf(out, _("Private: %s\n"),
-                        (mtodo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
-                if (mtodo->todo.indefinite) {
-                    fprintf(out, _("Due Date: None\n"));
-                } else {
-                    strftime(text, sizeof(text), short_date, &(mtodo->todo.due));
-                    fprintf(out, _("Due Date: %s\n"), text);
-                }
-                fprintf(out, _("Priority: %d\n"), mtodo->todo.priority);
-                fprintf(out, _("Completed: %s\n"), mtodo->todo.complete ? _("Yes") : _("No"));
-                if (mtodo->todo.description) {
-                    fprintf(out, _("Description: %s\n"), mtodo->todo.description);
-                }
-                if (mtodo->todo.note) {
-                    fprintf(out, _("Note: %s\n\n"), mtodo->todo.note);
-                }
-                break;
-
-            case EXPORT_TYPE_ICALENDAR:
-                /* RFC 2445: Internet Calendaring and Scheduling Core
-                 *           Object Specification */
-                if (i == 0) {
-                    fprintf(out, "BEGIN:VCALENDAR"CRLF);
-                    fprintf(out, "VERSION:2.0"CRLF);
-                    fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
-                }
-                fprintf(out, "BEGIN:VTODO"CRLF);
-                if (mtodo->attrib & dlpRecAttrSecret) {
-                    fprintf(out, "CLASS:PRIVATE"CRLF);
-                }
-                fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s"CRLF,
-                        mtodo->unique_id, userid, username, hostname);
-                fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
-                        now->tm_year + 1900,
-                        now->tm_mon + 1,
-                        now->tm_mday,
-                        now->tm_hour,
-                        now->tm_min,
-                        now->tm_sec);
-                str_to_ical_str(text, sizeof(text),
-                                todo_app_info.category.name[mtodo->attrib & 0x0F]);
-                fprintf(out, "CATEGORIES:%s"CRLF, text);
-                if (mtodo->todo.description) {
-                    g_strlcpy(str1, mtodo->todo.description, 51);
-                    /* truncate the string on a UTF-8 character boundary */
-                    if (char_set > CHAR_SET_UTF) {
-                        if (!g_utf8_validate(str1, -1, (const gchar **) &end))
-                            *end = 0;
+                    g_free(utf);
+                    fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1" : "0");
+                    fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1" : "0");
+                    if (mtodo->todo.indefinite) {
+                        fprintf(out, "\"\",");
+                    } else {
+                        strftime(text, sizeof(text), "%Y/%02m/%02d", &(mtodo->todo.due));
+                        fprintf(out, "\"%s\",", text);
                     }
-                } else {
-                    /* Handle pathological case with null description. */
-                    str1[0] = '\0';
-                }
-                if ((p = strchr(str1, '\n'))) {
-                    *p = '\0';
-                }
-                str_to_ical_str(text, sizeof(text), str1);
-                fprintf(out, "SUMMARY:%s%s"CRLF, text,
-                        strlen(str1) > 49 ? "..." : "");
-                str_to_ical_str(text, sizeof(text), mtodo->todo.description);
-                fprintf(out, "DESCRIPTION:%s", text);
-                if (mtodo->todo.note && mtodo->todo.note[0]) {
-                    str_to_ical_str(text, sizeof(text), mtodo->todo.note);
-                    fprintf(out, "\\n"CRLF" %s"CRLF, text);
-                } else {
-                    fprintf(out, ""CRLF);
-                }
-                fprintf(out, "STATUS:%s"CRLF, mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
-                fprintf(out, "PRIORITY:%d"CRLF, mtodo->todo.priority);
-                if (!mtodo->todo.indefinite) {
-                    fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d"CRLF,
-                            mtodo->todo.due.tm_year + 1900,
-                            mtodo->todo.due.tm_mon + 1,
-                            mtodo->todo.due.tm_mday);
-                }
-                fprintf(out, "END:VTODO"CRLF);
-                if (temp_list->next == NULL) {
-                    fprintf(out, "END:VCALENDAR"CRLF);
-                }
-                break;
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                    fprintf(out, "\"%d\",", mtodo->todo.priority);
+                    fprintf(out, "\"%s\",", mtodo->todo.complete ? "1" : "0");
+                    if (mtodo->todo.description) {
+                        str_to_csv_str(csv_text, mtodo->todo.description);
+                        fprintf(out, "\"%s\",", csv_text);
+                    } else {
+                        fprintf(out, "\"\",");
+                    }
+                    if (mtodo->todo.note) {
+                        str_to_csv_str(csv_text, mtodo->todo.note);
+                        fprintf(out, "\"%s\"\n", csv_text);
+                    } else {
+                        fprintf(out, "\"\",");
+                    }
+                    break;
+
+                case EXPORT_TYPE_TEXT:
+                    utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
+                    fprintf(out, _("Category: %s\n"), utf);
+                    g_free(utf);
+
+                    fprintf(out, _("Private: %s\n"),
+                            (mtodo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
+                    if (mtodo->todo.indefinite) {
+                        fprintf(out, _("Due Date: None\n"));
+                    } else {
+                        strftime(text, sizeof(text), short_date, &(mtodo->todo.due));
+                        fprintf(out, _("Due Date: %s\n"), text);
+                    }
+                    fprintf(out, _("Priority: %d\n"), mtodo->todo.priority);
+                    fprintf(out, _("Completed: %s\n"), mtodo->todo.complete ? _("Yes") : _("No"));
+                    if (mtodo->todo.description) {
+                        fprintf(out, _("Description: %s\n"), mtodo->todo.description);
+                    }
+                    if (mtodo->todo.note) {
+                        fprintf(out, _("Note: %s\n\n"), mtodo->todo.note);
+                    }
+                    break;
+
+                case EXPORT_TYPE_ICALENDAR:
+                    /* RFC 2445: Internet Calendaring and Scheduling Core
+                     *           Object Specification */
+                    if (i == 0) {
+                        fprintf(out, "BEGIN:VCALENDAR"CRLF);
+                        fprintf(out, "VERSION:2.0"CRLF);
+                        fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
+                    }
+                    fprintf(out, "BEGIN:VTODO"CRLF);
+                    if (mtodo->attrib & dlpRecAttrSecret) {
+                        fprintf(out, "CLASS:PRIVATE"CRLF);
+                    }
+                    fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s"CRLF,
+                            mtodo->unique_id, userid, username, hostname);
+                    fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
+                            now->tm_year + 1900,
+                            now->tm_mon + 1,
+                            now->tm_mday,
+                            now->tm_hour,
+                            now->tm_min,
+                            now->tm_sec);
+                    str_to_ical_str(text, sizeof(text),
+                                    todo_app_info.category.name[mtodo->attrib & 0x0F]);
+                    fprintf(out, "CATEGORIES:%s"CRLF, text);
+                    if (mtodo->todo.description) {
+                        g_strlcpy(str1, mtodo->todo.description, 51);
+                        /* truncate the string on a UTF-8 character boundary */
+                        if (char_set > CHAR_SET_UTF) {
+                            if (!g_utf8_validate(str1, -1, (const gchar **) &end))
+                                *end = 0;
+                        }
+                    } else {
+                        /* Handle pathological case with null description. */
+                        str1[0] = '\0';
+                    }
+                    if ((p = strchr(str1, '\n'))) {
+                        *p = '\0';
+                    }
+                    str_to_ical_str(text, sizeof(text), str1);
+                    fprintf(out, "SUMMARY:%s%s"CRLF, text,
+                            strlen(str1) > 49 ? "..." : "");
+                    str_to_ical_str(text, sizeof(text), mtodo->todo.description);
+                    fprintf(out, "DESCRIPTION:%s", text);
+                    if (mtodo->todo.note && mtodo->todo.note[0]) {
+                        str_to_ical_str(text, sizeof(text), mtodo->todo.note);
+                        fprintf(out, "\\n"CRLF" %s"CRLF, text);
+                    } else {
+                        fprintf(out, ""CRLF);
+                    }
+                    fprintf(out, "STATUS:%s"CRLF, mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
+                    fprintf(out, "PRIORITY:%d"CRLF, mtodo->todo.priority);
+                    if (!mtodo->todo.indefinite) {
+                        fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d"CRLF,
+                                mtodo->todo.due.tm_year + 1900,
+                                mtodo->todo.due.tm_mon + 1,
+                                mtodo->todo.due.tm_mday);
+                    }
+                    fprintf(out, "END:VTODO"CRLF);
+                    if (temp_list->next == NULL) {
+                        fprintf(out, "END:VCALENDAR"CRLF);
+                    }
+                    break;
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -873,10 +880,8 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 }
 
 //todo: this is used by export_gui.  ExportGui needs to be converted to liststore.
-static void cb_todo_update_clist(GtkWidget *clist, int category) {
-    //TODO: do nothing for now.\ until begin working on exportGui
-    //todo_update_clist(clist, NULL, &export_todo_list, category, FALSE);
-    //todo_update_liststore(listStore, category_menu1, &glob_todo_list, todo_category, TRUE);
+static void cb_todo_update_clist(GtkWidget *treeView, int category) {
+    todo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), category_menu1, &glob_todo_list, todo_category, FALSE);
 }
 
 

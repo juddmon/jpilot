@@ -564,7 +564,7 @@ int memo_import(GtkWidget *window) {
 
 /* Start Export code */
 
-static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyMemo *mmemo;
     GList *list, *temp_list;
@@ -657,72 +657,78 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
+    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
+    list = gtk_tree_selection_get_selected_rows(selection,model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mmemo) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                len = 0;
-                if (mmemo->memo.text) {
-                    len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
-                }
-                if (len < 256) len = 256;
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"%s\",", csv_text);
-                g_free(utf);
-                fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1" : "0");
-                str_to_csv_str(csv_text, mmemo->memo.text);
-                fprintf(out, "\"%s\"\n", csv_text);
-                break;
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+            if (!mmemo) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    len = 0;
+                    if (mmemo->memo.text) {
+                        len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
+                    }
+                    if (len < 256) len = 256;
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
+                    fprintf(out, "\"%s\",", csv_text);
+                    g_free(utf);
+                    fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1" : "0");
+                    str_to_csv_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "\"%s\"\n", csv_text);
+                    break;
 
-            case EXPORT_TYPE_BFOLDERS:
-                len = 0;
-                str_to_csv_str(csv_text, mmemo->memo.text);
-                fprintf(out, "\"%s\",", csv_text);
+                case EXPORT_TYPE_BFOLDERS:
+                    len = 0;
+                    str_to_csv_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                if (mmemo->memo.text) {
-                    len = (unsigned int)  strlen(mmemo->memo.text) * 2 + 4;
-                }
-                if (len < 256) len = 256;
-                printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"Memos > %s\"\n", csv_text);
-                printf("\"Memos > %s\"\n", utf);
-                g_free(utf);
-                break;
+                    if (mmemo->memo.text) {
+                        len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
+                    }
+                    if (len < 256) len = 256;
+                    printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
+                    fprintf(out, "\"Memos > %s\"\n", csv_text);
+                    printf("\"Memos > %s\"\n", utf);
+                    g_free(utf);
+                    break;
 
-            case EXPORT_TYPE_TEXT:
-                get_pref(PREF_SHORTDATE, NULL, &short_date);
-                get_pref_time_no_secs(pref_time);
-                time(&ltime);
-                now = localtime(&ltime);
-                strftime(str1, sizeof(str1), short_date, now);
-                strftime(str2, sizeof(str2), pref_time, now);
-                g_snprintf(text, sizeof(text), "%s %s", str1, str2);
+                case EXPORT_TYPE_TEXT:
+                    get_pref(PREF_SHORTDATE, NULL, &short_date);
+                    get_pref_time_no_secs(pref_time);
+                    time(&ltime);
+                    now = localtime(&ltime);
+                    strftime(str1, sizeof(str1), short_date, now);
+                    strftime(str2, sizeof(str2), pref_time, now);
+                    g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
-                fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
-                fprintf(out, _("Category: %s\n"), utf);
-                g_free(utf);
-                fprintf(out, _("Private: %s\n"),
-                        (mmemo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
-                fprintf(out, _("----- Start of Memo -----\n"));
-                fprintf(out, "%s", mmemo->memo.text);
-                fprintf(out, _("\n----- End of Memo -----\n\n"));
-                break;
+                    fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    fprintf(out, _("Category: %s\n"), utf);
+                    g_free(utf);
+                    fprintf(out, _("Private: %s\n"),
+                            (mmemo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
+                    fprintf(out, _("----- Start of Memo -----\n"));
+                    fprintf(out, "%s", mmemo->memo.text);
+                    fprintf(out, _("\n----- End of Memo -----\n\n"));
+                    break;
 
-            case EXPORT_TYPE_KEEPASSX:
-                break;
+                case EXPORT_TYPE_KEEPASSX:
+                    break;
 
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -742,44 +748,48 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
             fprintf(out, "   <icon>7</icon>\n");
             g_free(utf);
             for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-                mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-                if (!mmemo) {
-                    continue;
-                    jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
-                }
-                if ((mmemo->attrib & 0x0F) != cat) {
-                    continue;
-                }
-                fprintf(out, "   <entry>\n");
+                GtkTreePath *path = temp_list->data;
+                GtkTreeIter iter;
+                if (gtk_tree_model_get_iter(model, &iter, path)) {
+                    gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+                    if (!mmemo) {
+                        continue;
+                        jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
+                    }
+                    if ((mmemo->attrib & 0x0F) != cat) {
+                        continue;
+                    }
+                    fprintf(out, "   <entry>\n");
 
-                /* Create a title (which is the first line of the memo) */
-                for (j = 0; j < 100; j++) {
-                    str1[j] = mmemo->memo.text[j];
-                    if (str1[j] == '\0') {
-                        break;
+                    /* Create a title (which is the first line of the memo) */
+                    for (j = 0; j < 100; j++) {
+                        str1[j] = mmemo->memo.text[j];
+                        if (str1[j] == '\0') {
+                            break;
+                        }
+                        if (str1[j] == '\n') {
+                            str1[j] = '\0';
+                            break;
+                        }
                     }
-                    if (str1[j] == '\n') {
-                        str1[j] = '\0';
-                        break;
-                    }
+                    str1[100] = '\0';
+                    str_to_keepass_str(csv_text, str1);
+                    fprintf(out, "    <title>%s</title>\n", csv_text);
+                    /* No keyring field for username */
+                    /* No keyring field for password */
+                    /* No keyring field for url */
+                    str_to_keepass_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "    <comment>%s</comment>\n", csv_text);
+                    fprintf(out, "    <icon>7</icon>\n");
+                    /* No keyring field for creation */
+                    /* No keyring field for lastaccess */
+                    /* No keyring field for lastmod */
+                    /* No keyring field for expire */
+                    fprintf(out, "    <expire>Never</expire>\n");
+                    fprintf(out, "   </entry>\n");
                 }
-                str1[100] = '\0';
-                str_to_keepass_str(csv_text, str1);
-                fprintf(out, "    <title>%s</title>\n", csv_text);
-                /* No keyring field for username */
-                /* No keyring field for password */
-                /* No keyring field for url */
-                str_to_keepass_str(csv_text, mmemo->memo.text);
-                fprintf(out, "    <comment>%s</comment>\n", csv_text);
-                fprintf(out, "    <icon>7</icon>\n");
-                /* No keyring field for creation */
-                /* No keyring field for lastaccess */
-                /* No keyring field for lastmod */
-                /* No keyring field for expire */
-                fprintf(out, "    <expire>Never</expire>\n");
-                fprintf(out, "   </entry>\n");
+                fprintf(out, "  </group>\n");
             }
-            fprintf(out, "  </group>\n");
         }
 
         /* Write a footer to the KeePassX XML file */
@@ -795,8 +805,8 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 }
 
 //TODO: update this when ready todo export function
-static void cb_memo_update_clist(GtkWidget *clist, int category) {
-    memo_update_liststore(listStore, NULL, &export_memo_list, category, FALSE);
+static void cb_memo_update_clist(GtkWidget *treeView, int category) {
+    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), NULL, &export_memo_list, category, FALSE);
     //memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
 }
 
@@ -1546,12 +1556,12 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         }
             /* Second, try the currently selected row */
         else if (clist_row_selected < entries_shown) {
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRowMemo, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else {
             clist_row_selected = 0;
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRowMemo, NULL);
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
     }
 

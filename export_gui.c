@@ -50,10 +50,10 @@ static int glob_export_type;
 static GtkWidget *save_as_entry;
 
 /****************************** Prototypes ************************************/
-static void (*glob_cb_export_menu)(GtkWidget *clist, int category);
+static void (*glob_cb_export_menu)(GtkWidget *treeView, int category);
 static void (*glob_cb_export_done)(GtkWidget *widget, const char *filename);
 static void (*glob_cb_export_ok)(GtkWidget *export_window,
-                                 GtkWidget *clist,
+                                 GtkWidget *treeView,
                                  int type,
                                  const char *filename);
 
@@ -214,11 +214,11 @@ int export_gui(GtkWidget *main_window,
                int pref_export,
                char *type_text[],
                int type_int[],
-               void (*cb_export_menu)(GtkWidget *clist, int category),
+               void (*cb_export_menu)(GtkWidget *treeView, int category),
                void (*cb_export_done)(GtkWidget *widget,
                                       const char *filename),
                void (*cb_export_ok)(GtkWidget *export_window,
-                                    GtkWidget *clist,
+                                    GtkWidget *treeView,
                                     int type,
                                     const char *filename)
                )
