@@ -144,7 +144,6 @@ static GtkWidget *category_menu1;
 /* Need two extra slots for the ALL category and Edit Categories... */
 static GtkWidget *exp_cat_menu_item1[NUM_EXP_CAT_ITEMS + 2];
 static GtkWidget *scrolled_window;
-static GtkWidget *clist;
 static GtkTreeView *treeView;
 static GtkListStore *listStore;
 
@@ -208,12 +207,6 @@ static void display_records(void);
 
 static void connect_changed_signals(int con_or_dis);
 
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data);
-
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
 static void cb_pulldown_menu(GtkWidget *item, unsigned int value);
@@ -228,6 +221,8 @@ static void cb_category(GtkWidget *item, int selection);
 static int find_sort_cat_pos(int cat);
 
 static int find_menu_cat_pos(int cat);
+void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data);
+void deleteExpense(struct MyExpense *mexp,gpointer data);
 
 /******************************************************************************/
 /* Start of code                                                              */
@@ -305,68 +300,6 @@ static gint sortDateColumn(GtkTreeModel *model,
 
 }
 
-static gint sort_compare_date(GtkCList *clist,
-                              gconstpointer ptr1,
-                              gconstpointer ptr2) {
-    const GtkCListRow *row1, *row2;
-    struct MyExpense *mexp1, *mexp2;
-    time_t time1, time2;
-
-    row1 = (const GtkCListRow *) ptr1;
-    row2 = (const GtkCListRow *) ptr2;
-
-    mexp1 = row1->data;
-    mexp2 = row2->data;
-
-    time1 = mktime(&(mexp1->ex.date));
-    time2 = mktime(&(mexp2->ex.date));
-
-    return (time1 - time2);
-}
-
-static void cb_clist_click_column(GtkWidget *clist, int column) {
-    struct MyExpense *mexp;
-    unsigned int unique_id;
-
-    /* Remember currently selected item and return to it after sort
-     * This is critically important because sorting without updating the
-     * global variable clist_row_selected can cause data loss */
-    mexp = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
-    if (mexp < (struct MyExpense *) CLIST_MIN_DATA) {
-        unique_id = 0;
-    } else {
-        unique_id = mexp->unique_id;
-    }
-
-    /* Clicking on same column toggles ascending/descending sort */
-    if (clist_col_selected == column) {
-        if (GTK_CLIST(clist)->sort_type == GTK_SORT_ASCENDING) {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_DESCENDING);
-        } else {
-            gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-        }
-    } else /* Always sort in ascending order when changing sort column */
-    {
-        gtk_clist_set_sort_type(GTK_CLIST (clist), GTK_SORT_ASCENDING);
-    }
-
-    clist_col_selected = column;
-
-    gtk_clist_set_sort_column(GTK_CLIST(clist), column);
-    switch (column) {
-        case EXP_DATE_COLUMN:  /* Date column */
-            gtk_clist_set_compare_func(GTK_CLIST(clist), sort_compare_date);
-            break;
-        default: /* All other columns can use GTK default sort function */
-            gtk_clist_set_compare_func(GTK_CLIST(clist), NULL);
-            break;
-    }
-    gtk_clist_sort(GTK_CLIST(clist));
-
-    /* Return to previously selected item */
-    expense_find(unique_id);
-}
-
 static void set_new_button_to(int new_state) {
     jp_logf(JP_LOG_DEBUG, "set_new_button_to new %d old %d\n", new_state, record_changed);
 
@@ -410,7 +343,7 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (GTK_CLIST(clist)->rows > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
@@ -648,10 +581,23 @@ static char *get_entry_type(enum ExpenseType type) {
             return NULL;
     }
 }
+gboolean deleteExpenseRecord(GtkTreeModel *model,
+                      GtkTreePath  *path,
+                      GtkTreeIter  *iter,
+                      gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        struct MyExpense *mexp = NULL;
+        gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
+        deleteExpense(mexp,data);
+        return TRUE;
+    }
 
-/* This function gets called when the "delete" button is pressed */
-static void cb_delete(GtkWidget *widget, gpointer data) {
-    struct MyExpense *mexp;
+    return FALSE;
+
+
+}
+void deleteExpense(struct MyExpense *mexp,gpointer data) {
     int size;
     unsigned char buf[0xFFFF];
     buf_rec br;
@@ -661,7 +607,7 @@ static void cb_delete(GtkWidget *widget, gpointer data) {
 
     flag = GPOINTER_TO_INT(data);
 
-    mexp = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
+
     if (!mexp) {
         return;
     }
@@ -689,6 +635,12 @@ static void cb_delete(GtkWidget *widget, gpointer data) {
         }
         display_records();
     }
+}
+/* This function gets called when the "delete" button is pressed */
+static void cb_delete(GtkWidget *widget, gpointer data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteExpenseRecord, data);
+    return;
+
 }
 
 /*
@@ -761,13 +713,24 @@ static int position_to_currency_id(int position) {
         return 0;
     }
 }
+gboolean
+addNewExpenseRecord (GtkTreeModel *model,
+              GtkTreePath  *path,
+              GtkTreeIter  *iter,
+              gpointer data) {
 
-/*
- * This function is called when the user presses the "Add" button.
- * We collect all of the data from the GUI and pack it into an expense
- * record and then write it out.
- */
-static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    int * i = gtk_tree_path_get_indices ( path ) ;
+    if(i[0] == clist_row_selected){
+        struct MyExpense *mexp = NULL;
+        gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
+        addNewExpenseRecordToDataStructure(&mexp,data);
+        return TRUE;
+    }
+    return FALSE;
+
+
+}
+void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
     struct Expense ex;
     buf_rec br;
     const char *text;
@@ -776,7 +739,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     int flag;
     int i;
     unsigned int unique_id = 0;
-    struct MyExpense *mexp = NULL;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
 
@@ -794,7 +756,6 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
         return;
     }
     if (flag == MODIFY_FLAG) {
-        mexp = gtk_clist_get_row_data(GTK_CLIST(clist), clist_row_selected);
         if (!mexp) {
             return;
         }
@@ -898,6 +859,20 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
     return;
 }
+/*
+ * This function is called when the user presses the "Add" button.
+ * We collect all of the data from the GUI and pack it into an expense
+ * record and then write it out.
+ */
+static void cb_add_new_record(GtkWidget *widget, gpointer data) {
+    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+        gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewExpenseRecord, data);
+    }else {
+        //no records exist in category yet.
+        addNewExpenseRecordToDataStructure(NULL,data);
+    }
+
+}
 
 /*
  * This function just adds the record to the clist on the left side of
@@ -937,13 +912,13 @@ static int display_record(struct MyExpense *mexp, int at_row, const char *datefo
                 showBgColor = FALSE;
             }
     }
-    gtk_list_store_append(listStore, &iter);
+    gtk_list_store_append(listStore, iter);
     sprintf(date, dateformat, mexp->ex.date.tm_mon + 1, mexp->ex.date.tm_mday);
     Ptype = get_entry_type(mexp->ex.type);
     if (mexp->ex.amount) {
         amount = mexp->ex.amount;
     }
-    gtk_list_store_set(listStore, &iter,
+    gtk_list_store_set(listStore, iter,
                        EXPENSE_DATE_COLUMN_ENUM, date,
                        EXPENSE_TYPE_COLUMN_ENUM, Ptype,
                        EXPENSE_AMOUNT_COLUMN_ENUM, amount,
@@ -1047,12 +1022,6 @@ static void display_records(void) {
     }
 
     jp_free_DB_records(&records);
-
-    /* Sort the clist */
-    gtk_clist_sort(GTK_CLIST(clist));
-
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection), NULL);
 
     /* Select the existing requested row, or row 0 if that is impossible */
     if (clist_row_selected <= entries_shown) {
@@ -1186,126 +1155,122 @@ static void cb_category(GtkWidget *item, int selection) {
     }
 }
 
-/*
- * This function just displays a record on the right hand side of the screen
- * (the details) after a row has been selected in the clist on the left.
- */
-static void cb_clist_selection(GtkWidget *clist,
-                               gint row,
-                               gint column,
-                               GdkEventButton *event,
-                               gpointer data) {
+static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
+                                   GtkTreeModel *model,
+                                   GtkTreePath *path,
+                                   gboolean path_currently_selected,
+                                   gpointer userdata) {
+    GtkTreeIter iter;
     struct MyExpense *mexp;
     int b;
     int index, sorted_position;
     int currency_position;
     unsigned int unique_id = 0;
+    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
-    jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
+        int *i = gtk_tree_path_get_indices(path);
+        clist_row_selected = i[0];
+        gtk_tree_model_get(model, &iter, EXPENSE_DATA_COLUMN_ENUM, &mexp, -1);
+        jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
 
-    if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-        mexp = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-        if (mexp != NULL) {
-            unique_id = mexp->unique_id;
+        if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
+            if (mexp != NULL) {
+                unique_id = mexp->unique_id;
+            }
+
+            b = dialog_save_changed_record(scrolled_window, record_changed);
+            if (b == DIALOG_SAID_2) {
+                cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+            }
+            set_new_button_to(CLEAR_FLAG);
+
+            if (unique_id) {
+                expense_find(unique_id);
+            }
+            return TRUE;
+        }
+        if (mexp == NULL) {
+            return TRUE;
         }
 
-        b = dialog_save_changed_record(scrolled_window, record_changed);
-        if (b == DIALOG_SAID_2) {
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
         set_new_button_to(CLEAR_FLAG);
+        /* Need to disconnect signals while changing values */
+        connect_changed_signals(DISCONNECT_SIGNALS);
 
-        if (unique_id) {
-            expense_find(unique_id);
-        } else {
-            clist_select_row(GTK_CLIST(clist), row, column);
+        index = mexp->attrib & 0x0F;
+        sorted_position = find_sort_cat_pos(index);
+        if (exp_cat_menu_item2[sorted_position] == NULL) {
+            /* Illegal category */
+            jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
+            sorted_position = 0;
         }
-        return;
-    }
+        if (sorted_position < 0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+        } else {
+            gtk_check_menu_item_set_active
+                    (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
+        }
+        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
+                                    find_menu_cat_pos(sorted_position));
 
-    clist_row_selected = row;
+        if (mexp->ex.type < MAX_EXPENSE_TYPES) {
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+                                           (menu_item_expense_type[mexp->ex.type]), TRUE);
+        } else {
+            jp_logf(JP_LOG_WARN, _("Expense: Unknown expense type\n"));
+        }
+        if (mexp->ex.payment < MAX_PAYMENTS) {
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
+                                           (menu_item_payment[mexp->ex.payment]), TRUE);
+        } else {
+            jp_logf(JP_LOG_WARN, _("Expense: Unknown payment type\n"));
+        }
+        currency_position = currency_id_to_position(mexp->ex.currency);
 
-    mexp = gtk_clist_get_row_data(GTK_CLIST(clist), row);
-    if (mexp == NULL) {
-        return;
-    }
-
-    set_new_button_to(CLEAR_FLAG);
-    /* Need to disconnect signals while changing values */
-    connect_changed_signals(DISCONNECT_SIGNALS);
-
-    index = mexp->attrib & 0x0F;
-    sorted_position = find_sort_cat_pos(index);
-    if (exp_cat_menu_item2[sorted_position] == NULL) {
-        /* Illegal category */
-        jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
-        sorted_position = 0;
-    }
-    if (sorted_position < 0) {
-        jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-    } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[sorted_position]), TRUE);
-    }
-    gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                find_menu_cat_pos(sorted_position));
-
-    if (mexp->ex.type < MAX_EXPENSE_TYPES) {
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                       (menu_item_expense_type[mexp->ex.type]), TRUE);
-    } else {
-        jp_logf(JP_LOG_WARN, _("Expense: Unknown expense type\n"));
+                                       (menu_item_currency[currency_position]), TRUE);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mexp->ex.type);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mexp->ex.payment);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), currency_position);
+
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mexp->ex.date.tm_mon + 1);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mexp->ex.date.tm_mday);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_year), mexp->ex.date.tm_year + 1900);
+
+        if (mexp->ex.amount) {
+            gtk_entry_set_text(GTK_ENTRY(entry_amount), mexp->ex.amount);
+        } else {
+            gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
+        }
+
+        if (mexp->ex.vendor) {
+            gtk_entry_set_text(GTK_ENTRY(entry_vendor), mexp->ex.vendor);
+        } else {
+            gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
+        }
+
+        if (mexp->ex.city) {
+            gtk_entry_set_text(GTK_ENTRY(entry_city), mexp->ex.city);
+        } else {
+            gtk_entry_set_text(GTK_ENTRY(entry_city), "");
+        }
+
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), "", -1);
+
+        if (mexp->ex.attendees) {
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), mexp->ex.attendees, -1);
+        }
+
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), "", -1);
+        if (mexp->ex.note) {
+            gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), mexp->ex.note, -1);
+        }
+
+        connect_changed_signals(CONNECT_SIGNALS);
+
+        jp_logf(JP_LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
     }
-    if (mexp->ex.payment < MAX_PAYMENTS) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                       (menu_item_payment[mexp->ex.payment]), TRUE);
-    } else {
-        jp_logf(JP_LOG_WARN, _("Expense: Unknown payment type\n"));
-    }
-    currency_position = currency_id_to_position(mexp->ex.currency);
-
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                   (menu_item_currency[currency_position]), TRUE);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mexp->ex.type);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mexp->ex.payment);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), currency_position);
-
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mexp->ex.date.tm_mon + 1);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mexp->ex.date.tm_mday);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_year), mexp->ex.date.tm_year + 1900);
-
-    if (mexp->ex.amount) {
-        gtk_entry_set_text(GTK_ENTRY(entry_amount), mexp->ex.amount);
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry_amount), "");
-    }
-
-    if (mexp->ex.vendor) {
-        gtk_entry_set_text(GTK_ENTRY(entry_vendor), mexp->ex.vendor);
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry_vendor), "");
-    }
-
-    if (mexp->ex.city) {
-        gtk_entry_set_text(GTK_ENTRY(entry_city), mexp->ex.city);
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry_city), "");
-    }
-
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), "", -1);
-
-    if (mexp->ex.attendees) {
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(attendees_buffer), mexp->ex.attendees, -1);
-    }
-
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), "", -1);
-    if (mexp->ex.note) {
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), mexp->ex.note, -1);
-    }
-
-    connect_changed_signals(CONNECT_SIGNALS);
-
-    jp_logf(JP_LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
+    return TRUE;
 }
 
 /*
@@ -1490,48 +1455,29 @@ static void make_menus(void) {
     make_menu(currency, EXPENSE_CURRENCY, &menu_currency, menu_item_currency);
 }
 
-/* returns 1 if found, 0 if not found */
-static int expense_clist_find_id(GtkWidget *clist,
-                                 unsigned int unique_id,
-                                 int *found_at) {
-    int i, found;
-    struct MyExpense *mexp;
 
-    jp_logf(JP_LOG_DEBUG, "Expense: expense_clist_find_id\n");
+gboolean
+findExpenseRecord (GtkTreeModel *model,
+            GtkTreePath  *path,
+            GtkTreeIter  *iter,
+            gpointer data) {
+    int uniqueId = GPOINTER_TO_INT(data);
+    if (uniqueId) {
+        struct MyExpense *mexp = NULL;
 
-    *found_at = 0;
-    for (found = i = 0; i <= GTK_CLIST(clist)->rows; i++) {
-        mexp = gtk_clist_get_row_data(GTK_CLIST(clist), i);
-        if (!mexp) {
-            break;
-        }
-        if (mexp->unique_id == unique_id) {
-            found = TRUE;
-            *found_at = i;
-            break;
+        gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
+        if(mexp->unique_id == uniqueId){
+            GtkTreeSelection * selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, EXPENSE_DATE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            return TRUE;
         }
     }
-
-    return found;
+    return FALSE;
 }
-
 static int expense_find(int unique_id) {
-    int r, found_at;
-
-    jp_logf(JP_LOG_DEBUG, "Expense: expense_find, unique_id=%d\n", unique_id);
-
-    if (unique_id) {
-        r = expense_clist_find_id(clist,
-                                  unique_id,
-                                  &found_at);
-        if (r) {
-            gtk_clist_select_row(GTK_CLIST(clist), found_at, 0);
-            if (!gtk_clist_row_is_visible(GTK_CLIST(clist), found_at)) {
-                gtk_clist_moveto(GTK_CLIST(clist), found_at, 0, 0.5, 0.0);
-            }
-        }
-    }
-
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findExpenseRecord, GINT_TO_POINTER(unique_id));
     return EXIT_SUCCESS;
 }
 
@@ -1657,12 +1603,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_tree_view_column_set_sort_column_id(typeColumn, EXPENSE_TYPE_COLUMN_ENUM);
     gtk_tree_view_column_set_sort_column_id(amountColumn, EXPENSE_AMOUNT_COLUMN_ENUM);
 
-    /* Clist */
-    clist = gtk_clist_new_with_titles(3, titles);
-
-    gtk_clist_set_column_title(GTK_CLIST(clist), 0, _("Date"));
-    gtk_clist_set_column_title(GTK_CLIST(clist), 1, _("Type"));
-    gtk_clist_set_column_title(GTK_CLIST(clist), 2, _("Amount"));
     gtk_tree_view_insert_column(treeView, dateColumn, EXPENSE_DATE_COLUMN_ENUM);
     gtk_tree_view_insert_column(treeView, typeColumn, EXPENSE_TYPE_COLUMN_ENUM);
     gtk_tree_view_insert_column(treeView, amountColumn, EXPENSE_AMOUNT_COLUMN_ENUM);
@@ -1674,23 +1614,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_tree_view_column_set_sizing(typeColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_min_width(typeColumn, 100);
 
-    /* auto resize is used in all the other application clists but here
-     * it produces a cramped layout so a minimum width is specified */
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 0, TRUE);
-    gtk_clist_set_column_min_width(GTK_CLIST(clist), 0, 44);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 1, TRUE);
-    gtk_clist_set_column_min_width(GTK_CLIST(clist), 1, 100);
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist), 2, FALSE);
+    GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
-    gtk_clist_column_titles_active(GTK_CLIST(clist));
-    gtk_signal_connect(GTK_OBJECT(clist), "click_column",
-                       GTK_SIGNAL_FUNC(cb_clist_click_column), NULL);
+    gtk_tree_selection_set_select_function(treeSelection, handleExpenseRowSelection, NULL, NULL);
 
-    gtk_signal_connect(GTK_OBJECT(clist), "select_row",
-                       GTK_SIGNAL_FUNC(cb_clist_selection),
-                       NULL);
-    gtk_clist_set_shadow_type(GTK_CLIST(clist), SHADOW);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist), GTK_SELECTION_BROWSE);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
 
@@ -1710,7 +1637,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(listStore), clist_col_selected, (GtkSortType) ivalue);
 
-   // gtk_clist_set_sort_type(GTK_CLIST(clist), ivalue);
+
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
@@ -1959,7 +1886,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     }
 
     /* The focus doesn't do any good on the application button */
-    gtk_widget_grab_focus(GTK_WIDGET(clist));
+    gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
     jp_logf(JP_LOG_DEBUG, "Expense: calling display_records\n");
     display_records();
@@ -2002,7 +1929,7 @@ int plugin_gui_cleanup(void) {
         pane = NULL;
     }
     set_pref(PREF_EXPENSE_SORT_COLUMN, clist_col_selected, NULL, TRUE);
-    set_pref(PREF_EXPENSE_SORT_ORDER, GTK_CLIST(clist)->sort_type, NULL, TRUE);
+    set_pref(PREF_EXPENSE_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(treeView,clist_row_selected)), NULL, TRUE);
 
     plugin_last_time = time(NULL);
 
