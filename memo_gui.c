@@ -43,7 +43,7 @@
 #define NUM_MEMO_CAT_ITEMS 16
 
 #define MEMO_MAX_COLUMN_LEN 80
-#define MEMO_CLIST_CHAR_WIDTH 50
+#define MEMO_LIST_CHAR_WIDTH 50
 
 #define NUM_MEMO_CSV_FIELDS 3
 
@@ -60,7 +60,7 @@ extern int glob_date_timer_tag;
 
 static struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
-static int clist_row_selected;
+static int row_selected;
 
 static GtkWidget *treeView;
 static GtkListStore *listStore;
@@ -277,7 +277,7 @@ int print_memo(MyMemo *mmemo ) {
 
     memo_list = NULL;
     if (this_many == 1) {
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(memo_list1.mmemo), mmemo, sizeof(MyMemo));
@@ -305,7 +305,7 @@ gboolean printRecordMemo(GtkTreeModel *model,
                      GtkTreeIter  *iter,
                      gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         print_memo(mmemo);
@@ -903,7 +903,7 @@ gboolean deleteRecordMemo(GtkTreeModel *model,
                       GtkTreeIter  *iter,
                       gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         delete_memo(mmemo,data);
@@ -919,7 +919,7 @@ gboolean undeleteRecordMemo(GtkTreeModel *model,
                           GtkTreeIter  *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         undelete_memo(mmemo, data);
@@ -936,7 +936,7 @@ void delete_memo(MyMemo * mmemo, gpointer data) {
     int show_priv;
     long char_set;
 
-    if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+    if (mmemo < (MyMemo *) LIST_MIN_DATA) {
         return;
     }
     /* Convert to Palm character set */
@@ -960,8 +960,8 @@ void delete_memo(MyMemo * mmemo, gpointer data) {
         delete_pc_record(MEMO, mmemo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -984,7 +984,7 @@ void undelete_memo(MyMemo *mmemo, gpointer data) {
     int show_priv;
 
 
-    if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+    if (mmemo < (MyMemo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1126,7 +1126,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             memo_category = selection;
         }
-        clist_row_selected = 0;
+        row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
         memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
         //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
@@ -1203,7 +1203,7 @@ addNewRecordMemo (GtkTreeModel *model,
 
     int * i = gtk_tree_path_get_indices ( path ) ;
 
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo * mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         return addNewMemo(mmemo, data);
@@ -1232,7 +1232,7 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
         show_priv = show_privates(GET_PRIVATES);
 
 
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return TRUE;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1255,7 +1255,7 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
     if (flag == MODIFY_FLAG) {
 
         unique_id = mmemo->unique_id;
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return TRUE;
         }
         if ((mmemo->rt == DELETED_PALM_REC) ||
@@ -1438,7 +1438,7 @@ selectRecordByRowMemo (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -1457,7 +1457,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     char *last;
     char str2[MEMO_MAX_COLUMN_LEN];
     MemoList *temp_memo;
-    char str[MEMO_CLIST_CHAR_WIDTH + 10];
+    char str[MEMO_LIST_CHAR_WIDTH + 10];
     int len, len1;
     int show_priv;
     long show_tooltips;
@@ -1516,8 +1516,8 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         len1 = ( int) strlen(str);
         len = ((int) strlen(temp_memo->mmemo.memo.text)) + 1;
         /* ..memo clist does not display '/n' */
-        if ((copy_max_length = (size_t) len) > MEMO_CLIST_CHAR_WIDTH) {
-            copy_max_length = MEMO_CLIST_CHAR_WIDTH;
+        if ((copy_max_length = (size_t) len) > MEMO_LIST_CHAR_WIDTH) {
+            copy_max_length = MEMO_LIST_CHAR_WIDTH;
         }
         last =  multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
         if (last) {
@@ -1534,21 +1534,21 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         switch (temp_memo->mmemo.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -1572,12 +1572,12 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
             memo_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
+        else if (row_selected < entries_shown) {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else {
-            clist_row_selected = 0;
+            row_selected = 0;
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
     }
@@ -1662,7 +1662,7 @@ int memo_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -1725,7 +1725,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
     /* Do some initialization */
-    clist_row_selected = 0;
+    row_selected = 0;
 
     record_changed = CLEAR_FLAG;
 
@@ -1965,7 +1965,7 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
-        clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mmemo != NULL) {

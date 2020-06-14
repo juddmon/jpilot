@@ -75,9 +75,9 @@
 #define CATEGORY_ALL 300
 
 /* Used to mark the entry in the clist to add a record */
-#define CLIST_NEW_ENTRY_DATA 100
-#define CLIST_ADDING_ENTRY_DATA 101
-#define CLIST_MIN_DATA 199
+#define LIST_NEW_ENTRY_DATA 100
+#define LIST_ADDING_ENTRY_DATA 101
+#define LIST_MIN_DATA 199
 
 #define DIALOG_SAID_1           454
 #define DIALOG_SAID_PRINT       454
@@ -354,9 +354,7 @@ GdkColor get_color(int r, int g, int b);
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
-void clist_clear(GtkCList *clist);
-
-void set_tooltip(int show_tooltip, 
+void set_tooltip(int show_tooltip,
                         GtkTooltips *tooltips,
                         GtkWidget *widget,
                         const gchar *tip_text,

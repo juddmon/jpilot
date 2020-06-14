@@ -40,7 +40,7 @@
 static GtkWidget *filew = NULL;
 static GtkWidget *treeView;
 static GtkListStore *listStore;
-static int clist_row_selected;
+static int row_selected;
 static int column_selected;
 enum {
     INSTALL_SDCARD_COLUMN_ENUM = 0,
@@ -231,11 +231,11 @@ static void cb_add(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_remove(GtkWidget *widget, gpointer data) {
-    if (clist_row_selected < 0) {
+    if (row_selected < 0) {
         return;
     }
-    jp_logf(JP_LOG_DEBUG, "Remove line %d\n", clist_row_selected);
-    install_remove_line(clist_row_selected);
+    jp_logf(JP_LOG_DEBUG, "Remove line %d\n", row_selected);
+    install_remove_line(row_selected);
     install_update_listStore();
 }
 
@@ -245,7 +245,7 @@ selectInstallRecordByRow (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -272,7 +272,7 @@ static int install_update_listStore(void) {
     new_line[1] = line;
     new_line[2] = NULL;
 
-    last_row_selected = clist_row_selected;
+    last_row_selected = row_selected;
 
     in = jp_open_home_file(EPN".install", "r");
     if (!in) {
@@ -323,7 +323,7 @@ static int install_update_listStore(void) {
     }
 
     if (last_row_selected >= 0) {
-        clist_row_selected = last_row_selected;
+        row_selected = last_row_selected;
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectInstallRecordByRow, NULL);
     }
     return EXIT_SUCCESS;
@@ -366,7 +366,7 @@ static gboolean handleInstallRowSelection(GtkTreeSelection *selection,
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
-        clist_row_selected = i[0];
+        row_selected = i[0];
     }
 
     return TRUE;
@@ -389,7 +389,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
         return EXIT_SUCCESS;
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
     filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,

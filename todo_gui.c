@@ -94,8 +94,8 @@ static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
 static struct ToDoAppInfo todo_app_info;
 static int todo_category = CATEGORY_ALL;
-static int clist_col_selected;
-static int clist_row_selected;
+static int column_selected;
+static int row_selected;
 static int record_changed;
 
 /****************************** Prototypes ************************************/
@@ -149,8 +149,8 @@ static void init(void) {
     get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
     add_days_to_date(&due_date,(int) ivalue);
 
-    clist_row_selected = 0;
-    clist_col_selected = 0;
+    row_selected = 0;
+    column_selected = 0;
 
     record_changed = CLEAR_FLAG;
 }
@@ -212,7 +212,7 @@ int printTodo(MyToDo * mtodo,gpointer data) {
 
     todo_list = NULL;
     if (this_many == 1) {
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(todo_list1.mtodo), mtodo, sizeof(MyToDo));
@@ -1027,7 +1027,7 @@ gboolean deleteRecord(GtkTreeModel *model,
                        GtkTreeIter  *iter,
                        gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         deleteTodo(mytodo,data);
@@ -1044,7 +1044,7 @@ void deleteTodo(MyToDo * mtodo,gpointer data){
     int show_priv;
     long char_set;
 
-    if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+    if (mtodo < (MyToDo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1070,8 +1070,8 @@ void deleteTodo(MyToDo * mtodo,gpointer data){
         delete_pc_record(TODO, mtodo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -1091,7 +1091,7 @@ gboolean undeleteRecord(GtkTreeModel *model,
                       GtkTreeIter  *iter,
                       gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         undeleteTodo(mytodo,data);
@@ -1107,7 +1107,7 @@ gboolean printRecord(GtkTreeModel *model,
                         GtkTreeIter  *iter,
                         gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         printTodo(mytodo,data);
@@ -1122,7 +1122,7 @@ gboolean printRecord(GtkTreeModel *model,
 void undeleteTodo(MyToDo * mtodo,gpointer data){
     int flag;
     int show_priv;
-    if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+    if (mtodo < (MyToDo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1259,7 +1259,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             todo_category = selection;
         }
-        clist_row_selected = 0;
+        row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "todo_category = %d\n", todo_category);
         todo_update_liststore(listStore,category_menu1,&glob_todo_list,todo_category,TRUE);
     }
@@ -1421,7 +1421,7 @@ addNewRecord (GtkTreeModel *model,
               gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         addNewRecordToDataStructure(mytodo,data);
@@ -1447,7 +1447,7 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1470,7 +1470,7 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
     if (flag == MODIFY_FLAG) {
 
         unique_id = mtodo->unique_id;
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return;
         }
         if ((mtodo->rt == DELETED_PALM_REC) ||
@@ -1593,7 +1593,7 @@ gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *righ
 
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    clist_col_selected = column->sort_column_id;
+    column_selected = column->sort_column_id;
 
 }
 
@@ -1637,7 +1637,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
       int * i = gtk_tree_path_get_indices ( path ) ;
-      clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mtodo != NULL) {
@@ -1933,7 +1933,7 @@ int todo_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -2113,24 +2113,24 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
 
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
 
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
 
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
 
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -2142,10 +2142,10 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
 
             if (comp_due < comp_now) {
-                fgColor = get_color(CLIST_OVERDUE_RED,CLIST_OVERDUE_GREEN,CLIST_OVERDUE_BLUE);
+                fgColor = get_color(LIST_OVERDUE_RED, LIST_OVERDUE_GREEN, LIST_OVERDUE_BLUE);
 
             } else if (comp_due == comp_now) {
-                fgColor = get_color(CLIST_DUENOW_RED,CLIST_DUENOW_GREEN,CLIST_DUENOW_BLUE);
+                fgColor = get_color(LIST_DUENOW_RED, LIST_DUENOW_GREEN, LIST_DUENOW_BLUE);
             }
             showFgColor=TRUE;
         }
@@ -2171,14 +2171,14 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             todo_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown)
+        else if (row_selected < entries_shown)
         {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else
         {
-            clist_row_selected = 0;
+            row_selected = 0;
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
 
@@ -2223,7 +2223,7 @@ selectRecordByRow (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -2252,9 +2252,9 @@ int todo_gui_cleanup(void) {
     set_pref(PREF_TODO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_TODO_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
     set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
-    set_pref(PREF_TODO_SORT_COLUMN, clist_col_selected, NULL, TRUE);
+    set_pref(PREF_TODO_SORT_COLUMN, column_selected, NULL, TRUE);
 
-    set_pref(PREF_TODO_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),clist_col_selected)), NULL, TRUE);
+    set_pref(PREF_TODO_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected)), NULL, TRUE);
     todo_liststore_clear(listStore);
     return EXIT_SUCCESS;
 }
@@ -2362,7 +2362,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), (GtkShadowType) GTK_TYPE_SHADOW_TYPE);
+    //gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), (GtkShadowType) GTK_TYPE_SHADOW_TYPE);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
@@ -2470,16 +2470,16 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
-    clist_col_selected = (int) ivalue;
+    column_selected = (int) ivalue;
 
     for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected), gtk_true());
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(treeView));
 
     get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
-    gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, (GtkSortType)  ivalue);
+    gtk_tree_sortable_set_sort_column_id(sortable, column_selected, (GtkSortType)  ivalue);
 
 
     //gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));

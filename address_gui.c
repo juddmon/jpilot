@@ -42,7 +42,7 @@
 #define MAX_NUM_TEXTS contNote+1
 #define NUM_IM_LABELS 5
 
-#define ADDRESS_MAX_CLIST_NAME 30
+#define ADDRESS_MAX_LIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
 #define NUM_CONT_CSV_FIELDS 56
 #define NUM_ADDR_CSV_FIELDS 27
@@ -165,7 +165,7 @@ static struct AddressAppInfo address_app_info;
 static struct ContactAppInfo contact_app_info;
 static struct sorted_cats sort_l[NUM_ADDRESS_CAT_ITEMS];
 static int address_category = CATEGORY_ALL;
-static int clist_row_selected;
+static int rowSelected;
 
 static ContactList *glob_contact_list = NULL;
 static ContactList *export_contact_list = NULL;
@@ -308,7 +308,7 @@ static void init(void) {
     contact_picture.length = 0;
     contact_picture.data = NULL;
 
-    clist_row_selected = 0;
+    rowSelected = 0;
 
     changed_list = NULL;
     record_changed = CLEAR_FLAG;
@@ -445,7 +445,7 @@ gboolean printAddressRecord(GtkTreeModel *model,
                             GtkTreeIter *iter,
                             gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *myContact = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &myContact, -1);
         printAddress(myContact, data);
@@ -468,7 +468,7 @@ int printAddress(MyContact *mcont, gpointer data) {
 
     cont_list = NULL;
     if (this_many == 1) {
-        if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        if (mcont < (MyContact *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(cont_list1.mcont), mcont, sizeof(MyContact));
@@ -1796,7 +1796,7 @@ gboolean deleteAddressRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         deleteAddress(mcont, data);
@@ -1812,7 +1812,7 @@ gboolean addNewAddressRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data){
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == rowSelected){
         MyContact *mcont = NULL;
         gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
         addNewAddressRecordToDataStructure(mcont,data);
@@ -1841,7 +1841,7 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        if (mcont < (MyContact *) LIST_MIN_DATA) {
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1854,7 +1854,7 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
         /* These rec_types are both the same for now */
         if (flag == MODIFY_FLAG) {
             unique_id = mcont->unique_id;
-            if (mcont < (MyContact *) CLIST_MIN_DATA) {
+            if (mcont < (MyContact *) LIST_MIN_DATA) {
                 return;
             }
             if ((mcont->rt == DELETED_PALM_REC) ||
@@ -1972,7 +1972,7 @@ gboolean deleteAddressContactRecord(GtkTreeModel *model,
                                     GtkTreeIter *iter,
                                     gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         deleteAddressContact(mcont, data);
@@ -1989,7 +1989,7 @@ gboolean undeleteAddressRecord(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         undeleteAddress(mcont, data);
@@ -2007,7 +2007,7 @@ void deleteAddressContact(MyContact *mcont, gpointer data) {
     long char_set;
     int i;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
     /* convert to Palm character set */
@@ -2033,8 +2033,8 @@ void deleteAddressContact(MyContact *mcont, gpointer data) {
         delete_pc_record(CONTACTS, mcont, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (rowSelected > 0) {
+                rowSelected--;
             }
         }
     }
@@ -2051,7 +2051,7 @@ void deleteAddress(MyContact *mcont, gpointer data) {
     long char_set;
     int i;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
 
@@ -2084,8 +2084,8 @@ void deleteAddress(MyContact *mcont, gpointer data) {
         delete_pc_record(ADDRESS, &maddr, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (rowSelected > 0) {
+                rowSelected--;
             }
         }
     }
@@ -2117,7 +2117,7 @@ void undeleteAddress(MyContact *mcont, gpointer data) {
     int flag;
     int show_priv;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
 
@@ -2641,7 +2641,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             address_category = selection;
         }
-        clist_row_selected = 0;
+        rowSelected = 0;
         jp_logf(JP_LOG_DEBUG, "address_category = %d\n", address_category);
         address_update_listStore(listStore, category_menu1, &glob_contact_list,
                                  address_category, TRUE);
@@ -3091,15 +3091,15 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreeIter *iter,
                                  char *entry_text) {
     int *i = gtk_tree_path_get_indices(path);
-    char *clist_text;
+    char *list_text;
     //int i, r;
-    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&clist_text);
-    if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&list_text);
+    if (!strncasecmp(list_text, entry_text, strlen(entry_text))) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
-        clist_row_selected = i[0];
+        rowSelected = i[0];
     }
    
 }
@@ -3132,7 +3132,7 @@ findAndSetGlobalAddressId(GtkTreeModel *model,
                           GtkTreeIter *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *maddr = NULL;
 
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
@@ -3153,7 +3153,7 @@ selectRecordAddressByRow(GtkTreeModel *model,
                          GtkTreeIter *iter,
                          gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -3276,7 +3276,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                 if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
                     if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
                     if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
+                    g_snprintf(str, ADDRESS_MAX_LIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
                                temp_cl->mcont.cont.entry[show2]);
                     if (tmp_p1) *tmp_p1 = '\1';
                     if (tmp_p2) *tmp_p2 = '\1';
@@ -3285,22 +3285,22 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                     if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
                     if (temp_cl->mcont.cont.entry[show3]) {
                         if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                        g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
+                        g_snprintf(str, ADDRESS_MAX_LIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
                                    temp_cl->mcont.cont.entry[show3]);
                         if (tmp_p3) *tmp_p3 = '\1';
                     } else {
-                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_CLIST_NAME);
+                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_LIST_NAME);
                     }
                     if (tmp_p1) *tmp_p1 = '\1';
                 }
                 if (!temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
                     if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_CLIST_NAME);
+                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_LIST_NAME);
                     if (tmp_p2) *tmp_p2 = '\1';
                 }
             } else if (temp_cl->mcont.cont.entry[show3]) {
                 if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_CLIST_NAME);
+                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_LIST_NAME);
                 if (tmp_p3) *tmp_p3 = '\1';
             } else {
                 strcpy(str, _("-Unnamed-"));
@@ -3352,21 +3352,21 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         switch (temp_cl->mcont.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_cl->mcont.attrib & dlpRecAttrSecret) {
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -3398,12 +3398,12 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             address_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
+        else if (rowSelected < entries_shown) {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         } else
             /* Third, select row 0 if nothing else is possible */
         {
-            clist_row_selected = 0;
+            rowSelected = 0;
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         }
     }
@@ -3597,7 +3597,7 @@ int address_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    rowSelected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -3652,14 +3652,14 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-    select_row = clist_row_selected + add;
+    select_row = rowSelected + add;
     if (select_row > row_count - 1) {
         select_row = 0;
     }
     if (select_row < 0) {
         select_row = row_count - 1;
     }
-    clist_row_selected = select_row;
+    rowSelected = select_row;
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
     return TRUE;
 }
@@ -3770,7 +3770,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     int b;
     int i, index, sorted_position;
     unsigned int unique_id = 0;
-    char *clist_text;
+    char *list_text;
     const char *entry_text;
     int address_i, IM_i, phone_i;
     char birthday_str[255];
@@ -3782,7 +3782,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *path_index = gtk_tree_path_get_indices(path);
-        clist_row_selected = path_index[0];
+        rowSelected = path_index[0];
         get_pref(PREF_CHAR_SET, &char_set, NULL);
 
         gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
@@ -3859,11 +3859,11 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
         }
 
         cont = &(mcont->cont);
-        clist_text = NULL;
-        gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &clist_text, -1);
-        //gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &clist_text);
+        list_text = NULL;
+        gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
+        //gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &list_text);
         entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
-        if (strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+        if (strncasecmp(list_text, entry_text, strlen(entry_text))) {
             gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
         }
 

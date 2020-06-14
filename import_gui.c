@@ -211,7 +211,7 @@ static void cb_import(GtkWidget *widget, gpointer filesel)
    cb_quit(widget, filew);
 }
 
-static void cb_import_select_row(GtkWidget *file_clist,
+static void cb_import_select_row(GtkWidget *file_list,
                                  gint row,
                                  gint column,
                                  GdkEventButton *bevent,

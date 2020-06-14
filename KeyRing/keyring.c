@@ -148,8 +148,8 @@ static struct tm glob_date;
 static GtkAccelGroup *accel_group;
 #endif
 static int record_changed;
-static int clist_col_selected;
-static int clist_row_selected;
+static int column_selected;
+static int row_selected;
 
 #ifdef HAVE_LIBGCRYPT
 static unsigned char key[24];
@@ -864,7 +864,7 @@ gboolean deleteKeyRingRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         deleteKeyRing(mkr, data);
@@ -881,7 +881,7 @@ gboolean undeleteKeyRingRecord(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         undeleteKeyRing(mkr, data);
@@ -981,8 +981,8 @@ void deleteKeyRing(struct MyKeyRing *mkr, gpointer data) {
         jp_delete_record("Keys-Gtkr", &br, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -1067,7 +1067,7 @@ gboolean addKeyRingRecord(GtkTreeModel *model,
                           GtkTreeIter *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         addKeyRing(mkr, data);
@@ -1295,16 +1295,16 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
-            bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+            bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
             showBgColor = TRUE;
             break;
         case DELETED_PALM_REC:
         case DELETED_PC_REC:
-            bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+            bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
             showBgColor = TRUE;
             break;
         case MODIFIED_PALM_REC:
-            bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+            bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
             showBgColor = TRUE;
             break;
         default:
@@ -1378,7 +1378,7 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
     int entries_shown;
     struct MyKeyRing *temp_list;
 
-    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_liststore\n");
 
     free_mykeyring_list(keyring_list);
 
@@ -1401,7 +1401,7 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
         }
         entries_shown++;
     }
-    jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_liststore\n");
 }
 
 static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
@@ -1418,7 +1418,7 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
     jp_logf(JP_LOG_DEBUG, "KeyRing: handleKeyringRowSelection\n");
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
-        clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
 
@@ -1547,7 +1547,7 @@ static void cb_category(GtkWidget *item, int selection) {
         }
 
         keyr_category = selection;
-        clist_row_selected = 0;
+        row_selected = 0;
         keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
     }
 }
@@ -2404,7 +2404,7 @@ int plugin_gui_cleanup(void) {
 }
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    clist_col_selected = column->sort_column_id;
+    column_selected = column->sort_column_id;
 
 }
 
@@ -2523,7 +2523,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /************************************************************/
     /* Build GUI */
     record_changed = CLEAR_FLAG;
-    clist_row_selected = 0;
+    row_selected = 0;
 
     /* Do some initialization */
     for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
@@ -2654,7 +2654,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     for (int x = 0; x < KEYRING_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected),
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                            gtk_true());
 
     g_signal_connect (changedColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);

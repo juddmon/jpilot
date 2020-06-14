@@ -860,22 +860,6 @@ int cleanup_pc_files(void) {
 /* returns 0 if not found, 1 if found */
 
 
-/* Encapsulate GTK function to make it free all resources */
-void clist_clear(GtkCList *clist) {
-    GtkStyle *base_style, *row_style;
-    int i;
-
-    base_style = gtk_widget_get_style(GTK_WIDGET(clist));
-
-    for (i = 0; i < GTK_CLIST(clist)->rows; i++) {
-        row_style = gtk_clist_get_row_style(GTK_CLIST(clist), i);
-        if (row_style && (row_style != base_style)) {
-            g_object_unref(row_style);
-        }
-    }
-
-    gtk_clist_clear(GTK_CLIST(clist));
-}
 
 /* Encapsulate GTK tooltip function which no longer supports disabling as
  * of GTK 2.12 */
@@ -888,14 +872,6 @@ void set_tooltip(int show_tooltip,
         gtk_tooltips_set_tip(tooltips, widget, tip_text, tip_private);
 }
 
-
-/* Encapsulate broken GTK function to make it work as documented */
-void clist_select_row(GtkCList *clist,
-                      int row,
-                      int column) {
-    clist->focus_row = row;
-    gtk_clist_select_row(clist, row, column);
-}
 
 int dateToDays(struct tm *tm1) {
     time_t t1;

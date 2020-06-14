@@ -181,8 +181,8 @@ static int exp_category = CATEGORY_ALL;
 static time_t plugin_last_time = 0;
 
 static int record_changed;
-static int clist_row_selected;
-static int clist_col_selected;
+static int row_selected;
+static int column_selected;
 static int connected = 0;
 
 static int glob_detail_type;
@@ -586,7 +586,7 @@ gboolean deleteExpenseRecord(GtkTreeModel *model,
                       GtkTreeIter  *iter,
                       gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         struct MyExpense *mexp = NULL;
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
         deleteExpense(mexp,data);
@@ -630,8 +630,8 @@ void deleteExpense(struct MyExpense *mexp,gpointer data) {
 
     if (flag == DELETE_FLAG) {
         /* when we redraw we want to go to the line above the deleted one */
-        if (clist_row_selected > 0) {
-            clist_row_selected--;
+        if (row_selected > 0) {
+            row_selected--;
         }
         display_records();
     }
@@ -720,7 +720,7 @@ addNewExpenseRecord (GtkTreeModel *model,
               gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         struct MyExpense *mexp = NULL;
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
         addNewExpenseRecordToDataStructure(mexp,data);
@@ -890,21 +890,21 @@ static int display_record(struct MyExpense *mexp, int at_row, const char *datefo
     switch (mexp->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
-            bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+            bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
             showBgColor = TRUE;
             break;
         case DELETED_PALM_REC:
         case DELETED_PC_REC:
-            bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+            bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
             showBgColor = TRUE;
             break;
         case MODIFIED_PALM_REC:
-            bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+            bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
             showBgColor = TRUE;
             break;
         default:
             if (mexp->attrib & dlpRecAttrSecret) {
-                bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                 showBgColor = TRUE;
             } else {
                 showBgColor = FALSE;
@@ -933,7 +933,7 @@ selectExpenseRecordByRow(GtkTreeModel *model,
                          GtkTreeIter *iter,
                          gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -1021,11 +1021,11 @@ static void display_records(void) {
     jp_free_DB_records(&records);
 
     /* Select the existing requested row, or row 0 if that is impossible */
-    if (clist_row_selected <= entries_shown) {
+    if (row_selected <= entries_shown) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectExpenseRecordByRow, NULL);
 
     } else {
-        clist_row_selected = 0;
+        row_selected = 0;
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectExpenseRecordByRow, NULL);
     }
 
@@ -1146,7 +1146,7 @@ static void cb_category(GtkWidget *item, int selection) {
         }
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", exp_category);
 
-        clist_row_selected = 0;
+        row_selected = 0;
         display_records();
         jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
     }
@@ -1166,9 +1166,9 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *i = gtk_tree_path_get_indices(path);
-        clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, EXPENSE_DATA_COLUMN_ENUM, &mexp, -1);
-        jp_logf(JP_LOG_DEBUG, "Expense: cb_clist_selection\n");
+        jp_logf(JP_LOG_DEBUG, "Expense: handleExpenseRowSelection\n");
 
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mexp != NULL) {
@@ -1265,7 +1265,7 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
 
         connect_changed_signals(CONNECT_SIGNALS);
 
-        jp_logf(JP_LOG_DEBUG, "Expense: leaving cb_clist_selection\n");
+        jp_logf(JP_LOG_DEBUG, "Expense: leaving handleExpenseRowSelection\n");
     }
     return TRUE;
 }
@@ -1518,7 +1518,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         cycle_category = FALSE;
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     time(&ltime);
     now = localtime(&ltime);
@@ -1621,19 +1621,19 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Restore previous sorting configuration */
     get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
-    clist_col_selected = (int) ivalue;
+    column_selected = (int) ivalue;
 
     for (int x = 0; x < EXPENSE_NUM_COLS - 3; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected),
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                             gtk_true());
 
     get_pref(PREF_EXPENSE_SORT_ORDER, &ivalue, NULL);
     gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(listStore), EXPENSE_DATE_COLUMN_ENUM, sortDateColumn,
                                     GINT_TO_POINTER(EXPENSE_DATE_COLUMN_ENUM), NULL);
 
-    gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(listStore), clist_col_selected, (GtkSortType) ivalue);
+    gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(listStore), column_selected, (GtkSortType) ivalue);
 
 
 
@@ -1926,8 +1926,8 @@ int plugin_gui_cleanup(void) {
         set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
         pane = NULL;
     }
-    set_pref(PREF_EXPENSE_SORT_COLUMN, clist_col_selected, NULL, TRUE);
-    set_pref(PREF_EXPENSE_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(treeView,clist_row_selected)), NULL, TRUE);
+    set_pref(PREF_EXPENSE_SORT_COLUMN, column_selected, NULL, TRUE);
+    set_pref(PREF_EXPENSE_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(treeView, row_selected)), NULL, TRUE);
 
     plugin_last_time = time(NULL);
 
