@@ -72,22 +72,22 @@ static gboolean cb_export_browse_destroy(GtkWidget *widget) {
 
 static void cb_export_browse_cancel(GtkWidget *widget, gpointer data) {
     glob_export_browse_pressed = BROWSE_CANCEL;
-    gtk_widget_destroy(data);
+    gtk_widget_destroy(widget);
 }
 
 static void cb_export_browse_ok(GtkWidget *widget, gpointer data) {
-    const char *sel;
+    char *sel;
 
     glob_export_browse_pressed = BROWSE_OK;
     if (glob_pref_export) {
-        sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
+        sel = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
         set_pref(glob_pref_export, 0, sel, TRUE);
     }
-    gtk_widget_destroy(data);
+    gtk_widget_destroy(widget);
 }
 
 int export_browse(GtkWidget *main_window, int pref_export) {
-    GtkWidget *filesel;
+    GtkWidget *fileChooserWidget;
     const char *svalue;
     char dir[MAX_PREF_LEN + 2];
     int i;
@@ -118,21 +118,14 @@ int export_browse(GtkWidget *main_window, int pref_export) {
             jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
         }
     }
-    filesel = gtk_file_selection_new(_("File Browser"));
-
-    gtk_window_set_modal(GTK_WINDOW(filesel), TRUE);
-    gtk_window_set_transient_for(GTK_WINDOW(filesel), GTK_WINDOW(main_window));
-
-    gtk_signal_connect(GTK_OBJECT(filesel), "destroy",
-                       GTK_SIGNAL_FUNC(cb_export_browse_destroy), filesel);
-
-    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->ok_button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_export_browse_ok), filesel);
-    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->cancel_button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_export_browse_cancel), filesel);
-
-    gtk_widget_show(filesel);
-
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"),main_window,GTK_FILE_CHOOSER_ACTION_OPEN,GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,NULL);
+    //This blocks main thread until they close the dialog.
+    if (gtk_dialog_run (GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT)
+    {
+        cb_export_browse_ok(fileChooserWidget,NULL);
+    } else {
+        cb_export_browse_cancel(fileChooserWidget,NULL);
+    }
     gtk_main();
 
     return glob_export_browse_pressed;

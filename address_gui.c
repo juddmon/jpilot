@@ -1726,8 +1726,8 @@ int address_export(GtkWidget *window) {
                       EXPORT_TYPE_LDIF,
                       EXPORT_TYPE_BFOLDERS};
 
-    gdk_window_get_size(window->window, &w, &h);
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));
     x += 40;
@@ -3205,7 +3205,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
     }
 
-    gtk_list_store_clear(GTK_LIST_STORE(listStore));
+    gtk_list_store_clear(GTK_LIST_STORE(pListStore));
     /* Collect preferences and pixmaps before loop */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     get_pref(PREF_USE_JOS, &use_jos, NULL);
@@ -4222,11 +4222,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Put pretty pictures in the list column headings */
     get_pixbufs(PIXMAP_NOTE,&pixmap);
-    //get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
-//#ifdef __APPLE__
-  //  mask = NULL;
-//#endif
-
     pixmapwid = gtk_image_new_from_pixbuf(pixmap);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
