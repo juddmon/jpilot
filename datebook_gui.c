@@ -2557,7 +2557,6 @@ static int datebook_update_listStore(void) {
             continue;
         }
 
-        /* Add entry to clist */
 
 
         /* Print the event time */
@@ -2700,7 +2699,7 @@ static int datebook_update_listStore(void) {
     //column->
     set_tooltip((int) show_tooltips, glob_tooltips, column->button, str, NULL);
 
-    /* return focus to clist after any big operation which requires a redraw */
+    /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
     return EXIT_SUCCESS;
@@ -2789,7 +2788,6 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           gpointer data) {
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-        /* Call clist_selection to handle any cleanup such as a modified record */
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
@@ -5048,8 +5046,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
    gtk_idle_add(cb_datebook_idle, NULL);
 #else
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
-    /* gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
-    /* gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
+
 #endif
 
     /* "Show ToDos" button */
@@ -5829,7 +5826,7 @@ void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixm
     gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView)),
                                 GTK_SELECTION_BROWSE);
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the treeView column headings */
     get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixmap, mask);
 #ifdef __APPLE__
     mask = NULL;

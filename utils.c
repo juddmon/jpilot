@@ -1153,7 +1153,7 @@ int dialog_generic(GtkWindow *main_window,
     /* This gdk function call is required in order to avoid a GTK
     * error which causes X and the mouse pointer to lock up.
     * The lockup is generated whenever a modal dialog is created
-    * from the callback routine of a clist. */
+    * from the callback routine of a treeView. */
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
 
     dialog_result = 0;

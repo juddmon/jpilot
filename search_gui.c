@@ -257,7 +257,6 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
                     new_sr->next = search_rl;
                     search_rl = new_sr;
 
-                    // gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
                     gtk_list_store_set(listStore, iter,
                                        SEARCH_APP_NAME_COLUMN_ENUM, appName,
                                        SEARCH_TEXT_COLUMN_ENUM, text,
@@ -511,7 +510,6 @@ static void cb_entry(GtkWidget *widget, gpointer data) {
 
     treeView = data;
     listStore = GTK_LIST_STORE(gtk_tree_view_get_model(treeView));
-    //gtk_clist_clear(GTK_CLIST(clist));
     gtk_list_store_clear(listStore);
     count += search_address_or_contacts(entry_text, listStore, &iter);
     count += search_todo(entry_text, listStore, &iter);

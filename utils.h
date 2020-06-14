@@ -56,7 +56,7 @@
 /* This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
-/* How clist widget should appear for main apps */
+/* How treeView widget should appear for main apps */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 /*  Define the maximum length of a category name
@@ -74,7 +74,7 @@
 /* Constant used by J-Pilot to indicate "All" category */
 #define CATEGORY_ALL 300
 
-/* Used to mark the entry in the clist to add a record */
+/* Used to mark the entry in the treeView to add a record */
 #define LIST_NEW_ENTRY_DATA 100
 #define LIST_ADDING_ENTRY_DATA 101
 #define LIST_MIN_DATA 199

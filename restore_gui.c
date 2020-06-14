@@ -87,7 +87,6 @@ static void cb_restore_ok(GtkWidget *widget, gpointer data) {
         GtkTreeIter iter;
         if(gtk_tree_model_get_iter(model,&iter,path)) {
             gtk_tree_model_get(model, &iter, RESTORE_DISPLAY_COLUMN_ENUM, &text, -1);
-            //gtk_clist_get_text(GTK_CLIST(restore_clist), GPOINTER_TO_INT(temp_list->data), 0, &text);
             int * i = gtk_tree_path_get_indices ( path ) ;
             jp_logf(JP_LOG_DEBUG, "row %ld [%s]\n", i[0], text);
             /* Look for the file in the JPILOT_HOME and JPILOT_HOME/backup.
@@ -129,7 +128,7 @@ static void cb_restore_quit(GtkWidget *widget, gpointer data) {
 
 /*
  * path is the dir to open
- * check_for_dups will check the clist and not add if its a duplicate
+ * check_for_dups will check the listStore and not add if its a duplicate
  * check_exts will not add if its not a pdb, prc, or pqa.
  */
 static int populate_listStore_subpath(char *path, int check_for_dups, int check_exts) {
@@ -203,7 +202,6 @@ static int populate_listStore_subpath(char *path, int check_for_dups, int check_
                 row_text[0] = utf8_text;
                 gtk_list_store_append(listStore,&iter);
                 gtk_list_store_set(listStore,&iter,RESTORE_DISPLAY_COLUMN_ENUM,row_text[0],-1);
-               // gtk_clist_append(GTK_CLIST(restore_clist), row_text);
                 g_free(utf8_text);
             }
             num++;

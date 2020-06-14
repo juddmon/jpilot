@@ -807,7 +807,6 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
 //TODO: update this when ready todo export function
 static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
     memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list, category, FALSE);
-    //memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
 }
 static GtkWidget * cb_memo_init_export_treeView() {
     GtkListStore * listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
@@ -1129,7 +1128,6 @@ static void cb_category(GtkWidget *item, int selection) {
         row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
         memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-        //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
         jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
     }
 }
@@ -1339,7 +1337,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
 static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer next_widget) {
-    /* Switch to clist */
+    /* Switch to treeView */
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
@@ -1475,13 +1473,6 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     }
     gtk_list_store_clear(GTK_LIST_STORE(pListStore));
 
-#ifdef __APPLE__
-    /*   gtk_clist_thaw(GTK_CLIST(clist));
-      gtk_widget_hide(clist);
-      gtk_widget_show_all(clist);
-      gtk_clist_freeze(GTK_CLIST(clist)); */
-#endif
-
     show_priv = show_privates(GET_PRIVATES);
 
     entries_shown = 0;
@@ -1515,7 +1506,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
         len1 = ( int) strlen(str);
         len = ((int) strlen(temp_memo->mmemo.memo.text)) + 1;
-        /* ..memo clist does not display '/n' */
+        /* ..memo treeView does not display '/n' */
         if ((copy_max_length = (size_t) len) > MEMO_LIST_CHAR_WIDTH) {
             copy_max_length = MEMO_LIST_CHAR_WIDTH;
         }
@@ -1597,8 +1588,8 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         connect_changed_signals(CONNECT_SIGNALS);
     }
 
-    /* return focus to clist after any big operation which requires a redraw */
-    //gtk_widget_grab_focus(GTK_WIDGET(clist));
+    /* return focus to treeView after any big operation which requires a redraw */
+    gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_liststore()\n");
 }
@@ -1682,7 +1673,6 @@ int memo_refresh(void) {
         index += 1;
     }
     memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-    //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
     if (index < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {

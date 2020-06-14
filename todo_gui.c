@@ -1899,9 +1899,8 @@ static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
     return FALSE;
 }
 
-/* This redraws the clist and goes back to the same line number */
+/* This redraws the treeView and goes back to the same line number */
 static int todo_redraw(void) {
-    //todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
     todo_update_liststore(listStore,category_menu1,&glob_todo_list, todo_category, TRUE);
     return EXIT_SUCCESS;
 }
@@ -1997,13 +1996,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     }
 
     todo_liststore_clear(pListStore);
-/*#ifdef __APPLE__
-    gtk_clist_thaw(GTK_CLIST(clist));
-   gtk_widget_hide(clist);
-   gtk_widget_show_all(clist);
-   gtk_clist_freeze(GTK_CLIST(clist));
-#endif
- */
+
 
     /* Collect preferences and constant pixmaps for loop */
     get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
@@ -2043,8 +2036,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
                                -1);
             clear_mytodos(&temp_todo->mtodo);
-            // gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
-            //  gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
             entries_shown++;
             continue;
         }
@@ -2439,7 +2430,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                 GTK_SELECTION_BROWSE);
 
 
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the treeView column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
 #ifdef __APPLE__
     mask = NULL;
@@ -2482,7 +2473,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_sortable_set_sort_column_id(sortable, column_selected, (GtkSortType)  ivalue);
 
 
-    //gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
+
 
     g_object_unref(model);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));

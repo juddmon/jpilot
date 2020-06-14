@@ -741,7 +741,7 @@ static gint GtkTreeModelKeyrCompareDates(GtkTreeModel *model,
     return (time1 - time2);
 }
 
-/* Function is used to sort clist case insensitively
+/* Function is used to sort list case insensitively
  * not sure if this is really needed as the default sort seems to do the same thing
  */
 static gint GtkTreeModelKeyrCompareNocase(GtkTreeModel *model,
@@ -1277,7 +1277,7 @@ static void cb_gen_password(GtkWidget *widget, gpointer data) {
 }
 
 /*
- * This function just adds the record to the clist on the left side of
+ * This function just adds the record to the treeView on the left side of
  * the screen.
  */
 static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
@@ -1311,32 +1311,24 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
             showBgColor = FALSE;
     }
 
-    // gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
-
     if (mkr->kr.last_changed.tm_year == 0) {
         sprintf(changedTxt, _("No date"));
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     } else {
         get_pref(PREF_SHORTDATE, NULL, &svalue);
         strftime(changedTxt, sizeof(changedTxt), svalue, &(mkr->kr.last_changed));
-        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     }
 
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
         sprintf(temp, "#%03d", row);
         nameTxt = temp;
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
     } else {
         nameTxt = mkr->kr.name;
-        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, mkr->kr.name);
     }
 
     if ((!(mkr->kr.account)) || (mkr->kr.account[0] == '\0')) {
         accountTxt = "";
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
     } else {
         accountTxt = mkr->kr.account;
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, mkr->kr.account);
     }
     gtk_list_store_append(listStore, iter);
     gtk_list_store_set(listStore, iter,
@@ -2597,7 +2589,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
-    /* Clist */
+    /* listStore */
     listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                    G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     titles[0] = _("Changed");
@@ -2847,8 +2839,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     } else {
         keyr_category = CATEGORY_ALL;
     }
-
-    // keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
     keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
     if (unique_id) {

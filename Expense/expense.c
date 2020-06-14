@@ -875,7 +875,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 }
 
 /*
- * This function just adds the record to the clist on the left side of
+ * This function just adds the record to the treeView on the left side of
  * the screen.
  */
 static int display_record(struct MyExpense *mexp, int at_row, const char *dateformat, GtkTreeIter *iter) {
@@ -945,7 +945,7 @@ selectExpenseRecordByRow(GtkTreeModel *model,
 }
 
 /*
- * This function lists the records in the clist on the left side of
+ * This function lists the records in the treeView on the left side of
  * the screen.
  */
 static void display_records(void) {

@@ -1090,7 +1090,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
     list = gtk_tree_selection_get_selected_rows(selection,&model);
 
-    /* Loop over clist of records to export */
+    /* Loop over list of records to export */
     for (record_num = 0, temp_list = list; temp_list; temp_list = temp_list->next, record_num++) {
         GtkTreePath * path = temp_list->data;
         GtkTreeIter iter;
@@ -3211,10 +3211,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     get_pref(PREF_USE_JOS, &use_jos, NULL);
     show_priv = show_privates(GET_PRIVATES);
     get_pixbufs(PIXMAP_NOTE, &pixbuf_note);
-    // get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-#ifdef __APPLE__
-    //  mask_note = NULL;
-#endif
+
 
     switch (addr_sort_order) {
         case SORT_BY_LNAME:
@@ -3305,7 +3302,6 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             } else {
                 strcpy(str, _("-Unnamed-"));
             }
-            // gtk_clist_append(GTK_CLIST(clist), empty_line);
         } else {
             str[0] = '\0';
             field1 = field2 = field3 = blank;
@@ -3337,7 +3333,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             if (strlen(str) < 1) strcpy(str, _("-Unnamed-"));
             str[ADDRESS_MAX_COLUMN_LEN] = '\0';
 
-            // gtk_clist_append(GTK_CLIST(clist), empty_line);
+
         }
 
         lstrncpy_remove_cr_lfs(name, str, ADDRESS_MAX_COLUMN_LEN);
@@ -3418,7 +3414,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         }
     }
 
-    /* return focus to clist after any big operation which requires a redraw */
+    /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
 }
@@ -3806,8 +3802,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             if (unique_id) {
                 glob_find_id = unique_id;
                 address_find();
-            } else {
-                //clist_select_row(GTK_CLIST(clist), row, column);
             }
             return TRUE;
         }
@@ -3861,7 +3855,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
         cont = &(mcont->cont);
         list_text = NULL;
         gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
-        //gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &list_text);
         entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
         if (strncasecmp(list_text, entry_text, strlen(entry_text))) {
             gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
@@ -4228,7 +4221,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
 
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the list column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
 #ifdef __APPLE__
     mask = NULL;
