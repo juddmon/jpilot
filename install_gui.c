@@ -378,9 +378,8 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     GtkWidget *scrolled_window;
     GtkWidget *button;
     GtkWidget *label;
-    GtkWidget *pixmapwid;
-    GdkPixmap *pixmap;
-    GdkBitmap *mask;
+    GtkWidget *pixbufwid;
+    GdkPixbuf *pixbuf;
     char temp_str[256];
     const char *svalue;
     gchar *titles[] = {"", _("Files to install")};
@@ -453,13 +452,11 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
 
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), sdColumn, INSTALL_SDCARD_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), fileNameColumn, INSTALL_FNAME_COLUMN_ENUM);
+    get_pixbufs(PIXMAP_SDCARD,&pixbuf);
 
-    get_pixmaps(treeView, PIXMAP_SDCARD, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
-    gtk_tree_view_column_set_widget(sdColumn, pixmapwid);
+    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    gtk_widget_show(GTK_WIDGET(pixbufwid));
+    gtk_tree_view_column_set_widget(sdColumn, pixbufwid);
     gtk_tree_view_column_set_alignment(sdColumn, GTK_JUSTIFY_CENTER);
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     column_selected = -1;

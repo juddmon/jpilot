@@ -283,11 +283,10 @@ gint cb_todo_treeview_selection_event(GtkWidget *widget,
                                       GdkEvent *event,
                                       gpointer callback_data);
 
-void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixmap, GdkBitmap **mask);
+void buildToDoList(const GtkWidget *vbox);
 
 void
-buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, GtkWidget **pixmapwid, GdkPixmap **pixmap,
-              GdkBitmap **mask);
+buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags);
 
 /****************************** Main Code *************************************/
 static int datebook_to_text(struct CalendarEvent *cale, char *text, int len) {
@@ -4786,9 +4785,6 @@ static gint cb_datebook_idle(gpointer data)
 #endif
 
 int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
-    GtkWidget *pixmapwid;
-    GdkPixmap *pixmap;
-    GdkBitmap *mask;
     GtkWidget *button;
     GtkWidget *separator;
     GtkWidget *label;
@@ -5038,7 +5034,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
-    buildTreeView(vbox, titles, use_db3_tags, &pixmapwid, &pixmap, &mask);
+    buildTreeView(vbox, titles, use_db3_tags);
 
 
 #ifdef DAY_VIEW
@@ -5056,7 +5052,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_todos_show), NULL);
 
     /* ToDo  */
-    buildToDoList(vbox, pixmapwid, &pixmap, &mask);
+    buildToDoList(vbox);
     /* End ToDo code */
 
     /* Right side of GUI */
@@ -5630,9 +5626,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 }
 
 void
-buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, GtkWidget **pixmapwid, GdkPixmap **pixmap,
-              GdkBitmap **mask) {
-
+buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
+    GtkWidget *pixbufwid;
+    GdkPixbuf *pixbuf;
     GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
@@ -5712,39 +5708,35 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags, Gtk
     GtkTreeSelection * treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
     /* Put pretty pictures in the treeView column headings */
-    get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixmap, mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
-    gtk_tree_view_column_set_widget(noteColumn, (*pixmapwid));
+    //get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixbuf, mask);
+    get_pixbufs(PIXMAP_NOTE,&pixbuf);
+
+    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    gtk_widget_show(GTK_WIDGET(pixbufwid));
+    gtk_tree_view_column_set_widget(noteColumn, pixbufwid);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
-    get_pixmaps((GtkWidget *) vbox, PIXMAP_ALARM, pixmap, mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-    gtk_widget_show(GTK_WIDGET((*pixmapwid)));
-    gtk_tree_view_column_set_widget(alarmColumn, (*pixmapwid));
+    get_pixbufs(PIXMAP_ALARM,&pixbuf);
+
+    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    gtk_widget_show(GTK_WIDGET(pixbufwid));
+    gtk_tree_view_column_set_widget(alarmColumn, pixbufwid);
     gtk_tree_view_column_set_alignment(alarmColumn, GTK_JUSTIFY_CENTER);
 #ifdef ENABLE_DATEBK
     if (use_db3_tags) {
-        get_pixmaps((GtkWidget *) vbox, PIXMAP_FLOAT_CHECKED, pixmap, mask);
+        get_pixbufs(PIXMAP_FLOAT_CHECKED,&pixbuf);
 
-#  ifdef __APPLE__
-        mask = NULL;
-#  endif
-        (*pixmapwid) = gtk_pixmap_new((*pixmap), (*mask));
-        gtk_widget_show(GTK_WIDGET((*pixmapwid)));
-        gtk_tree_view_column_set_widget(floatColumn, (*pixmapwid));
+        pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+        gtk_widget_show(GTK_WIDGET(pixbufwid));
+        gtk_tree_view_column_set_widget(floatColumn, pixbufwid);
         gtk_tree_view_column_set_alignment(floatColumn, GTK_JUSTIFY_CENTER);
     }
 #endif
 
 }
 
-void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixmap, GdkBitmap **mask) {
+void buildToDoList(const GtkWidget *vbox) {
+    GtkWidget *pixmapwid;
+    GdkPixbuf *pixbuf;
     todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
@@ -5827,19 +5819,14 @@ void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixm
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView)),
                                 GTK_SELECTION_BROWSE);
     /* Put pretty pictures in the treeView column headings */
-    get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixmap, mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new((*pixmap), (*mask));
+
+    get_pixbufs(PIXMAP_NOTE,&pixbuf);
+    pixmapwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
-    get_pixmaps((GtkWidget *) vbox, PIXMAP_BOX_CHECKED, pixmap, mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new((*pixmap), (*mask));
+    get_pixbufs(PIXMAP_BOX_CHECKED,&pixbuf);
+    pixmapwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(checkColumn, pixmapwid);
     gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
