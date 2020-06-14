@@ -2298,6 +2298,7 @@ int plugin_export(GtkWidget *window) {
                PREF_KEYR_EXPORT_FILENAME,
                type_text,
                type_int,
+               NULL,
                cb_keyr_update_clist,
                cb_keyr_export_done,
                cb_keyr_export_ok

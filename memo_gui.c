@@ -805,11 +805,27 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
 }
 
 //TODO: update this when ready todo export function
-static void cb_memo_update_clist(GtkWidget *treeView, int category) {
-    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), NULL, &export_memo_list, category, FALSE);
+static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
+    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list, category, FALSE);
     //memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
 }
+static GtkWidget * cb_memo_init_export_treeView() {
+    GtkListStore * listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                            G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkWidget * treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
+    GtkTreeSelection *treeSelection = NULL;
+    treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
+    GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
+                                                                         "cell-background-gdk",MEMO_BACKGROUND_COLOR_ENUM, "cell-background-set",MEMO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
+    gtk_tree_view_column_set_fixed_width(column, (gint) 50);
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
+    return treeView;
 
+
+}
 
 static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
     free_MemoList(&export_memo_list);
@@ -818,7 +834,7 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
 }
 //TODO: implement this when ready to handle export functions
 int memo_export(GtkWidget *window) {
-    /*int w, h, x, y;
+    int w, h, x, y;
     char *type_text[] = {N_("Text"),
                          N_("CSV"),
                          N_("B-Folders CSV"),
@@ -837,11 +853,12 @@ int memo_export(GtkWidget *window) {
                PREF_MEMO_EXPORT_FILENAME,
                type_text,
                type_int,
-               cb_memo_update_clist,
+               cb_memo_init_export_treeView,
+               cb_memo_update_listStore,
                cb_memo_export_done,
                cb_memo_export_ok
     );
-   */
+
     return EXIT_SUCCESS;
 }
 

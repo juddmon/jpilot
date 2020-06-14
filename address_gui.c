@@ -1695,6 +1695,7 @@ int address_export(GtkWidget *window) {
                PREF_ADDRESS_EXPORT_FILENAME,
                type_text,
                type_int,
+               NULL,
                cb_addr_update_clist,
                cb_addr_export_done,
                cb_addr_export_ok

@@ -39,7 +39,8 @@
 #define BROWSE_CANCEL 2
 
 /******************************* Global vars **********************************/
-static GtkWidget *export_clist;
+//static GtkWidget *export_clist;
+static GtkWidget *export_treeView;
 static int export_category;
 
 static int glob_export_browse_pressed;
@@ -51,6 +52,7 @@ static GtkWidget *save_as_entry;
 
 /****************************** Prototypes ************************************/
 static void (*glob_cb_export_menu)(GtkWidget *treeView, int category);
+static GtkWidget * (*glob_cb_init_menu)();
 static void (*glob_cb_export_done)(GtkWidget *widget, const char *filename);
 static void (*glob_cb_export_ok)(GtkWidget *export_window,
                                  GtkWidget *treeView,
@@ -151,7 +153,8 @@ static gboolean cb_export_destroy(GtkWidget *widget)
    if (glob_cb_export_done) {
       glob_cb_export_done(widget, filename);
    }
-   clist_clear(GTK_CLIST(export_clist));
+   //clist_clear(GTK_CLIST(export_clist));
+   gtk_list_store_clear(gtk_tree_view_get_model(GTK_TREE_VIEW(export_treeView)));
    gtk_main_quit();
 
    return FALSE;
@@ -164,7 +167,7 @@ static void cb_ok(GtkWidget *widget, gpointer data)
    filename = gtk_entry_get_text(GTK_ENTRY(save_as_entry));
 
    if (glob_cb_export_ok) {
-      glob_cb_export_ok(data, export_clist, glob_export_type, filename);
+      glob_cb_export_ok(data, export_treeView, glob_export_type, filename);
    }
 
    gtk_widget_destroy(data);
@@ -200,9 +203,9 @@ static void cb_export_category(GtkWidget *item, int selection)
       export_category = selection;
       jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
       if (glob_cb_export_menu) {
-         glob_cb_export_menu(export_clist, export_category);
+         glob_cb_export_menu(export_treeView, export_category);
       }
-      gtk_clist_select_all(GTK_CLIST(export_clist));
+      gtk_tree_selection_select_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)));
       jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
    }
 }
@@ -214,6 +217,7 @@ int export_gui(GtkWidget *main_window,
                int pref_export,
                char *type_text[],
                int type_int[],
+               GtkWidget * (*cb_init_menu)(),
                void (*cb_export_menu)(GtkWidget *treeView, int category),
                void (*cb_export_done)(GtkWidget *widget,
                                       const char *filename),
@@ -242,6 +246,7 @@ int export_gui(GtkWidget *main_window,
 
    /* Set the export type to the first type available */
    glob_export_type = type_int[0];
+   glob_cb_init_menu = cb_init_menu;
    glob_cb_export_menu = cb_export_menu;
    glob_cb_export_done = cb_export_done;
    glob_cb_export_ok = cb_export_ok;
@@ -287,15 +292,24 @@ int export_gui(GtkWidget *main_window,
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
-   export_clist = gtk_clist_new(columns);
+  // export_clist = gtk_clist_new(columns);
 
-   gtk_clist_set_shadow_type(GTK_CLIST(export_clist), SHADOW);
-   gtk_clist_set_selection_mode(GTK_CLIST(export_clist), GTK_SELECTION_EXTENDED);
-   for (i=0; i<columns; i++) {
-      gtk_clist_set_column_auto_resize(GTK_CLIST(export_clist), i, TRUE);
-   }
+    if(glob_cb_init_menu){
+        export_treeView= glob_cb_init_menu();
+    }else {
+        export_treeView = gtk_tree_view_new();
+    }
+    GtkWidget *temp = export_treeView;
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)),
+                                GTK_SELECTION_EXTENDED);
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(export_treeView),gtk_false());
+   //gtk_clist_set_shadow_type(GTK_CLIST(export_clist), SHADOW);
+  // gtk_clist_set_selection_mode(GTK_CLIST(export_clist), GTK_SELECTION_EXTENDED);
+  // for (i=0; i<columns; i++) {
+     // gtk_clist_set_column_auto_resize(GTK_CLIST(export_clist), i, TRUE);
+  // }
 
-   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(export_clist));
+   gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(export_treeView));
 
    /* Export Type buttons */
    group = NULL;
@@ -349,12 +363,12 @@ int export_gui(GtkWidget *main_window,
                       GTK_SIGNAL_FUNC(cb_ok), export_window);
 
    if (glob_cb_export_menu) {
-      glob_cb_export_menu(export_clist, export_category);
+      glob_cb_export_menu(export_treeView, export_category);
    }
 
    gtk_widget_show_all(export_window);
 
-   gtk_clist_select_all(GTK_CLIST(export_clist));
+   gtk_tree_selection_select_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)));
 
    gtk_main();
 
