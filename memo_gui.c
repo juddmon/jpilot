@@ -1577,10 +1577,10 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (memo_list == NULL) {
-            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+            set_tooltip((int) show_tooltips,  tooltip_widget, _("0 records"));
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+            set_tooltip((int) show_tooltips,  tooltip_widget, str);
         }
     }
 

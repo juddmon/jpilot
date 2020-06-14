@@ -49,7 +49,6 @@ unsigned char skip_plugins;
 pid_t jpilot_master_pid = -1;
 int *glob_date_label;
 GtkWidget *glob_dialog;
-GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
 
 void output_to_pane(const char *str) { return; }

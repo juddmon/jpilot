@@ -39,7 +39,6 @@
 /******************************* Global vars **********************************/
 extern int datebk_category;
 extern int glob_app;
-extern GtkTooltips *glob_tooltips;
 
 GtkWidget *weekview_window=NULL;
 static GtkWidget *week_day_label[8];
@@ -331,8 +330,8 @@ void weekview_gui(struct tm *date_in)
    /* Accelerator key for left arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
                               GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button, _("Last week   Alt+LeftArrow"), NULL);
+   set_tooltip(show_tooltips,
+               button, _("Last week   Alt+LeftArrow"));
 
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
@@ -360,8 +359,8 @@ void weekview_gui(struct tm *date_in)
    /* Accelerator key for right arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
                               GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button, _("Next week   Alt+RightArrow"), NULL);
+   set_tooltip(show_tooltips,
+               button, _("Next week   Alt+RightArrow"));
 
    get_pref(PREF_FDOW, &fdow, NULL);
 

@@ -355,10 +355,8 @@ GdkColor get_color(int r, int g, int b);
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
 void set_tooltip(int show_tooltip,
-                        GtkTooltips *tooltips,
                         GtkWidget *widget,
-                        const gchar *tip_text,
-                        const gchar *tip_private);
+                        const gchar *tip_text);
 
 
 int check_copy_DBs_to_home(void);

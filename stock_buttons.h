@@ -20,7 +20,6 @@
 
 #include "config.h"
 
-extern GtkTooltips *glob_tooltips;
 
 #ifndef ENABLE_STOCK_BUTTONS
    /* old behavior */
@@ -43,7 +42,7 @@ extern GtkTooltips *glob_tooltips;
 
 #  define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
    widget = gtk_button_new_from_stock(GTK_STOCK_ ## stock); \
-   set_tooltip(show_tooltips, glob_tooltips, widget, tooltip, NULL); \
+   set_tooltip(show_tooltips,  widget, tooltip); \
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #endif
