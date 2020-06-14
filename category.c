@@ -845,7 +845,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
                                            handleCategorySelection, &Pdata, NULL);
     gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(treeView), TRUE, TRUE, 1);
 
-    /* Fill clist with categories except for category 0, Unfiled,
+    /* Fill list with categories except for category 0, Unfiled,
      * which is not editable */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     GtkTreeIter iter;

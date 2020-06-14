@@ -94,8 +94,8 @@ static struct sorted_cats sort_l[NUM_TODO_CAT_ITEMS];
 
 static struct ToDoAppInfo todo_app_info;
 static int todo_category = CATEGORY_ALL;
-static int clist_col_selected;
-static int clist_row_selected;
+static int column_selected;
+static int row_selected;
 static int record_changed;
 
 /****************************** Prototypes ************************************/
@@ -149,8 +149,8 @@ static void init(void) {
     get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
     add_days_to_date(&due_date,(int) ivalue);
 
-    clist_row_selected = 0;
-    clist_col_selected = 0;
+    row_selected = 0;
+    column_selected = 0;
 
     record_changed = CLEAR_FLAG;
 }
@@ -212,7 +212,7 @@ int printTodo(MyToDo * mtodo,gpointer data) {
 
     todo_list = NULL;
     if (this_many == 1) {
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(todo_list1.mtodo), mtodo, sizeof(MyToDo));
@@ -643,7 +643,7 @@ int todo_import(GtkWidget *window) {
 
 
 
-static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyToDo *mtodo;
     GList *list, *temp_list;
@@ -739,131 +739,138 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
+
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mtodo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mtodo) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"%s\",", csv_text);
-                g_free(utf);
-                fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1" : "0");
-                fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1" : "0");
-                if (mtodo->todo.indefinite) {
-                    fprintf(out, "\"\",");
-                } else {
-                    strftime(text, sizeof(text), "%Y/%02m/%02d", &(mtodo->todo.due));
-                    fprintf(out, "\"%s\",", text);
-                }
-                fprintf(out, "\"%d\",", mtodo->todo.priority);
-                fprintf(out, "\"%s\",", mtodo->todo.complete ? "1" : "0");
-                if (mtodo->todo.description) {
-                    str_to_csv_str(csv_text, mtodo->todo.description);
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+            if (!mtodo) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
                     fprintf(out, "\"%s\",", csv_text);
-                } else {
-                    fprintf(out, "\"\",");
-                }
-                if (mtodo->todo.note) {
-                    str_to_csv_str(csv_text, mtodo->todo.note);
-                    fprintf(out, "\"%s\"\n", csv_text);
-                } else {
-                    fprintf(out, "\"\",");
-                }
-                break;
-
-            case EXPORT_TYPE_TEXT:
-                utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
-                fprintf(out, _("Category: %s\n"), utf);
-                g_free(utf);
-
-                fprintf(out, _("Private: %s\n"),
-                        (mtodo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
-                if (mtodo->todo.indefinite) {
-                    fprintf(out, _("Due Date: None\n"));
-                } else {
-                    strftime(text, sizeof(text), short_date, &(mtodo->todo.due));
-                    fprintf(out, _("Due Date: %s\n"), text);
-                }
-                fprintf(out, _("Priority: %d\n"), mtodo->todo.priority);
-                fprintf(out, _("Completed: %s\n"), mtodo->todo.complete ? _("Yes") : _("No"));
-                if (mtodo->todo.description) {
-                    fprintf(out, _("Description: %s\n"), mtodo->todo.description);
-                }
-                if (mtodo->todo.note) {
-                    fprintf(out, _("Note: %s\n\n"), mtodo->todo.note);
-                }
-                break;
-
-            case EXPORT_TYPE_ICALENDAR:
-                /* RFC 2445: Internet Calendaring and Scheduling Core
-                 *           Object Specification */
-                if (i == 0) {
-                    fprintf(out, "BEGIN:VCALENDAR"CRLF);
-                    fprintf(out, "VERSION:2.0"CRLF);
-                    fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
-                }
-                fprintf(out, "BEGIN:VTODO"CRLF);
-                if (mtodo->attrib & dlpRecAttrSecret) {
-                    fprintf(out, "CLASS:PRIVATE"CRLF);
-                }
-                fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s"CRLF,
-                        mtodo->unique_id, userid, username, hostname);
-                fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
-                        now->tm_year + 1900,
-                        now->tm_mon + 1,
-                        now->tm_mday,
-                        now->tm_hour,
-                        now->tm_min,
-                        now->tm_sec);
-                str_to_ical_str(text, sizeof(text),
-                                todo_app_info.category.name[mtodo->attrib & 0x0F]);
-                fprintf(out, "CATEGORIES:%s"CRLF, text);
-                if (mtodo->todo.description) {
-                    g_strlcpy(str1, mtodo->todo.description, 51);
-                    /* truncate the string on a UTF-8 character boundary */
-                    if (char_set > CHAR_SET_UTF) {
-                        if (!g_utf8_validate(str1, -1, (const gchar **) &end))
-                            *end = 0;
+                    g_free(utf);
+                    fprintf(out, "\"%s\",", (mtodo->attrib & dlpRecAttrSecret) ? "1" : "0");
+                    fprintf(out, "\"%s\",", mtodo->todo.indefinite ? "1" : "0");
+                    if (mtodo->todo.indefinite) {
+                        fprintf(out, "\"\",");
+                    } else {
+                        strftime(text, sizeof(text), "%Y/%02m/%02d", &(mtodo->todo.due));
+                        fprintf(out, "\"%s\",", text);
                     }
-                } else {
-                    /* Handle pathological case with null description. */
-                    str1[0] = '\0';
-                }
-                if ((p = strchr(str1, '\n'))) {
-                    *p = '\0';
-                }
-                str_to_ical_str(text, sizeof(text), str1);
-                fprintf(out, "SUMMARY:%s%s"CRLF, text,
-                        strlen(str1) > 49 ? "..." : "");
-                str_to_ical_str(text, sizeof(text), mtodo->todo.description);
-                fprintf(out, "DESCRIPTION:%s", text);
-                if (mtodo->todo.note && mtodo->todo.note[0]) {
-                    str_to_ical_str(text, sizeof(text), mtodo->todo.note);
-                    fprintf(out, "\\n"CRLF" %s"CRLF, text);
-                } else {
-                    fprintf(out, ""CRLF);
-                }
-                fprintf(out, "STATUS:%s"CRLF, mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
-                fprintf(out, "PRIORITY:%d"CRLF, mtodo->todo.priority);
-                if (!mtodo->todo.indefinite) {
-                    fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d"CRLF,
-                            mtodo->todo.due.tm_year + 1900,
-                            mtodo->todo.due.tm_mon + 1,
-                            mtodo->todo.due.tm_mday);
-                }
-                fprintf(out, "END:VTODO"CRLF);
-                if (temp_list->next == NULL) {
-                    fprintf(out, "END:VCALENDAR"CRLF);
-                }
-                break;
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                    fprintf(out, "\"%d\",", mtodo->todo.priority);
+                    fprintf(out, "\"%s\",", mtodo->todo.complete ? "1" : "0");
+                    if (mtodo->todo.description) {
+                        str_to_csv_str(csv_text, mtodo->todo.description);
+                        fprintf(out, "\"%s\",", csv_text);
+                    } else {
+                        fprintf(out, "\"\",");
+                    }
+                    if (mtodo->todo.note) {
+                        str_to_csv_str(csv_text, mtodo->todo.note);
+                        fprintf(out, "\"%s\"\n", csv_text);
+                    } else {
+                        fprintf(out, "\"\",");
+                    }
+                    break;
+
+                case EXPORT_TYPE_TEXT:
+                    utf = charset_p2newj(todo_app_info.category.name[mtodo->attrib & 0x0F], 16, (int) char_set);
+                    fprintf(out, _("Category: %s\n"), utf);
+                    g_free(utf);
+
+                    fprintf(out, _("Private: %s\n"),
+                            (mtodo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
+                    if (mtodo->todo.indefinite) {
+                        fprintf(out, _("Due Date: None\n"));
+                    } else {
+                        strftime(text, sizeof(text), short_date, &(mtodo->todo.due));
+                        fprintf(out, _("Due Date: %s\n"), text);
+                    }
+                    fprintf(out, _("Priority: %d\n"), mtodo->todo.priority);
+                    fprintf(out, _("Completed: %s\n"), mtodo->todo.complete ? _("Yes") : _("No"));
+                    if (mtodo->todo.description) {
+                        fprintf(out, _("Description: %s\n"), mtodo->todo.description);
+                    }
+                    if (mtodo->todo.note) {
+                        fprintf(out, _("Note: %s\n\n"), mtodo->todo.note);
+                    }
+                    break;
+
+                case EXPORT_TYPE_ICALENDAR:
+                    /* RFC 2445: Internet Calendaring and Scheduling Core
+                     *           Object Specification */
+                    if (i == 0) {
+                        fprintf(out, "BEGIN:VCALENDAR"CRLF);
+                        fprintf(out, "VERSION:2.0"CRLF);
+                        fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
+                    }
+                    fprintf(out, "BEGIN:VTODO"CRLF);
+                    if (mtodo->attrib & dlpRecAttrSecret) {
+                        fprintf(out, "CLASS:PRIVATE"CRLF);
+                    }
+                    fprintf(out, "UID:palm-todo-%08x-%08lx-%s@%s"CRLF,
+                            mtodo->unique_id, userid, username, hostname);
+                    fprintf(out, "DTSTAMP:%04d%02d%02dT%02d%02d%02dZ"CRLF,
+                            now->tm_year + 1900,
+                            now->tm_mon + 1,
+                            now->tm_mday,
+                            now->tm_hour,
+                            now->tm_min,
+                            now->tm_sec);
+                    str_to_ical_str(text, sizeof(text),
+                                    todo_app_info.category.name[mtodo->attrib & 0x0F]);
+                    fprintf(out, "CATEGORIES:%s"CRLF, text);
+                    if (mtodo->todo.description) {
+                        g_strlcpy(str1, mtodo->todo.description, 51);
+                        /* truncate the string on a UTF-8 character boundary */
+                        if (char_set > CHAR_SET_UTF) {
+                            if (!g_utf8_validate(str1, -1, (const gchar **) &end))
+                                *end = 0;
+                        }
+                    } else {
+                        /* Handle pathological case with null description. */
+                        str1[0] = '\0';
+                    }
+                    if ((p = strchr(str1, '\n'))) {
+                        *p = '\0';
+                    }
+                    str_to_ical_str(text, sizeof(text), str1);
+                    fprintf(out, "SUMMARY:%s%s"CRLF, text,
+                            strlen(str1) > 49 ? "..." : "");
+                    str_to_ical_str(text, sizeof(text), mtodo->todo.description);
+                    fprintf(out, "DESCRIPTION:%s", text);
+                    if (mtodo->todo.note && mtodo->todo.note[0]) {
+                        str_to_ical_str(text, sizeof(text), mtodo->todo.note);
+                        fprintf(out, "\\n"CRLF" %s"CRLF, text);
+                    } else {
+                        fprintf(out, ""CRLF);
+                    }
+                    fprintf(out, "STATUS:%s"CRLF, mtodo->todo.complete ? "COMPLETED" : "NEEDS-ACTION");
+                    fprintf(out, "PRIORITY:%d"CRLF, mtodo->todo.priority);
+                    if (!mtodo->todo.indefinite) {
+                        fprintf(out, "DUE;VALUE=DATE:%04d%02d%02d"CRLF,
+                                mtodo->todo.due.tm_year + 1900,
+                                mtodo->todo.due.tm_mon + 1,
+                                mtodo->todo.due.tm_mday);
+                    }
+                    fprintf(out, "END:VTODO"CRLF);
+                    if (temp_list->next == NULL) {
+                        fprintf(out, "END:VCALENDAR"CRLF);
+                    }
+                    break;
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -873,15 +880,77 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 }
 
 //todo: this is used by export_gui.  ExportGui needs to be converted to liststore.
-static void cb_todo_update_clist(GtkWidget *clist, int category) {
-    //TODO: do nothing for now.\ until begin working on exportGui
-    //todo_update_clist(clist, NULL, &export_todo_list, category, FALSE);
-    //todo_update_liststore(listStore, category_menu1, &glob_todo_list, todo_category, TRUE);
+static void cb_todo_update_listStore(GtkWidget *treeView, int category) {
+    todo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_todo_list, category, FALSE);
 }
+static GtkWidget * cb_todo_init_treeView() {
+    GtkListStore *listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    GtkTreeView *todo_treeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
+    GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
+                                                                             taskRenderer,
+                                                                             "text", TODO_TEXT_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(taskColumn, TODO_TEXT_COLUMN_ENUM);
+
+
+    GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+
+    GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
+                                                                             dateRenderer,
+                                                                             "text", TODO_DATE_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             "foreground",TODO_FOREGROUND_COLOR_ENUM,
+                                                                             "foreground-set",TODO_FORGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
+
+    GtkCellRenderer *priorityRenderer  = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                                 priorityRenderer,
+                                                                                 "text", TODO_PRIORITY_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                                 "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                 NULL);
+    gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
+
+    GtkCellRenderer *noteRenderer  = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
+                                                                             noteRenderer,
+                                                                             "pixbuf", TODO_NOTE_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(noteColumn, TODO_NOTE_COLUMN_ENUM);
+
+
+    GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
+
+    GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",checkRenderer,"active",TODO_CHECK_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), noteColumn, TODO_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), dateColumn, TODO_DATE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), taskColumn, TODO_TEXT_COLUMN_ENUM);
+    gtk_tree_view_column_set_clickable(checkColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(priorityColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(noteColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(dateColumn, gtk_false());
+    gtk_tree_view_column_set_clickable(taskColumn, gtk_false());
+    gtk_tree_view_column_set_sizing(checkColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(dateColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(priorityColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
+    return GTK_WIDGET(todo_treeView);
+}
 
 static void cb_todo_export_done(GtkWidget *widget, const char *filename) {
     free_ToDoList(&export_todo_list);
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget))));
 
     set_pref(PREF_TODO_EXPORT_FILENAME, 0, filename, TRUE);
 }
@@ -905,7 +974,8 @@ int todo_export(GtkWidget *window) {
                PREF_TODO_EXPORT_FILENAME,
                type_text,
                type_int,
-               cb_todo_update_clist,
+               cb_todo_init_treeView,
+               cb_todo_update_listStore,
                cb_todo_export_done,
                cb_todo_export_ok
     );
@@ -957,7 +1027,7 @@ gboolean deleteRecord(GtkTreeModel *model,
                        GtkTreeIter  *iter,
                        gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         deleteTodo(mytodo,data);
@@ -974,7 +1044,7 @@ void deleteTodo(MyToDo * mtodo,gpointer data){
     int show_priv;
     long char_set;
 
-    if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+    if (mtodo < (MyToDo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1000,8 +1070,8 @@ void deleteTodo(MyToDo * mtodo,gpointer data){
         delete_pc_record(TODO, mtodo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -1021,7 +1091,7 @@ gboolean undeleteRecord(GtkTreeModel *model,
                       GtkTreeIter  *iter,
                       gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         undeleteTodo(mytodo,data);
@@ -1037,7 +1107,7 @@ gboolean printRecord(GtkTreeModel *model,
                         GtkTreeIter  *iter,
                         gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         printTodo(mytodo,data);
@@ -1052,7 +1122,7 @@ gboolean printRecord(GtkTreeModel *model,
 void undeleteTodo(MyToDo * mtodo,gpointer data){
     int flag;
     int show_priv;
-    if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+    if (mtodo < (MyToDo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1189,7 +1259,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             todo_category = selection;
         }
-        clist_row_selected = 0;
+        row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "todo_category = %d\n", todo_category);
         todo_update_liststore(listStore,category_menu1,&glob_todo_list,todo_category,TRUE);
     }
@@ -1351,7 +1421,7 @@ addNewRecord (GtkTreeModel *model,
               gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyToDo * mytodo = NULL;
         gtk_tree_model_get(model,iter,TODO_DATA_COLUMN_ENUM,&mytodo,-1);
         addNewRecordToDataStructure(mytodo,data);
@@ -1377,7 +1447,7 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1400,7 +1470,7 @@ void addNewRecordToDataStructure(MyToDo * mtodo, gpointer data){
     if (flag == MODIFY_FLAG) {
 
         unique_id = mtodo->unique_id;
-        if (mtodo < (MyToDo *) CLIST_MIN_DATA) {
+        if (mtodo < (MyToDo *) LIST_MIN_DATA) {
             return;
         }
         if ((mtodo->rt == DELETED_PALM_REC) ||
@@ -1523,7 +1593,7 @@ gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *righ
 
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    clist_col_selected = column->sort_column_id;
+    column_selected = column->sort_column_id;
 
 }
 
@@ -1567,7 +1637,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
       int * i = gtk_tree_path_get_indices ( path ) ;
-      clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mtodo != NULL) {
@@ -1829,9 +1899,8 @@ static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
     return FALSE;
 }
 
-/* This redraws the clist and goes back to the same line number */
+/* This redraws the treeView and goes back to the same line number */
 static int todo_redraw(void) {
-    //todo_update_clist(clist, category_menu1, &glob_todo_list, todo_category, TRUE);
     todo_update_liststore(listStore,category_menu1,&glob_todo_list, todo_category, TRUE);
     return EXIT_SUCCESS;
 }
@@ -1863,7 +1932,7 @@ int todo_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -1927,13 +1996,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     }
 
     todo_liststore_clear(pListStore);
-/*#ifdef __APPLE__
-    gtk_clist_thaw(GTK_CLIST(clist));
-   gtk_widget_hide(clist);
-   gtk_widget_show_all(clist);
-   gtk_clist_freeze(GTK_CLIST(clist));
-#endif
- */
+
 
     /* Collect preferences and constant pixmaps for loop */
     get_pref(PREF_TODO_HIDE_COMPLETED, &hide_completed, NULL);
@@ -1973,8 +2036,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                                TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
                                -1);
             clear_mytodos(&temp_todo->mtodo);
-            // gtk_clist_set_row_data(GTK_CLIST(clist), entries_shown, &(temp_todo->mtodo));
-            //  gtk_clist_set_row_style(GTK_CLIST(clist), entries_shown, NULL);
             entries_shown++;
             continue;
         }
@@ -2043,24 +2104,24 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
 
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
 
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
 
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_todo->mtodo.attrib & dlpRecAttrSecret) {
 
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -2072,10 +2133,10 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             comp_due=due->tm_year*380+due->tm_mon*31+due->tm_mday-1;
 
             if (comp_due < comp_now) {
-                fgColor = get_color(CLIST_OVERDUE_RED,CLIST_OVERDUE_GREEN,CLIST_OVERDUE_BLUE);
+                fgColor = get_color(LIST_OVERDUE_RED, LIST_OVERDUE_GREEN, LIST_OVERDUE_BLUE);
 
             } else if (comp_due == comp_now) {
-                fgColor = get_color(CLIST_DUENOW_RED,CLIST_DUENOW_GREEN,CLIST_DUENOW_BLUE);
+                fgColor = get_color(LIST_DUENOW_RED, LIST_DUENOW_GREEN, LIST_DUENOW_BLUE);
             }
             showFgColor=TRUE;
         }
@@ -2101,14 +2162,14 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             todo_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown)
+        else if (row_selected < entries_shown)
         {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else
         {
-            clist_row_selected = 0;
+            row_selected = 0;
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRow, NULL);
         }
 
@@ -2153,7 +2214,7 @@ selectRecordByRow (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -2182,9 +2243,9 @@ int todo_gui_cleanup(void) {
     set_pref(PREF_TODO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_TODO_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
     set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
-    set_pref(PREF_TODO_SORT_COLUMN, clist_col_selected, NULL, TRUE);
+    set_pref(PREF_TODO_SORT_COLUMN, column_selected, NULL, TRUE);
 
-    set_pref(PREF_TODO_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),clist_col_selected)), NULL, TRUE);
+    set_pref(PREF_TODO_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected)), NULL, TRUE);
     todo_liststore_clear(listStore);
     return EXIT_SUCCESS;
 }
@@ -2292,7 +2353,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), (GtkShadowType) GTK_TYPE_SHADOW_TYPE);
+    //gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), (GtkShadowType) GTK_TYPE_SHADOW_TYPE);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
@@ -2369,7 +2430,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                 GTK_SELECTION_BROWSE);
 
 
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the treeView column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
 #ifdef __APPLE__
     mask = NULL;
@@ -2400,19 +2461,19 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
-    clist_col_selected = (int) ivalue;
+    column_selected = (int) ivalue;
 
     for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected), gtk_true());
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected), gtk_true());
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(treeView));
 
     get_pref(PREF_TODO_SORT_ORDER, &ivalue, NULL);
-    gtk_tree_sortable_set_sort_column_id(sortable, clist_col_selected, (GtkSortType)  ivalue);
+    gtk_tree_sortable_set_sort_column_id(sortable, column_selected, (GtkSortType)  ivalue);
 
 
-    //gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
+
 
     g_object_unref(model);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));

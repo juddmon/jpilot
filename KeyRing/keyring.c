@@ -148,8 +148,8 @@ static struct tm glob_date;
 static GtkAccelGroup *accel_group;
 #endif
 static int record_changed;
-static int clist_col_selected;
-static int clist_row_selected;
+static int column_selected;
+static int row_selected;
 
 #ifdef HAVE_LIBGCRYPT
 static unsigned char key[24];
@@ -193,6 +193,7 @@ void deleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 void undeleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 
 void addKeyRing(struct MyKeyRing *mkr, gpointer data);
+static GtkWidget * cb_keyr_export_init_treeView();
 
 /****************************** Main Code *************************************/
 
@@ -740,7 +741,7 @@ static gint GtkTreeModelKeyrCompareDates(GtkTreeModel *model,
     return (time1 - time2);
 }
 
-/* Function is used to sort clist case insensitively
+/* Function is used to sort list case insensitively
  * not sure if this is really needed as the default sort seems to do the same thing
  */
 static gint GtkTreeModelKeyrCompareNocase(GtkTreeModel *model,
@@ -863,7 +864,7 @@ gboolean deleteKeyRingRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         deleteKeyRing(mkr, data);
@@ -880,7 +881,7 @@ gboolean undeleteKeyRingRecord(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         undeleteKeyRing(mkr, data);
@@ -980,8 +981,8 @@ void deleteKeyRing(struct MyKeyRing *mkr, gpointer data) {
         jp_delete_record("Keys-Gtkr", &br, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -1066,7 +1067,7 @@ gboolean addKeyRingRecord(GtkTreeModel *model,
                           GtkTreeIter *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         struct MyKeyRing *mkr = NULL;
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         addKeyRing(mkr, data);
@@ -1276,7 +1277,7 @@ static void cb_gen_password(GtkWidget *widget, gpointer data) {
 }
 
 /*
- * This function just adds the record to the clist on the left side of
+ * This function just adds the record to the treeView on the left side of
  * the screen.
  */
 static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
@@ -1294,48 +1295,40 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     switch (mkr->rt) {
         case NEW_PC_REC:
         case REPLACEMENT_PALM_REC:
-            bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+            bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
             showBgColor = TRUE;
             break;
         case DELETED_PALM_REC:
         case DELETED_PC_REC:
-            bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+            bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
             showBgColor = TRUE;
             break;
         case MODIFIED_PALM_REC:
-            bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+            bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
             showBgColor = TRUE;
             break;
         default:
             showBgColor = FALSE;
     }
 
-    // gtk_clist_set_row_data(GTK_CLIST(clist), row, mkr);
-
     if (mkr->kr.last_changed.tm_year == 0) {
         sprintf(changedTxt, _("No date"));
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     } else {
         get_pref(PREF_SHORTDATE, NULL, &svalue);
         strftime(changedTxt, sizeof(changedTxt), svalue, &(mkr->kr.last_changed));
-        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_CHGD_COLUMN, changedTxt);
     }
 
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
         sprintf(temp, "#%03d", row);
         nameTxt = temp;
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, temp);
     } else {
         nameTxt = mkr->kr.name;
-        //   gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_NAME_COLUMN, mkr->kr.name);
     }
 
     if ((!(mkr->kr.account)) || (mkr->kr.account[0] == '\0')) {
         accountTxt = "";
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, "");
     } else {
         accountTxt = mkr->kr.account;
-        // gtk_clist_set_text(GTK_CLIST(clist), row, KEYR_ACCT_COLUMN, mkr->kr.account);
     }
     gtk_list_store_append(listStore, iter);
     gtk_list_store_set(listStore, iter,
@@ -1366,7 +1359,8 @@ display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, 
     //KEYRING_CHANGED_COLUMN_ENUM
     gtk_list_store_append(pListStore, iter);
     gtk_list_store_set(pListStore, iter,
-                       KEYRING_CHANGED_COLUMN_ENUM, nameTxt, -1);
+                       KEYRING_CHANGED_COLUMN_ENUM, nameTxt,
+                       KEYRING_DATA_COLUMN_ENUM, mkr,-1);
     return EXIT_SUCCESS;
 }
 
@@ -1376,7 +1370,7 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
     int entries_shown;
     struct MyKeyRing *temp_list;
 
-    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_clist\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: keyr_update_liststore\n");
 
     free_mykeyring_list(keyring_list);
 
@@ -1399,7 +1393,7 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
         }
         entries_shown++;
     }
-    jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_clist\n");
+    jp_logf(JP_LOG_DEBUG, "KeyRing: leave keyr_update_liststore\n");
 }
 
 static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
@@ -1416,7 +1410,7 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
     jp_logf(JP_LOG_DEBUG, "KeyRing: handleKeyringRowSelection\n");
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
-        clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
 
@@ -1545,7 +1539,7 @@ static void cb_category(GtkWidget *item, int selection) {
         }
 
         keyr_category = selection;
-        clist_row_selected = 0;
+        row_selected = 0;
         keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
     }
 }
@@ -2015,9 +2009,8 @@ static int keyring_find(int unique_id) {
     return EXIT_SUCCESS;
 }
 
-static void cb_keyr_update_clist(GtkWidget *clist, int category) {
-    // keyr_update_clist(clist, &export_keyring_list, category, FALSE);
-    // keyr_update_liststore(listStore, &export_keyring_list, keyr_category, FALSE);
+static void cb_keyr_update_listStore(GtkWidget *treeView, int category) {
+    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), &export_keyring_list, category, FALSE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
@@ -2025,8 +2018,7 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
 
     set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
 }
-
-static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     struct MyKeyRing *mkr;
     GList *list, *temp_list;
@@ -2145,68 +2137,74 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mkr) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
-                fprintf(out, "\"%s\",", utf);
-                g_free(utf);
-                str_to_csv_str(csv_text, mkr->kr.name);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.account);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.password);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.note);
-                fprintf(out, "\"%s\"\n", csv_text);
-                break;
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+            if (!mkr) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+                    fprintf(out, "\"%s\",", utf);
+                    g_free(utf);
+                    str_to_csv_str(csv_text, mkr->kr.name);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.account);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.password);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.note);
+                    fprintf(out, "\"%s\"\n", csv_text);
+                    break;
 
-            case EXPORT_TYPE_BFOLDERS:
-                str_to_csv_str(csv_text, mkr->kr.name);
-                fprintf(out, "\"%s\",", csv_text);
+                case EXPORT_TYPE_BFOLDERS:
+                    str_to_csv_str(csv_text, mkr->kr.name);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"\",");
+                    fprintf(out, "\"\",");
 
-                str_to_csv_str(csv_text, mkr->kr.account);
-                fprintf(out, "\"%s\",", csv_text);
-                str_to_csv_str(csv_text, mkr->kr.password);
-                fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.account);
+                    fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.password);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"\",\"\",\"\",\"\","
-                             "\"\",\"\",\"\",\"\","
-                             "\"\",\"\",");
+                    fprintf(out, "\"\",\"\",\"\",\"\","
+                                 "\"\",\"\",\"\",\"\","
+                                 "\"\",\"\",");
 
-                str_to_csv_str(csv_text, mkr->kr.note);
-                fprintf(out, "\"%s\",", csv_text);
+                    str_to_csv_str(csv_text, mkr->kr.note);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                fprintf(out, "\"KeyRing > ");
+                    fprintf(out, "\"KeyRing > ");
 
-                utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
-                fprintf(out, "%s\"\n", utf);
-                g_free(utf);
+                    utf = charset_p2newj(keyr_app_info.name[mkr->attrib & 0x0F], 16, char_set);
+                    fprintf(out, "%s\"\n", utf);
+                    g_free(utf);
 
-                break;
+                    break;
 
-            case EXPORT_TYPE_TEXT:
-                fprintf(out, "#%d\n", i + 1);
-                fprintf(out, "Name: %s\n", mkr->kr.name);
-                fprintf(out, "Account: %s\n", mkr->kr.account);
-                fprintf(out, "Password: %s\n", mkr->kr.password);
-                fprintf(out, "Note: %s\n", mkr->kr.note);
-                break;
+                case EXPORT_TYPE_TEXT:
+                    fprintf(out, "#%d\n", i + 1);
+                    fprintf(out, "Name: %s\n", mkr->kr.name);
+                    fprintf(out, "Account: %s\n", mkr->kr.account);
+                    fprintf(out, "Password: %s\n", mkr->kr.password);
+                    fprintf(out, "Note: %s\n", mkr->kr.note);
+                    break;
 
-            case EXPORT_TYPE_KEEPASSX:
-                break;
+                case EXPORT_TYPE_KEEPASSX:
+                    break;
 
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -2227,35 +2225,39 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *clist,
             g_free(utf);
 
             for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-                mkr = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-                if (!mkr) {
-                    continue;
-                    jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+                GtkTreePath *path = temp_list->data;
+                GtkTreeIter iter;
+                if (gtk_tree_model_get_iter(model, &iter, path)) {
+                    gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+                    if (!mkr) {
+                        continue;
+                        jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
+                    }
+                    if ((mkr->attrib & 0x0F) != cat) {
+                        continue;
+                    }
+                    fprintf(out, "   <entry>\n");
+                    str_to_keepass_str(csv_text, mkr->kr.name);
+                    fprintf(out, "    <title>%s</title>\n", csv_text);
+                    str_to_keepass_str(csv_text, mkr->kr.account);
+                    fprintf(out, "    <username>%s</username>\n", csv_text);
+                    str_to_keepass_str(csv_text, mkr->kr.password);
+                    fprintf(out, "    <password>%s</password>\n", csv_text);
+                    /* No keyring field for url */
+                    str_to_keepass_str(csv_text, mkr->kr.note);
+                    fprintf(out, "    <comment>%s</comment>\n", csv_text);
+                    fprintf(out, "    <icon>0</icon>\n");
+                    /* No keyring field for creation */
+                    /* No keyring field for lastaccess */
+                    /* lastmod */
+                    strftime(str1, sizeof(str1), "%Y-%m-%dT%H:%M:%S", &(mkr->kr.last_changed));
+                    fprintf(out, "    <lastmod>%s</lastmod>\n", str1);
+                    /* No keyring field for expire */
+                    fprintf(out, "    <expire>Never</expire>\n");
+                    fprintf(out, "   </entry>\n");
                 }
-                if ((mkr->attrib & 0x0F) != cat) {
-                    continue;
-                }
-                fprintf(out, "   <entry>\n");
-                str_to_keepass_str(csv_text, mkr->kr.name);
-                fprintf(out, "    <title>%s</title>\n", csv_text);
-                str_to_keepass_str(csv_text, mkr->kr.account);
-                fprintf(out, "    <username>%s</username>\n", csv_text);
-                str_to_keepass_str(csv_text, mkr->kr.password);
-                fprintf(out, "    <password>%s</password>\n", csv_text);
-                /* No keyring field for url */
-                str_to_keepass_str(csv_text, mkr->kr.note);
-                fprintf(out, "    <comment>%s</comment>\n", csv_text);
-                fprintf(out, "    <icon>0</icon>\n");
-                /* No keyring field for creation */
-                /* No keyring field for lastaccess */
-                /* lastmod */
-                strftime(str1, sizeof(str1), "%Y-%m-%dT%H:%M:%S", &(mkr->kr.last_changed));
-                fprintf(out, "    <lastmod>%s</lastmod>\n", str1);
-                /* No keyring field for expire */
-                fprintf(out, "    <expire>Never</expire>\n");
-                fprintf(out, "   </entry>\n");
+                fprintf(out, "  </group>\n");
             }
-            fprintf(out, "  </group>\n");
         }
 
         /* Write a footer to the KeePassX XML file */
@@ -2289,12 +2291,57 @@ int plugin_export(GtkWidget *window) {
                PREF_KEYR_EXPORT_FILENAME,
                type_text,
                type_int,
-               cb_keyr_update_clist,
+               cb_keyr_export_init_treeView,
+               cb_keyr_update_listStore,
                cb_keyr_export_done,
                cb_keyr_export_ok
     );
 
     return EXIT_SUCCESS;
+}
+
+static GtkWidget * cb_keyr_export_init_treeView() {
+    GtkListStore * listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    GtkTreeView *keyr_treeView  = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
+                                                                                changedRenderer,
+                                                                                "text", KEYRING_CHANGED_COLUMN_ENUM,
+                                                                                "cell-background-gdk",
+                                                                                KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                                "cell-background-set",
+                                                                                KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                NULL);
+    gtk_tree_view_column_set_sort_column_id(changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
+    GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
+                                                                             nameRenderer,
+                                                                             "text", KEYRING_NAME_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(nameColumn, KEYRING_NAME_COLUMN_ENUM);
+    GtkCellRenderer *accountRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
+                                                                                accountRenderer,
+                                                                                "text", KEYRING_ACCOUNT_COLUMN_ENUM,
+                                                                                "cell-background-gdk",
+                                                                                KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                                "cell-background-set",
+                                                                                KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                NULL);
+    gtk_tree_view_column_set_sort_column_id(accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
+    gtk_tree_view_column_set_sizing(changedColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(nameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(accountColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    return GTK_WIDGET(keyr_treeView);
 }
 
 /*
@@ -2349,7 +2396,7 @@ int plugin_gui_cleanup(void) {
 }
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    clist_col_selected = column->sort_column_id;
+    column_selected = column->sort_column_id;
 
 }
 
@@ -2468,7 +2515,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /************************************************************/
     /* Build GUI */
     record_changed = CLEAR_FLAG;
-    clist_row_selected = 0;
+    row_selected = 0;
 
     /* Do some initialization */
     for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
@@ -2542,7 +2589,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
-    /* Clist */
+    /* listStore */
     listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                    G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     titles[0] = _("Changed");
@@ -2599,7 +2646,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     for (int x = 0; x < KEYRING_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
-    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), clist_col_selected),
+    gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                            gtk_true());
 
     g_signal_connect (changedColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
@@ -2792,8 +2839,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     } else {
         keyr_category = CATEGORY_ALL;
     }
-
-    // keyr_update_clist(clist, &glob_keyring_list, keyr_category, TRUE);
     keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
     if (unique_id) {

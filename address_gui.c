@@ -42,7 +42,7 @@
 #define MAX_NUM_TEXTS contNote+1
 #define NUM_IM_LABELS 5
 
-#define ADDRESS_MAX_CLIST_NAME 30
+#define ADDRESS_MAX_LIST_NAME 30
 #define ADDRESS_MAX_COLUMN_LEN 80
 #define NUM_CONT_CSV_FIELDS 56
 #define NUM_ADDR_CSV_FIELDS 27
@@ -165,7 +165,7 @@ static struct AddressAppInfo address_app_info;
 static struct ContactAppInfo contact_app_info;
 static struct sorted_cats sort_l[NUM_ADDRESS_CAT_ITEMS];
 static int address_category = CATEGORY_ALL;
-static int clist_row_selected;
+static int rowSelected;
 
 static ContactList *glob_contact_list = NULL;
 static ContactList *export_contact_list = NULL;
@@ -308,7 +308,7 @@ static void init(void) {
     contact_picture.length = 0;
     contact_picture.data = NULL;
 
-    clist_row_selected = 0;
+    rowSelected = 0;
 
     changed_list = NULL;
     record_changed = CLEAR_FLAG;
@@ -445,7 +445,7 @@ gboolean printAddressRecord(GtkTreeModel *model,
                             GtkTreeIter *iter,
                             gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *myContact = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &myContact, -1);
         printAddress(myContact, data);
@@ -468,7 +468,7 @@ int printAddress(MyContact *mcont, gpointer data) {
 
     cont_list = NULL;
     if (this_many == 1) {
-        if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        if (mcont < (MyContact *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(cont_list1.mcont), mcont, sizeof(MyContact));
@@ -933,7 +933,7 @@ static const char *vCardMapType(int label) {
     }
 }
 //TODO: fix this when working on exports
-static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyContact *mcont;
     GList *list, *temp_list;
@@ -1086,557 +1086,566 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
-    /* Loop over clist of records to export */
+    /* Loop over list of records to export */
     for (record_num = 0, temp_list = list; temp_list; temp_list = temp_list->next, record_num++) {
-        mcont = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mcont) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
-        }
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
+           if (!mcont) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
+            }
 
-        switch (type) {
-            case EXPORT_TYPE_TEXT:
-                utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-                fprintf(out, _("Category: %s\n"), utf);
-                g_free(utf);
-                fprintf(out, _("Private: %s\n"),
-                        (mcont->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
+            switch (type) {
+                case EXPORT_TYPE_TEXT:
+                    utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+                    fprintf(out, _("Category: %s\n"), utf);
+                    g_free(utf);
+                    fprintf(out, _("Private: %s\n"),
+                            (mcont->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
 
-                for (i = 0; i < schema_size; i++) {
-                    /* Special handling for birthday which doesn't have an entry
-             * field but instead has a flag and a tm struct field */
-                    if (schema[i].type == ADDRESS_GUI_BIRTHDAY) {
-                        if (mcont->cont.birthdayFlag) {
-                            fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field]
-                                                    ? contact_app_info.labels[schema[i].record_field] : "");
-                            birthday_str[0] = '\0';
-                            get_pref(PREF_SHORTDATE, NULL, &pref_date);
-                            strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-                            fprintf(out, _("%s\n"), birthday_str);
-                            continue;
-                        }
-                    }
-
-                    if (mcont->cont.entry[schema[i].record_field]) {
-                        /* Print labels for menu selectable fields (Work, Fax, etc.) */
-                        switch (schema[i].type) {
-                            case ADDRESS_GUI_IM_MENU_TEXT:
-                                index = mcont->cont.IMLabel[i - contIM1];
-                                fprintf(out, _("%s: "), contact_app_info.IMLabels[index]);
-                                break;
-                            case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-                                index = mcont->cont.phoneLabel[i - contPhone1];
-                                fprintf(out, _("%s: "), contact_app_info.phoneLabels[index]);
-                                break;
-                            case ADDRESS_GUI_ADDR_MENU_TEXT:
-                                switch (schema[i].record_field) {
-                                    case contAddress1 :
-                                        index = 0;
-                                        break;
-                                    case contAddress2 :
-                                        index = 1;
-                                        break;
-                                    case contAddress3 :
-                                        index = 2;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                index = mcont->cont.addressLabel[index];
-                                fprintf(out, _("%s: "), contact_app_info.addrLabels[mcont->cont.addressLabel[index]]);
-                                break;
-                            default:
+                    for (i = 0; i < schema_size; i++) {
+                        /* Special handling for birthday which doesn't have an entry
+                 * field but instead has a flag and a tm struct field */
+                        if (schema[i].type == ADDRESS_GUI_BIRTHDAY) {
+                            if (mcont->cont.birthdayFlag) {
                                 fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field]
                                                         ? contact_app_info.labels[schema[i].record_field] : "");
-                        }
-                        /* Next print the entry field */
-                        switch (schema[i].type) {
-                            case ADDRESS_GUI_LABEL_TEXT:
-                            case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-                            case ADDRESS_GUI_IM_MENU_TEXT:
-                            case ADDRESS_GUI_ADDR_MENU_TEXT:
-                            case ADDRESS_GUI_WEBSITE_TEXT:
-                                fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                fprintf(out, "\n");
-
-                break;
-
-            case EXPORT_TYPE_CSV:
-                /* Category name */
-                utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"%s\",", csv_text);
-                g_free(utf);
-
-                /* Private */
-                fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "1" : "0");
-
-                address_i = phone_i = IM_i = 0;
-                /* The Contact entry values */
-                for (i = 0; i < schema_size; i++) {
-                    switch (schema[i].type) {
-                        /* For labels that are menu selectable ("Work", Fax", etc)
-              * we list what they are set to in the record */
-                        case ADDRESS_GUI_IM_MENU_TEXT:
-                            str_to_csv_str(csv_text, contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
-                            fprintf(out, "\"%s\",", csv_text);
-                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                     mcont->cont.entry[schema[i].record_field] : "");
-                            fprintf(out, "\"%s\",", csv_text);
-                            IM_i++;
-                            break;
-                        case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-                            str_to_csv_str(csv_text, contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
-                            fprintf(out, "\"%s\",", csv_text);
-                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                     mcont->cont.entry[schema[i].record_field] : "");
-                            fprintf(out, "\"%s\",", csv_text);
-                            phone_i++;
-                            break;
-                        case ADDRESS_GUI_ADDR_MENU_TEXT:
-                            str_to_csv_str(csv_text, contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
-                            fprintf(out, "\"%s\",", csv_text);
-                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                     mcont->cont.entry[schema[i].record_field] : "");
-                            fprintf(out, "\"%s\",", csv_text);
-                            address_i++;
-                            break;
-                        case ADDRESS_GUI_LABEL_TEXT:
-                        case ADDRESS_GUI_WEBSITE_TEXT:
-                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                     mcont->cont.entry[schema[i].record_field] : "");
-                            fprintf(out, "\"%s\",", csv_text);
-                            break;
-                        case ADDRESS_GUI_BIRTHDAY:
-                            if (mcont->cont.birthdayFlag) {
                                 birthday_str[0] = '\0';
-                                strftime(birthday_str, sizeof(birthday_str), "%Y/%02m/%02d", &(mcont->cont.birthday));
-                                fprintf(out, "\"%s\",", birthday_str);
-
-                                if (mcont->cont.reminder) {
-                                    fprintf(out, "\"%d\",", mcont->cont.advance);
-                                } else {
-                                    fprintf(out, "\"\",");
-                                }
-
-                            } else {
-                                fprintf(out, "\"\",");  /* for null Birthday field */
-                                fprintf(out, "\"\",");  /* for null Birthday Reminder field */
+                                get_pref(PREF_SHORTDATE, NULL, &pref_date);
+                                strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
+                                fprintf(out, _("%s\n"), birthday_str);
+                                continue;
                             }
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                        }
 
-                fprintf(out, "\"%d\"\n", mcont->cont.showPhone);
-                break;
-
-            case EXPORT_TYPE_BFOLDERS:
-                /* fprintf(out, "%s",
-                 "Name, Email, Phone (mobile), Company, Title, Website, Phone (work),"
-                 "Phone 2(work), Fax (work), Address (work), Phone (home), Address (home), "
-                 "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
-                 "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
-                 "\"Custom Label 5\",\"Custom Value 5\",Note,Folder");
-          */
-                //address_i = phone_i = IM_i = 0;
-                for (i = 0; i < schema_size; i++) {
-                    if (schema[i].record_field == contLastname) {
-                        str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                 mcont->cont.entry[schema[i].record_field] : "");
-                        fprintf(out, "\"%s, ", csv_text);
-                    }
-                }
-                for (i = 0; i < schema_size; i++) {
-                    if (schema[i].record_field == contFirstname) {
-                        str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
-                                                 mcont->cont.entry[schema[i].record_field] : "");
-                        fprintf(out, "%s\",", csv_text);
-                    }
-                }
-                /* E-Mail */
-                /*
-         for (i=0; i<schema_size; i++) {
-            if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
-               gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
-               gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
-            }
-            fprintf(out, "%s\",", csv_text);
-         }
-*/
-                fprintf(out, "%s",
-                        "\"\", \"\", \"\", \"\", \"\","
-                        "\"\", \"\", \"\", \"\", \"\", "
-                        "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
-                        "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
-                        "\"Custom Label 5\",\"Custom Value 5\",\"Note\",\"Contacts\"");
-                fprintf(out, "\n");
-
-                break;
-
-            case EXPORT_TYPE_VCARD:
-            case EXPORT_TYPE_VCARD_GMAIL:
-                /* RFC 2426: vCard MIME Directory Profile */
-                fprintf(out, "BEGIN:VCARD"CRLF);
-                fprintf(out, "VERSION:3.0"CRLF);
-                fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
-                if (mcont->attrib & dlpRecAttrSecret) {
-                    fprintf(out, "CLASS:PRIVATE"CRLF);
-                }
-                fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s"CRLF,
-                        mcont->unique_id, userid, username, hostname);
-                utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
-                str_to_vcard_str(csv_text, sizeof(csv_text), utf);
-                fprintf(out, "CATEGORIES:%s"CRLF, csv_text);
-                g_free(utf);
-                if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
-                    char *last = mcont->cont.entry[contLastname];
-                    char *first = mcont->cont.entry[contFirstname];
-                    fprintf(out, "FN:");
-                    if (first) {
-                        str_to_vcard_str(csv_text, sizeof(csv_text), first);
-                        fprintf(out, "%s", csv_text);
-                    }
-                    if (first && last) {
-                        fprintf(out, " ");
-                    }
-                    if (last) {
-                        str_to_vcard_str(csv_text, sizeof(csv_text), last);
-                        fprintf(out, "%s", csv_text);
-                    }
-                    fprintf(out, CRLF);
-                    fprintf(out, "N:");
-                    if (last) {
-                        str_to_vcard_str(csv_text, sizeof(csv_text), last);
-                        fprintf(out, "%s", csv_text);
-                    }
-                    fprintf(out, ";");
-                    /* split up first into first + middle and do first;middle,middle*/
-                    if (first) {
-                        str_to_vcard_str(csv_text, sizeof(csv_text), first);
-                        fprintf(out, "%s", csv_text);
-                    }
-                    fprintf(out, CRLF);
-                } else if (mcont->cont.entry[contCompany]) {
-                    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
-                    fprintf(out, "FN:%s"CRLF"N:%s"CRLF, csv_text, csv_text);
-                } else {
-                    fprintf(out, "FN:-Unknown-"CRLF"N:known-;-Un"CRLF);
-                }
-                if (mcont->cont.entry[contTitle]) {
-                    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contTitle]);
-                    fprintf(out, "TITLE:%s"CRLF, csv_text);
-                }
-                if (mcont->cont.entry[contCompany]) {
-                    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
-                    fprintf(out, "ORG:%s"CRLF, csv_text);
-                }
-                for (n = contPhone1; n < contPhone7 + 1; n++) {
-                    if (mcont->cont.entry[n]) {
-                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-                        /* E-mail should be the Palm dropdown menu item for email */
-                        if (!strcasecmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n - contPhone1]],
-                                        _("E-mail"))) {
-                            fprintf(out, "EMAIL:%s"CRLF, csv_text);
-                        } else {
-                            fprintf(out, "TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
-                            if (mcont->cont.showPhone == n - contPhone1) {
-                                fprintf(out, ",pref");
+                        if (mcont->cont.entry[schema[i].record_field]) {
+                            /* Print labels for menu selectable fields (Work, Fax, etc.) */
+                            switch (schema[i].type) {
+                                case ADDRESS_GUI_IM_MENU_TEXT:
+                                    index = mcont->cont.IMLabel[i - contIM1];
+                                    fprintf(out, _("%s: "), contact_app_info.IMLabels[index]);
+                                    break;
+                                case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                                    index = mcont->cont.phoneLabel[i - contPhone1];
+                                    fprintf(out, _("%s: "), contact_app_info.phoneLabels[index]);
+                                    break;
+                                case ADDRESS_GUI_ADDR_MENU_TEXT:
+                                    switch (schema[i].record_field) {
+                                        case contAddress1 :
+                                            index = 0;
+                                            break;
+                                        case contAddress2 :
+                                            index = 1;
+                                            break;
+                                        case contAddress3 :
+                                            index = 2;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    index = mcont->cont.addressLabel[index];
+                                    fprintf(out, _("%s: "),
+                                            contact_app_info.addrLabels[mcont->cont.addressLabel[index]]);
+                                    break;
+                                default:
+                                    fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field]
+                                                            ? contact_app_info.labels[schema[i].record_field] : "");
                             }
-                            fprintf(out, ":%s"CRLF, csv_text);
+                            /* Next print the entry field */
+                            switch (schema[i].type) {
+                                case ADDRESS_GUI_LABEL_TEXT:
+                                case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                                case ADDRESS_GUI_IM_MENU_TEXT:
+                                case ADDRESS_GUI_ADDR_MENU_TEXT:
+                                case ADDRESS_GUI_WEBSITE_TEXT:
+                                    fprintf(out, "%s\n", mcont->cont.entry[schema[i].record_field]);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
-                }
-                for (i = 0; i < NUM_ADDRESSES; i++) {
-                    int address_il = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
-                    switch (i) {
-                        case 0:
-                            address_il = contAddress1;
-                            city_i = contCity1;
-                            state_i = contState1;
-                            zip_i = contZip1;
-                            country_i = contCountry1;
-                            break;
-                        case 1:
-                            address_il = contAddress2;
-                            city_i = contCity2;
-                            state_i = contState2;
-                            zip_i = contZip2;
-                            country_i = contCountry2;
-                            break;
-                        case 2:
-                            address_il = contAddress3;
-                            city_i = contCity3;
-                            state_i = contState3;
-                            zip_i = contZip3;
-                            country_i = contCountry3;
-                            break;
-                        default:
-                            break;
-                    }
-                    if (mcont->cont.entry[address_il] ||
-                        mcont->cont.entry[city_i] ||
-                        mcont->cont.entry[state_i] ||
-                        mcont->cont.entry[zip_i] ||
-                        mcont->cont.entry[country_i]) {
+                    fprintf(out, "\n");
 
-                        /* Should we rely on the label, or the label index, for the addr
-                * type?  The label depends on the translated text.  I'll go
-                * with index for now.  The text is here:
-               contact_app_info.addrLabels[mcont->cont.addressLabel[i]] */
+                    break;
 
-                        switch (mcont->cont.addressLabel[i]) {
-                            case 0:
-                                fprintf(out, "ADR;TYPE=WORK:;;");
+                case EXPORT_TYPE_CSV:
+                    /* Category name */
+                    utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+                    str_to_csv_str(csv_text, utf);
+                    fprintf(out, "\"%s\",", csv_text);
+                    g_free(utf);
+
+                    /* Private */
+                    fprintf(out, "\"%s\",", (mcont->attrib & dlpRecAttrSecret) ? "1" : "0");
+
+                    address_i = phone_i = IM_i = 0;
+                    /* The Contact entry values */
+                    for (i = 0; i < schema_size; i++) {
+                        switch (schema[i].type) {
+                            /* For labels that are menu selectable ("Work", Fax", etc)
+                  * we list what they are set to in the record */
+                            case ADDRESS_GUI_IM_MENU_TEXT:
+                                str_to_csv_str(csv_text, contact_app_info.IMLabels[mcont->cont.IMLabel[IM_i]]);
+                                fprintf(out, "\"%s\",", csv_text);
+                                str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                         mcont->cont.entry[schema[i].record_field] : "");
+                                fprintf(out, "\"%s\",", csv_text);
+                                IM_i++;
                                 break;
-                            case 1:
-                                fprintf(out, "ADR;TYPE=HOME:;;");
+                            case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
+                                str_to_csv_str(csv_text, contact_app_info.phoneLabels[mcont->cont.phoneLabel[phone_i]]);
+                                fprintf(out, "\"%s\",", csv_text);
+                                str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                         mcont->cont.entry[schema[i].record_field] : "");
+                                fprintf(out, "\"%s\",", csv_text);
+                                phone_i++;
+                                break;
+                            case ADDRESS_GUI_ADDR_MENU_TEXT:
+                                str_to_csv_str(csv_text,
+                                               contact_app_info.addrLabels[mcont->cont.addressLabel[address_i]]);
+                                fprintf(out, "\"%s\",", csv_text);
+                                str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                         mcont->cont.entry[schema[i].record_field] : "");
+                                fprintf(out, "\"%s\",", csv_text);
+                                address_i++;
+                                break;
+                            case ADDRESS_GUI_LABEL_TEXT:
+                            case ADDRESS_GUI_WEBSITE_TEXT:
+                                str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                         mcont->cont.entry[schema[i].record_field] : "");
+                                fprintf(out, "\"%s\",", csv_text);
+                                break;
+                            case ADDRESS_GUI_BIRTHDAY:
+                                if (mcont->cont.birthdayFlag) {
+                                    birthday_str[0] = '\0';
+                                    strftime(birthday_str, sizeof(birthday_str), "%Y/%02m/%02d",
+                                             &(mcont->cont.birthday));
+                                    fprintf(out, "\"%s\",", birthday_str);
+
+                                    if (mcont->cont.reminder) {
+                                        fprintf(out, "\"%d\",", mcont->cont.advance);
+                                    } else {
+                                        fprintf(out, "\"\",");
+                                    }
+
+                                } else {
+                                    fprintf(out, "\"\",");  /* for null Birthday field */
+                                    fprintf(out, "\"\",");  /* for null Birthday Reminder field */
+                                }
                                 break;
                             default:
-                                fprintf(out, "ADR:;;");
+                                break;
                         }
+                    }
 
-                        for (n = address_il; n < country_i + 1; n++) {
-                            if (mcont->cont.entry[n]) {
-                                str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-                                fprintf(out, "%s", csv_text);
-                            }
-                            if (n < country_i) {
-                                fprintf(out, ";");
-                            }
+                    fprintf(out, "\"%d\"\n", mcont->cont.showPhone);
+                    break;
+
+                case EXPORT_TYPE_BFOLDERS:
+                    /* fprintf(out, "%s",
+                     "Name, Email, Phone (mobile), Company, Title, Website, Phone (work),"
+                     "Phone 2(work), Fax (work), Address (work), Phone (home), Address (home), "
+                     "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
+                     "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+                     "\"Custom Label 5\",\"Custom Value 5\",Note,Folder");
+              */
+                    //address_i = phone_i = IM_i = 0;
+                    for (i = 0; i < schema_size; i++) {
+                        if (schema[i].record_field == contLastname) {
+                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                     mcont->cont.entry[schema[i].record_field] : "");
+                            fprintf(out, "\"%s, ", csv_text);
+                        }
+                    }
+                    for (i = 0; i < schema_size; i++) {
+                        if (schema[i].record_field == contFirstname) {
+                            str_to_csv_str(csv_text, mcont->cont.entry[schema[i].record_field] ?
+                                                     mcont->cont.entry[schema[i].record_field] : "");
+                            fprintf(out, "%s\",", csv_text);
+                        }
+                    }
+                    /* E-Mail */
+                    /*
+             for (i=0; i<schema_size; i++) {
+                if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
+                   gtk_object_set_data(GTK_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
+                   gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
+                }
+                fprintf(out, "%s\",", csv_text);
+             }
+    */
+                    fprintf(out, "%s",
+                            "\"\", \"\", \"\", \"\", \"\","
+                            "\"\", \"\", \"\", \"\", \"\", "
+                            "\"Custom Label 1\", \"Custom Value 1\", \"Custom Label 2\", \"Custom Value 2\","
+                            "\"Custom Label 3\",\"Custom Value 3\",\"Custom Label 4\",\"Custom Value 4\","
+                            "\"Custom Label 5\",\"Custom Value 5\",\"Note\",\"Contacts\"");
+                    fprintf(out, "\n");
+
+                    break;
+
+                case EXPORT_TYPE_VCARD:
+                case EXPORT_TYPE_VCARD_GMAIL:
+                    /* RFC 2426: vCard MIME Directory Profile */
+                    fprintf(out, "BEGIN:VCARD"CRLF);
+                    fprintf(out, "VERSION:3.0"CRLF);
+                    fprintf(out, "PRODID:%s"CRLF, FPI_STRING);
+                    if (mcont->attrib & dlpRecAttrSecret) {
+                        fprintf(out, "CLASS:PRIVATE"CRLF);
+                    }
+                    fprintf(out, "UID:palm-addressbook-%08x-%08lx-%s@%s"CRLF,
+                            mcont->unique_id, userid, username, hostname);
+                    utf = charset_p2newj(contact_app_info.category.name[mcont->attrib & 0x0F], 16, char_set);
+                    str_to_vcard_str(csv_text, sizeof(csv_text), utf);
+                    fprintf(out, "CATEGORIES:%s"CRLF, csv_text);
+                    g_free(utf);
+                    if (mcont->cont.entry[contLastname] || mcont->cont.entry[contFirstname]) {
+                        char *last = mcont->cont.entry[contLastname];
+                        char *first = mcont->cont.entry[contFirstname];
+                        fprintf(out, "FN:");
+                        if (first) {
+                            str_to_vcard_str(csv_text, sizeof(csv_text), first);
+                            fprintf(out, "%s", csv_text);
+                        }
+                        if (first && last) {
+                            fprintf(out, " ");
+                        }
+                        if (last) {
+                            str_to_vcard_str(csv_text, sizeof(csv_text), last);
+                            fprintf(out, "%s", csv_text);
                         }
                         fprintf(out, CRLF);
+                        fprintf(out, "N:");
+                        if (last) {
+                            str_to_vcard_str(csv_text, sizeof(csv_text), last);
+                            fprintf(out, "%s", csv_text);
+                        }
+                        fprintf(out, ";");
+                        /* split up first into first + middle and do first;middle,middle*/
+                        if (first) {
+                            str_to_vcard_str(csv_text, sizeof(csv_text), first);
+                            fprintf(out, "%s", csv_text);
+                        }
+                        fprintf(out, CRLF);
+                    } else if (mcont->cont.entry[contCompany]) {
+                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
+                        fprintf(out, "FN:%s"CRLF"N:%s"CRLF, csv_text, csv_text);
+                    } else {
+                        fprintf(out, "FN:-Unknown-"CRLF"N:known-;-Un"CRLF);
                     }
-                }
-                for (i = 0; i < NUM_IMS; i++) {
-                    int im_i = 0;
-                    switch (i) {
-                        case 0:
-                            im_i = contIM1;
-                            break;
-                        case 1:
-                            im_i = contIM2;
-                            break;
-                        default:
-                            break;
+                    if (mcont->cont.entry[contTitle]) {
+                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contTitle]);
+                        fprintf(out, "TITLE:%s"CRLF, csv_text);
                     }
-                    if (mcont->cont.entry[im_i]) {
-                        int i_label = mcont->cont.IMLabel[i];
-                        const gchar *label = contact_app_info.IMLabels[i_label];
-                        gchar *vlabel;
-                        if (strcmp(label, "AOL ICQ") == 0)
-                            label = "ICQ";
-                        vlabel = g_strcanon(g_ascii_strup(label, -1),
-                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
-                        fprintf(out, "X-%s:", vlabel);
-                        g_free(vlabel);
-                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[im_i]);
-                        fprintf(out, "%s"CRLF, csv_text);
+                    if (mcont->cont.entry[contCompany]) {
+                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contCompany]);
+                        fprintf(out, "ORG:%s"CRLF, csv_text);
                     }
-                }
-                if (mcont->cont.entry[contWebsite]) {
-                    str_to_vcard_str(csv_text, sizeof(csv_text),
-                                     mcont->cont.entry[contWebsite]);
-                    fprintf(out, "URL:%s"CRLF, csv_text);
-                }
-                if (mcont->cont.birthdayFlag) {
-                    char birthday_str_l[255];
-                    strftime(birthday_str_l, sizeof(birthday_str), "%F", &mcont->cont.birthday);
-                    str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str_l);
-                    fprintf(out, "BDAY:%s"CRLF, birthday_str);
-                }
-                if (type == EXPORT_TYPE_VCARD_GMAIL) {
-                    /* Gmail contacts don't have fields for the custom fields,
-             * rather than lose them we can stick them all in a note field */
-                    int printed_note = 0;
-                    for (n = contCustom1; n <= contCustom9; n++) {
+                    for (n = contPhone1; n < contPhone7 + 1; n++) {
                         if (mcont->cont.entry[n]) {
-                            if (!printed_note) {
-                                printed_note = 1;
-                                fprintf(out, "NOTE:");
-                            } else {
-                                fprintf(out, " ");
-                            }
                             str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-                            fprintf(out, "%s:%s\\n"CRLF, contact_app_info.customLabels[n - contCustom1], csv_text);
+                            /* E-mail should be the Palm dropdown menu item for email */
+                            if (!strcasecmp(contact_app_info.phoneLabels[mcont->cont.phoneLabel[n - contPhone1]],
+                                            _("E-mail"))) {
+                                fprintf(out, "EMAIL:%s"CRLF, csv_text);
+                            } else {
+                                fprintf(out, "TEL;TYPE=%s", vCardMapType(mcont->cont.phoneLabel[n - contPhone1]));
+                                if (mcont->cont.showPhone == n - contPhone1) {
+                                    fprintf(out, ",pref");
+                                }
+                                fprintf(out, ":%s"CRLF, csv_text);
+                            }
                         }
                     }
-                    if (mcont->cont.entry[contNote]) {
-                        if (!printed_note) {
-                            fprintf(out, "NOTE:");
-                        } else {
-                            fprintf(out, " note:");
+                    for (i = 0; i < NUM_ADDRESSES; i++) {
+                        int address_il = 0, city_i = 0, state_i = 0, zip_i = 0, country_i = 0;
+                        switch (i) {
+                            case 0:
+                                address_il = contAddress1;
+                                city_i = contCity1;
+                                state_i = contState1;
+                                zip_i = contZip1;
+                                country_i = contCountry1;
+                                break;
+                            case 1:
+                                address_il = contAddress2;
+                                city_i = contCity2;
+                                state_i = contState2;
+                                zip_i = contZip2;
+                                country_i = contCountry2;
+                                break;
+                            case 2:
+                                address_il = contAddress3;
+                                city_i = contCity3;
+                                state_i = contState3;
+                                zip_i = contZip3;
+                                country_i = contCountry3;
+                                break;
+                            default:
+                                break;
                         }
-                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
-                        fprintf(out, "%s\\n"CRLF, csv_text);
+                        if (mcont->cont.entry[address_il] ||
+                            mcont->cont.entry[city_i] ||
+                            mcont->cont.entry[state_i] ||
+                            mcont->cont.entry[zip_i] ||
+                            mcont->cont.entry[country_i]) {
+
+                            /* Should we rely on the label, or the label index, for the addr
+                    * type?  The label depends on the translated text.  I'll go
+                    * with index for now.  The text is here:
+                   contact_app_info.addrLabels[mcont->cont.addressLabel[i]] */
+
+                            switch (mcont->cont.addressLabel[i]) {
+                                case 0:
+                                    fprintf(out, "ADR;TYPE=WORK:;;");
+                                    break;
+                                case 1:
+                                    fprintf(out, "ADR;TYPE=HOME:;;");
+                                    break;
+                                default:
+                                    fprintf(out, "ADR:;;");
+                            }
+
+                            for (n = address_il; n < country_i + 1; n++) {
+                                if (mcont->cont.entry[n]) {
+                                    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                                    fprintf(out, "%s", csv_text);
+                                }
+                                if (n < country_i) {
+                                    fprintf(out, ";");
+                                }
+                            }
+                            fprintf(out, CRLF);
+                        }
                     }
-                } else { /* Not a Gmail optimized export */
-                    if (mcont->cont.entry[contCustom1] ||
-                        mcont->cont.entry[contCustom2] ||
-                        mcont->cont.entry[contCustom3] ||
-                        mcont->cont.entry[contCustom4] ||
-                        mcont->cont.entry[contCustom5] ||
-                        mcont->cont.entry[contCustom6] ||
-                        mcont->cont.entry[contCustom7] ||
-                        mcont->cont.entry[contCustom8] ||
-                        mcont->cont.entry[contCustom9]) {
+                    for (i = 0; i < NUM_IMS; i++) {
+                        int im_i = 0;
+                        switch (i) {
+                            case 0:
+                                im_i = contIM1;
+                                break;
+                            case 1:
+                                im_i = contIM2;
+                                break;
+                            default:
+                                break;
+                        }
+                        if (mcont->cont.entry[im_i]) {
+                            int i_label = mcont->cont.IMLabel[i];
+                            const gchar *label = contact_app_info.IMLabels[i_label];
+                            gchar *vlabel;
+                            if (strcmp(label, "AOL ICQ") == 0)
+                                label = "ICQ";
+                            vlabel = g_strcanon(g_ascii_strup(label, -1),
+                                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+                            fprintf(out, "X-%s:", vlabel);
+                            g_free(vlabel);
+                            str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[im_i]);
+                            fprintf(out, "%s"CRLF, csv_text);
+                        }
+                    }
+                    if (mcont->cont.entry[contWebsite]) {
+                        str_to_vcard_str(csv_text, sizeof(csv_text),
+                                         mcont->cont.entry[contWebsite]);
+                        fprintf(out, "URL:%s"CRLF, csv_text);
+                    }
+                    if (mcont->cont.birthdayFlag) {
+                        char birthday_str_l[255];
+                        strftime(birthday_str_l, sizeof(birthday_str), "%F", &mcont->cont.birthday);
+                        str_to_vcard_str(csv_text, sizeof(csv_text), birthday_str_l);
+                        fprintf(out, "BDAY:%s"CRLF, birthday_str);
+                    }
+                    if (type == EXPORT_TYPE_VCARD_GMAIL) {
+                        /* Gmail contacts don't have fields for the custom fields,
+                 * rather than lose them we can stick them all in a note field */
+                        int printed_note = 0;
                         for (n = contCustom1; n <= contCustom9; n++) {
                             if (mcont->cont.entry[n]) {
-                                const gchar *label = contact_app_info.customLabels[n - contCustom1];
-                                gchar *vlabel;
-                                vlabel = g_strcanon(g_ascii_strup(label, -1),
-                                                    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
-                                fprintf(out, "X-%s:", vlabel);
-                                g_free(vlabel);
+                                if (!printed_note) {
+                                    printed_note = 1;
+                                    fprintf(out, "NOTE:");
+                                } else {
+                                    fprintf(out, " ");
+                                }
                                 str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
-                                fprintf(out, "%s"CRLF, csv_text);
+                                fprintf(out, "%s:%s\\n"CRLF, contact_app_info.customLabels[n - contCustom1], csv_text);
                             }
                         }
-                    }
-                    if (mcont->cont.entry[contNote]) {
-                        fprintf(out, "NOTE:");
-                        str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
-                        fprintf(out, "%s\\n"CRLF, csv_text);
-                    }
-                }
-
-                fprintf(out, "END:VCARD"CRLF);
-                break;
-
-            case EXPORT_TYPE_LDIF:
-                /* RFC 2256 - organizationalPerson */
-                /* RFC 2798 - inetOrgPerson */
-                /* RFC 2849 - LDIF file format */
-                if (record_num == 0) {
-                    fprintf(out, "version: 1\n");
-                }
-                {
-                    char *cn;
-                    char *email = NULL;
-                    char *last = mcont->cont.entry[contLastname];
-                    char *first = mcont->cont.entry[contFirstname];
-                    for (n = contPhone1; n <= contPhone7; n++) {
-                        if (mcont->cont.entry[n] && mcont->cont.phoneLabel[n - contPhone1] == 4) {
-                            email = mcont->cont.entry[n];
-                            break;
+                        if (mcont->cont.entry[contNote]) {
+                            if (!printed_note) {
+                                fprintf(out, "NOTE:");
+                            } else {
+                                fprintf(out, " note:");
+                            }
+                            str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+                            fprintf(out, "%s\\n"CRLF, csv_text);
+                        }
+                    } else { /* Not a Gmail optimized export */
+                        if (mcont->cont.entry[contCustom1] ||
+                            mcont->cont.entry[contCustom2] ||
+                            mcont->cont.entry[contCustom3] ||
+                            mcont->cont.entry[contCustom4] ||
+                            mcont->cont.entry[contCustom5] ||
+                            mcont->cont.entry[contCustom6] ||
+                            mcont->cont.entry[contCustom7] ||
+                            mcont->cont.entry[contCustom8] ||
+                            mcont->cont.entry[contCustom9]) {
+                            for (n = contCustom1; n <= contCustom9; n++) {
+                                if (mcont->cont.entry[n]) {
+                                    const gchar *label = contact_app_info.customLabels[n - contCustom1];
+                                    gchar *vlabel;
+                                    vlabel = g_strcanon(g_ascii_strup(label, -1),
+                                                        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", '-');
+                                    fprintf(out, "X-%s:", vlabel);
+                                    g_free(vlabel);
+                                    str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[n]);
+                                    fprintf(out, "%s"CRLF, csv_text);
+                                }
+                            }
+                        }
+                        if (mcont->cont.entry[contNote]) {
+                            fprintf(out, "NOTE:");
+                            str_to_vcard_str(csv_text, sizeof(csv_text), mcont->cont.entry[contNote]);
+                            fprintf(out, "%s\\n"CRLF, csv_text);
                         }
                     }
-                    if (first || last) {
-                        cn = csv_text;
-                        snprintf(csv_text, sizeof(csv_text), "%s%s%s", first ? first : "",
-                                 first && last ? " " : "", last ? last : "");
-                        if (!last) {
-                            last = first;
-                            first = NULL;
-                        }
-                    } else if (mcont->cont.entry[contCompany]) {
-                        last = mcont->cont.entry[contCompany];
-                        cn = last;
-                    } else {
-                        last = "Unknown";
-                        cn = last;
-                    }
-                    /* maybe add dc=%s for each part of the email address? */
-                    /* Mozilla just does mail=%s */
-                    ldif_out(out, "dn", "cn=%s%s%s", cn, email ? ",mail=" : "",
-                             email ? email : "");
-                    fprintf(out, "dnQualifier: %s\n", PN);
-                    fprintf(out, "objectClass: top\nobjectClass: person\n");
-                    fprintf(out, "objectClass: organizationalPerson\n");
-                    fprintf(out, "objectClass: inetOrgPerson\n");
-                    ldif_out(out, "cn", "%s", cn);
-                    ldif_out(out, "sn", "%s", last);
-                    if (first)
-                        ldif_out(out, "givenName", "%s", first);
-                    if (mcont->cont.entry[contCompany])
-                        ldif_out(out, "o", "%s", mcont->cont.entry[contCompany]);
-                    for (n = contPhone1; n <= contPhone7; n++) {
-                        if (mcont->cont.entry[n]) {
-                            ldif_out(out, ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), "%s",
-                                     mcont->cont.entry[n]);
-                        }
-                    }
-                    if (mcont->cont.entry[contAddress1])
-                        ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress1]);
-                    if (mcont->cont.entry[contCity1])
-                        ldif_out(out, "l", "%s", mcont->cont.entry[contCity1]);
-                    if (mcont->cont.entry[contState1])
-                        ldif_out(out, "st", "%s", mcont->cont.entry[contState1]);
-                    if (mcont->cont.entry[contZip1])
-                        ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip1]);
-                    if (mcont->cont.entry[contCountry1])
-                        ldif_out(out, "c", "%s", mcont->cont.entry[contCountry1]);
 
-                    if (mcont->cont.entry[contAddress2])
-                        ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress2]);
-                    if (mcont->cont.entry[contCity2])
-                        ldif_out(out, "l", "%s", mcont->cont.entry[contCity2]);
-                    if (mcont->cont.entry[contState2])
-                        ldif_out(out, "st", "%s", mcont->cont.entry[contState2]);
-                    if (mcont->cont.entry[contZip2])
-                        ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip2]);
-                    if (mcont->cont.entry[contCountry2])
-                        ldif_out(out, "c", "%s", mcont->cont.entry[contCountry2]);
-
-                    if (mcont->cont.entry[contAddress3])
-                        ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress3]);
-                    if (mcont->cont.entry[contCity3])
-                        ldif_out(out, "l", "%s", mcont->cont.entry[contCity3]);
-                    if (mcont->cont.entry[contState3])
-                        ldif_out(out, "st", "%s", mcont->cont.entry[contState3]);
-                    if (mcont->cont.entry[contZip3])
-                        ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip3]);
-                    if (mcont->cont.entry[contCountry3])
-                        ldif_out(out, "c", "%s", mcont->cont.entry[contCountry3]);
-
-                    if (mcont->cont.entry[contIM1]) {
-                        strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[0]], 100);
-                        ldif_out(out, text, "%s", mcont->cont.entry[contIM1]);
-                    }
-                    if (mcont->cont.entry[contIM2]) {
-                        strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[1]], 100);
-                        ldif_out(out, text, "%s", mcont->cont.entry[contIM2]);
-                    }
-
-                    if (mcont->cont.entry[contWebsite])
-                        ldif_out(out, "website", "%s", mcont->cont.entry[contWebsite]);
-                    if (mcont->cont.entry[contTitle])
-                        ldif_out(out, "title", "%s", mcont->cont.entry[contTitle]);
-                    if (mcont->cont.entry[contCustom1])
-                        ldif_out(out, "custom1", "%s", mcont->cont.entry[contCustom1]);
-                    if (mcont->cont.entry[contCustom2])
-                        ldif_out(out, "custom2", "%s", mcont->cont.entry[contCustom2]);
-                    if (mcont->cont.entry[contCustom3])
-                        ldif_out(out, "custom3", "%s", mcont->cont.entry[contCustom3]);
-                    if (mcont->cont.entry[contCustom4])
-                        ldif_out(out, "custom4", "%s", mcont->cont.entry[contCustom4]);
-                    if (mcont->cont.entry[contCustom5])
-                        ldif_out(out, "custom5", "%s", mcont->cont.entry[contCustom5]);
-                    if (mcont->cont.entry[contCustom6])
-                        ldif_out(out, "custom6", "%s", mcont->cont.entry[contCustom6]);
-                    if (mcont->cont.entry[contCustom7])
-                        ldif_out(out, "custom7", "%s", mcont->cont.entry[contCustom7]);
-                    if (mcont->cont.entry[contCustom8])
-                        ldif_out(out, "custom8", "%s", mcont->cont.entry[contCustom8]);
-                    if (mcont->cont.entry[contCustom9])
-                        ldif_out(out, "custom9", "%s", mcont->cont.entry[contCustom9]);
-                    if (mcont->cont.entry[contNote])
-                        ldif_out(out, "description", "%s", mcont->cont.entry[contNote]);
-                    fprintf(out, "\n");
+                    fprintf(out, "END:VCARD"CRLF);
                     break;
-                }
 
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                case EXPORT_TYPE_LDIF:
+                    /* RFC 2256 - organizationalPerson */
+                    /* RFC 2798 - inetOrgPerson */
+                    /* RFC 2849 - LDIF file format */
+                    if (record_num == 0) {
+                        fprintf(out, "version: 1\n");
+                    }
+                    {
+                        char *cn;
+                        char *email = NULL;
+                        char *last = mcont->cont.entry[contLastname];
+                        char *first = mcont->cont.entry[contFirstname];
+                        for (n = contPhone1; n <= contPhone7; n++) {
+                            if (mcont->cont.entry[n] && mcont->cont.phoneLabel[n - contPhone1] == 4) {
+                                email = mcont->cont.entry[n];
+                                break;
+                            }
+                        }
+                        if (first || last) {
+                            cn = csv_text;
+                            snprintf(csv_text, sizeof(csv_text), "%s%s%s", first ? first : "",
+                                     first && last ? " " : "", last ? last : "");
+                            if (!last) {
+                                last = first;
+                                first = NULL;
+                            }
+                        } else if (mcont->cont.entry[contCompany]) {
+                            last = mcont->cont.entry[contCompany];
+                            cn = last;
+                        } else {
+                            last = "Unknown";
+                            cn = last;
+                        }
+                        /* maybe add dc=%s for each part of the email address? */
+                        /* Mozilla just does mail=%s */
+                        ldif_out(out, "dn", "cn=%s%s%s", cn, email ? ",mail=" : "",
+                                 email ? email : "");
+                        fprintf(out, "dnQualifier: %s\n", PN);
+                        fprintf(out, "objectClass: top\nobjectClass: person\n");
+                        fprintf(out, "objectClass: organizationalPerson\n");
+                        fprintf(out, "objectClass: inetOrgPerson\n");
+                        ldif_out(out, "cn", "%s", cn);
+                        ldif_out(out, "sn", "%s", last);
+                        if (first)
+                            ldif_out(out, "givenName", "%s", first);
+                        if (mcont->cont.entry[contCompany])
+                            ldif_out(out, "o", "%s", mcont->cont.entry[contCompany]);
+                        for (n = contPhone1; n <= contPhone7; n++) {
+                            if (mcont->cont.entry[n]) {
+                                ldif_out(out, ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), "%s",
+                                         mcont->cont.entry[n]);
+                            }
+                        }
+                        if (mcont->cont.entry[contAddress1])
+                            ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress1]);
+                        if (mcont->cont.entry[contCity1])
+                            ldif_out(out, "l", "%s", mcont->cont.entry[contCity1]);
+                        if (mcont->cont.entry[contState1])
+                            ldif_out(out, "st", "%s", mcont->cont.entry[contState1]);
+                        if (mcont->cont.entry[contZip1])
+                            ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip1]);
+                        if (mcont->cont.entry[contCountry1])
+                            ldif_out(out, "c", "%s", mcont->cont.entry[contCountry1]);
+
+                        if (mcont->cont.entry[contAddress2])
+                            ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress2]);
+                        if (mcont->cont.entry[contCity2])
+                            ldif_out(out, "l", "%s", mcont->cont.entry[contCity2]);
+                        if (mcont->cont.entry[contState2])
+                            ldif_out(out, "st", "%s", mcont->cont.entry[contState2]);
+                        if (mcont->cont.entry[contZip2])
+                            ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip2]);
+                        if (mcont->cont.entry[contCountry2])
+                            ldif_out(out, "c", "%s", mcont->cont.entry[contCountry2]);
+
+                        if (mcont->cont.entry[contAddress3])
+                            ldif_out(out, "postalAddress", "%s", mcont->cont.entry[contAddress3]);
+                        if (mcont->cont.entry[contCity3])
+                            ldif_out(out, "l", "%s", mcont->cont.entry[contCity3]);
+                        if (mcont->cont.entry[contState3])
+                            ldif_out(out, "st", "%s", mcont->cont.entry[contState3]);
+                        if (mcont->cont.entry[contZip3])
+                            ldif_out(out, "postalCode", "%s", mcont->cont.entry[contZip3]);
+                        if (mcont->cont.entry[contCountry3])
+                            ldif_out(out, "c", "%s", mcont->cont.entry[contCountry3]);
+
+                        if (mcont->cont.entry[contIM1]) {
+                            strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[0]], 100);
+                            ldif_out(out, text, "%s", mcont->cont.entry[contIM1]);
+                        }
+                        if (mcont->cont.entry[contIM2]) {
+                            strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[1]], 100);
+                            ldif_out(out, text, "%s", mcont->cont.entry[contIM2]);
+                        }
+
+                        if (mcont->cont.entry[contWebsite])
+                            ldif_out(out, "website", "%s", mcont->cont.entry[contWebsite]);
+                        if (mcont->cont.entry[contTitle])
+                            ldif_out(out, "title", "%s", mcont->cont.entry[contTitle]);
+                        if (mcont->cont.entry[contCustom1])
+                            ldif_out(out, "custom1", "%s", mcont->cont.entry[contCustom1]);
+                        if (mcont->cont.entry[contCustom2])
+                            ldif_out(out, "custom2", "%s", mcont->cont.entry[contCustom2]);
+                        if (mcont->cont.entry[contCustom3])
+                            ldif_out(out, "custom3", "%s", mcont->cont.entry[contCustom3]);
+                        if (mcont->cont.entry[contCustom4])
+                            ldif_out(out, "custom4", "%s", mcont->cont.entry[contCustom4]);
+                        if (mcont->cont.entry[contCustom5])
+                            ldif_out(out, "custom5", "%s", mcont->cont.entry[contCustom5]);
+                        if (mcont->cont.entry[contCustom6])
+                            ldif_out(out, "custom6", "%s", mcont->cont.entry[contCustom6]);
+                        if (mcont->cont.entry[contCustom7])
+                            ldif_out(out, "custom7", "%s", mcont->cont.entry[contCustom7]);
+                        if (mcont->cont.entry[contCustom8])
+                            ldif_out(out, "custom8", "%s", mcont->cont.entry[contCustom8]);
+                        if (mcont->cont.entry[contCustom9])
+                            ldif_out(out, "custom9", "%s", mcont->cont.entry[contCustom9]);
+                        if (mcont->cont.entry[contNote])
+                            ldif_out(out, "description", "%s", mcont->cont.entry[contNote]);
+                        fprintf(out, "\n");
+                        break;
+                    }
+
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -1645,15 +1654,57 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 }
 
+static GtkWidget * cb_addr_export_init_treeView() {
+    GtkListStore *localListStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
+                                                      G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                      G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
+    GtkTreeView * localTreeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
+                                                                             "text",
+                                                                             ADDRESS_NAME_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_clickable(nameColumn, FALSE);
 
-static void cb_addr_update_clist(GtkWidget *clist, int category) {
-    address_update_listStore(listStore, NULL, &export_contact_list, category, FALSE);
+    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
+                                                                             ADDRESS_NOTE_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_clickable(noteColumn, FALSE);
+
+    GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
+                                                                              ADDRESS_PHONE_COLUMN_ENUM,
+                                                                              "cell-background-gdk",
+                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",
+                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                              NULL);
+    gtk_tree_view_column_set_clickable(phoneColumn, FALSE);
+    gtk_tree_view_column_set_sizing(nameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(phoneColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), nameColumn, ADDRESS_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), noteColumn, ADDRESS_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), phoneColumn, ADDRESS_PHONE_COLUMN_ENUM);
+    return GTK_WIDGET(localTreeView);
+}
+static void cb_addr_update_listStore(GtkWidget *ptreeView, int category) {
+    address_update_listStore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(ptreeView))), NULL, &export_contact_list, category, FALSE);
 }
 
 
 static void cb_addr_export_done(GtkWidget *widget, const char *filename) {
     free_ContactList(&export_contact_list);
-
     set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
@@ -1686,7 +1737,8 @@ int address_export(GtkWidget *window) {
                PREF_ADDRESS_EXPORT_FILENAME,
                type_text,
                type_int,
-               cb_addr_update_clist,
+               cb_addr_export_init_treeView,
+               cb_addr_update_listStore,
                cb_addr_export_done,
                cb_addr_export_ok
     );
@@ -1744,7 +1796,7 @@ gboolean deleteAddressRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         deleteAddress(mcont, data);
@@ -1760,7 +1812,7 @@ gboolean addNewAddressRecord(GtkTreeModel *model,
                              GtkTreeIter *iter,
                              gpointer data){
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == rowSelected){
         MyContact *mcont = NULL;
         gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
         addNewAddressRecordToDataStructure(mcont,data);
@@ -1789,7 +1841,7 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        if (mcont < (MyContact *) CLIST_MIN_DATA) {
+        if (mcont < (MyContact *) LIST_MIN_DATA) {
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1802,7 +1854,7 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
         /* These rec_types are both the same for now */
         if (flag == MODIFY_FLAG) {
             unique_id = mcont->unique_id;
-            if (mcont < (MyContact *) CLIST_MIN_DATA) {
+            if (mcont < (MyContact *) LIST_MIN_DATA) {
                 return;
             }
             if ((mcont->rt == DELETED_PALM_REC) ||
@@ -1920,7 +1972,7 @@ gboolean deleteAddressContactRecord(GtkTreeModel *model,
                                     GtkTreeIter *iter,
                                     gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         deleteAddressContact(mcont, data);
@@ -1937,7 +1989,7 @@ gboolean undeleteAddressRecord(GtkTreeModel *model,
                                GtkTreeIter *iter,
                                gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
         undeleteAddress(mcont, data);
@@ -1955,7 +2007,7 @@ void deleteAddressContact(MyContact *mcont, gpointer data) {
     long char_set;
     int i;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
     /* convert to Palm character set */
@@ -1981,8 +2033,8 @@ void deleteAddressContact(MyContact *mcont, gpointer data) {
         delete_pc_record(CONTACTS, mcont, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (rowSelected > 0) {
+                rowSelected--;
             }
         }
     }
@@ -1999,7 +2051,7 @@ void deleteAddress(MyContact *mcont, gpointer data) {
     long char_set;
     int i;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
 
@@ -2032,8 +2084,8 @@ void deleteAddress(MyContact *mcont, gpointer data) {
         delete_pc_record(ADDRESS, &maddr, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (rowSelected > 0) {
+                rowSelected--;
             }
         }
     }
@@ -2065,7 +2117,7 @@ void undeleteAddress(MyContact *mcont, gpointer data) {
     int flag;
     int show_priv;
 
-    if (mcont < (MyContact *) CLIST_MIN_DATA) {
+    if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
 
@@ -2589,7 +2641,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             address_category = selection;
         }
-        clist_row_selected = 0;
+        rowSelected = 0;
         jp_logf(JP_LOG_DEBUG, "address_category = %d\n", address_category);
         address_update_listStore(listStore, category_menu1, &glob_contact_list,
                                  address_category, TRUE);
@@ -3039,15 +3091,15 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreeIter *iter,
                                  char *entry_text) {
     int *i = gtk_tree_path_get_indices(path);
-    char *clist_text;
+    char *list_text;
     //int i, r;
-    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&clist_text);
-    if (!strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&list_text);
+    if (!strncasecmp(list_text, entry_text, strlen(entry_text))) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
-        clist_row_selected = i[0];
+        rowSelected = i[0];
     }
    
 }
@@ -3080,7 +3132,7 @@ findAndSetGlobalAddressId(GtkTreeModel *model,
                           GtkTreeIter *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         MyContact *maddr = NULL;
 
         gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &maddr, -1);
@@ -3101,7 +3153,7 @@ selectRecordAddressByRow(GtkTreeModel *model,
                          GtkTreeIter *iter,
                          gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == rowSelected) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -3159,10 +3211,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     get_pref(PREF_USE_JOS, &use_jos, NULL);
     show_priv = show_privates(GET_PRIVATES);
     get_pixbufs(PIXMAP_NOTE, &pixbuf_note);
-    // get_pixmaps(clist, PIXMAP_NOTE, &pixmap_note, &mask_note);
-#ifdef __APPLE__
-    //  mask_note = NULL;
-#endif
+
 
     switch (addr_sort_order) {
         case SORT_BY_LNAME:
@@ -3224,7 +3273,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                 if (temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
                     if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
                     if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
+                    g_snprintf(str, ADDRESS_MAX_LIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
                                temp_cl->mcont.cont.entry[show2]);
                     if (tmp_p1) *tmp_p1 = '\1';
                     if (tmp_p2) *tmp_p2 = '\1';
@@ -3233,27 +3282,26 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                     if ((tmp_p1 = strchr(temp_cl->mcont.cont.entry[show1], '\1'))) *tmp_p1 = '\0';
                     if (temp_cl->mcont.cont.entry[show3]) {
                         if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                        g_snprintf(str, ADDRESS_MAX_CLIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
+                        g_snprintf(str, ADDRESS_MAX_LIST_NAME, "%s, %s", temp_cl->mcont.cont.entry[show1],
                                    temp_cl->mcont.cont.entry[show3]);
                         if (tmp_p3) *tmp_p3 = '\1';
                     } else {
-                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_CLIST_NAME);
+                        multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show1], ADDRESS_MAX_LIST_NAME);
                     }
                     if (tmp_p1) *tmp_p1 = '\1';
                 }
                 if (!temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
                     if ((tmp_p2 = strchr(temp_cl->mcont.cont.entry[show2], '\1'))) *tmp_p2 = '\0';
-                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_CLIST_NAME);
+                    multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show2], ADDRESS_MAX_LIST_NAME);
                     if (tmp_p2) *tmp_p2 = '\1';
                 }
             } else if (temp_cl->mcont.cont.entry[show3]) {
                 if ((tmp_p3 = strchr(temp_cl->mcont.cont.entry[show3], '\1'))) *tmp_p3 = '\0';
-                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_CLIST_NAME);
+                multibyte_safe_strncpy(str, temp_cl->mcont.cont.entry[show3], ADDRESS_MAX_LIST_NAME);
                 if (tmp_p3) *tmp_p3 = '\1';
             } else {
                 strcpy(str, _("-Unnamed-"));
             }
-            // gtk_clist_append(GTK_CLIST(clist), empty_line);
         } else {
             str[0] = '\0';
             field1 = field2 = field3 = blank;
@@ -3285,7 +3333,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             if (strlen(str) < 1) strcpy(str, _("-Unnamed-"));
             str[ADDRESS_MAX_COLUMN_LEN] = '\0';
 
-            // gtk_clist_append(GTK_CLIST(clist), empty_line);
+
         }
 
         lstrncpy_remove_cr_lfs(name, str, ADDRESS_MAX_COLUMN_LEN);
@@ -3300,21 +3348,21 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         switch (temp_cl->mcont.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_cl->mcont.attrib & dlpRecAttrSecret) {
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -3346,13 +3394,13 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             address_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
+        else if (rowSelected < entries_shown) {
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         } else
             /* Third, select row 0 if nothing else is possible */
         {
-            clist_row_selected = 0;
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
+            rowSelected = 0;
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         }
     }
 
@@ -3366,7 +3414,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         }
     }
 
-    /* return focus to clist after any big operation which requires a redraw */
+    /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
 }
@@ -3545,7 +3593,7 @@ int address_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    rowSelected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -3600,14 +3648,14 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-    select_row = clist_row_selected + add;
+    select_row = rowSelected + add;
     if (select_row > row_count - 1) {
         select_row = 0;
     }
     if (select_row < 0) {
         select_row = row_count - 1;
     }
-    clist_row_selected = select_row;
+    rowSelected = select_row;
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
     return TRUE;
 }
@@ -3718,7 +3766,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     int b;
     int i, index, sorted_position;
     unsigned int unique_id = 0;
-    char *clist_text;
+    char *list_text;
     const char *entry_text;
     int address_i, IM_i, phone_i;
     char birthday_str[255];
@@ -3730,7 +3778,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *path_index = gtk_tree_path_get_indices(path);
-        clist_row_selected = path_index[0];
+        rowSelected = path_index[0];
         get_pref(PREF_CHAR_SET, &char_set, NULL);
 
         gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
@@ -3754,8 +3802,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             if (unique_id) {
                 glob_find_id = unique_id;
                 address_find();
-            } else {
-                //clist_select_row(GTK_CLIST(clist), row, column);
             }
             return TRUE;
         }
@@ -3807,11 +3853,10 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
         }
 
         cont = &(mcont->cont);
-        clist_text = NULL;
-        gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &clist_text, -1);
-        //gtk_clist_get_text(GTK_CLIST(clist), row, ADDRESS_NAME_COLUMN, &clist_text);
+        list_text = NULL;
+        gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
         entry_text = gtk_entry_get_text(GTK_ENTRY(address_quickfind_entry));
-        if (strncasecmp(clist_text, entry_text, strlen(entry_text))) {
+        if (strncasecmp(list_text, entry_text, strlen(entry_text))) {
             gtk_entry_set_text(GTK_ENTRY(address_quickfind_entry), "");
         }
 
@@ -4176,7 +4221,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
 
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the list column headings */
     get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
 #ifdef __APPLE__
     mask = NULL;

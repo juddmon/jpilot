@@ -56,7 +56,7 @@
 /* This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
-/* How clist widget should appear for main apps */
+/* How treeView widget should appear for main apps */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 /*  Define the maximum length of a category name
@@ -74,10 +74,10 @@
 /* Constant used by J-Pilot to indicate "All" category */
 #define CATEGORY_ALL 300
 
-/* Used to mark the entry in the clist to add a record */
-#define CLIST_NEW_ENTRY_DATA 100
-#define CLIST_ADDING_ENTRY_DATA 101
-#define CLIST_MIN_DATA 199
+/* Used to mark the entry in the treeView to add a record */
+#define LIST_NEW_ENTRY_DATA 100
+#define LIST_ADDING_ENTRY_DATA 101
+#define LIST_MIN_DATA 199
 
 #define DIALOG_SAID_1           454
 #define DIALOG_SAID_PRINT       454
@@ -348,29 +348,18 @@ int cal_dialog(GtkWindow *main_window,
                const char *title, int monday_is_fdow,
                int *mon, int *day, int *year);
 
-void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
 GdkColor get_color(int r, int g, int b);
 
-void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
-void clist_clear(GtkCList *clist);
-
-void set_tooltip(int show_tooltip, 
+void set_tooltip(int show_tooltip,
                         GtkTooltips *tooltips,
                         GtkWidget *widget,
                         const gchar *tip_text,
                         const gchar *tip_private);
 
-void clist_select_row(GtkCList *clist, 
-                      int       row,
-                      int       column);
-
-int clist_find_id(GtkWidget *clist,
-                  unsigned int unique_id,
-                  int *found_at);
 
 int check_copy_DBs_to_home(void);
 

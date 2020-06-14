@@ -155,7 +155,7 @@ static GtkWidget *notebook;
 static int current_day;   /* range 1-31 */
 static int current_month; /* range 0-11 */
 static int current_year;  /* years since 1900 */
-static int clist_row_selected;
+static int row_selected;
 static int record_changed;
 #ifdef ENABLE_DATEBK
 int datebk_category = 0xFFFF; /* This is a bitmask */
@@ -1795,7 +1795,7 @@ static void init(void) {
         free_CalendarEventList(&ce_list);
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     record_changed = CLEAR_FLAG;
 }
@@ -2441,7 +2441,7 @@ selectDateRecordByRow (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -2479,7 +2479,7 @@ static int datebook_update_listStore(void) {
     char str2[DATEBOOK_MAX_COLUMN_LEN];
     long show_tooltips;
 
-    jp_logf(JP_LOG_DEBUG, "datebook_update_clist()\n");
+    jp_logf(JP_LOG_DEBUG, "datebook_update_listStore()\n");
 
     free_CalendarEventList(&glob_cel);
 
@@ -2557,7 +2557,6 @@ static int datebook_update_listStore(void) {
             continue;
         }
 
-        /* Add entry to clist */
 
 
         /* Print the event time */
@@ -2636,21 +2635,21 @@ static int datebook_update_listStore(void) {
         switch (temp_cel->mcale.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_cel->mcale.attrib & dlpRecAttrSecret) {
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -2679,13 +2678,13 @@ static int datebook_update_listStore(void) {
             datebook_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
+        else if (row_selected < entries_shown) {
             gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectDateRecordByRow, NULL);
 
         }
             /* Third, select row 0 if nothing else is possible */
         else {
-            clist_row_selected = 0;
+            row_selected = 0;
             gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectDateRecordByRow, NULL);
 
         }
@@ -2700,7 +2699,7 @@ static int datebook_update_listStore(void) {
     //column->
     set_tooltip((int) show_tooltips, glob_tooltips, column->button, str, NULL);
 
-    /* return focus to clist after any big operation which requires a redraw */
+    /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
     return EXIT_SUCCESS;
@@ -2789,7 +2788,6 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           gpointer data) {
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
-        /* Call clist_selection to handle any cleanup such as a modified record */
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
@@ -2903,7 +2901,7 @@ addNewDateRecord (GtkTreeModel *model,
               gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyCalendarEvent * mycale = NULL;
         gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mycale,-1);
         addNewDateRecordToDataStructure(mycale,data);
@@ -2921,7 +2919,7 @@ deleteDateRecord (GtkTreeModel *model,
                   gpointer data) {
 
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyCalendarEvent * mycale = NULL;
         gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mycale,-1);
         deleteDateRecordFromDataStructure(mycale,data);
@@ -2939,7 +2937,7 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent * mcale, gpointer data) {
     int show_priv;
     long char_set;
     unsigned int *write_unique_id;
-    if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
+    if (mcale < (MyCalendarEvent *) LIST_MIN_DATA) {
         return;
     }
 
@@ -3028,8 +3026,8 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent * mcale, gpointer data) {
 
     if (flag == DELETE_FLAG) {
         /* when we redraw we want to go to the line above the deleted one */
-        if (clist_row_selected > 0) {
-            clist_row_selected--;
+        if (row_selected > 0) {
+            row_selected--;
         }
     }
 
@@ -3063,7 +3061,7 @@ void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
         show_priv = show_privates(GET_PRIVATES);
-        if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
+        if (mcale < (MyCalendarEvent *) LIST_MIN_DATA) {
             return;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -3086,7 +3084,7 @@ void addNewDateRecordToDataStructure(MyCalendarEvent * mcale, gpointer data) {
     }
     if (flag == MODIFY_FLAG) {
         unique_id = mcale->unique_id;
-        if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
+        if (mcale < (MyCalendarEvent *) LIST_MIN_DATA) {
             return;
         }
         if ((mcale->rt == DELETED_PALM_REC) ||
@@ -3315,7 +3313,7 @@ gboolean undeleteDateRecord(GtkTreeModel *model,
                         GtkTreeIter  *iter,
                         gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyCalendarEvent * mcale = NULL;
         gtk_tree_model_get(model,iter,DATE_DATA_COLUMN_ENUM,&mcale,-1);
         undeleteDate(mcale,data);
@@ -3330,7 +3328,7 @@ void undeleteDate(MyCalendarEvent * mcale,gpointer data) {
     int flag;
     int show_priv;
 
-    if (mcale < (MyCalendarEvent *) CLIST_MIN_DATA) {
+    if (mcale < (MyCalendarEvent *) LIST_MIN_DATA) {
         return;
     }
 
@@ -3459,7 +3457,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *index = gtk_tree_path_get_indices(path);
-        clist_row_selected = index[0];
+        row_selected = index[0];
         gtk_tree_model_get(model, &iter, DATE_DATA_COLUMN_ENUM, &mcale, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mcale != NULL) {
@@ -3875,7 +3873,7 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             dbook_category = selection;
         }
-        clist_row_selected = 0;
+        row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", dbook_category);
         datebook_update_listStore();
         highlight_days();
@@ -4000,7 +3998,7 @@ static void cb_cal_changed(GtkWidget *widget,
     }
     if (day_changed || mon_changed || year_changed) {
         set_date_label();
-        clist_row_selected = 0;
+        row_selected = 0;
     }
     datebook_update_listStore();
 
@@ -5048,8 +5046,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
    gtk_idle_add(cb_datebook_idle, NULL);
 #else
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
-    /* gtk_clist_set_sort_column (GTK_CLIST(clist), 0); */
-    /* gtk_clist_set_auto_sort(GTK_CLIST(clist), TRUE); */
+
 #endif
 
     /* "Show ToDos" button */
@@ -5829,7 +5826,7 @@ void buildToDoList(const GtkWidget *vbox, GtkWidget *pixmapwid, GdkPixmap **pixm
     gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView)),
                                 GTK_SELECTION_BROWSE);
-    /* Put pretty pictures in the clist column headings */
+    /* Put pretty pictures in the treeView column headings */
     get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixmap, mask);
 #ifdef __APPLE__
     mask = NULL;

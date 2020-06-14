@@ -858,45 +858,8 @@ int cleanup_pc_files(void) {
 }
 
 /* returns 0 if not found, 1 if found */
-int clist_find_id(GtkWidget *clist,
-                  unsigned int unique_id,
-                  int *found_at) {
-    int i, found;
-    MyAddress *maddr;
 
-    *found_at = 0;
 
-    for (found = i = 0; i < GTK_CLIST(clist)->rows; i++) {
-        maddr = gtk_clist_get_row_data(GTK_CLIST(clist), i);
-        if (maddr < (MyAddress *) CLIST_MIN_DATA) {
-            break;
-        }
-        if (maddr->unique_id == unique_id) {
-            found = TRUE;
-            *found_at = i;
-            break;
-        }
-    }
-
-    return found;
-}
-
-/* Encapsulate GTK function to make it free all resources */
-void clist_clear(GtkCList *clist) {
-    GtkStyle *base_style, *row_style;
-    int i;
-
-    base_style = gtk_widget_get_style(GTK_WIDGET(clist));
-
-    for (i = 0; i < GTK_CLIST(clist)->rows; i++) {
-        row_style = gtk_clist_get_row_style(GTK_CLIST(clist), i);
-        if (row_style && (row_style != base_style)) {
-            g_object_unref(row_style);
-        }
-    }
-
-    gtk_clist_clear(GTK_CLIST(clist));
-}
 
 /* Encapsulate GTK tooltip function which no longer supports disabling as
  * of GTK 2.12 */
@@ -909,14 +872,6 @@ void set_tooltip(int show_tooltip,
         gtk_tooltips_set_tip(tooltips, widget, tip_text, tip_private);
 }
 
-
-/* Encapsulate broken GTK function to make it work as documented */
-void clist_select_row(GtkCList *clist,
-                      int row,
-                      int column) {
-    clist->focus_row = row;
-    gtk_clist_select_row(clist, row, column);
-}
 
 int dateToDays(struct tm *tm1) {
     time_t t1;
@@ -1198,7 +1153,7 @@ int dialog_generic(GtkWindow *main_window,
     /* This gdk function call is required in order to avoid a GTK
     * error which causes X and the mouse pointer to lock up.
     * The lockup is generated whenever a modal dialog is created
-    * from the callback routine of a clist. */
+    * from the callback routine of a treeView. */
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
 
     dialog_result = 0;
@@ -2149,7 +2104,7 @@ int get_pixmaps(GtkWidget *widget,
                 GdkPixmap **out_pixmap,
                 GdkBitmap **out_mask) {
     /* Externally stored icon definitions */
-#include "icons/clist_mini_icons.h"
+#include "icons/list_mini_icons.h"
 
     static int init_done = 0;
     static GdkPixmap *pixmap_note;
@@ -2255,7 +2210,7 @@ int get_pixbufs(int which_pixbuf,
                 GdkPixbuf **out_pixbuf) {
 
     /* Externally stored icon definitions */
-#include "icons/clist_mini_icons.h"
+#include "icons/list_mini_icons.h"
 
     static int init_done = 0;
     static GdkPixbuf *pixbuf_note;
@@ -3175,45 +3130,9 @@ GdkColor get_color(int r, int g, int b){
     return color;
 }
 
-void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b) {
-    GtkStyle *old_style, *new_style;
-    GdkColor color;
 
-    if ((old_style = gtk_widget_get_style(clist))) {
-        new_style = gtk_style_copy(old_style);
-    } else {
-        new_style = gtk_style_new();
-    }
 
-    color.red = r;
-    color.green = g;
-    color.blue = b;
-    color.pixel = 0;
 
-    new_style->base[GTK_STATE_NORMAL] = color;
-    gtk_clist_set_row_style(GTK_CLIST(clist), row, new_style);
-}
-
-void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b) {
-    GtkStyle *old_style, *new_style;
-    GdkColor fg_color;
-
-    if ((old_style = gtk_clist_get_row_style(GTK_CLIST(clist), row)) ||
-        (old_style = gtk_widget_get_style(clist))) {
-        new_style = gtk_style_copy(old_style);
-    } else {
-        new_style = gtk_style_new();
-    }
-
-    fg_color.red = r;
-    fg_color.green = g;
-    fg_color.blue = b;
-    fg_color.pixel = 0;
-
-    new_style->fg[GTK_STATE_NORMAL] = fg_color;
-    new_style->fg[GTK_STATE_SELECTED] = fg_color;
-    gtk_clist_set_cell_style(GTK_CLIST(clist), row, col, new_style);
-}
 
 int setup_sync(unsigned int flags) {
     long num_backups;

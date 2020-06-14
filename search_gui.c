@@ -57,7 +57,7 @@ static GtkWidget *window = NULL;
 static GtkWidget *entry = NULL;
 static GtkAccelGroup *accel_group = NULL;
 
-static int clist_row_selected;
+static int row_selected;
 
 /****************************** Prototypes ************************************/
 
@@ -257,7 +257,6 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
                     new_sr->next = search_rl;
                     search_rl = new_sr;
 
-                    // gtk_clist_set_row_data(GTK_CLIST(clist), 0, new_sr);
                     gtk_list_store_set(listStore, iter,
                                        SEARCH_APP_NAME_COLUMN_ENUM, appName,
                                        SEARCH_TEXT_COLUMN_ENUM, text,
@@ -511,7 +510,6 @@ static void cb_entry(GtkWidget *widget, gpointer data) {
 
     treeView = data;
     listStore = GTK_LIST_STORE(gtk_tree_view_get_model(treeView));
-    //gtk_clist_clear(GTK_CLIST(clist));
     gtk_list_store_clear(listStore);
     count += search_address_or_contacts(entry_text, listStore, &iter);
     count += search_todo(entry_text, listStore, &iter);
@@ -568,7 +566,7 @@ static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
     int row;
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
-        clist_row_selected = i[0];
+        row_selected = i[0];
         row = i[0];
         gtk_tree_model_get(model, &iter, SEARCH_DATA_ENUM, &sr, -1);
         if(sr == NULL){
@@ -603,9 +601,9 @@ static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
     return TRUE;
 }
 
-static gboolean cb_key_pressed_in_clist(GtkWidget *widget,
-                                        GdkEventKey *event,
-                                        gpointer data) {
+static gboolean cb_key_pressed_in_list(GtkWidget *widget,
+                                       GdkEventKey *event,
+                                       gpointer data) {
     if (event->keyval == GDK_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         return TRUE;
@@ -704,7 +702,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
 
 
     gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
-                       GTK_SIGNAL_FUNC(cb_key_pressed_in_clist),
+                       GTK_SIGNAL_FUNC(cb_key_pressed_in_list),
                        NULL);
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));

@@ -43,7 +43,7 @@
 #define NUM_MEMO_CAT_ITEMS 16
 
 #define MEMO_MAX_COLUMN_LEN 80
-#define MEMO_CLIST_CHAR_WIDTH 50
+#define MEMO_LIST_CHAR_WIDTH 50
 
 #define NUM_MEMO_CSV_FIELDS 3
 
@@ -60,7 +60,7 @@ extern int glob_date_timer_tag;
 
 static struct MemoAppInfo memo_app_info;
 static int memo_category = CATEGORY_ALL;
-static int clist_row_selected;
+static int row_selected;
 
 static GtkWidget *treeView;
 static GtkListStore *listStore;
@@ -277,7 +277,7 @@ int print_memo(MyMemo *mmemo ) {
 
     memo_list = NULL;
     if (this_many == 1) {
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return EXIT_FAILURE;
         }
         memcpy(&(memo_list1.mmemo), mmemo, sizeof(MyMemo));
@@ -305,7 +305,7 @@ gboolean printRecordMemo(GtkTreeModel *model,
                      GtkTreeIter  *iter,
                      gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         print_memo(mmemo);
@@ -564,7 +564,7 @@ int memo_import(GtkWidget *window) {
 
 /* Start Export code */
 
-static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
+static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyMemo *mmemo;
     GList *list, *temp_list;
@@ -657,72 +657,78 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    list = GTK_CLIST(clist)->selection;
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-        if (!mmemo) {
-            continue;
-            jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
-        }
-        switch (type) {
-            case EXPORT_TYPE_CSV:
-                len = 0;
-                if (mmemo->memo.text) {
-                    len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
-                }
-                if (len < 256) len = 256;
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"%s\",", csv_text);
-                g_free(utf);
-                fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1" : "0");
-                str_to_csv_str(csv_text, mmemo->memo.text);
-                fprintf(out, "\"%s\"\n", csv_text);
-                break;
+        GtkTreePath * path = temp_list->data;
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter(model,&iter,path)) {
+            gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+            if (!mmemo) {
+                continue;
+                jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
+            }
+            switch (type) {
+                case EXPORT_TYPE_CSV:
+                    len = 0;
+                    if (mmemo->memo.text) {
+                        len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
+                    }
+                    if (len < 256) len = 256;
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
+                    fprintf(out, "\"%s\",", csv_text);
+                    g_free(utf);
+                    fprintf(out, "\"%s\",", (mmemo->attrib & dlpRecAttrSecret) ? "1" : "0");
+                    str_to_csv_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "\"%s\"\n", csv_text);
+                    break;
 
-            case EXPORT_TYPE_BFOLDERS:
-                len = 0;
-                str_to_csv_str(csv_text, mmemo->memo.text);
-                fprintf(out, "\"%s\",", csv_text);
+                case EXPORT_TYPE_BFOLDERS:
+                    len = 0;
+                    str_to_csv_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "\"%s\",", csv_text);
 
-                if (mmemo->memo.text) {
-                    len = (unsigned int)  strlen(mmemo->memo.text) * 2 + 4;
-                }
-                if (len < 256) len = 256;
-                printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
-                str_to_csv_str(csv_text, utf);
-                fprintf(out, "\"Memos > %s\"\n", csv_text);
-                printf("\"Memos > %s\"\n", utf);
-                g_free(utf);
-                break;
+                    if (mmemo->memo.text) {
+                        len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
+                    }
+                    if (len < 256) len = 256;
+                    printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    str_to_csv_str(csv_text, utf);
+                    fprintf(out, "\"Memos > %s\"\n", csv_text);
+                    printf("\"Memos > %s\"\n", utf);
+                    g_free(utf);
+                    break;
 
-            case EXPORT_TYPE_TEXT:
-                get_pref(PREF_SHORTDATE, NULL, &short_date);
-                get_pref_time_no_secs(pref_time);
-                time(&ltime);
-                now = localtime(&ltime);
-                strftime(str1, sizeof(str1), short_date, now);
-                strftime(str2, sizeof(str2), pref_time, now);
-                g_snprintf(text, sizeof(text), "%s %s", str1, str2);
+                case EXPORT_TYPE_TEXT:
+                    get_pref(PREF_SHORTDATE, NULL, &short_date);
+                    get_pref_time_no_secs(pref_time);
+                    time(&ltime);
+                    now = localtime(&ltime);
+                    strftime(str1, sizeof(str1), short_date, now);
+                    strftime(str2, sizeof(str2), pref_time, now);
+                    g_snprintf(text, sizeof(text), "%s %s", str1, str2);
 
-                fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
-                utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int)char_set);
-                fprintf(out, _("Category: %s\n"), utf);
-                g_free(utf);
-                fprintf(out, _("Private: %s\n"),
-                        (mmemo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
-                fprintf(out, _("----- Start of Memo -----\n"));
-                fprintf(out, "%s", mmemo->memo.text);
-                fprintf(out, _("\n----- End of Memo -----\n\n"));
-                break;
+                    fprintf(out, _("Memo: %ld\n"), (long) temp_list->data + 1);
+                    utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
+                    fprintf(out, _("Category: %s\n"), utf);
+                    g_free(utf);
+                    fprintf(out, _("Private: %s\n"),
+                            (mmemo->attrib & dlpRecAttrSecret) ? _("Yes") : _("No"));
+                    fprintf(out, _("----- Start of Memo -----\n"));
+                    fprintf(out, "%s", mmemo->memo.text);
+                    fprintf(out, _("\n----- End of Memo -----\n\n"));
+                    break;
 
-            case EXPORT_TYPE_KEEPASSX:
-                break;
+                case EXPORT_TYPE_KEEPASSX:
+                    break;
 
-            default:
-                jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+                default:
+                    jp_logf(JP_LOG_WARN, _("Unknown export type\n"));
+            }
         }
     }
 
@@ -742,44 +748,48 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
             fprintf(out, "   <icon>7</icon>\n");
             g_free(utf);
             for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-                mmemo = gtk_clist_get_row_data(GTK_CLIST(clist), GPOINTER_TO_INT(temp_list->data));
-                if (!mmemo) {
-                    continue;
-                    jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
-                }
-                if ((mmemo->attrib & 0x0F) != cat) {
-                    continue;
-                }
-                fprintf(out, "   <entry>\n");
+                GtkTreePath *path = temp_list->data;
+                GtkTreeIter iter;
+                if (gtk_tree_model_get_iter(model, &iter, path)) {
+                    gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+                    if (!mmemo) {
+                        continue;
+                        jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
+                    }
+                    if ((mmemo->attrib & 0x0F) != cat) {
+                        continue;
+                    }
+                    fprintf(out, "   <entry>\n");
 
-                /* Create a title (which is the first line of the memo) */
-                for (j = 0; j < 100; j++) {
-                    str1[j] = mmemo->memo.text[j];
-                    if (str1[j] == '\0') {
-                        break;
+                    /* Create a title (which is the first line of the memo) */
+                    for (j = 0; j < 100; j++) {
+                        str1[j] = mmemo->memo.text[j];
+                        if (str1[j] == '\0') {
+                            break;
+                        }
+                        if (str1[j] == '\n') {
+                            str1[j] = '\0';
+                            break;
+                        }
                     }
-                    if (str1[j] == '\n') {
-                        str1[j] = '\0';
-                        break;
-                    }
+                    str1[100] = '\0';
+                    str_to_keepass_str(csv_text, str1);
+                    fprintf(out, "    <title>%s</title>\n", csv_text);
+                    /* No keyring field for username */
+                    /* No keyring field for password */
+                    /* No keyring field for url */
+                    str_to_keepass_str(csv_text, mmemo->memo.text);
+                    fprintf(out, "    <comment>%s</comment>\n", csv_text);
+                    fprintf(out, "    <icon>7</icon>\n");
+                    /* No keyring field for creation */
+                    /* No keyring field for lastaccess */
+                    /* No keyring field for lastmod */
+                    /* No keyring field for expire */
+                    fprintf(out, "    <expire>Never</expire>\n");
+                    fprintf(out, "   </entry>\n");
                 }
-                str1[100] = '\0';
-                str_to_keepass_str(csv_text, str1);
-                fprintf(out, "    <title>%s</title>\n", csv_text);
-                /* No keyring field for username */
-                /* No keyring field for password */
-                /* No keyring field for url */
-                str_to_keepass_str(csv_text, mmemo->memo.text);
-                fprintf(out, "    <comment>%s</comment>\n", csv_text);
-                fprintf(out, "    <icon>7</icon>\n");
-                /* No keyring field for creation */
-                /* No keyring field for lastaccess */
-                /* No keyring field for lastmod */
-                /* No keyring field for expire */
-                fprintf(out, "    <expire>Never</expire>\n");
-                fprintf(out, "   </entry>\n");
+                fprintf(out, "  </group>\n");
             }
-            fprintf(out, "  </group>\n");
         }
 
         /* Write a footer to the KeePassX XML file */
@@ -795,11 +805,26 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *clist,
 }
 
 //TODO: update this when ready todo export function
-static void cb_memo_update_clist(GtkWidget *clist, int category) {
-    memo_update_liststore(listStore, NULL, &export_memo_list, category, FALSE);
-    //memo_update_clist(clist, NULL, &export_memo_list, category, FALSE);
+static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
+    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list, category, FALSE);
 }
+static GtkWidget * cb_memo_init_export_treeView() {
+    GtkListStore * listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                            G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkWidget * treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
+    GtkTreeSelection *treeSelection = NULL;
+    treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
+    GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
+                                                                         "cell-background-gdk",MEMO_BACKGROUND_COLOR_ENUM, "cell-background-set",MEMO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
+    gtk_tree_view_column_set_fixed_width(column, (gint) 50);
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
+    return GTK_WIDGET(treeView);
 
+
+}
 
 static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
     free_MemoList(&export_memo_list);
@@ -808,7 +833,7 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
 }
 //TODO: implement this when ready to handle export functions
 int memo_export(GtkWidget *window) {
-    /*int w, h, x, y;
+    int w, h, x, y;
     char *type_text[] = {N_("Text"),
                          N_("CSV"),
                          N_("B-Folders CSV"),
@@ -827,11 +852,12 @@ int memo_export(GtkWidget *window) {
                PREF_MEMO_EXPORT_FILENAME,
                type_text,
                type_int,
-               cb_memo_update_clist,
+               cb_memo_init_export_treeView,
+               cb_memo_update_listStore,
                cb_memo_export_done,
                cb_memo_export_ok
     );
-   */
+
     return EXIT_SUCCESS;
 }
 
@@ -876,7 +902,7 @@ gboolean deleteRecordMemo(GtkTreeModel *model,
                       GtkTreeIter  *iter,
                       gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         delete_memo(mmemo,data);
@@ -892,7 +918,7 @@ gboolean undeleteRecordMemo(GtkTreeModel *model,
                           GtkTreeIter  *iter,
                           gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
-    if (i[0] == clist_row_selected) {
+    if (i[0] == row_selected) {
         MyMemo *mmemo = NULL;
         gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         undelete_memo(mmemo, data);
@@ -909,7 +935,7 @@ void delete_memo(MyMemo * mmemo, gpointer data) {
     int show_priv;
     long char_set;
 
-    if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+    if (mmemo < (MyMemo *) LIST_MIN_DATA) {
         return;
     }
     /* Convert to Palm character set */
@@ -933,8 +959,8 @@ void delete_memo(MyMemo * mmemo, gpointer data) {
         delete_pc_record(MEMO, mmemo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
-            if (clist_row_selected > 0) {
-                clist_row_selected--;
+            if (row_selected > 0) {
+                row_selected--;
             }
         }
     }
@@ -957,7 +983,7 @@ void undelete_memo(MyMemo *mmemo, gpointer data) {
     int show_priv;
 
 
-    if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+    if (mmemo < (MyMemo *) LIST_MIN_DATA) {
         return;
     }
 
@@ -1099,10 +1125,9 @@ static void cb_category(GtkWidget *item, int selection) {
         } else {
             memo_category = selection;
         }
-        clist_row_selected = 0;
+        row_selected = 0;
         jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
         memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-        //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
         jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
     }
 }
@@ -1176,7 +1201,7 @@ addNewRecordMemo (GtkTreeModel *model,
 
     int * i = gtk_tree_path_get_indices ( path ) ;
 
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         MyMemo * mmemo = NULL;
         gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
         return addNewMemo(mmemo, data);
@@ -1205,7 +1230,7 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
         show_priv = show_privates(GET_PRIVATES);
 
 
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return TRUE;
         }
         if ((show_priv != SHOW_PRIVATES) &&
@@ -1228,7 +1253,7 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
     if (flag == MODIFY_FLAG) {
 
         unique_id = mmemo->unique_id;
-        if (mmemo < (MyMemo *) CLIST_MIN_DATA) {
+        if (mmemo < (MyMemo *) LIST_MIN_DATA) {
             return TRUE;
         }
         if ((mmemo->rt == DELETED_PALM_REC) ||
@@ -1312,7 +1337,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
 static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer next_widget) {
-    /* Switch to clist */
+    /* Switch to treeView */
     if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
@@ -1411,7 +1436,7 @@ selectRecordByRowMemo (GtkTreeModel *model,
                    GtkTreeIter  *iter,
                    gpointer data) {
     int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == clist_row_selected){
+    if(i[0] == row_selected){
         GtkTreeSelection * selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
@@ -1430,7 +1455,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     char *last;
     char str2[MEMO_MAX_COLUMN_LEN];
     MemoList *temp_memo;
-    char str[MEMO_CLIST_CHAR_WIDTH + 10];
+    char str[MEMO_LIST_CHAR_WIDTH + 10];
     int len, len1;
     int show_priv;
     long show_tooltips;
@@ -1447,13 +1472,6 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         memo_clear_details();
     }
     gtk_list_store_clear(GTK_LIST_STORE(pListStore));
-
-#ifdef __APPLE__
-    /*   gtk_clist_thaw(GTK_CLIST(clist));
-      gtk_widget_hide(clist);
-      gtk_widget_show_all(clist);
-      gtk_clist_freeze(GTK_CLIST(clist)); */
-#endif
 
     show_priv = show_privates(GET_PRIVATES);
 
@@ -1488,9 +1506,9 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
         len1 = ( int) strlen(str);
         len = ((int) strlen(temp_memo->mmemo.memo.text)) + 1;
-        /* ..memo clist does not display '/n' */
-        if ((copy_max_length = (size_t) len) > MEMO_CLIST_CHAR_WIDTH) {
-            copy_max_length = MEMO_CLIST_CHAR_WIDTH;
+        /* ..memo treeView does not display '/n' */
+        if ((copy_max_length = (size_t) len) > MEMO_LIST_CHAR_WIDTH) {
+            copy_max_length = MEMO_LIST_CHAR_WIDTH;
         }
         last =  multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
         if (last) {
@@ -1507,21 +1525,21 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         switch (temp_memo->mmemo.rt) {
             case NEW_PC_REC:
             case REPLACEMENT_PALM_REC:
-                bgColor = get_color(CLIST_NEW_RED, CLIST_NEW_GREEN, CLIST_NEW_BLUE);
+                bgColor = get_color(LIST_NEW_RED, LIST_NEW_GREEN, LIST_NEW_BLUE);
                 showBgColor = TRUE;
                 break;
             case DELETED_PALM_REC:
             case DELETED_PC_REC:
-                bgColor = get_color(CLIST_DEL_RED, CLIST_DEL_GREEN, CLIST_DEL_BLUE);
+                bgColor = get_color(LIST_DEL_RED, LIST_DEL_GREEN, LIST_DEL_BLUE);
                 showBgColor = TRUE;
                 break;
             case MODIFIED_PALM_REC:
-                bgColor = get_color(CLIST_MOD_RED, CLIST_MOD_GREEN, CLIST_MOD_BLUE);
+                bgColor = get_color(LIST_MOD_RED, LIST_MOD_GREEN, LIST_MOD_BLUE);
                 showBgColor = TRUE;
                 break;
             default:
                 if (temp_memo->mmemo.attrib & dlpRecAttrSecret) {
-                    bgColor = get_color(CLIST_PRIVATE_RED, CLIST_PRIVATE_GREEN, CLIST_PRIVATE_BLUE);
+                    bgColor = get_color(LIST_PRIVATE_RED, LIST_PRIVATE_GREEN, LIST_PRIVATE_BLUE);
                     showBgColor = TRUE;
                 } else {
                     showBgColor = FALSE;
@@ -1545,13 +1563,13 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
             memo_find();
         }
             /* Second, try the currently selected row */
-        else if (clist_row_selected < entries_shown) {
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRowMemo, NULL);
+        else if (row_selected < entries_shown) {
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
             /* Third, select row 0 if nothing else is possible */
         else {
-            clist_row_selected = 0;
-            gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordByRowMemo, NULL);
+            row_selected = 0;
+            gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordByRowMemo, NULL);
         }
     }
 
@@ -1570,8 +1588,8 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         connect_changed_signals(CONNECT_SIGNALS);
     }
 
-    /* return focus to clist after any big operation which requires a redraw */
-    //gtk_widget_grab_focus(GTK_WIDGET(clist));
+    /* return focus to treeView after any big operation which requires a redraw */
+    gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_liststore()\n");
 }
@@ -1635,7 +1653,7 @@ int memo_cycle_cat(void) {
         }
     }
 
-    clist_row_selected = 0;
+    row_selected = 0;
 
     return EXIT_SUCCESS;
 }
@@ -1655,7 +1673,6 @@ int memo_refresh(void) {
         index += 1;
     }
     memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-    //memo_update_clist(clist, category_menu1, &glob_memo_list, memo_category, TRUE);
     if (index < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
@@ -1698,7 +1715,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
 
     /* Do some initialization */
-    clist_row_selected = 0;
+    row_selected = 0;
 
     record_changed = CLEAR_FLAG;
 
@@ -1938,7 +1955,7 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
-        clist_row_selected = i[0];
+        row_selected = i[0];
         gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mmemo != NULL) {
