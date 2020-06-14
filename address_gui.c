@@ -4017,8 +4017,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
 int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkWidget *scrolled_window;
     GtkWidget *pixmapwid;
-    GdkPixmap *pixmap;
-    GdkBitmap *mask;
+    GdkPixbuf *pixmap;
     GtkWidget *vbox1, *vbox2;
     GtkWidget *hbox_temp;
     GtkWidget *vbox_temp;
@@ -4222,12 +4221,16 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
     /* Put pretty pictures in the list column headings */
-    get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
-#ifdef __APPLE__
-    mask = NULL;
-#endif
-    pixmapwid = gtk_pixmap_new(pixmap, mask);
+    get_pixbufs(PIXMAP_NOTE,&pixmap);
+    //get_pixmaps(vbox, PIXMAP_NOTE, &pixmap, &mask);
+//#ifdef __APPLE__
+  //  mask = NULL;
+//#endif
+
+    pixmapwid = gtk_image_new_from_pixbuf(pixmap);
+    gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
+
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
 
     gtk_tree_view_column_set_min_width(nameColumn, 60);
