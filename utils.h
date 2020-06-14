@@ -281,11 +281,6 @@ int get_timeout_interval(void);
 gint timeout_sync_up(gpointer data);
 gint timeout_date(gpointer data);
 
-int get_pixmaps(GtkWidget *widget,
-                int which_one,
-                GdkPixmap **out_pixmap,
-                GdkBitmap **out_mask);
-
 int get_pixbufs(int which_one,
                 GdkPixbuf **out_pixbuf);
 
