@@ -2932,7 +2932,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
     GtkTextBuffer *text_buffer;
     GtkTextIter iter;
 
-    if (event->keyval == GDK_Return) {
+    if (event->keyval == GDK_KEY_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
         if (address_version == 0) {
@@ -2992,14 +2992,14 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
 static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer data) {
-    if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+    if ((event->keyval == GDK_KEY_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
     if (data != NULL &&
-        (event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+        (event->keyval == GDK_KEY_e) && (event->state & GDK_CONTROL_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
         /* Get current text and place in temporary file */
@@ -3636,10 +3636,10 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     int add;
 
     add = 0;
-    if ((event->keyval == GDK_KP_Down) || (event->keyval == GDK_Down)) {
+    if ((event->keyval == GDK_KEY_KP_Down) || (event->keyval == GDK_KEY_Down)) {
         add = 1;
     }
-    if ((event->keyval == GDK_KP_Up) || (event->keyval == GDK_Up)) {
+    if ((event->keyval == GDK_KEY_KP_Up) || (event->keyval == GDK_KEY_Up)) {
         add = -1;
     }
     if (!add) return FALSE;
@@ -3666,12 +3666,12 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
     int page, next;
     int i, j, found, break_loop;
 
-    if ((event->keyval != GDK_Tab) &&
-        (event->keyval != GDK_ISO_Left_Tab)) {
+    if ((event->keyval != GDK_KEY_Tab) &&
+        (event->keyval != GDK_KEY_ISO_Left_Tab)) {
         return FALSE;
     }
 
-    if (event->keyval == GDK_Tab) {
+    if (event->keyval == GDK_KEY_Tab) {
         /* See if they are at the end of the text */
         text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
         gtk_text_buffer_get_iter_at_mark(text_buffer, &cursor_pos_iter, gtk_text_buffer_get_insert(text_buffer));
@@ -3710,7 +3710,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
         }
     }
 
-    if (event->keyval == GDK_ISO_Left_Tab) {
+    if (event->keyval == GDK_KEY_ISO_Left_Tab) {
         j = (j < 0 ? 0 : j);
         page = schema[j].notebook_page;
         next = schema[j].record_field;
