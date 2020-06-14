@@ -103,7 +103,7 @@ jpilot_SOURCES = \
 	icons/sync.xpm \
 	icons/cancel_sync.xpm \
 	icons/backup.xpm \
-	icons/clist_mini_icons.h \
+	icons/list_mini_icons.h \
 	icons/appl_menu_icons.h \
 	icons/lock_icons.h \
 	icons/icons.c
