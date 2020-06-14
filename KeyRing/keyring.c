@@ -193,6 +193,7 @@ void deleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 void undeleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 
 void addKeyRing(struct MyKeyRing *mkr, gpointer data);
+static GtkWidget * cb_keyr_export_init_treeView();
 
 /****************************** Main Code *************************************/
 
@@ -2015,8 +2016,8 @@ static int keyring_find(int unique_id) {
     return EXIT_SUCCESS;
 }
 
-static void cb_keyr_update_clist(GtkWidget *treeView, int category) {
-    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), &export_keyring_list, category, FALSE);
+static void cb_keyr_update_listStore(GtkWidget *treeView, int category) {
+    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), &export_keyring_list, category, FALSE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
@@ -2144,9 +2145,9 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
-    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
-    list = gtk_tree_selection_get_selected_rows(selection,model);
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
         GtkTreePath * path = temp_list->data;
@@ -2298,13 +2299,57 @@ int plugin_export(GtkWidget *window) {
                PREF_KEYR_EXPORT_FILENAME,
                type_text,
                type_int,
-               NULL,
-               cb_keyr_update_clist,
+               cb_keyr_export_init_treeView,
+               cb_keyr_update_listStore,
                cb_keyr_export_done,
                cb_keyr_export_ok
     );
 
     return EXIT_SUCCESS;
+}
+
+static GtkWidget * cb_keyr_export_init_treeView() {
+    GtkListStore * listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    treeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
+                                                                                changedRenderer,
+                                                                                "text", KEYRING_CHANGED_COLUMN_ENUM,
+                                                                                "cell-background-gdk",
+                                                                                KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                                "cell-background-set",
+                                                                                KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                NULL);
+    gtk_tree_view_column_set_sort_column_id(changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
+    GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
+                                                                             nameRenderer,
+                                                                             "text", KEYRING_NAME_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_sort_column_id(nameColumn, KEYRING_NAME_COLUMN_ENUM);
+    GtkCellRenderer *accountRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
+                                                                                accountRenderer,
+                                                                                "text", KEYRING_ACCOUNT_COLUMN_ENUM,
+                                                                                "cell-background-gdk",
+                                                                                KEYRING_BACKGROUND_COLOR_ENUM,
+                                                                                "cell-background-set",
+                                                                                KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                                NULL);
+    gtk_tree_view_column_set_sort_column_id(accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
+    gtk_tree_view_column_set_sizing(changedColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(nameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(accountColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    return GTK_WIDGET(treeView);
 }
 
 /*

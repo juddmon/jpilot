@@ -1705,7 +1705,6 @@ static void cb_addr_update_listStore(GtkWidget *ptreeView, int category) {
 
 static void cb_addr_export_done(GtkWidget *widget, const char *filename) {
     free_ContactList(&export_contact_list);
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget))));
     set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
