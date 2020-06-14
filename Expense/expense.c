@@ -831,7 +831,7 @@ void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
     /* Get the category that is set from the menu */
     for (i = 0; i < NUM_EXP_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(exp_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[i])->active) {
+            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(exp_cat_menu_item2[i]))) {
                 br.attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
@@ -1108,8 +1108,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 /* Called when left-hand category menu is used */
 static void cb_category(GtkWidget *item, int selection) {
     int b;
-
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
         if (exp_category == selection) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -1279,8 +1278,12 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value) {
 
     jp_logf(JP_LOG_DEBUG, "Expense: cb_pulldown_menu\n");
 
-    if (!item) return;
-    if (!(GTK_CHECK_MENU_ITEM(item))->active) return;
+    if (!item){
+        return;
+    }
+    if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
+        return;
+    }
 
     menu = (value & 0xFF00) >> 8;
     sel = value & 0x00FF;

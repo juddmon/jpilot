@@ -1014,7 +1014,7 @@ static void update_date_button(GtkWidget *button, struct tm *t) {
     get_pref(PREF_SHORTDATE, NULL, &short_date);
     strftime(str, sizeof(str), short_date, t);
 
-    gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
+    gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(button))), str);
 }
 
 /*
@@ -1142,7 +1142,7 @@ void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
     /* grab category from menu */
     for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(keyr_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[i])->active) {
+            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[i]))) {
                 br.attrib = sort_l[i].cat_num;
                 break;
             }
@@ -1508,7 +1508,7 @@ static void cb_category(GtkWidget *item, int selection) {
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: cb_category\n");
 
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active((GTK_CHECK_MENU_ITEM(item)))) {
         if (keyr_category == selection) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -2280,8 +2280,8 @@ int plugin_export(GtkWidget *window) {
     char *type_text[] = {N_("Text"), N_("CSV"), N_("B-Folders CSV"), N_("KeePassX XML"), NULL};
     int type_int[] = {EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS, EXPORT_TYPE_KEEPASSX};
 
-    gdk_window_get_size(window->window, &w, &h);
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));
     x += 40;
@@ -2396,7 +2396,7 @@ int plugin_gui_cleanup(void) {
 }
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    column_selected = column->sort_column_id;
+    column_selected = gtk_tree_view_column_get_sort_column_id(column);
 
 }
 
