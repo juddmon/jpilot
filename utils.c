@@ -864,12 +864,13 @@ int cleanup_pc_files(void) {
 /* Encapsulate GTK tooltip function which no longer supports disabling as
  * of GTK 2.12 */
 void set_tooltip(int show_tooltip,
-                 GtkTooltips *tooltips,
                  GtkWidget *widget,
-                 const gchar *tip_text,
-                 const gchar *tip_private) {
-    if (show_tooltip)
-        gtk_tooltips_set_tip(tooltips, widget, tip_text, tip_private);
+                 const gchar *tip_text) {
+    if (show_tooltip) {
+        gtk_widget_set_tooltip_text (widget, tip_text);
+    }else {
+        gtk_widget_set_tooltip_text (widget, NULL);
+    }
 }
 
 

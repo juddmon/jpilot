@@ -2697,7 +2697,7 @@ static int datebook_update_listStore(void) {
     g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
     GtkTreeViewColumn * column = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),DATE_APPT_COLUMN_ENUM);
     //column->
-    set_tooltip((int) show_tooltips, glob_tooltips, column->button, str, NULL);
+    set_tooltip((int) show_tooltips, column->button, str);
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
@@ -4952,10 +4952,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         fdow = 0;
     }
     main_calendar = gtk_calendar_new();
-    gtk_calendar_display_options(GTK_CALENDAR(main_calendar),
-                                 GTK_CALENDAR_SHOW_HEADING |
-                                 GTK_CALENDAR_SHOW_DAY_NAMES |
-                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
+    gtk_calendar_set_display_options(GTK_CALENDAR(main_calendar),GTK_CALENDAR_SHOW_HEADING |
+                                                                 GTK_CALENDAR_SHOW_DAY_NAMES |
+                                                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
+
     // This way produces a small calendar on the left
     gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);
     // This way produces a centered, small calendar
@@ -4975,7 +4975,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Accelerator key for starting Weekview GUI */
     gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_w,
                                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    set_tooltip((int) show_tooltips, glob_tooltips, button, _("View appointments by week   Ctrl+W"), NULL);
+    set_tooltip((int) show_tooltips, button, _("View appointments by week   Ctrl+W"));
 
     /* Monthview button */
     button = gtk_button_new_with_label(_("Month"));
@@ -4987,7 +4987,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Accelerator key for starting Monthview GUI */
     gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_m,
                                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    set_tooltip((int) show_tooltips, glob_tooltips, button, _("View appointments by month   Ctrl+M"), NULL);
+    set_tooltip((int) show_tooltips, button, _("View appointments by month   Ctrl+M"));
 
 #ifdef ENABLE_DATEBK
     if (use_db3_tags) {

@@ -42,7 +42,6 @@ static GtkWidget *mail_command_entry;
 static GtkWidget *todo_days_due_entry;
 
 extern int glob_app;
-extern GtkTooltips *glob_tooltips;
 #ifdef ENABLE_PLUGINS
 extern unsigned char skip_plugins;
 #endif

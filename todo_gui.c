@@ -2177,10 +2177,10 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (todo_list == NULL) {
-            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, _("0 records"), NULL);
+            set_tooltip((int) show_tooltips, tooltip_widget, _("0 records"));
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip((int) show_tooltips, glob_tooltips, tooltip_widget, str, NULL);
+            set_tooltip((int) show_tooltips, tooltip_widget, str);
         }
     }
 
@@ -2565,7 +2565,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     label = gtk_label_new(_("Priority:"));
     gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 2);
-    set_tooltip((int) show_tooltips, glob_tooltips, label, _("Set priority   Alt+#"), NULL);
+    set_tooltip((int) show_tooltips, label, _("Set priority   Alt+#"));
 
     group = NULL;
     for (i = 0; i < NUM_TODO_PRIORITIES; i++) {

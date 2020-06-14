@@ -3407,10 +3407,10 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (cont_list == NULL) {
-            set_tooltip(show_tooltips, glob_tooltips, category_menu1, _("0 records"), NULL);
+            set_tooltip(show_tooltips, category_menu1, _("0 records"));
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip(show_tooltips, glob_tooltips, category_menu1, str, NULL);
+            set_tooltip(show_tooltips, category_menu1, str);
         }
     }
 

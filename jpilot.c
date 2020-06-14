@@ -89,7 +89,6 @@ int pipe_from_parent, pipe_to_child;
 /* Main GTK window for application */
 GtkWidget *window;
 GtkWidget *glob_date_label;
-GtkTooltips *glob_tooltips;
 GtkWidget *glob_dialog=NULL;
 int glob_app = 0;
 unsigned char skip_plugins;
@@ -1913,8 +1912,6 @@ int main(int argc, char *argv[])
    gtk_widget_set_name(button_todo, "button_app");
    gtk_widget_set_name(button_memo, "button_app");
 
-   /* Create tooltips */
-   glob_tooltips = gtk_tooltips_new();
 
    /* Get preference to show tooltips */
    get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
@@ -1940,18 +1937,18 @@ int main(int argc, char *argv[])
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_masklocked, FALSE, FALSE, 20);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_unlocked, FALSE, FALSE, 20);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button_locked, _("Show private records   Ctrl+Z"), NULL);
+   set_tooltip(show_tooltips,
+           button_locked, _("Show private records   Ctrl+Z"));
    gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button_masklocked, _("Hide private records   Ctrl+Z"), NULL);
+   set_tooltip(show_tooltips,
+               button_masklocked, _("Hide private records   Ctrl+Z"));
    gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button_unlocked, _("Mask private records   Ctrl+Z"), NULL);
+   set_tooltip(show_tooltips,
+               button_unlocked, _("Mask private records   Ctrl+Z"));
    gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
@@ -1962,8 +1959,8 @@ int main(int argc, char *argv[])
                       GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button_sync, _("Sync your palm to the desktop   Ctrl+Y"), NULL);
+   set_tooltip(show_tooltips,
+               button_sync, _("Sync your palm to the desktop   Ctrl+Y"));
    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
                               GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
@@ -1974,8 +1971,8 @@ int main(int argc, char *argv[])
                       NULL);
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_cancel_sync, FALSE, FALSE, 3);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button_cancel_sync, _("Stop Sync process"), NULL);
+   set_tooltip(show_tooltips,
+               button_cancel_sync, _("Stop Sync process"));
 
    /* "Backup" button in left column */
    button_backup = gtk_button_new();
@@ -1986,9 +1983,9 @@ int main(int argc, char *argv[])
                       : SYNC_FULL_BACKUP));
    gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
-   set_tooltip(show_tooltips, glob_tooltips, 
+   set_tooltip(show_tooltips,
                button_backup, _("Sync your palm to the desktop\n"
-                                "and then do a backup"), NULL);
+                                "and then do a backup"));
 
    /* Separator */
    separator = gtk_hseparator_new();
@@ -2135,10 +2132,10 @@ int main(int argc, char *argv[])
    gtk_widget_show(pixmapwid);
    gtk_container_add(GTK_CONTAINER(button_backup), pixmapwid);
 
-   set_tooltip(show_tooltips, glob_tooltips, button_datebook, _("Datebook/Go to Today"), NULL);
-   set_tooltip(show_tooltips, glob_tooltips, button_address, _("Address Book"), NULL);
-   set_tooltip(show_tooltips, glob_tooltips, button_todo, _("ToDo List"), NULL);
-   set_tooltip(show_tooltips, glob_tooltips, button_memo, _("Memo Pad"), NULL);
+   set_tooltip(show_tooltips,  button_datebook, _("Datebook/Go to Today") );
+   set_tooltip(show_tooltips,  button_address, _("Address Book"));
+   set_tooltip(show_tooltips,  button_todo, _("ToDo List"));
+   set_tooltip(show_tooltips,  button_memo, _("Memo Pad"));
 
    /* Set a callback for our pipe from the sync child process */
    gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
