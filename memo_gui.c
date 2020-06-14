@@ -657,9 +657,9 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
-    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
-    list = gtk_tree_selection_get_selected_rows(selection,model);
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
         GtkTreePath * path = temp_list->data;
@@ -822,7 +822,7 @@ static GtkWidget * cb_memo_init_export_treeView() {
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
-    return treeView;
+    return GTK_WIDGET(treeView);
 
 
 }

@@ -154,7 +154,7 @@ static gboolean cb_export_destroy(GtkWidget *widget)
       glob_cb_export_done(widget, filename);
    }
    //clist_clear(GTK_CLIST(export_clist));
-   gtk_list_store_clear(gtk_tree_view_get_model(GTK_TREE_VIEW(export_treeView)));
+   gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(export_treeView))));
    gtk_main_quit();
 
    return FALSE;

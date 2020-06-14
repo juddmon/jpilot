@@ -945,7 +945,7 @@ static GtkWidget * cb_todo_init_treeView() {
     gtk_tree_view_column_set_sizing(priorityColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
-    return treeView;
+    return GTK_WIDGET(treeView);
 }
 
 static void cb_todo_export_done(GtkWidget *widget, const char *filename) {

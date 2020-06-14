@@ -1086,9 +1086,9 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
-    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
-    list = gtk_tree_selection_get_selected_rows(selection,model);
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
     /* Loop over clist of records to export */
     for (record_num = 0, temp_list = list; temp_list; temp_list = temp_list->next, record_num++) {
@@ -1654,15 +1654,58 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 }
 
+static GtkWidget * cb_addr_export_init_treeView() {
+    GtkListStore *localListStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
+                                                      G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                      G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
+    GtkTreeView * localTreeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
+                                                                             "text",
+                                                                             ADDRESS_NAME_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_clickable(nameColumn, FALSE);
 
-static void cb_addr_update_clist(GtkWidget *treeView, int category) {
-    address_update_listStore(GTK_LIST_STORE(gtk_tree_view_get_model(treeView)), NULL, &export_contact_list, category, FALSE);
+    GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
+                                                                             ADDRESS_NOTE_COLUMN_ENUM,
+                                                                             "cell-background-gdk",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                             "cell-background-set",
+                                                                             ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             NULL);
+    gtk_tree_view_column_set_clickable(noteColumn, FALSE);
+
+    GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
+                                                                              ADDRESS_PHONE_COLUMN_ENUM,
+                                                                              "cell-background-gdk",
+                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
+                                                                              "cell-background-set",
+                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                              NULL);
+    gtk_tree_view_column_set_clickable(phoneColumn, FALSE);
+    gtk_tree_view_column_set_sizing(nameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_sizing(phoneColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), nameColumn, ADDRESS_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), noteColumn, ADDRESS_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), phoneColumn, ADDRESS_PHONE_COLUMN_ENUM);
+    return GTK_WIDGET(localTreeView);
+}
+static void cb_addr_update_listStore(GtkWidget *ptreeView, int category) {
+    address_update_listStore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(ptreeView))), NULL, &export_contact_list, category, FALSE);
 }
 
 
 static void cb_addr_export_done(GtkWidget *widget, const char *filename) {
     free_ContactList(&export_contact_list);
-
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget))));
     set_pref(PREF_ADDRESS_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
@@ -1695,8 +1738,8 @@ int address_export(GtkWidget *window) {
                PREF_ADDRESS_EXPORT_FILENAME,
                type_text,
                type_int,
-               NULL,
-               cb_addr_update_clist,
+               cb_addr_export_init_treeView,
+               cb_addr_update_listStore,
                cb_addr_export_done,
                cb_addr_export_ok
     );
