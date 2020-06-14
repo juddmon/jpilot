@@ -360,10 +360,6 @@ void set_tooltip(int show_tooltip,
                         const gchar *tip_text,
                         const gchar *tip_private);
 
-void clist_select_row(GtkCList *clist, 
-                      int       row,
-                      int       column);
-
 
 int check_copy_DBs_to_home(void);
 
