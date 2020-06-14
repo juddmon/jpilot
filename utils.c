@@ -2104,7 +2104,7 @@ int get_pixmaps(GtkWidget *widget,
                 GdkPixmap **out_pixmap,
                 GdkBitmap **out_mask) {
     /* Externally stored icon definitions */
-#include "icons/clist_mini_icons.h"
+#include "icons/list_mini_icons.h"
 
     static int init_done = 0;
     static GdkPixmap *pixmap_note;
@@ -2210,7 +2210,7 @@ int get_pixbufs(int which_pixbuf,
                 GdkPixbuf **out_pixbuf) {
 
     /* Externally stored icon definitions */
-#include "icons/clist_mini_icons.h"
+#include "icons/list_mini_icons.h"
 
     static int init_done = 0;
     static GdkPixbuf *pixbuf_note;
