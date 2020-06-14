@@ -1367,7 +1367,8 @@ display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, 
     //KEYRING_CHANGED_COLUMN_ENUM
     gtk_list_store_append(pListStore, iter);
     gtk_list_store_set(pListStore, iter,
-                       KEYRING_CHANGED_COLUMN_ENUM, nameTxt, -1);
+                       KEYRING_CHANGED_COLUMN_ENUM, nameTxt,
+                       KEYRING_DATA_COLUMN_ENUM, mkr,-1);
     return EXIT_SUCCESS;
 }
 
@@ -2025,7 +2026,6 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
 
     set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
 }
-
 static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     struct MyKeyRing *mkr;
@@ -2312,7 +2312,7 @@ static GtkWidget * cb_keyr_export_init_treeView() {
     GtkListStore * listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                    G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
-    treeView = gtk_tree_view_new_with_model(model);
+    GtkTreeView *keyr_treeView  = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
@@ -2343,13 +2343,13 @@ static GtkWidget * cb_keyr_export_init_treeView() {
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                 NULL);
     gtk_tree_view_column_set_sort_column_id(accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
     gtk_tree_view_column_set_sizing(changedColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(nameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(accountColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    return GTK_WIDGET(treeView);
+    return GTK_WIDGET(keyr_treeView);
 }
 
 /*

@@ -886,8 +886,8 @@ static void cb_todo_update_listStore(GtkWidget *treeView, int category) {
 static GtkWidget * cb_todo_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
                                    G_TYPE_STRING, G_TYPE_POINTER,GDK_TYPE_COLOR,G_TYPE_BOOLEAN,G_TYPE_STRING,G_TYPE_BOOLEAN);
-    GtkWidget *treeView  = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
-
+    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
+    GtkTreeView *todo_treeView = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
@@ -930,11 +930,11 @@ static GtkWidget * cb_todo_init_treeView() {
 
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("",checkRenderer,"active",TODO_CHECK_COLUMN_ENUM,"cell-background-gdk",TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",TODO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), noteColumn, TODO_NOTE_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), dateColumn, TODO_DATE_COLUMN_ENUM);
-    gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), taskColumn, TODO_TEXT_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), checkColumn, TODO_CHECK_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), noteColumn, TODO_NOTE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), dateColumn, TODO_DATE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW (todo_treeView), taskColumn, TODO_TEXT_COLUMN_ENUM);
     gtk_tree_view_column_set_clickable(checkColumn, gtk_false());
     gtk_tree_view_column_set_clickable(priorityColumn, gtk_false());
     gtk_tree_view_column_set_clickable(noteColumn, gtk_false());
@@ -945,7 +945,7 @@ static GtkWidget * cb_todo_init_treeView() {
     gtk_tree_view_column_set_sizing(priorityColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(noteColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(taskColumn, GTK_TREE_VIEW_COLUMN_FIXED);
-    return GTK_WIDGET(treeView);
+    return GTK_WIDGET(todo_treeView);
 }
 
 static void cb_todo_export_done(GtkWidget *widget, const char *filename) {
