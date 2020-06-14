@@ -739,9 +739,9 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(treeView);
-    GtkTreeModel * model = gtk_tree_view_get_model(treeView);
-    list = gtk_tree_selection_get_selected_rows(selection,model);
+    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection,&model);
 
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
