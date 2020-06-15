@@ -1836,7 +1836,6 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
     memset(&cont, 0, sizeof(cont));
     flag = GPOINTER_TO_INT(data);
     unique_id = 0;
-    mcont = NULL;
 
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
@@ -2801,23 +2800,23 @@ static int change_photo(char *filename) {
 
 // TODO: make a common filesel function
 static void cb_photo_browse_cancel(GtkWidget *widget, gpointer data) {
-    gtk_widget_destroy(data);
+    gtk_widget_destroy(widget);
 }
 
 static void cb_photo_browse_ok(GtkWidget *widget, gpointer data) {
     const char *sel;
     char **Pselection;
 
-    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
+    sel = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
     set_pref(PREF_CONTACTS_PHOTO_FILENAME, 0, sel, TRUE);
 
-    Pselection = gtk_object_get_data(GTK_OBJECT(GTK_FILE_SELECTION(data)), "selection");
+    Pselection = g_object_get_data(G_OBJECT(GTK_FILE_CHOOSER(widget)), "selection");
     if (Pselection) {
         jp_logf(JP_LOG_DEBUG, "setting selection to %s\n", sel);
         *Pselection = strdup(sel);
     }
 
-    gtk_widget_destroy(data);
+    gtk_widget_destroy(widget);
 }
 
 static gboolean cb_photo_browse_destroy(GtkWidget *widget) {
@@ -2826,7 +2825,7 @@ static gboolean cb_photo_browse_destroy(GtkWidget *widget) {
 }
 
 static int browse_photo(GtkWidget *main_window) {
-    GtkWidget *filesel;
+    GtkWidget *fileChooserWidget;
     const char *svalue;
     char dir[MAX_PREF_LEN + 2];
     int i;
@@ -2848,28 +2847,15 @@ static int browse_photo(GtkWidget *main_window) {
     if (chdir(dir)) {
         jp_logf(JP_LOG_WARN, _("chdir() failed\n"));
     }
-
-    filesel = gtk_file_selection_new(_("Add Photo"));
-
-    gtk_window_set_modal(GTK_WINDOW(filesel), TRUE);
-    gtk_window_set_transient_for(GTK_WINDOW(filesel), GTK_WINDOW(main_window));
-
-    gtk_signal_connect(GTK_OBJECT(filesel), "destroy",
-                       GTK_SIGNAL_FUNC(cb_photo_browse_destroy), filesel);
-
-    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->ok_button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_photo_browse_ok), filesel);
-    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filesel)->cancel_button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_photo_browse_cancel), filesel);
-
-    gtk_widget_show(filesel);
-
-    gtk_object_set_data(GTK_OBJECT(filesel), "selection", &selection);
-
     selection = NULL;
-
-    gtk_main();
-
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"),main_window,GTK_FILE_CHOOSER_ACTION_OPEN,GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,NULL);
+    g_object_set_data(G_OBJECT(GTK_FILE_CHOOSER(fileChooserWidget)), "selection", &selection);
+    if (gtk_dialog_run (GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT)
+    {
+        cb_photo_browse_ok(fileChooserWidget,NULL);
+    } else {
+        cb_photo_browse_cancel(fileChooserWidget,NULL);
+    }
     if (selection) {
         jp_logf(JP_LOG_DEBUG, "browse_photo(): selection = %s\n", selection);
         change_photo(selection);
