@@ -1836,7 +1836,6 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
     memset(&cont, 0, sizeof(cont));
     flag = GPOINTER_TO_INT(data);
     unique_id = 0;
-    mcont = NULL;
 
     /* Do masking like Palm OS 3.5 */
     if ((flag == COPY_FLAG) || (flag == MODIFY_FLAG)) {
