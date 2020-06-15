@@ -252,18 +252,21 @@ gboolean undeleteAddressRecord(GtkTreeModel *model,
                                gpointer data);
 
 void undeleteAddress(MyContact *mcont, gpointer data);
+
 static void cb_delete_address_or_contact(GtkWidget *widget, gpointer data);
 
 void deleteAddress(MyContact *mcont, gpointer data);
 
 void deleteAddressContact(MyContact *mcont, gpointer data);
-void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data);
+
+void addNewAddressRecordToDataStructure(MyContact *mcont, gpointer data);
 
 static int address_redraw(void);
 
 int printAddress(MyContact *mcont, gpointer data);
 
 static int address_find(void);
+
 static void get_address_attrib(unsigned char *attrib);
 
 
@@ -932,6 +935,7 @@ static const char *vCardMapType(int label) {
             return "x-unknown";
     }
 }
+
 //TODO: fix this when working on exports
 static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
@@ -1086,17 +1090,17 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
-    list = gtk_tree_selection_get_selected_rows(selection,&model);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection, &model);
 
     /* Loop over list of records to export */
     for (record_num = 0, temp_list = list; temp_list; temp_list = temp_list->next, record_num++) {
-        GtkTreePath * path = temp_list->data;
+        GtkTreePath *path = temp_list->data;
         GtkTreeIter iter;
-        if(gtk_tree_model_get_iter(model,&iter,path)) {
+        if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
-           if (!mcont) {
+            if (!mcont) {
                 continue;
                 jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
             }
@@ -1654,12 +1658,12 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 }
 
-static GtkWidget * cb_addr_export_init_treeView() {
+static GtkWidget *cb_addr_export_init_treeView() {
     GtkListStore *localListStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
                                                       G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
                                                       G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
-    GtkTreeView * localTreeView = gtk_tree_view_new_with_model(model);
+    GtkTreeView *localTreeView = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
@@ -1698,8 +1702,10 @@ static GtkWidget * cb_addr_export_init_treeView() {
     gtk_tree_view_insert_column(GTK_TREE_VIEW(localTreeView), phoneColumn, ADDRESS_PHONE_COLUMN_ENUM);
     return GTK_WIDGET(localTreeView);
 }
+
 static void cb_addr_update_listStore(GtkWidget *ptreeView, int category) {
-    address_update_listStore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(ptreeView))), NULL, &export_contact_list, category, FALSE);
+    address_update_listStore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(ptreeView))), NULL,
+                             &export_contact_list, category, FALSE);
 }
 
 
@@ -1807,21 +1813,22 @@ gboolean deleteAddressRecord(GtkTreeModel *model,
 
 
 }
+
 gboolean addNewAddressRecord(GtkTreeModel *model,
                              GtkTreePath *path,
                              GtkTreeIter *iter,
-                             gpointer data){
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == rowSelected){
+                             gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == rowSelected) {
         MyContact *mcont = NULL;
-        gtk_tree_model_get(model,iter,ADDRESS_DATA_COLUMN_ENUM,&mcont,-1);
-        addNewAddressRecordToDataStructure(mcont,data);
+        gtk_tree_model_get(model, iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
+        addNewAddressRecordToDataStructure(mcont, data);
         return TRUE;
     }
     return FALSE;
 }
 
-void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
+void addNewAddressRecordToDataStructure(MyContact *mcont, gpointer data) {
     int i;
     struct Contact cont;
     struct Address addr;
@@ -2284,11 +2291,11 @@ static void get_address_attrib(unsigned char *attrib) {
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
-    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+    if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewAddressRecord, data);
-    }else {
+    } else {
         //no records exist in category yet.
-        addNewAddressRecordToDataStructure(NULL,data);
+        addNewAddressRecordToDataStructure(NULL, data);
     }
 }
 
@@ -2511,7 +2518,7 @@ static void cb_address_quickfind(GtkWidget *widget,
         return;
     }
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, &entry_text);
-    
+
 }
 
 static void cb_edit_cats_contacts(GtkWidget *widget, gpointer data) {
@@ -2807,7 +2814,7 @@ static void cb_photo_browse_ok(GtkWidget *widget, gpointer data) {
     const char *sel;
     char **Pselection;
 
-    sel = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
     set_pref(PREF_CONTACTS_PHOTO_FILENAME, 0, sel, TRUE);
 
     Pselection = g_object_get_data(G_OBJECT(GTK_FILE_CHOOSER(widget)), "selection");
@@ -2848,13 +2855,14 @@ static int browse_photo(GtkWidget *main_window) {
         jp_logf(JP_LOG_WARN, _("chdir() failed\n"));
     }
     selection = NULL;
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"),main_window,GTK_FILE_CHOOSER_ACTION_OPEN,GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,NULL);
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                                    GTK_RESPONSE_ACCEPT, NULL);
     g_object_set_data(G_OBJECT(GTK_FILE_CHOOSER(fileChooserWidget)), "selection", &selection);
-    if (gtk_dialog_run (GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT)
-    {
-        cb_photo_browse_ok(fileChooserWidget,NULL);
+    if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
+        cb_photo_browse_ok(fileChooserWidget, NULL);
     } else {
-        cb_photo_browse_cancel(fileChooserWidget,NULL);
+        cb_photo_browse_cancel(fileChooserWidget, NULL);
     }
     if (selection) {
         jp_logf(JP_LOG_DEBUG, "browse_photo(): selection = %s\n", selection);
@@ -3079,7 +3087,7 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
     int *i = gtk_tree_path_get_indices(path);
     char *list_text;
     //int i, r;
-    gtk_tree_model_get(model,&iter,ADDRESS_NAME_COLUMN_ENUM,&list_text);
+    gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &list_text);
     if (!strncasecmp(list_text, entry_text, strlen(entry_text))) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
@@ -3087,7 +3095,7 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
         rowSelected = i[0];
     }
-   
+
 }
 
 gboolean
@@ -4207,7 +4215,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
     /* Put pretty pictures in the list column headings */
-    get_pixbufs(PIXMAP_NOTE,&pixmap);
+    get_pixbufs(PIXMAP_NOTE, &pixmap);
     pixmapwid = gtk_image_new_from_pixbuf(pixmap);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
@@ -4288,7 +4296,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-                                                                                                                            gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
+       gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
                        "label_high");
 #endif
 
@@ -4299,7 +4307,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-                                                                                                                            gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
+                  gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
                        "label_high");
 #endif
 

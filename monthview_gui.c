@@ -78,7 +78,7 @@ void cb_monthview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_window_get_size(monthview_window->window, &w, &h);
+   gdk_window_get_size(gtk_widget_get_window(monthview_window), &w, &h);
    set_pref(PREF_MONTHVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_MONTHVIEW_HEIGHT, h, NULL, FALSE);
 

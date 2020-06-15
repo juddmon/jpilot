@@ -312,7 +312,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_tree_view_column_set_clickable(textColumn, gtk_false());
     gtk_tree_view_column_set_sizing(textColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(restoreTreeView)),
-                                GTK_SELECTION_EXTENDED);
+                                GTK_SELECTION_MULTIPLE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(restoreTreeView),textColumn,RESTORE_DISPLAY_COLUMN_ENUM);
     gtk_tree_view_column_set_sort_column_id(textColumn, RESTORE_DISPLAY_COLUMN_ENUM);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(restoreTreeView), gtk_false());

@@ -290,8 +290,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    glob_import_record_ask_button_pressed = DIALOG_SAID_IMPORT_QUIT;
 
-   gdk_window_get_size(main_window->window, &pw, &ph);
-   gdk_window_get_root_origin(main_window->window, &px, &py);
+   gdk_window_get_size(gtk_widget_get_window(main_window), &pw, &ph);
+   gdk_window_get_root_origin(gtk_widget_get_window(main_window), &px, &py);
    pw = gtk_paned_get_position(GTK_PANED(pane));
    px+=40;
 
@@ -418,8 +418,8 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
    
    line_selected = -1;
 
-   gdk_window_get_size(main_window->window, &pw, &ph);
-   gdk_window_get_root_origin(main_window->window, &px, &py);
+   gdk_window_get_size(gtk_widget_get_window(main_window), &pw, &ph);
+   gdk_window_get_root_origin(gtk_widget_get_window(main_window), &px, &py);
    pw = gtk_paned_get_position(GTK_PANED(main_pane));
    px+=40;
 
@@ -499,7 +499,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
    /* This callback is for a file guess algorithm and to pre-push
     * the type buttons */
-   gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->file_list),
+   gtk_signal_connect(GTK_OBJECT( GTK_FILE_SELECTION(filew)->file_list),
                       "cursor_changed", GTK_SIGNAL_FUNC(cb_import_select_row), NULL);
 
    gtk_widget_show_all(vbox);

@@ -841,8 +841,8 @@ int memo_export(GtkWidget *window) {
                          NULL};
     int type_int[] = {EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS, EXPORT_TYPE_KEEPASSX};
 
-    gdk_window_get_size(window->window, &w, &h);
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));
     x += 40;
@@ -1849,7 +1849,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
+    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
                         "label_high");
 #endif
 
@@ -1860,7 +1860,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
+    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
                         "label_high");
 #endif
 

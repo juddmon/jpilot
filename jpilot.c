@@ -324,8 +324,8 @@ static void cb_restore(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "cb_restore()\n");
 
-    gdk_window_get_size(window->window, &w, &h);
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = w / 2;
     x += 40;
@@ -707,7 +707,7 @@ void output_to_pane(const char *str) {
         ivalue = size_requisition.height + 1;
         set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
     }
-    gdk_window_get_size(window->window, &w, &h);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
     new_y = h - ivalue;
     gtk_paned_set_position(GTK_PANED(output_pane), new_y);
 
@@ -942,7 +942,7 @@ static void cb_about(GtkWidget *widget, gpointer data) {
     char options[1024];
     int w, h;
 
-    gdk_window_get_size(window->window, &w, &h);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
 
     w = w / 2;
     h = 1;
@@ -1033,8 +1033,8 @@ static void cb_web(GtkWidget *widget, gpointer data)
 static void install_gui_and_size(GtkWidget *main_window) {
     int w, h, x, y;
 
-    gdk_window_get_size(window->window, &w, &h);
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = w / 2;
     x += 40;
@@ -1369,10 +1369,10 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
 #endif
 
     /* gdk_window_get_deskrelative_origin(window->window, &x, &y); */
-    gdk_window_get_origin(window->window, &x, &y);
+    gdk_window_get_origin(gtk_widget_get_window(window), &x, &y);
     jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
 
-    gdk_window_get_size(window->window, &pw, &ph);
+    gdk_window_get_size(gtk_widget_get_window(window), &pw, &ph);
     set_pref(PREF_WINDOW_WIDTH, pw, NULL, FALSE);
     set_pref(PREF_WINDOW_HEIGHT, ph, NULL, FALSE);
     set_pref(PREF_LAST_APP, glob_app, NULL, TRUE);
@@ -1420,7 +1420,7 @@ static void cb_output(GtkWidget *widget, gpointer data) {
 
     if ((flags == OUTPUT_MINIMIZE) || (flags == OUTPUT_RESIZE)) {
         jp_logf(JP_LOG_DEBUG, "paned pos = %d\n", gtk_paned_get_position(GTK_PANED(output_pane)));
-        gdk_window_get_size(window->window, &w, &h);
+        gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
         output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
         set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
         if (flags == OUTPUT_MINIMIZE) {
@@ -1979,7 +1979,7 @@ int main(int argc, char *argv[]) {
     //pixbuf = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
     //this method no longer exists in gtk3.  X11 handles this anyway.
     // gdk_window_set_icon(window->window, NULL, pixbuf, mask);
-    gdk_window_set_icon_name(window->window, PN);
+    gdk_window_set_icon_name(gtk_widget_get_window(window), PN);
 
     /* Create "Datebook" pixbuf */
     pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) datebook_xpm);
@@ -2081,7 +2081,7 @@ int main(int argc, char *argv[]) {
 
     /* Set the pane size */
     width = height = 0;
-    gdk_window_get_size(window->window, &width, &height);
+    gdk_window_get_size(gtk_widget_get_window(window), &width, &height);
     gtk_paned_set_position(GTK_PANED(output_pane), height);
 
     alarms_init(skip_past_alarms, skip_all_alarms);

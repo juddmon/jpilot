@@ -283,7 +283,7 @@ int export_gui(GtkWidget *main_window,
     }
     GtkWidget *temp = export_treeView;
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)),
-                                GTK_SELECTION_EXTENDED);
+                                GTK_SELECTION_MULTIPLE);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(export_treeView), gtk_false());
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(export_treeView));

@@ -1233,7 +1233,7 @@ static void appt_export_ok(int type, const char *filename) {
 int datebook_export(GtkWidget *window) {
     int x, y;
 
-    gdk_window_get_root_origin(window->window, &x, &y);
+    gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     x += 40;
 
@@ -1472,7 +1472,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "cb_datebk_cats\n");
     if (GTK_IS_WINDOW(window_datebk_cats)) {
-        gdk_window_raise(window_datebk_cats->window);
+        gdk_window_raise(gtk_widget_get_window(window_datebk_cats));
         jp_logf(JP_LOG_DEBUG, "datebk_cats window is already up\n");
         return;
     }
@@ -1921,7 +1921,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags) {
 
     get_pref(PREF_SHORTDATE, NULL, &pref_date);
     strftime(str, sizeof(str), pref_date, begin);
-    gtk_label_set_text(GTK_LABEL(GTK_BIN(begin_date_button)->child), str);
+    gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(begin_date_button))), str);
 
     if (flags & UPDATE_DATE_ENTRIES) {
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_no_time))) {
@@ -2405,7 +2405,7 @@ static void update_endon_button(GtkWidget *button, struct tm *t) {
     get_pref(PREF_SHORTDATE, NULL, &short_date);
     strftime(str, sizeof(str), short_date, t);
 
-    gtk_label_set_text(GTK_LABEL(GTK_BIN(button)->child), str);
+    gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(button))), str);
 }
 
 /* Do masking like Palm OS 3.5 */
@@ -2696,7 +2696,8 @@ static int datebook_update_listStore(void) {
     g_snprintf(str, sizeof(str), _("%d of %d records"), entries_shown, num_entries);
     GtkTreeViewColumn * column = gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),DATE_APPT_COLUMN_ENUM);
     //column->
-    set_tooltip((int) show_tooltips, column->button, str);
+    //column ->
+    set_tooltip((int) show_tooltips, gtk_tree_view_column_get_widget(column), str);
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
@@ -2769,7 +2770,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
     GtkTextBuffer *text_buffer;
     GtkTextIter iter;
 
-    if (event->keyval == GDK_Return) {
+    if (event->keyval == GDK_KEY_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         /* Position cursor at start of text */
@@ -2785,14 +2786,14 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
 static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer data) {
-    if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+    if ((event->keyval == GDK_KEY_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
     if (data != NULL &&
-        (event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+        (event->keyval == GDK_KEY_e) && (event->state & GDK_CONTROL_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
         /* Get current text and place in temporary file */
@@ -3428,7 +3429,7 @@ static void cb_check_button_endon(GtkWidget *widget, gpointer data) {
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         update_endon_button(Pbutton, Pt);
     } else {
-        gtk_label_set_text(GTK_LABEL(GTK_BIN(Pbutton)->child), _("No Date"));
+        gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(Pbutton))), _("No Date"));
     }
 }
 static gboolean handleDateRowSelection(GtkTreeSelection *selection,
@@ -4292,19 +4293,19 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
 
     gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
-    if ((event->keyval >= GDK_0) && (event->keyval <= GDK_9)) {
-        digit = (event->keyval) - GDK_0;
-    } else if ((event->keyval >= GDK_KP_0) && (event->keyval <= GDK_KP_9)) {
-        digit = (event->keyval) - GDK_KP_0;
-    } else if ((event->keyval == GDK_P) || (event->keyval == GDK_p)) {
+    if ((event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9)) {
+        digit = (event->keyval) - GDK_KEY_0;
+    } else if ((event->keyval >= GDK_KEY_KP_0) && (event->keyval <= GDK_KEY_KP_9)) {
+        digit = (event->keyval) - GDK_KEY_KP_0;
+    } else if ((event->keyval == GDK_KEY_P) || (event->keyval == GDK_KEY_p)) {
         digit = PRESSED_P;
-    } else if ((event->keyval == GDK_A) || (event->keyval == GDK_a)) {
+    } else if ((event->keyval == GDK_KEY_A) || (event->keyval == GDK_KEY_a)) {
         digit = PRESSED_A;
-    } else if (event->keyval == GDK_Tab) {
+    } else if (event->keyval == GDK_KEY_Tab) {
         digit = PRESSED_TAB;
-    } else if (event->keyval == GDK_ISO_Left_Tab) {
+    } else if (event->keyval == GDK_KEY_ISO_Left_Tab) {
         digit = PRESSED_SHIFT_TAB;
-    } else if ((event->keyval == GDK_KP_Subtract) || (event->keyval == GDK_minus)) {
+    } else if ((event->keyval == GDK_KEY_KP_Subtract) || (event->keyval == GDK_KEY_minus)) {
         digit = PRESSED_MINUS;
     }
 
@@ -4349,7 +4350,7 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
 static gboolean cb_key_pressed_tab(GtkWidget *widget,
                                    GdkEventKey *event,
                                    gpointer next_widget) {
-    if (event->keyval == GDK_Tab) {
+    if (event->keyval == GDK_KEY_Tab) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         return TRUE;
@@ -4364,7 +4365,7 @@ static gboolean cb_key_pressed_tab_entry(GtkWidget *widget,
     GtkTextIter cursor_pos_iter;
     GtkTextBuffer *text_buffer;
 
-    if (event->keyval == GDK_Tab) {
+    if (event->keyval == GDK_KEY_Tab) {
         text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
         gtk_text_buffer_get_iter_at_mark(text_buffer, &cursor_pos_iter, gtk_text_buffer_get_insert(text_buffer));
         if (gtk_text_iter_is_end(&cursor_pos_iter)) {
@@ -4379,7 +4380,7 @@ static gboolean cb_key_pressed_tab_entry(GtkWidget *widget,
 static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
                                          GdkEventKey *event,
                                          gpointer next_widget) {
-    if (event->keyval == GDK_ISO_Left_Tab) {
+    if (event->keyval == GDK_KEY_ISO_Left_Tab) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         return TRUE;
@@ -4394,12 +4395,12 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
 
     up = down = 0;
     switch (event->keyval) {
-        case GDK_Page_Up:
-        case GDK_KP_Page_Up:
+        case GDK_KEY_Page_Up:
+        case GDK_KEY_KP_Page_Up:
             up = 1;
             break;
-        case GDK_Page_Down:
-        case GDK_KP_Page_Down:
+        case GDK_KEY_Page_Down:
+        case GDK_KEY_KP_Page_Down:
             down = 1;
             break;
         default:
@@ -4969,7 +4970,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_widget_show(button);
 
     /* Accelerator key for starting Weekview GUI */
-    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_w,
+    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_KEY_w,
                                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     set_tooltip((int) show_tooltips, button, _("View appointments by week   Ctrl+W"));
 
@@ -4981,7 +4982,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_widget_show(button);
 
     /* Accelerator key for starting Monthview GUI */
-    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_m,
+    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, GDK_KEY_m,
                                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     set_tooltip((int) show_tooltips, button, _("View appointments by month   Ctrl+M"));
 
@@ -5062,12 +5063,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Add record modification buttons */
     /* Cancel button */
-    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
+    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
     gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_cancel), NULL);
 
     /* Delete button */
-    CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
+    CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_KEY_d, GDK_CONTROL_MASK,
                   "Ctrl+D")
     gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_delete_appt),
@@ -5080,7 +5081,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GINT_TO_POINTER(UNDELETE_FLAG));
 
     /* Copy button */
-    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
+    CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_KEY_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
     gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -5099,7 +5100,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-                                                                                                                            gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(add_record_button)->child)),
+             gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
                        "label_high");
 #endif
 
@@ -5110,7 +5111,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-                                                                                                                            gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(GTK_BIN(apply_record_button)->child)),
+                     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
                        "label_high");
 #endif
 

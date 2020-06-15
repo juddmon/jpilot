@@ -165,7 +165,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    jp_logf(JP_LOG_DEBUG, "print_gui\n");
    if (GTK_IS_WINDOW(window)) {
       jp_logf(JP_LOG_DEBUG, "print_gui window is already up\n");
-      gdk_window_raise(window->window);
+      gdk_window_raise(gtk_widget_get_window(window));
       return EXIT_SUCCESS;
    }
    print_dialog=0;
