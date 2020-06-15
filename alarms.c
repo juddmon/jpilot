@@ -137,7 +137,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
       remind = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(Pdata->remind_entry));
       jp_logf(JP_LOG_DEBUG, "remind = [%d]\n", remind);
       set_pref(PREF_REMIND_IN, remind, NULL, TRUE);
-      if (GTK_TOGGLE_BUTTON(Pdata->radio1)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Pdata->radio1))) {
          set_pref(PREF_REMIND_UNITS, 0, NULL, TRUE);
          remind *= MIN_IN_SECS;
       } else {

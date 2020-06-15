@@ -1871,7 +1871,7 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
         for (i = 0; i < schema_size; i++) {
             switch (schema[i].type) {
                 case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
-                    if (GTK_TOGGLE_BUTTON(radio_button[phone_i])->active) {
+                    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button[phone_i]))) {
                         cont.showPhone = phone_i;
                     }
                     cont.phoneLabel[phone_i] = address_phone_label_selected[phone_i];
@@ -1886,11 +1886,11 @@ void addNewAddressRecordToDataStructure(MyContact * mcont, gpointer data){
                     address_i++;
                     break;
                 case ADDRESS_GUI_BIRTHDAY:
-                    if (GTK_TOGGLE_BUTTON(birthday_checkbox)->active) {
+                    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(birthday_checkbox))) {
                         cont.birthdayFlag = 1;
                         memcpy(&cont.birthday, &birthday, sizeof(struct tm));
                     }
-                    if (GTK_TOGGLE_BUTTON(reminder_checkbox)->active) {
+                    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(reminder_checkbox))) {
                         cont.reminder = 1;
                         cont.advance = atoi(gtk_entry_get_text(GTK_ENTRY(reminder_entry)));
                         cont.advanceUnits = 1; /* Days */
@@ -2200,7 +2200,7 @@ static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
 static void cb_phone_menu(GtkWidget *item, unsigned int value) {
     if (!item)
         return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
         jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xFF00) >> 8);
         jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
         address_phone_label_selected[(value & 0xFF00) >> 8] = value & 0xFF;
@@ -2210,7 +2210,7 @@ static void cb_phone_menu(GtkWidget *item, unsigned int value) {
 static void cb_IM_type_menu(GtkWidget *item, unsigned int value) {
     if (!item)
         return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
         jp_logf(JP_LOG_DEBUG, "IM_type_menu = %d\n", (value & 0xFF00) >> 8);
         jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
         IM_type_selected[(value & 0xFF00) >> 8] = value & 0xFF;
@@ -2227,7 +2227,7 @@ static void cb_address_type_menu(GtkWidget *item, unsigned int value) {
 
     if (!item)
         return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
         menu = (value & 0xFF00) >> 8;
         selection = value & 0xFF;
         jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
@@ -2270,14 +2270,14 @@ static void get_address_attrib(unsigned char *attrib) {
     *attrib = 0;
     for (i = 0; i < NUM_ADDRESS_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(address_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(address_cat_menu_item2[i])->active) {
+            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(address_cat_menu_item2[i]))) {
                 *attrib = sort_l[i].cat_num;
                 break;
             }
         }
     }
     /* Get private flag */
-    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
     }
 }
@@ -2605,7 +2605,7 @@ static void cb_category(GtkWidget *item, int selection) {
     int b;
 
     if (!item) return;
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
         if (address_category == selection) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -2687,7 +2687,7 @@ static void cb_check_button_birthday(GtkWidget *widget, gpointer data) {
     time_t ltime;
     struct tm *now;
 
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         gtk_widget_show(birthday_box);
         set_button_label_to_date(birthday_button, &birthday);
     } else {
@@ -2700,7 +2700,7 @@ static void cb_check_button_birthday(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_check_button_reminder(GtkWidget *widget, gpointer data) {
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         gtk_widget_show(reminder_box);
     } else {
         gtk_widget_hide(reminder_box);

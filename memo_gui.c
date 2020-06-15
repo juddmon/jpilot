@@ -1090,7 +1090,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 static void cb_category(GtkWidget *item, int selection) {
     int b;
 
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
         if (memo_category == selection) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -1182,13 +1182,13 @@ static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
     /* Get the category that is set from the menu */
     for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i])->active) {
+            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i]))) {
                 *attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
         }
     }
-    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
     }
     return EXIT_SUCCESS;

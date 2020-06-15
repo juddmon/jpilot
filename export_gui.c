@@ -183,7 +183,7 @@ static void cb_export_type(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_export_category(GtkWidget *item, int selection) {
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
         export_category = selection;
         jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
         if (glob_cb_export_menu) {

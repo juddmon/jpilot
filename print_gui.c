@@ -58,15 +58,15 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    /* Get radio button prefs */
    if (radio_button_one) {
-      if (GTK_TOGGLE_BUTTON(radio_button_one)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_one))) {
          jp_logf(JP_LOG_DEBUG, "print one");
          set_pref(PREF_PRINT_THIS_MANY, 1, NULL, FALSE);
       }
-      if (GTK_TOGGLE_BUTTON(radio_button_shown)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_shown))) {
          jp_logf(JP_LOG_DEBUG, "print shown");
          set_pref(PREF_PRINT_THIS_MANY, 2, NULL, FALSE);
       }
-      if (GTK_TOGGLE_BUTTON(radio_button_all)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_all))) {
          jp_logf(JP_LOG_DEBUG, "print all");
          set_pref(PREF_PRINT_THIS_MANY, 3, NULL, FALSE);
       }
@@ -74,15 +74,15 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    /* Get radio button prefs */
    if (radio_button_daily) {
-      if (GTK_TOGGLE_BUTTON(radio_button_daily)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_daily))) {
          jp_logf(JP_LOG_DEBUG, "print daily");
          print_day_week_month=1;
       }
-      if (GTK_TOGGLE_BUTTON(radio_button_weekly)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_weekly))) {
          jp_logf(JP_LOG_DEBUG, "print weekly");
          print_day_week_month=2;
       }
-      if (GTK_TOGGLE_BUTTON(radio_button_monthly)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_monthly))) {
          jp_logf(JP_LOG_DEBUG, "print monthly");
          print_day_week_month=3;
       }
@@ -90,7 +90,7 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    /* Get one record per page pref */
    if (one_record_checkbutton) {
-      if (GTK_TOGGLE_BUTTON(one_record_checkbutton)->active) {
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(one_record_checkbutton))) {
          jp_logf(JP_LOG_DEBUG, "one record per page");
          set_pref(PREF_PRINT_ONE_PER_PAGE, 1, NULL, FALSE);
       } else {

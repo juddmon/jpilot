@@ -99,7 +99,7 @@ static void cb_serial_port_menu(GtkWidget *widget,
 {
    if (!widget)
       return;
-   if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
+   if (!(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))) {
       return;
    }
 
@@ -165,7 +165,7 @@ static void cb_pref_menu(GtkWidget *widget, gpointer data)
 
    if (!widget)
       return;
-   if (!(GTK_CHECK_MENU_ITEM(widget))->active) {
+   if (!(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))) {
       return;
    }
 
@@ -273,7 +273,7 @@ static void cb_checkbox_todo_days_till_due(GtkWidget *widget, gpointer data)
 
 static void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data)
 {
-   set_pref(PREF_SHOW_TOOLTIPS, GTK_TOGGLE_BUTTON(widget)->active, NULL, TRUE);
+   set_pref(PREF_SHOW_TOOLTIPS, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)), NULL, TRUE);
 }
 
 static void cb_text_entry(GtkWidget *widget, gpointer data)
@@ -307,7 +307,7 @@ static void cb_checkbox_set_pref(GtkWidget *widget, gpointer data)
    unsigned long pref, value;
 
    pref = GPOINTER_TO_INT(data);
-   value = GTK_TOGGLE_BUTTON(widget)->active;
+   value = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
    set_pref(pref, value, NULL, TRUE);
 }
 
@@ -343,7 +343,7 @@ static void cb_sync_plugin(GtkWidget *widget, gpointer data)
       Pplugin = (struct plugin_s *)temp_list->data;
       if (Pplugin) {
          if (number == Pplugin->number) {
-            if (GTK_TOGGLE_BUTTON(widget)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
                Pplugin->sync_on = 1;
             } else {
                Pplugin->sync_on = 0;

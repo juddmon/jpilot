@@ -119,7 +119,7 @@ static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeI
     calendar_sort(&ce_list, datebook_search_sort_compare);
 
     count = 0;
-    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+    case_sense = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(case_sense_checkbox));
 
     for (temp_cel = ce_list; temp_cel; temp_cel = temp_cel->next) {
         found = 0;
@@ -235,7 +235,7 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
     }
 
     count = 0;
-    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+    case_sense = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(case_sense_checkbox));
 
     for (temp_cl = cont_list; temp_cl; temp_cl = temp_cl->next) {
         for (i = 0; i < NUM_CONTACT_ENTRIES; i++) {
@@ -297,7 +297,7 @@ static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter 
     }
 
     count = 0;
-    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+    case_sense = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(case_sense_checkbox));
 
     for (temp_todo = todo_list; temp_todo; temp_todo = temp_todo->next) {
         found = 0;
@@ -372,7 +372,7 @@ static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter 
     }
 
     count = 0;
-    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+    case_sense = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(case_sense_checkbox));
 
     for (temp_memo = memo_list; temp_memo; temp_memo = temp_memo->next) {
         if (jp_strstr(temp_memo->mmemo.memo.text, needle, case_sense)) {
@@ -429,7 +429,7 @@ static int search_plugins(const char *needle, const GtkListStore *listStore, Gtk
     plugin_list = NULL;
     plugin_list = get_plugin_list();
 
-    case_sense = GTK_TOGGLE_BUTTON(case_sense_checkbox)->active;
+    case_sense = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(case_sense_checkbox));
 
     count = 0;
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {

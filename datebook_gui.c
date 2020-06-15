@@ -1411,7 +1411,7 @@ static void cb_toggle(GtkWidget *widget, int category) {
         ignore_count--;
         return;
     }
-    if (GTK_TOGGLE_BUTTON(toggle_button[category])->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button[category]))) {
         on = 1;
     } else {
         on = 0;
@@ -1441,7 +1441,7 @@ static void cb_datebk_category(GtkWidget *widget, gpointer data) {
     count = 0;
     for (i = 0; i < 16; i++) {
         if (GTK_IS_WIDGET(toggle_button[i])) {
-            if ((GTK_TOGGLE_BUTTON(toggle_button[i])->active) != (flag)) {
+            if ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button[i]))) != (flag)) {
                 count++;
             }
         }
@@ -1924,7 +1924,7 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags) {
     gtk_label_set_text(GTK_LABEL(GTK_BIN(begin_date_button)->child), str);
 
     if (flags & UPDATE_DATE_ENTRIES) {
-        if (GTK_TOGGLE_BUTTON(radio_button_no_time)->active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_no_time))) {
             gtk_entry_set_text(GTK_ENTRY(begin_time_entry), "");
             gtk_entry_set_text(GTK_ENTRY(end_time_entry), "");
         } else {
@@ -2089,7 +2089,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
         /* Get the category that is set from the menu */
         for (i = 0; i < NUM_DATEBOOK_CAT_ITEMS; i++) {
             if (GTK_IS_WIDGET(dbook_cat_menu_item2[i])) {
-                if (GTK_CHECK_MENU_ITEM(dbook_cat_menu_item2[i])->active) {
+                if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(dbook_cat_menu_item2[i]))) {
                     *attrib = (unsigned char) sort_l[i].cat_num;
                     break;
                 }
@@ -2128,7 +2128,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
     cale->end.tm_min = end_date.tm_min;
     cale->end.tm_sec = 0;
 
-    if (GTK_TOGGLE_BUTTON(radio_button_no_time)->active) {
+    if ((GTK_TOGGLE_BUTTON(radio_button_no_time))) {
         cale->event = 1;
         /* This event doesn't have a time */
         cale->begin.tm_hour = 0;
@@ -2153,20 +2153,20 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
         }
     }
 
-    if (GTK_TOGGLE_BUTTON(check_button_alarm)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_alarm))) {
         cale->alarm = 1;
         text1 = gtk_entry_get_text(GTK_ENTRY(units_entry));
         cale->advance = atoi(text1);
         jp_logf(JP_LOG_DEBUG, "alarm advance %d", cale->advance);
-        if (GTK_TOGGLE_BUTTON(radio_button_alarm_min)->active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min))) {
             cale->advanceUnits = advMinutes;
             jp_logf(JP_LOG_DEBUG, "min\n");
         }
-        if (GTK_TOGGLE_BUTTON(radio_button_alarm_hour)->active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_alarm_hour))) {
             cale->advanceUnits = advHours;
             jp_logf(JP_LOG_DEBUG, "hour\n");
         }
-        if (GTK_TOGGLE_BUTTON(radio_button_alarm_day)->active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_alarm_day))) {
             cale->advanceUnits = advDays;
             jp_logf(JP_LOG_DEBUG, "day\n");
         }
@@ -2191,7 +2191,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             text1 = gtk_entry_get_text(GTK_ENTRY(repeat_day_entry));
             cale->repeatFrequency = atoi(text1);
             jp_logf(JP_LOG_DEBUG, "every %d day(s)\n", cale->repeatFrequency);
-            if (GTK_TOGGLE_BUTTON(check_button_day_endon)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_day_endon))) {
                 cale->repeatForever = 0;
                 jp_logf(JP_LOG_DEBUG, "end on day\n");
                 cale->repeatEnd.tm_mon = glob_endon_day_tm.tm_mon;
@@ -2208,7 +2208,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             text1 = gtk_entry_get_text(GTK_ENTRY(repeat_week_entry));
             cale->repeatFrequency = atoi(text1);
             jp_logf(JP_LOG_DEBUG, "every %d week(s)\n", cale->repeatFrequency);
-            if (GTK_TOGGLE_BUTTON(check_button_week_endon)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_week_endon))) {
                 cale->repeatForever = 0;
                 jp_logf(JP_LOG_DEBUG, "end on week\n");
                 cale->repeatEnd.tm_mon = glob_endon_week_tm.tm_mon;
@@ -2233,7 +2233,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             jp_logf(JP_LOG_DEBUG, "Repeat Days:");
             cale->repeatWeekstart = 0;  /* We are going to always use 0 */
             for (i = 0; i < 7; i++) {
-                cale->repeatDays[i] = (GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])->active);
+                cale->repeatDays[i] = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i])));
                 total_repeat_days += cale->repeatDays[i];
             }
             jp_logf(JP_LOG_DEBUG, "\n");
@@ -2242,7 +2242,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             text1 = gtk_entry_get_text(GTK_ENTRY(repeat_mon_entry));
             cale->repeatFrequency = atoi(text1);
             jp_logf(JP_LOG_DEBUG, "every %d month(s)\n", cale->repeatFrequency);
-            if (GTK_TOGGLE_BUTTON(check_button_mon_endon)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_mon_endon))) {
                 cale->repeatForever = 0;
                 jp_logf(JP_LOG_DEBUG, "end on month\n");
                 cale->repeatEnd.tm_mon = glob_endon_mon_tm.tm_mon;
@@ -2264,14 +2264,14 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             } else {
                 cale->repeatForever = 1;
             }
-            if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_byday)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_byday))) {
                 cale->repeatType = calendarRepeatMonthlyByDay;
                 cale->repeatDay = (enum calendarDayOfMonthType) get_dom_type(cale->begin.tm_mon, cale->begin.tm_mday,
                                                                              cale->begin.tm_year,
                                                                              cale->begin.tm_wday);
                 jp_logf(JP_LOG_DEBUG, "***by day\n");
             }
-            if (GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_button_repeat_mon_bydate))) {
                 cale->repeatType = calendarRepeatMonthlyByDate;
                 jp_logf(JP_LOG_DEBUG, "***by date\n");
             }
@@ -2281,7 +2281,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             text1 = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
             cale->repeatFrequency = atoi(text1);
             jp_logf(JP_LOG_DEBUG, "every %s year(s)\n", cale->repeatFrequency);
-            if (GTK_TOGGLE_BUTTON(check_button_year_endon)->active) {
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_year_endon))) {
                 cale->repeatForever = 0;
                 jp_logf(JP_LOG_DEBUG, "end on year\n");
                 cale->repeatEnd.tm_mon = glob_endon_year_tm.tm_mon;
@@ -2391,7 +2391,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
         return EXIT_FAILURE;
     }
 
-    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
     }
 
@@ -3371,7 +3371,7 @@ static void cb_undelete_appt(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_check_button_alarm(GtkWidget *widget, gpointer data) {
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         gtk_widget_show(hbox_alarm2);
     } else {
         gtk_widget_hide(hbox_alarm2);
@@ -3425,7 +3425,7 @@ static void cb_check_button_endon(GtkWidget *widget, gpointer data) {
         default:
             return;
     }
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         update_endon_button(Pbutton, Pt);
     } else {
         gtk_label_set_text(GTK_LABEL(GTK_BIN(Pbutton)->child), _("No Date"));
@@ -3833,7 +3833,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 static void cb_category(GtkWidget *item, int selection) {
     int b;
 
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
         if (dbook_category == selection) { return; }
 
 #ifdef JPILOT_DEBUG
@@ -4468,7 +4468,7 @@ int datebook_gui_cleanup(void) {
     }
     set_pref(PREF_DATEBOOK_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_DATEBOOK_NOTE_PANE, gtk_paned_get_position(GTK_PANED(note_pane)), NULL, TRUE);
-    if (GTK_TOGGLE_BUTTON(show_todos_button)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(show_todos_button))) {
         set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
     }
     todo_liststore_clear(GTK_LIST_STORE(todo_listStore));
@@ -4754,12 +4754,12 @@ static GtkWidget *create_time_menu(int flags) {
 static void cb_todos_show(GtkWidget *widget, gpointer data) {
     long ivalue;
 
-    set_pref(PREF_DATEBOOK_TODO_SHOW, GTK_TOGGLE_BUTTON(show_todos_button)->active, NULL, TRUE);
+    set_pref(PREF_DATEBOOK_TODO_SHOW, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(show_todos_button)), NULL, TRUE);
 
-    if (!(GTK_TOGGLE_BUTTON(show_todos_button)->active)) {
+    if (!gtk_toggle_button_get_active((GTK_TOGGLE_BUTTON(show_todos_button)))) {
         set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
     }
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         get_pref(PREF_DATEBOOK_TODO_PANE, &ivalue, NULL);
         gtk_paned_set_position(GTK_PANED(todo_pane), (gint) ivalue);
         gtk_widget_show_all(GTK_WIDGET(todo_vbox));

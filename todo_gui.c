@@ -1224,7 +1224,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 static void cb_category(GtkWidget *item, int selection) {
     int b;
 
-    if ((GTK_CHECK_MENU_ITEM(item))->active) {
+    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
         if (todo_category == selection) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
@@ -1270,7 +1270,7 @@ static void cb_check_button_no_due_date(GtkWidget *widget, gpointer data) {
     struct tm *now;
     time_t ltime;
 
-    if (GTK_TOGGLE_BUTTON(widget)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
         update_due_button(due_date_button, NULL);
     } else {
         time(&ltime);
@@ -1352,7 +1352,7 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
     GtkTextIter start_iter;
     GtkTextIter end_iter;
 
-    new_todo->indefinite = (GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox)->active);
+    new_todo->indefinite = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(todo_no_due_date_checkbox)));
     if (!(new_todo->indefinite)) {
         new_todo->due.tm_mon = due_date.tm_mon;
         new_todo->due.tm_mday = due_date.tm_mday;
@@ -1364,12 +1364,12 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
     }
     new_todo->priority = 1;
     for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
-        if (GTK_TOGGLE_BUTTON(radio_button_todo[i])->active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_todo[i]))) {
             new_todo->priority = i + 1;
             break;
         }
     }
-    new_todo->complete = (GTK_TOGGLE_BUTTON(todo_completed_checkbox)->active);
+    new_todo->complete = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(todo_completed_checkbox)));
     /* Can there be an entry with no description? */
     /* Yes, but the Palm Pilot gui doesn't allow it to be entered on the Palm, */
     /* it will show it though.  I allow it. */
@@ -1388,13 +1388,13 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
 
     for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
         if (GTK_IS_WIDGET(todo_cat_menu_item2[i])) {
-            if (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[i])->active) {
+            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[i]))) {
                 *attrib = (unsigned char) sort_l[i].cat_num;
                 break;
             }
         }
     }
-    if (GTK_TOGGLE_BUTTON(private_checkbox)->active) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
     }
 
