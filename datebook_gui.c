@@ -4943,14 +4943,14 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     get_pref(PREF_FDOW, &fdow, NULL);
     if (fdow == 1) {
-        fdow = GTK_CALENDAR_WEEK_START_MONDAY;
+        fdow = 1;
     } else {
         fdow = 0;
     }
     main_calendar = gtk_calendar_new();
     gtk_calendar_set_display_options(GTK_CALENDAR(main_calendar),GTK_CALENDAR_SHOW_HEADING |
                                                                  GTK_CALENDAR_SHOW_DAY_NAMES |
-                                                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS | fdow);
+                                                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS );
 
     // This way produces a small calendar on the left
     gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, FALSE, FALSE, 0);

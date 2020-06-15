@@ -315,8 +315,7 @@ int cal_dialog(GtkWindow *main_window,
     gtk_calendar_display_options(GTK_CALENDAR(cal),
                                  GTK_CALENDAR_SHOW_HEADING |
                                  GTK_CALENDAR_SHOW_DAY_NAMES |
-                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS |
-                                 (monday_is_fdow ? GTK_CALENDAR_WEEK_START_MONDAY : 0));
+                                 GTK_CALENDAR_SHOW_WEEK_NUMBERS);
 
     /* gtk_signal_connect(GTK_OBJECT(cal), "day_selected", cb_cal_sel, NULL); */
     gtk_signal_connect(GTK_OBJECT(cal), "day_selected_double_click", GTK_SIGNAL_FUNC(cb_quit),
