@@ -827,7 +827,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 
     vbox2 = gtk_vbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), vbox2, FALSE, FALSE, 1);
-    listStore = gtk_list_store_new(CATEGORY_NUM_COLS, G_TYPE_STRING, GTK_TYPE_INT);
+    listStore = gtk_list_store_new(CATEGORY_NUM_COLS, G_TYPE_STRING, G_TYPE_INT);
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *titleRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *titleColumn = gtk_tree_view_column_new_with_attributes("Category",
