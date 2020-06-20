@@ -337,7 +337,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
                       GTK_SIGNAL_FUNC(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
-   GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+   gtk_widget_set_can_default(button,TRUE);
    gtk_widget_grab_default(button);
 
    /* Set the default button pressed to CANCEL */

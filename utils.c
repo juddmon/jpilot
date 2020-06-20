@@ -1234,7 +1234,7 @@ int dialog_generic(GtkWindow *main_window,
 
         /* default button is the last one */
         if (i == nob - 1) {
-            GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+            gtk_widget_set_can_default(button,TRUE);
             gtk_widget_grab_default(button);
             gtk_widget_grab_focus(button);
         }
