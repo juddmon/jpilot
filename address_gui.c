@@ -212,7 +212,7 @@ gboolean
 findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreePath *path,
                                  GtkTreeIter *iter,
-                                 char *entry_text);
+                                 gpointer data);
 
 gboolean
 selectRecordAddressByRow(GtkTreeModel *model,
@@ -2510,14 +2510,14 @@ static void cb_dial_or_mail(GtkWidget *widget, gpointer data) {
 
 static void cb_address_quickfind(GtkWidget *widget,
                                  gpointer data) {
-    const char *entry_text;
+    char *entry_text;
     jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
     if (!strlen(entry_text)) {
         return;
     }
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, &entry_text);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, entry_text);
 
 }
 
@@ -3083,19 +3083,24 @@ gboolean
 findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreePath *path,
                                  GtkTreeIter *iter,
-                                 char *entry_text) {
+                                 gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
     char *list_text;
+    char * entry_text = data;
+
     //int i, r;
-    gtk_tree_model_get(model, &iter, ADDRESS_NAME_COLUMN_ENUM, &list_text);
-    if (!strncasecmp(list_text, entry_text, strlen(entry_text))) {
+
+    gtk_tree_model_get(model, iter, ADDRESS_NAME_COLUMN_ENUM, &list_text,-1);
+    int result = strncasecmp(list_text, entry_text, strlen(entry_text));
+    if (!result) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_NAME_COLUMN_ENUM, FALSE, 1.0, 0.0);
         rowSelected = i[0];
+        return TRUE;
     }
-
+    return FALSE;
 }
 
 gboolean
@@ -4296,8 +4301,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-       gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
-                       "label_high");
+    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
+                    "label_high");
 #endif
 
     /* "Apply Changes" button */
@@ -4307,8 +4312,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
-                  gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
-                       "label_high");
+    gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
+         "label_high");
 #endif
 
     /* Separator */

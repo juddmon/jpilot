@@ -432,7 +432,7 @@ editCategoryRename(GtkTreeModel *model,
 
     int *i = gtk_tree_path_get_indices(path);
     if (Pdata->selected == i[0]) {
-        gtk_tree_model_get(GTK_TREE_MODEL(Pdata->listStore), iter, CATEGORY_TITLE_COLUMN_ENUM, &text);
+        gtk_tree_model_get(GTK_TREE_MODEL(Pdata->listStore), iter, CATEGORY_TITLE_COLUMN_ENUM, &text,-1);
         gtk_label_set_text(GTK_LABEL(Pdata->label), _("Enter New Category Name"));
         gtk_entry_set_text(GTK_ENTRY(Pdata->entry), text);
         gtk_widget_show(Pdata->entry_box);
