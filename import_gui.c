@@ -388,8 +388,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
                                                     NULL);
     get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
     if (svalue && svalue[0]) {
-        g_print("setting folder for %s\n",svalue);
-        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
+       gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
     }
     GtkBox *extraWidget = GTK_BOX(gtk_hbox_new(FALSE, 0));
 
