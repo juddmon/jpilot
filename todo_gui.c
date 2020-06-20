@@ -1593,7 +1593,7 @@ gint compareNoteColumn(GtkTreeModel *model, GtkTreeIter *left, GtkTreeIter *righ
 
 
 static void column_clicked_cb(GtkTreeViewColumn *column) {
-    column_selected = column->sort_column_id;
+    column_selected = gtk_tree_view_column_get_sort_column_id(column);
 
 }
 

@@ -330,7 +330,8 @@ columnClicked (GtkTreeView       *tree_view,
                GtkTreeViewColumn *column,
                gpointer           user_data){
     GtkTreeIter iter;
-    column_selected = column->sort_column_id;
+
+    column_selected = gtk_tree_view_column_get_sort_column_id(column);
     char fname[1000];
     char *gtk_str;
     if (gtk_tree_model_get_iter(GTK_TREE_MODEL(listStore), &iter, path)) {
