@@ -865,10 +865,12 @@ int cleanup_pc_files(void) {
 void set_tooltip(int show_tooltip,
                  GtkWidget *widget,
                  const gchar *tip_text) {
-    if (show_tooltip) {
-        gtk_widget_set_tooltip_text (widget, tip_text);
-    }else {
-        gtk_widget_set_tooltip_text (widget, NULL);
+    if (widget != NULL) {
+        if (show_tooltip) {
+            gtk_widget_set_tooltip_text(widget, tip_text);
+        } else {
+            gtk_widget_set_tooltip_text(widget, NULL);
+        }
     }
 }
 
@@ -1511,8 +1513,8 @@ int find_prev_next(struct CalendarEvent *cale,
                 }
             }
 #ifdef ALARMS_DEBUG
-                                                                                                                                strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
-         printf("fpn: initial weekly=%s\n", str);
+            strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
+printf("fpn: initial weekly=%s\n", str);
 #endif
             break;
         case repeatMonthlyByDay:
@@ -3014,7 +3016,7 @@ int rename_file(char *old_filename, char *new_filename) {
     return rename(old_fullname, new_fullname);
 }
 
-GdkColor get_color(int r, int g, int b){
+GdkColor get_color(int r, int g, int b) {
     GdkColor color;
     color.red = r;
     color.green = g;
@@ -3022,9 +3024,6 @@ GdkColor get_color(int r, int g, int b){
     color.pixel = 0;
     return color;
 }
-
-
-
 
 
 int setup_sync(unsigned int flags) {
