@@ -220,7 +220,7 @@ static int dialog_install_user(GtkWindow *main_window,
                       GTK_SIGNAL_FUNC(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
-   GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+   gtk_widget_set_can_default(button,TRUE);
    gtk_widget_grab_default(button);
    gtk_widget_grab_focus(button);
 
