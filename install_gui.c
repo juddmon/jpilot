@@ -37,7 +37,6 @@
 #define INST_FNAME_COLUMN  1
 
 /******************************* Global vars **********************************/
-static GtkWidget *filew = NULL;
 static GtkWidget *treeView;
 static GtkListStore *listStore;
 static int row_selected;
@@ -161,8 +160,7 @@ static int install_modify_line(int modified_line_num, const char *modified_line)
 }
 
 static gboolean cb_destroy(GtkWidget *widget) {
-    filew = NULL;
-
+   gtk_widget_destroy(widget);
     gtk_main_quit();
 
     return TRUE;
@@ -201,9 +199,7 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 
     set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
 
-    filew = NULL;
-
-    gtk_widget_destroy(data);
+    gtk_widget_destroy(widget);
 }
 
 static void cb_add(GtkWidget *widget, gpointer data) {
@@ -213,7 +209,7 @@ static void cb_add(GtkWidget *widget, gpointer data) {
     struct stat statb;
 
     jp_logf(JP_LOG_DEBUG, "install: cb_add\n");
-    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
+    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
     jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
     /* Check to see if its a regular file */
@@ -373,52 +369,7 @@ static gboolean handleInstallRowSelection(GtkTreeSelection *selection,
 }
 
 
-
-int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
-    GtkWidget *scrolled_window;
-    GtkWidget *button;
-    GtkWidget *label;
-    GtkWidget *pixbufwid;
-    GdkPixbuf *pixbuf;
-    char temp_str[256];
-    const char *svalue;
-    gchar *titles[] = {"", _("Files to install")};
-
-    if (filew) {
-        return EXIT_SUCCESS;
-    }
-
-    row_selected = 0;
-
-    g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
-    filew = gtk_widget_new(GTK_TYPE_FILE_SELECTION,
-                           "type", GTK_WINDOW_TOPLEVEL,
-                           "title", temp_str,
-                           NULL);
-
-    gtk_window_set_default_size(GTK_WINDOW(filew), w, h);
-    gtk_widget_set_uposition(filew, x, y);
-
-    gtk_window_set_modal(GTK_WINDOW(filew), TRUE);
-    gtk_window_set_transient_for(GTK_WINDOW(filew), GTK_WINDOW(main_window));
-
-    get_pref(PREF_INSTALL_PATH, NULL, &svalue);
-    if (svalue && svalue[0]) {
-        gtk_file_selection_set_filename(GTK_FILE_SELECTION(filew), svalue);
-    }
-
-    gtk_file_selection_hide_fileop_buttons((gpointer) filew);
-
-    gtk_widget_hide((GTK_FILE_SELECTION(filew)->cancel_button));
-    gtk_signal_connect(GTK_OBJECT(filew), "destroy",
-                       GTK_SIGNAL_FUNC(cb_destroy), filew);
-
-    /* Even though I hide the ok button I still want to connect its signal */
-    /* because a double click on the file name also calls this callback */
-    gtk_widget_hide(GTK_WIDGET(GTK_FILE_SELECTION(filew)->ok_button));
-    gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(filew)->ok_button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
-
+void intializeInstallTreeView(GtkWidget *pixbufwid, GdkPixbuf **pixbuf) {
     listStore = gtk_list_store_new(INSTALL_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER,
                                    GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
@@ -452,9 +403,9 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
 
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), sdColumn, INSTALL_SDCARD_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW (treeView), fileNameColumn, INSTALL_FNAME_COLUMN_ENUM);
-    get_pixbufs(PIXMAP_SDCARD,&pixbuf);
+    get_pixbufs(PIXMAP_SDCARD, pixbuf);
 
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = gtk_image_new_from_pixbuf((*pixbuf));
     gtk_widget_show(GTK_WIDGET(pixbufwid));
     gtk_tree_view_column_set_widget(sdColumn, pixbufwid);
     gtk_tree_view_column_set_alignment(sdColumn, GTK_JUSTIFY_CENTER);
@@ -464,48 +415,59 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     //todo: set this up to work on a single click once on gtk3.
 
     g_signal_connect (treeView, "row-activated", G_CALLBACK(columnClicked), NULL);
+}
+
+int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
+    GtkWidget *scrolled_window;
+    GtkWidget *button;
+    GtkWidget *label;
+    GtkWidget *pixbufwid;
+    GdkPixbuf *pixbuf;
+    char temp_str[256];
+    const char *svalue;
+    gchar *titles[] = {"", _("Files to install")};
+    GtkWidget *fileChooserWidget;
 
 
-    /* Scrolled Window for file list */
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 5);
-    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->action_area),
-                       scrolled_window, TRUE, TRUE, 0);
-
-    label = gtk_label_new(_("To change to a hidden directory type it below and hit TAB"));
-    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->main_vbox),
-                       label, FALSE, FALSE, 0);
-
-    /* Add/Remove/Quit buttons */
-    button = gtk_button_new_from_stock(GTK_STOCK_ADD);
-    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-                       button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_add), filew);
-
-    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-                       button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_remove), filew);
-
-    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-    gtk_box_pack_start(GTK_BOX(GTK_FILE_SELECTION(filew)->ok_button->parent),
-                       button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button),
-                       "clicked", GTK_SIGNAL_FUNC(cb_quit), filew);
-
-    /**********************************************************************/
-    gtk_widget_show_all(filew);
-
-    /* Hide default buttons not used by Jpilot file selector */
-    gtk_widget_hide(GTK_FILE_SELECTION(filew)->cancel_button);
-    gtk_widget_hide(GTK_FILE_SELECTION(filew)->ok_button);
-
+    row_selected = 0;
+    intializeInstallTreeView(pixbufwid, &pixbuf);
     install_update_listStore();
+    g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Install"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    GTK_STOCK_ADD, GTK_RESPONSE_ACCEPT,GTK_STOCK_DELETE, GTK_RESPONSE_DELETE_EVENT,
+                                                    GTK_STOCK_CLOSE,GTK_RESPONSE_CLOSE,
+                                                    NULL);
+    get_pref(PREF_INSTALL_PATH, NULL, &svalue);
+    if (svalue && svalue[0]) {
+        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
+    }
+    GtkBox *extraWidget = GTK_BOX(gtk_hbox_new(FALSE, 0));
+    gtk_box_pack_start(extraWidget,treeView,TRUE,TRUE,0);
+    gtk_widget_show_all(extraWidget);
+    gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));
+    gtk_signal_connect(GTK_OBJECT(fileChooserWidget), "destroy",
+                       GTK_SIGNAL_FUNC(cb_destroy), fileChooserWidget);
+    int dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
+    g_print("response = %d",dialogResponse);
+    do {
+     if(dialogResponse == GTK_RESPONSE_DELETE_EVENT){
+         //remove from list
+         cb_remove(fileChooserWidget,fileChooserWidget);
+     } else if(dialogResponse == GTK_RESPONSE_ACCEPT){
+         // add to list.
+         cb_add(fileChooserWidget,fileChooserWidget);
+     } else {
+         // handle close and destroy widget.
+         cb_destroy(fileChooserWidget);
+
+     }
+     if(dialogResponse != GTK_RESPONSE_CLOSE){
+        dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
+     }
+    }while (dialogResponse != GTK_RESPONSE_CLOSE);
+    gtk_widget_destroy(fileChooserWidget);
+
+
     gtk_main();
 
     return EXIT_SUCCESS;
