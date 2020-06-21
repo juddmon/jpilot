@@ -86,7 +86,7 @@
 #define MASK_HEIGHT 0x04
 #define MASK_X      0x02
 #define MASK_Y      0x01
-
+#define PIPE_DEBUG 1
 /* #define PIPE_DEBUG */
 /******************************* Global vars **********************************/
 /* Application-wide globals */
@@ -753,7 +753,7 @@ void output_to_pane(const char *str) {
 }
 
 
-gboolean cb_read_pipe_from_child2(GIOChannel *channel, GIOCondition cond, gpointer data){
+gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointer data){
     int num;
     char buf_space[1026];
     char *buf;
@@ -935,189 +935,6 @@ gboolean cb_read_pipe_from_child2(GIOChannel *channel, GIOCondition cond, gpoint
         }
     }
     return FALSE;
-}
-static void cb_read_pipe_from_child(gpointer data,
-                                    gint in,
-                                    GdkInputCondition condition) {
-    int num;
-    char buf_space[1026];
-    char *buf;
-    int buf_len;
-    fd_set fds;
-    struct timeval tv;
-    int ret, done;
-    char *Pstr1, *Pstr2, *Pstr3;
-    int user_len;
-    char password[MAX_PREF_LEN];
-    int password_len;
-    unsigned long user_id;
-    int i, reason;
-    int command;
-    char user[MAX_PREF_LEN];
-    char command_str[80];
-    long char_set;
-    const char *svalue;
-    char title[MAX_PREF_LEN + 256];
-    char *user_name;
-
-    /* This is so we can always look at the previous char in buf */
-    buf = &buf_space[1];
-    buf[-1] = 'A'; /* that looks weird */
-
-    done = 0;
-    while (!done) {
-        buf[0] = '\0';
-        buf_len = 0;
-        /* Read until "\0\n", or buffer full */
-        for (i = 0; i < 1022; i++) {
-            buf[i] = '\0';
-            /* Linux modifies tv in the select call */
-            tv.tv_sec = 0;
-            tv.tv_usec = 0;
-            FD_ZERO(&fds);
-            FD_SET(in, &fds);
-            ret = select(in + 1, &fds, NULL, NULL, &tv);
-            if ((ret < 1) || (!FD_ISSET(in, &fds))) {
-                done = 1;
-                break;
-            }
-            ret = read(in, &(buf[i]), 1);
-            if (ret <= 0) {
-                done = 1;
-                break;
-            }
-            if ((buf[i - 1] == '\0') && (buf[i] == '\n')) {
-                buf_len = buf_len - 1;
-                break;
-            }
-            buf_len++;
-            if (buf_len >= 1022) {
-                buf[buf_len] = '\0';
-                break;
-            }
-        }
-
-        if (buf_len < 1) break;
-
-        /* Look for the command */
-        command = 0;
-        sscanf(buf, "%d:", &command);
-
-        Pstr1 = strstr(buf, ":");
-        if (Pstr1 != NULL) {
-            Pstr1++;
-        }
-#ifdef PIPE_DEBUG
-        printf("command=%d [%s]\n", command, Pstr1);
-#endif
-        if (Pstr1) {
-            switch (command) {
-                case PIPE_PRINT:
-                    /* Output the text to the Sync window */
-                    output_to_pane(Pstr1);
-                    break;
-                case PIPE_USERID:
-                    /* Save user ID as pref */
-                    num = sscanf(Pstr1, "%lu", &user_id);
-                    if (num > 0) {
-                        jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
-                        set_pref(PREF_USER_ID, user_id, NULL, TRUE);
-                    } else {
-                        jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
-                    }
-                    break;
-                case PIPE_USERNAME:
-                    /* Save username as pref */
-                    Pstr2 = strchr(Pstr1, '\"');
-                    if (Pstr2) {
-                        Pstr2++;
-                        Pstr3 = strchr(Pstr2, '\"');
-                        if (Pstr3) {
-                            user_len = Pstr3 - Pstr2;
-                            if (user_len > MAX_PREF_LEN) {
-                                user_len = MAX_PREF_LEN;
-                            }
-                            g_strlcpy(user, Pstr2, user_len + 1);
-                            jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
-                            set_pref(PREF_USER, 0, user, TRUE);
-                        }
-                    }
-                    break;
-                case PIPE_PASSWORD:
-                    /* Save password as pref */
-                    Pstr2 = strchr(Pstr1, '\"');
-                    if (Pstr2) {
-                        Pstr2++;
-                        Pstr3 = strchr(Pstr2, '\"');
-                        if (Pstr3) {
-                            password_len = Pstr3 - Pstr2;
-                            if (password_len > MAX_PREF_LEN) {
-                                password_len = MAX_PREF_LEN;
-                            }
-                            g_strlcpy(password, Pstr2, password_len + 1);
-                            jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
-                            set_pref(PREF_PASSWORD, 0, password, TRUE);
-                        }
-                    }
-                    break;
-                case PIPE_WAITING_ON_USER:
-#ifdef PIPE_DEBUG
-                    printf("waiting on user\n");
-#endif
-                    /* Look for the reason */
-                    num = sscanf(Pstr1, "%d", &reason);
-#ifdef PIPE_DEBUG
-                    printf("reason %d\n", reason);
-#endif
-                    if (num > 0) {
-                        jp_logf(JP_LOG_DEBUG, "pipe_read: reason = %d\n", reason);
-                    } else {
-                        jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading reason\n");
-                    }
-                    if ((reason == SYNC_ERROR_NOT_SAME_USERID) ||
-                        (reason == SYNC_ERROR_NOT_SAME_USER) ||
-                        (reason == SYNC_ERROR_NULL_USERID)) {
-                        /* Future code */
-                        /* This is where to add an option for adding user or
-                         user id to possible ids to sync with. */
-                        ret = bad_sync_exit_status(reason);
-#ifdef PIPE_DEBUG
-                        printf("ret=%d\n", ret);
-#endif
-                        if (ret == DIALOG_SAID_2) {
-                            sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
-                        } else {
-                            sprintf(command_str, "%d:\n", PIPE_SYNC_CANCEL);
-                        }
-                        if (write(pipe_to_child, command_str, strlen(command_str)) < 0) {
-                            jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
-                        }
-                        fsync(pipe_to_child);
-                    }
-                    break;
-                case PIPE_FINISHED:
-                    /* Update main window title as user name may have changed */
-                    get_pref(PREF_CHAR_SET, &char_set, NULL);
-                    get_pref(PREF_USER, NULL, &svalue);
-                    strcpy(title, PN" "VERSION);
-                    if ((svalue) && (svalue[0])) {
-                        strcat(title, _(" User: "));
-                        user_name = charset_p2newj(svalue, -1, char_set);
-                        strcat(title, user_name);
-                        gtk_window_set_title(GTK_WINDOW(window), title);
-                        free(user_name);
-                    }
-                    /* And redraw GUI */
-                    if (Pstr1) {
-                        cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
-                    }
-                    break;
-                default:
-                    jp_logf(JP_LOG_WARN, _("Unknown command from sync process\n"));
-                    jp_logf(JP_LOG_WARN, "buf=[%s]\n", buf);
-            }
-        }
-    }
 }
 
 static void cb_about(GtkWidget *widget, gpointer data) {
@@ -2250,13 +2067,13 @@ int main(int argc, char *argv[]) {
     set_tooltip(show_tooltips, button_memo, _("Memo Pad"));
 
     /* Set a callback for our pipe from the sync child process */
-   // GIOChannel *channel = g_io_channel_unix_new(pipe_from_child);
-   // guint id = g_io_add_watch(channel,
-    //                          G_IO_IN,
-   //                           cb_read_pipe_from_child2,
-   //                           window);
+   GIOChannel *channel = g_io_channel_unix_new(pipe_from_child);
+    guint id = g_io_add_watch(channel,
+                             G_IO_IN | G_IO_HUP | G_IO_ERR,
+                              cb_read_pipe_from_child,
+                             window);
 
-      gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
+      //gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
       get_pref(PREF_LAST_APP, &ivalue, NULL);
       /* We don't want to start up to a plugin because the plugin might
