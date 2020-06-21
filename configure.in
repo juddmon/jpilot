@@ -364,7 +364,7 @@ if test $pl_version -eq 0 ; then
    fi
 fi
 if test $pl_version_check_done != yes; then
-   AC_MSG_ERROR([pilot-link version >= 0.12.5 is required])
+   AC_MSG_ERROR([pilot-link version >= 0.13.0 is required])
 fi
 
 dnl restore variables after pilot-link testing
