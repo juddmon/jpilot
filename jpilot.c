@@ -1147,7 +1147,7 @@ static void get_main_menu(GtkWidget *my_window,
             {_("/Help/About J-Pilot"), NULL, cb_about, 0, ICON(GTK_STOCK_DIALOG_INFO)},
             {"END", NULL, NULL, 0, NULL, NULL}
     };
-
+    GtkBuilder *item_builder;
     GtkItemFactory *item_factory;
     GtkAccelGroup *accel_group;
     gint nmenu_items;
@@ -1317,6 +1317,8 @@ static void get_main_menu(GtkWidget *my_window,
      * Param 2: The path of the menu.
      * Param 3: A pointer to a gtk_accel_group.  The item factory sets up
      * the accelerator table while generating menus. */
+    item_builder = gtk_builder_new();
+
     item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<main>",
                                         accel_group);
 
@@ -1917,17 +1919,17 @@ int main(int argc, char *argv[]) {
     set_tooltip(show_tooltips,
                 button_locked, _("Show private records   Ctrl+Z"));
     gtk_widget_add_accelerator(button_locked, "clicked", accel_group,
-                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                               GDK_KEY_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     set_tooltip(show_tooltips,
                 button_masklocked, _("Hide private records   Ctrl+Z"));
     gtk_widget_add_accelerator(button_masklocked, "clicked", accel_group,
-                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                               GDK_KEY_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     set_tooltip(show_tooltips,
                 button_unlocked, _("Mask private records   Ctrl+Z"));
     gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
-                               GDK_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+                               GDK_KEY_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     /* "Sync" button */
     button_sync = gtk_button_new();
@@ -1938,7 +1940,7 @@ int main(int argc, char *argv[]) {
 
     set_tooltip(show_tooltips,
                 button_sync, _("Sync your palm to the desktop   Ctrl+Y"));
-    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_y,
+    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_KEY_y,
                                GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     /* "Cancel Sync" button */
