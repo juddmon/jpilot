@@ -520,7 +520,18 @@ static void cb_install_user(GtkWidget *widget, gpointer data) {
         gtk_widget_show(button_cancel_sync);
     }
 }
-
+void cb_datebook_app_button(){
+     cb_app_button(NULL,GINT_TO_POINTER(DATEBOOK));
+}
+void cb_address_app_button(){
+    cb_app_button(NULL,GINT_TO_POINTER(ADDRESS));
+}
+void cb_todo_app_button(){
+    cb_app_button(NULL,GINT_TO_POINTER(TODO));
+}
+void cb_memo_app_button(){
+    cb_app_button(NULL,GINT_TO_POINTER(MEMO));
+}
 void cb_app_button(GtkWidget *widget, gpointer data) {
     int app;
     int refresh;
@@ -1093,7 +1104,7 @@ static void get_main_menu(GtkWidget *my_window,
 
     static GtkActionEntry entries[] =
             {
-                    { "FileMenuAction", NULL, "_File" },
+                    { "FileMenuAction", NULL, "_File","<alt>F" },
                     /* name, stock id, label */
                     { "FindAction", GTK_STOCK_FIND,   "_Find", "<control>F",
                             "Find an entry by text",
@@ -1129,7 +1140,36 @@ static void get_main_menu(GtkWidget *my_window,
                     { "QuitAction", GTK_STOCK_QUIT,
                       "_Quit", "<control>Q",
                       "Exit application",
-                      G_CALLBACK (cb_delete_event) }
+                      G_CALLBACK (cb_delete_event) },
+                    { "ViewMenuAction", NULL, "View","<alt>V" },
+                    { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
+                      "Hide Private Records", "<control>Q",
+                      "Exit application",
+                      G_CALLBACK (cb_delete_event) },
+                    { "ShowPrivateRecordsAction", GTK_STOCK_QUIT,
+                      "Show Private Records", "<control>Q",
+                      "Exit application",
+                      G_CALLBACK (cb_delete_event) },
+                    { "MasKPrivateRecordsAction", GTK_STOCK_QUIT,
+                      "Mask Private Records", "<control>Q",
+                      "Exit application",
+                      G_CALLBACK (cb_delete_event) },
+                    { "DatebookAction", GTK_STOCK_QUIT,
+                      "Datebook", "F1",
+                      "Open Datebook",
+                      G_CALLBACK (cb_datebook_app_button) },
+                    { "AddressesAction", GTK_STOCK_QUIT,
+                      "Addresses", "F2",
+                      "Open Addresses",
+                      G_CALLBACK (cb_address_app_button) },
+                    { "TodosAction", GTK_STOCK_QUIT,
+                      "Todos", "F3",
+                      "Open Todos",
+                      G_CALLBACK (cb_todo_app_button) },
+                    { "MemosAction", GTK_STOCK_QUIT,
+                      "Memos", "F4",
+                      "Open Memos",
+                      G_CALLBACK (cb_memo_app_button) },
             };
     static guint n_entries = G_N_ELEMENTS (entries);
     GtkActionGroup * action_group = gtk_action_group_new ("TestActions");
@@ -1439,6 +1479,17 @@ char *getMenuXmlString() {
            "            <menuitem name=\"Restore Handheld\" action=\"RestoreHandheldAction\" />\n"
            "            <separator/>\n"
            "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
+           "        </menu>\n"
+           "        <menu name=\"View\" action=\"ViewMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\" />\n"
+           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\" />\n"
+           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\" />\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Datebook\" action=\"DatebookAction\" />\n"
+           "            <menuitem name=\"Addresses\" action=\"AddressesAction\" />\n"
+           "            <menuitem name=\"Todos\" action=\"TodosAction\" />\n"
+           "            <menuitem name=\"Memos\" action=\"MemosAction\" />\n"
            "        </menu>\n"
            "    </menubar>\n"
            "</ui>";
