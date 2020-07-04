@@ -1,0 +1,19 @@
+<ui>
+    <menubar name="MainMenu">
+        <menu name="File" action="FileMenuAction">
+            <separator/>
+            <menuitem name="_Find" action="FindAction" />
+            <separator/>
+            <menuitem name="_Install" action="InstallAction" />
+            <menuitem name="Import" action="ImportAction" />
+            <menuitem name="Export" action="ExportAction" />
+            <menuitem name="Preferences" action="PreferencesAction" />
+            <menuitem name="_Print" action="PrintAction" />
+            <separator/>
+            <menuitem name="Install User" action="InstallUserAction" />
+            <menuitem name="Restore Handheld" action="RestoreHandheldAction" />
+            <separator/>
+            <menuitem name="_Quit" action="QuitAction" />
+        </menu>
+    </menubar>
+</ui>

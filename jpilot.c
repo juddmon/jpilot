@@ -1118,6 +1118,14 @@ static void get_main_menu(GtkWidget *my_window,
                       "_Print", "<control>P",
                       "Print",
                       G_CALLBACK (cb_print) },
+                    { "InstallUserAction", "jpilot-installUser",
+                      "Install User", "",
+                      "Install a user",
+                      G_CALLBACK (cb_install_user) },
+                    { "RestoreHandheldAction", "jpilot-restoreHandheld",
+                      "Restore Handheld", "",
+                      "Restore Handheld device",
+                      G_CALLBACK (cb_restore) },
                     { "QuitAction", GTK_STOCK_QUIT,
                       "_Quit", "<control>Q",
                       "Exit application",
@@ -1426,6 +1434,9 @@ char *getMenuXmlString() {
            "            <menuitem name=\"Export\" action=\"ExportAction\" />\n"
            "            <menuitem name=\"Preferences\" action=\"PreferencesAction\" />\n"
            "            <menuitem name=\"_Print\" action=\"PrintAction\" />\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Install User\" action=\"InstallUserAction\" />\n"
+           "            <menuitem name=\"Restore Handheld\" action=\"RestoreHandheldAction\" />\n"
            "            <separator/>\n"
            "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
            "        </menu>\n"
