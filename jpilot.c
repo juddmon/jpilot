@@ -2074,7 +2074,7 @@ int main(int argc, char *argv[]) {
                              G_IO_IN | G_IO_HUP | G_IO_ERR,
                               cb_read_pipe_from_child,
                              window);
-    g_object_unref(channel);
+
       //gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
       get_pref(PREF_LAST_APP, &ivalue, NULL);
