@@ -640,6 +640,8 @@ static void cb_sync(GtkWidget *widget, unsigned int flags) {
 
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 
+char *getMenuXmlString();
+
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags) {
     if (glob_child_pid) {
         jp_logf(JP_LOG_GUI, "****************************************\n");
@@ -1087,34 +1089,38 @@ static void get_main_menu(GtkWidget *my_window,
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
     GtkUIManager * uiManager = gtk_ui_manager_new();
-    const char * menuXml  = "<ui>\n"
-                            "    <menubar name=\"MainMenu\">\n"
-                            "        <menu name=\"File\" action=\"FileMenuAction\">\n"
-                            "            <separator/>\n"
-                            "            <menuitem name=\"_Find\" action=\"FindAction\" />\n"
-                            "            <separator/>\n"
-                            "            <menuitem name=\"_Install\" action=\"InstallAction\" />\n"
-                            "            <separator/>\n"
-                            "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
-                            "        </menu>\n"
-                            "    </menubar>\n"
-                            "</ui>";
+    const char * menuXml  = getMenuXmlString();
 
     static GtkActionEntry entries[] =
             {
                     { "FileMenuAction", NULL, "_File" },
                     /* name, stock id, label */
-                    { "FindAction", GTK_STOCK_FIND,                             /* name, stock id */
-                            "_Find", "<control>F",                                    /* label, accelerator */
-                            "Find an entry by text",                              /* tooltip */
+                    { "FindAction", GTK_STOCK_FIND,   "_Find", "<control>F",
+                            "Find an entry by text",
                             G_CALLBACK (cb_search_gui) },
-                    { "InstallAction", "jpilot-install",                             /* name, stock id */
-                      "_Install", "<control>I",                                    /* label, accelerator */
-                      "Install an application",                              /* tooltip */
+                    { "InstallAction", GTK_STOCK_OPEN,
+                      "_Install", "<control>I",
+                      "Install an application",
                       G_CALLBACK (cb_install_gui) },
-                    { "QuitAction", GTK_STOCK_QUIT,                             /* name, stock id */
-                      "_Quit", "<control>Q",                                    /* label, accelerator */
-                      "Exit application",                              /* tooltip */
+                    { "ImportAction", GTK_STOCK_GO_FORWARD,
+                      "Import", "",
+                      "Import data",
+                      G_CALLBACK (cb_import) },
+                    { "ExportAction", GTK_STOCK_GO_BACK,
+                      "Export", "",
+                      "Export data",
+                      G_CALLBACK (cb_export) },
+                    { "PreferencesAction", "jpilot-preferences",
+                      "Preferences", "<control>S",
+                      "Manage settings for J-Pilot",
+                      G_CALLBACK (cb_prefs_gui) },
+                    { "PrintAction", GTK_STOCK_PRINT,
+                      "_Print", "<control>P",
+                      "Print",
+                      G_CALLBACK (cb_print) },
+                    { "QuitAction", GTK_STOCK_QUIT,
+                      "_Quit", "<control>Q",
+                      "Exit application",
                       G_CALLBACK (cb_delete_event) }
             };
     static guint n_entries = G_N_ELEMENTS (entries);
@@ -1404,6 +1410,25 @@ static void get_main_menu(GtkWidget *my_window,
     menu_mask_privates = GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(
             item_factory,
             _("/View/Mask Private Records")));
+}
+
+char *getMenuXmlString() {
+    return "<ui>\n"
+           "    <menubar name=\"MainMenu\">\n"
+           "        <menu name=\"File\" action=\"FileMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Find\" action=\"FindAction\" />\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Install\" action=\"InstallAction\" />\n"
+           "            <menuitem name=\"Import\" action=\"ImportAction\" />\n"
+           "            <menuitem name=\"Export\" action=\"ExportAction\" />\n"
+           "            <menuitem name=\"Preferences\" action=\"PreferencesAction\" />\n"
+           "            <menuitem name=\"_Print\" action=\"PrintAction\" />\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
+           "        </menu>\n"
+           "    </menubar>\n"
+           "</ui>";
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
