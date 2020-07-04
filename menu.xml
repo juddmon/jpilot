@@ -15,5 +15,16 @@
             <separator/>
             <menuitem name="_Quit" action="QuitAction" />
         </menu>
+        <menu name="View" action="ViewMenuAction">
+            <separator/>
+            <menuitem name="Hide Private Records" action="HidePrivateRecordsAction" />
+            <menuitem name="Show Private Records" action="ShowPrivateRecordsAction" />
+            <menuitem name="Mask Private Records" action="MasKPrivateRecordsAction" />
+            <separator/>
+            <menuitem name="Datebook" action="DatebookAction" />
+            <menuitem name="Addresses" action="AddressesAction" />
+            <menuitem name="Todos" action="TodosAction" />
+            <menuitem name="Memos" action="MemosAction" />
+        </menu>
     </menubar>
 </ui>

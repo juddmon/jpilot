@@ -4772,7 +4772,7 @@ static void cb_todos_show(GtkWidget *widget, gpointer data) {
 /*** End ToDo code ***/
 
 #ifdef DAY_VIEW
-                                                                                                                        static void cb_resize(GtkWidget *widget, gpointer data)
+static void cb_resize(GtkWidget *widget, gpointer data)
 {
    printf("resize\n");
 }
