@@ -1086,7 +1086,48 @@ static void get_main_menu(GtkWidget *my_window,
                           GList *plugin_list) {
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
+    GtkUIManager * uiManager = gtk_ui_manager_new();
+    const char * menuXml  = "<ui>\n"
+                            "    <menubar name=\"MainMenu\">\n"
+                            "        <menu name=\"File\" action=\"FileMenuAction\">\n"
+                            "            <separator/>\n"
+                            "            <menuitem name=\"_Find\" action=\"FindAction\" />\n"
+                            "            <separator/>\n"
+                            "            <menuitem name=\"_Install\" action=\"InstallAction\" />\n"
+                            "            <separator/>\n"
+                            "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
+                            "        </menu>\n"
+                            "    </menubar>\n"
+                            "</ui>";
 
+    static GtkActionEntry entries[] =
+            {
+                    { "FileMenuAction", NULL, "_File" },
+                    /* name, stock id, label */
+                    { "FindAction", GTK_STOCK_FIND,                             /* name, stock id */
+                            "_Find", "<control>F",                                    /* label, accelerator */
+                            "Find an entry by text",                              /* tooltip */
+                            G_CALLBACK (cb_search_gui) },
+                    { "InstallAction", "jpilot-install",                             /* name, stock id */
+                      "_Install", "<control>I",                                    /* label, accelerator */
+                      "Install an application",                              /* tooltip */
+                      G_CALLBACK (cb_install_gui) },
+                    { "QuitAction", GTK_STOCK_QUIT,                             /* name, stock id */
+                      "_Quit", "<control>Q",                                    /* label, accelerator */
+                      "Exit application",                              /* tooltip */
+                      G_CALLBACK (cb_delete_event) }
+            };
+    static guint n_entries = G_N_ELEMENTS (entries);
+    GtkActionGroup * action_group = gtk_action_group_new ("TestActions");
+    gtk_action_group_add_actions (action_group, entries, n_entries, NULL);
+    gtk_ui_manager_insert_action_group (uiManager, action_group, 0);
+    GError * error = NULL;
+    gtk_ui_manager_add_ui_from_string(uiManager,menuXml,strlen(menuXml),&error);
+    if (error)
+    {
+        g_message ("building menus failed: %s", error->message);
+        g_error_free (error);
+    }
     GtkItemFactoryEntry menu_items1[] = {
             {_("/_File"), NULL, NULL, 0, "<Branch>", NULL},
             {_("/File/tear"), NULL, NULL, 0, "<Tearoff>", NULL},
@@ -1332,7 +1373,9 @@ static void get_main_menu(GtkWidget *my_window,
 
     if (menubar) {
         /* Finally, return the actual menu bar created by the item factory. */
-        *menubar = gtk_item_factory_get_widget(item_factory, "<main>");
+        *menubar =   gtk_ui_manager_get_widget (uiManager, "/MainMenu");
+        gtk_widget_show (menubar);
+       // *menubar = gtk_item_factory_get_widget(item_factory, "<main>");
     }
 
     free(menu_items2);
