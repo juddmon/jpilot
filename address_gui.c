@@ -1754,12 +1754,11 @@ int address_export(GtkWidget *window) {
 
 /* End Export Code */
 
-static void cb_resize_column(GtkTreeView *pTreeView,
-                             gint column,
-                             gint width,
-                             gpointer user_data) {
-    if (column != ADDRESS_NAME_COLUMN_ENUM) return;
-
+static void cb_resize_column(GtkTreeViewColumn *column) {
+    if(column == NULL){
+        return;
+    }
+    int width = gtk_tree_view_column_get_width(column);
     set_pref(PREF_ADDR_NAME_COL_SZ, width, NULL, TRUE);
 }
 
@@ -4163,7 +4162,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     addr_sort_order = (int) ivalue;
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
+    get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
+    nameRenderer->width = ivalue;
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
@@ -4230,8 +4231,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_min_width(nameColumn, 60);
 
 
-    get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
-    gtk_tree_view_column_set_fixed_width(nameColumn, ivalue);
+
+
 
     gtk_tree_view_column_set_resizable(nameColumn, TRUE);
     gtk_tree_view_column_set_resizable(noteColumn, FALSE);
@@ -4239,8 +4240,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
 
 
-    gtk_signal_connect(GTK_OBJECT(treeView), "resize-column",
-                       GTK_SIGNAL_FUNC(cb_resize_column), NULL);
+    g_signal_connect(GTK_OBJECT(nameColumn), "notify::width",
+                     G_CALLBACK(cb_resize_column), NULL);
 
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
