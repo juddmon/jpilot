@@ -161,8 +161,6 @@ static int install_modify_line(int modified_line_num, const char *modified_line)
 
 static gboolean cb_destroy(GtkWidget *widget) {
    gtk_widget_destroy(widget);
-    gtk_main_quit();
-
     return TRUE;
 }
 
@@ -419,9 +417,6 @@ void intializeInstallTreeView(GtkWidget *pixbufwid, GdkPixbuf **pixbuf) {
 }
 
 int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
-    GtkWidget *scrolled_window;
-    GtkWidget *button;
-    GtkWidget *label;
     GtkWidget *pixbufwid;
     GdkPixbuf *pixbuf;
     char temp_str[256];
@@ -449,7 +444,6 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_signal_connect(GTK_OBJECT(fileChooserWidget), "destroy",
                        GTK_SIGNAL_FUNC(cb_destroy), fileChooserWidget);
     int dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
-    g_print("response = %d",dialogResponse);
     do {
      if(dialogResponse == GTK_RESPONSE_DELETE_EVENT){
          //remove from list
@@ -468,8 +462,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     }while (dialogResponse != GTK_RESPONSE_CLOSE);
     gtk_widget_destroy(fileChooserWidget);
 
-
-    gtk_main();
+   // gtk_main();
 
     return EXIT_SUCCESS;
 }

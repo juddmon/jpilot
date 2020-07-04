@@ -1126,6 +1126,8 @@ static void get_main_menu(GtkWidget *my_window,
     static guint n_entries = G_N_ELEMENTS (entries);
     GtkActionGroup * action_group = gtk_action_group_new ("TestActions");
     gtk_action_group_add_actions (action_group, entries, n_entries, NULL);
+    gtk_window_add_accel_group (GTK_WINDOW (my_window),
+                                gtk_ui_manager_get_accel_group (uiManager));
     gtk_ui_manager_insert_action_group (uiManager, action_group, 0);
     GError * error = NULL;
     gtk_ui_manager_add_ui_from_string(uiManager,menuXml,strlen(menuXml),&error);
