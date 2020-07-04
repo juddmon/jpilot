@@ -1101,6 +1101,24 @@ static void get_main_menu(GtkWidget *my_window,
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
     GtkUIManager * uiManager = gtk_ui_manager_new();
     const char * menuXml  = getMenuXmlString();
+    GtkRadioActionEntry * privateAppointent = { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
+                                           "Hide Private Records", "<control>Q",
+                                           "Exit application",
+                                           G_CALLBACK (cb_delete_event) };
+    static GtkRadioActionEntry radioEntries[] = {
+            { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
+                    "Hide Private Records", "<control>Q",
+                    "Exit application",
+                    HIDE_PRIVATES },
+            { "ShowPrivateRecordsAction", GTK_STOCK_QUIT,
+                    "Show Private Records", "<control>Q",
+                    "Exit application",
+                    SHOW_PRIVATES },
+            { "MasKPrivateRecordsAction", GTK_STOCK_QUIT,
+                    "Mask Private Records", "<control>Q",
+                    "Exit application",
+                    MASK_PRIVATES},
+    };
 
     static GtkActionEntry entries[] =
             {
@@ -1142,18 +1160,6 @@ static void get_main_menu(GtkWidget *my_window,
                       "Exit application",
                       G_CALLBACK (cb_delete_event) },
                     { "ViewMenuAction", NULL, "View","<alt>V" },
-                    { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
-                      "Hide Private Records", "<control>Q",
-                      "Exit application",
-                      G_CALLBACK (cb_delete_event) },
-                    { "ShowPrivateRecordsAction", GTK_STOCK_QUIT,
-                      "Show Private Records", "<control>Q",
-                      "Exit application",
-                      G_CALLBACK (cb_delete_event) },
-                    { "MasKPrivateRecordsAction", GTK_STOCK_QUIT,
-                      "Mask Private Records", "<control>Q",
-                      "Exit application",
-                      G_CALLBACK (cb_delete_event) },
                     { "DatebookAction", GTK_STOCK_QUIT,
                       "Datebook", "F1",
                       "Open Datebook",
@@ -1174,6 +1180,7 @@ static void get_main_menu(GtkWidget *my_window,
     static guint n_entries = G_N_ELEMENTS (entries);
     GtkActionGroup * action_group = gtk_action_group_new ("TestActions");
     gtk_action_group_add_actions (action_group, entries, n_entries, NULL);
+    gtk_action_group_add_radio_actions(action_group,radioEntries,G_N_ELEMENTS (radioEntries),show_privates(GET_PRIVATES),cb_private,NULL);
     gtk_window_add_accel_group (GTK_WINDOW (my_window),
                                 gtk_ui_manager_get_accel_group (uiManager));
     gtk_ui_manager_insert_action_group (uiManager, action_group, 0);
