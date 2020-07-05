@@ -126,6 +126,10 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 
 static void install_gui_and_size(GtkWidget *main_window);
 
+static void cb_private(GtkWidget *widget, gpointer data);
+
+char *getViewMenuXmlString();
+
 /****************************** Main Code *************************************/
 
 static int create_main_boxes(void) {
@@ -425,6 +429,10 @@ static void cb_export(GtkWidget *widget, gpointer data) {
                    1, button_text);
 }
 
+static void cb_private_from_radio(GtkRadioAction *action) {
+    cb_private(NULL, GINT_TO_POINTER(gtk_radio_action_get_current_value(action)));
+}
+
 static void cb_private(GtkWidget *widget, gpointer data) {
     int privates, was_privates;
     int r_dialog = 0;
@@ -520,18 +528,23 @@ static void cb_install_user(GtkWidget *widget, gpointer data) {
         gtk_widget_show(button_cancel_sync);
     }
 }
-void cb_datebook_app_button(){
-     cb_app_button(NULL,GINT_TO_POINTER(DATEBOOK));
+
+void cb_datebook_app_button() {
+    cb_app_button(NULL, GINT_TO_POINTER(DATEBOOK));
 }
-void cb_address_app_button(){
-    cb_app_button(NULL,GINT_TO_POINTER(ADDRESS));
+
+void cb_address_app_button() {
+    cb_app_button(NULL, GINT_TO_POINTER(ADDRESS));
 }
-void cb_todo_app_button(){
-    cb_app_button(NULL,GINT_TO_POINTER(TODO));
+
+void cb_todo_app_button() {
+    cb_app_button(NULL, GINT_TO_POINTER(TODO));
 }
-void cb_memo_app_button(){
-    cb_app_button(NULL,GINT_TO_POINTER(MEMO));
+
+void cb_memo_app_button() {
+    cb_app_button(NULL, GINT_TO_POINTER(MEMO));
 }
+
 void cb_app_button(GtkWidget *widget, gpointer data) {
     int app;
     int refresh;
@@ -651,7 +664,15 @@ static void cb_sync(GtkWidget *widget, unsigned int flags) {
 
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 
-char *getMenuXmlString();
+char *getFileMenuXmlString();
+
+void addUiFromString(const GtkUIManager *uiManager, const char *menuXml);
+
+static const char *getPluginMenuXmlString();
+
+static const char *getWebMenuXmlString();
+
+static const char *getHelpMenuXmlString();
 
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags) {
     if (glob_child_pid) {
@@ -766,7 +787,7 @@ void output_to_pane(const char *str) {
 }
 
 
-gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointer data){
+gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointer data) {
     int num;
     char buf_space[1026];
     char *buf;
@@ -1099,98 +1120,115 @@ static void get_main_menu(GtkWidget *my_window,
                           GList *plugin_list) {
 #define ICON(icon) "<StockItem>", icon
 #define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
-    GtkUIManager * uiManager = gtk_ui_manager_new();
-    const char * menuXml  = getMenuXmlString();
-    GtkRadioActionEntry * privateAppointent = { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
-                                           "Hide Private Records", "<control>Q",
-                                           "Exit application",
-                                           G_CALLBACK (cb_delete_event) };
+    GtkUIManager *uiManager = gtk_ui_manager_new();
+    const char *viewMenuXml = getViewMenuXmlString();
+    const char *fileMenuXml = getFileMenuXmlString();
+    const char *pluginMenuXml = getPluginMenuXmlString();
+    const char *webMenuXml = getWebMenuXmlString();
+    const char *helpMenuXml = getHelpMenuXmlString();
+
     static GtkRadioActionEntry radioEntries[] = {
-            { "HidePrivateRecordsAction", GTK_STOCK_QUIT,
-                    "Hide Private Records", "<control>Q",
+            {"HidePrivateRecordsAction", "jpilot-hide-private",
+                    "Hide Private Records", NULL,
                     "Exit application",
-                    HIDE_PRIVATES },
-            { "ShowPrivateRecordsAction", GTK_STOCK_QUIT,
-                    "Show Private Records", "<control>Q",
+                    HIDE_PRIVATES},
+            {"ShowPrivateRecordsAction", "jpilot-show-private",
+                    "Show Private Records", NULL,
                     "Exit application",
-                    SHOW_PRIVATES },
-            { "MasKPrivateRecordsAction", GTK_STOCK_QUIT,
-                    "Mask Private Records", "<control>Q",
+                    SHOW_PRIVATES},
+            {"MasKPrivateRecordsAction", "jpilot-mask-private",
+                    "Mask Private Records", NULL,
                     "Exit application",
                     MASK_PRIVATES},
     };
+    static GtkActionEntry helpEntries[] = {
+            {"HelpMenuAction",    NULL, "_Help",      "<alt>H"},
+            {"AboutJPilotAction", GTK_STOCK_ABOUT,
+                                        "About J-Pilot", NULL,
+                    "About J-Pilot",
+                    G_CALLBACK (cb_about)},
+    };
+    static GtkActionEntry viewEntries[] = {
+            {"ViewMenuAction", NULL, "_View",     "<alt>V"},
+            {"DatebookAction",  "jpilot-datebook",
+                                     "Datebook",  "F1",
+                    "Open Datebook",
+                    G_CALLBACK (cb_datebook_app_button)},
+            {"AddressesAction", "jpilot-address",
+                                     "Addresses", "F2",
+                    "Open Addresses",
+                    G_CALLBACK (cb_address_app_button)},
+            {"TodosAction",     "jpilot-todo",
+                                     "Todos",     "F3",
+                    "Open Todos",
+                    G_CALLBACK (cb_todo_app_button)},
+            {"MemosAction",     "jpilot-memo",
+                                     "Memos",     "F4",
+                    "Open Memos",
+                    G_CALLBACK (cb_memo_app_button)},
+            /*    {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},
+                {"WebMenuAction",     NULL, "Web",       "<alt>W"}, */
 
-    static GtkActionEntry entries[] =
+    };
+    static GtkActionEntry fileEntries[] =
             {
-                    { "FileMenuAction", NULL, "_File","<alt>F" },
+                    {"FileMenuAction", NULL,           "_File",       "<alt>F"},
                     /* name, stock id, label */
-                    { "FindAction", GTK_STOCK_FIND,   "_Find", "<control>F",
+                    {"FindAction",     GTK_STOCK_FIND, "_Find",       "<control>F",
                             "Find an entry by text",
-                            G_CALLBACK (cb_search_gui) },
-                    { "InstallAction", GTK_STOCK_OPEN,
-                      "_Install", "<control>I",
-                      "Install an application",
-                      G_CALLBACK (cb_install_gui) },
-                    { "ImportAction", GTK_STOCK_GO_FORWARD,
-                      "Import", "",
-                      "Import data",
-                      G_CALLBACK (cb_import) },
-                    { "ExportAction", GTK_STOCK_GO_BACK,
-                      "Export", "",
-                      "Export data",
-                      G_CALLBACK (cb_export) },
-                    { "PreferencesAction", "jpilot-preferences",
-                      "Preferences", "<control>S",
-                      "Manage settings for J-Pilot",
-                      G_CALLBACK (cb_prefs_gui) },
-                    { "PrintAction", GTK_STOCK_PRINT,
-                      "_Print", "<control>P",
-                      "Print",
-                      G_CALLBACK (cb_print) },
-                    { "InstallUserAction", "jpilot-installUser",
-                      "Install User", "",
-                      "Install a user",
-                      G_CALLBACK (cb_install_user) },
-                    { "RestoreHandheldAction", "jpilot-restoreHandheld",
-                      "Restore Handheld", "",
-                      "Restore Handheld device",
-                      G_CALLBACK (cb_restore) },
-                    { "QuitAction", GTK_STOCK_QUIT,
-                      "_Quit", "<control>Q",
-                      "Exit application",
-                      G_CALLBACK (cb_delete_event) },
-                    { "ViewMenuAction", NULL, "View","<alt>V" },
-                    { "DatebookAction", GTK_STOCK_QUIT,
-                      "Datebook", "F1",
-                      "Open Datebook",
-                      G_CALLBACK (cb_datebook_app_button) },
-                    { "AddressesAction", GTK_STOCK_QUIT,
-                      "Addresses", "F2",
-                      "Open Addresses",
-                      G_CALLBACK (cb_address_app_button) },
-                    { "TodosAction", GTK_STOCK_QUIT,
-                      "Todos", "F3",
-                      "Open Todos",
-                      G_CALLBACK (cb_todo_app_button) },
-                    { "MemosAction", GTK_STOCK_QUIT,
-                      "Memos", "F4",
-                      "Open Memos",
-                      G_CALLBACK (cb_memo_app_button) },
+                            G_CALLBACK (cb_search_gui)},
+                    {"InstallAction",  GTK_STOCK_OPEN,
+                                                       "_Install",    "<control>I",
+                            "Install an application",
+                            G_CALLBACK (cb_install_gui)},
+                    {"ImportAction",   GTK_STOCK_GO_FORWARD,
+                                                       "Import",           NULL,
+                            "Import data",
+                            G_CALLBACK (cb_import)},
+                    {"ExportAction",   GTK_STOCK_GO_BACK,
+                                                       "Export",           NULL,
+                            "Export data",
+                            G_CALLBACK (cb_export)},
+                    {"PreferencesAction",     "jpilot-preferences",
+                                                       "Preferences", "<control>S",
+                            "Manage settings for J-Pilot",
+                            G_CALLBACK (cb_prefs_gui)},
+                    {"PrintAction",    GTK_STOCK_PRINT,
+                                                       "_Print",      "<control>P",
+                            "Print",
+                            G_CALLBACK (cb_print)},
+                    {"InstallUserAction",     "jpilot-installUser",
+                                                       "Install User",     NULL,
+                            "Install a user",
+                            G_CALLBACK (cb_install_user)},
+                    {"RestoreHandheldAction", "jpilot-restoreHandheld",
+                                                       "Restore Handheld", NULL,
+                            "Restore Handheld device",
+                            G_CALLBACK (cb_restore)},
+                    {"QuitAction",     GTK_STOCK_QUIT,
+                                                       "_Quit",       "<control>Q",
+                            "Exit application",
+                            G_CALLBACK (cb_delete_event)},
+
             };
-    static guint n_entries = G_N_ELEMENTS (entries);
-    GtkActionGroup * action_group = gtk_action_group_new ("TestActions");
-    gtk_action_group_add_actions (action_group, entries, n_entries, NULL);
-    gtk_action_group_add_radio_actions(action_group,radioEntries,G_N_ELEMENTS (radioEntries),show_privates(GET_PRIVATES),cb_private,NULL);
-    gtk_window_add_accel_group (GTK_WINDOW (my_window),
-                                gtk_ui_manager_get_accel_group (uiManager));
-    gtk_ui_manager_insert_action_group (uiManager, action_group, 0);
-    GError * error = NULL;
-    gtk_ui_manager_add_ui_from_string(uiManager,menuXml,strlen(menuXml),&error);
-    if (error)
-    {
-        g_message ("building menus failed: %s", error->message);
-        g_error_free (error);
-    }
+    static guint n_entries = G_N_ELEMENTS (fileEntries);
+    GtkActionGroup *action_group = gtk_action_group_new("MainMenu");
+
+    gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
+    gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
+    gtk_action_group_add_actions(action_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
+    //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
+    gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
+                                       show_privates(GET_PRIVATES), G_CALLBACK(cb_private_from_radio), NULL);
+
+    gtk_ui_manager_insert_action_group(uiManager, action_group, 0);
+
+    gtk_window_add_accel_group(GTK_WINDOW (my_window),
+                               gtk_ui_manager_get_accel_group(uiManager));
+    addUiFromString(uiManager, fileMenuXml);
+    addUiFromString(uiManager, viewMenuXml);
+    addUiFromString(uiManager, helpMenuXml);
+    //gtk_ui_manager_
     GtkItemFactoryEntry menu_items1[] = {
             {_("/_File"), NULL, NULL, 0, "<Branch>", NULL},
             {_("/File/tear"), NULL, NULL, 0, "<Tearoff>", NULL},
@@ -1436,9 +1474,7 @@ static void get_main_menu(GtkWidget *my_window,
 
     if (menubar) {
         /* Finally, return the actual menu bar created by the item factory. */
-        *menubar =   gtk_ui_manager_get_widget (uiManager, "/MainMenu");
-        gtk_widget_show (menubar);
-       // *menubar = gtk_item_factory_get_widget(item_factory, "<main>");
+        *menubar = gtk_ui_manager_get_widget(uiManager, "/MainMenu");
     }
 
     free(menu_items2);
@@ -1469,37 +1505,100 @@ static void get_main_menu(GtkWidget *my_window,
             _("/View/Mask Private Records")));
 }
 
-char *getMenuXmlString() {
-    return "<ui>\n"
+static const char *getHelpMenuXmlString() {
+   return "<ui>\n"
            "    <menubar name=\"MainMenu\">\n"
-           "        <menu name=\"File\" action=\"FileMenuAction\">\n"
+           "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
            "            <separator/>\n"
-           "            <menuitem name=\"_Find\" action=\"FindAction\" />\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"_Install\" action=\"InstallAction\" />\n"
-           "            <menuitem name=\"Import\" action=\"ImportAction\" />\n"
-           "            <menuitem name=\"Export\" action=\"ExportAction\" />\n"
-           "            <menuitem name=\"Preferences\" action=\"PreferencesAction\" />\n"
-           "            <menuitem name=\"_Print\" action=\"PrintAction\" />\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Install User\" action=\"InstallUserAction\" />\n"
-           "            <menuitem name=\"Restore Handheld\" action=\"RestoreHandheldAction\" />\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"_Quit\" action=\"QuitAction\" />\n"
-           "        </menu>\n"
-           "        <menu name=\"View\" action=\"ViewMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\" />\n"
-           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\" />\n"
-           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\" />\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Datebook\" action=\"DatebookAction\" />\n"
-           "            <menuitem name=\"Addresses\" action=\"AddressesAction\" />\n"
-           "            <menuitem name=\"Todos\" action=\"TodosAction\" />\n"
-           "            <menuitem name=\"Memos\" action=\"MemosAction\" />\n"
+           "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n"
+           "            <placeholder name=\"PluginHelpAdditions\" />\n"
            "        </menu>\n"
            "    </menubar>\n"
            "</ui>";
+}
+
+static const char *getWebMenuXmlString() {
+    return NULL;
+}
+
+static const char *getPluginMenuXmlString() {
+    return NULL;
+}
+
+void addUiFromString(const GtkUIManager *uiManager, const char *menuXml) {
+    GError *error = NULL;
+    gtk_ui_manager_add_ui_from_string(uiManager, menuXml, strlen(menuXml), &error);
+    if (error) {
+        g_message ("building menus failed: %s", error->message);
+        g_error_free(error);
+    }
+}
+
+char *getViewMenuXmlString() {
+    return "<ui>\n"
+           "    <menubar name=\"MainMenu\">\n"
+           "        <menu name=\"_View\" action=\"ViewMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\"/>\n"
+           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\"/>\n"
+           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\"/>\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Datebook\" action=\"DatebookAction\"/>\n"
+           "            <menuitem name=\"Addresses\" action=\"AddressesAction\"/>\n"
+           "            <menuitem name=\"Todos\" action=\"TodosAction\"/>\n"
+           "            <menuitem name=\"Memos\" action=\"MemosAction\"/>\n"
+           "        </menu>\n"
+           "    </menubar>\n"
+           "</ui>";
+}
+
+char *getFileMenuXmlString() {
+    return "<ui>\n"
+           "    <menubar name=\"MainMenu\">\n"
+           "        <menu name=\"_File\" action=\"FileMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Find\" action=\"FindAction\"/>\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Install\" action=\"InstallAction\"/>\n"
+           "            <menuitem name=\"Import\" action=\"ImportAction\"/>\n"
+           "            <menuitem name=\"Export\" action=\"ExportAction\"/>\n"
+           "            <menuitem name=\"Preferences\" action=\"PreferencesAction\"/>\n"
+           "            <menuitem name=\"_Print\" action=\"PrintAction\"/>\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Install User\" action=\"InstallUserAction\"/>\n"
+           "            <menuitem name=\"Restore Handheld\" action=\"RestoreHandheldAction\"/>\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"_Quit\" action=\"QuitAction\"/>\n"
+           "        </menu>\n"
+           "    </menubar>\n"
+           "</ui>";
+    /*
+           "        <menu name=\"View\" action=\"ViewMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\"/>\n"
+           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\"/>\n"
+           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\"/>\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"Datebook\" action=\"DatebookAction\"/>\n"
+           "            <menuitem name=\"Addresses\" action=\"AddressesAction\"/>\n"
+           "            <menuitem name=\"Todos\" action=\"TodosAction\"/>\n"
+           "            <menuitem name=\"Memos\" action=\"MemosAction\"/>\n"
+           "        </menu>\n"
+           "        <menu name=\"Plugins\" action=\"PluginMenuAction\">\n"
+           "            <separator/>\n"
+           "            <placeholder name=\"PluginAdditions\" />\n"
+           "        </menu>\n"
+           "        <menu name=\"Web\" action=\"WebMenuAction\">\n"
+           "            <separator/>\n"
+           "            <placeholder name=\"WebAdditions\" />\n"
+           "        </menu>\n"
+           "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n"
+           "            <placeholder name=\"PluginHelpAdditions\" />\n"
+           "        </menu>\n"
+           "    </menubar>\n"
+           "</ui>";*/
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
@@ -2208,18 +2307,18 @@ int main(int argc, char *argv[]) {
     set_tooltip(show_tooltips, button_memo, _("Memo Pad"));
 
     /* Set a callback for our pipe from the sync child process */
-   GIOChannel *channel = g_io_channel_unix_new(pipe_from_child);
+    GIOChannel *channel = g_io_channel_unix_new(pipe_from_child);
     guint id = g_io_add_watch(channel,
-                             G_IO_IN | G_IO_HUP | G_IO_ERR,
+                              G_IO_IN | G_IO_HUP | G_IO_ERR,
                               cb_read_pipe_from_child,
-                             window);
+                              window);
 
-      //gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
+    //gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
-      get_pref(PREF_LAST_APP, &ivalue, NULL);
-      /* We don't want to start up to a plugin because the plugin might
-       * repeatedly segfault.  Of course main apps can do that, but since I
-       * handle the email support...  */
+    get_pref(PREF_LAST_APP, &ivalue, NULL);
+    /* We don't want to start up to a plugin because the plugin might
+     * repeatedly segfault.  Of course main apps can do that, but since I
+     * handle the email support...  */
     if ((ivalue == ADDRESS) ||
         (ivalue == DATEBOOK) ||
         (ivalue == TODO) ||
