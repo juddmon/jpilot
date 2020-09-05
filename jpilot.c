@@ -75,7 +75,8 @@
 #include "icons/sync.xpm"
 #include "icons/cancel_sync.xpm"
 #include "icons/backup.xpm"
-
+//todo: remove this after finishing webmenu.
+#define WEBMENU 1
 /********************************* Constants **********************************/
 #define OUTPUT_MINIMIZE 383
 #define OUTPUT_RESIZE   384
@@ -1052,6 +1053,66 @@ static struct url_command url_commands[]={
      {KONQUEROR_NEW, "/Web/Konqueror/Konqueror jpilot.org", "konqueror http://jpilot.org"}
 };
 
+
+
+static void cb_web(GtkWidget *widget, gpointer data);
+void openNetscapeExisting(){
+    cb_web(NULL,GINT_TO_POINTER(NETSCAPE_EXISTING));
+}
+void openNetscapeNewWindow(){
+    cb_web(NULL,GINT_TO_POINTER(NETSCAPE_NEW_WINDOW));
+}
+void openNetscapeNew(){
+    cb_web(NULL,GINT_TO_POINTER(NETSCAPE_NEW));
+}
+void openMozillaExisting(){
+    cb_web(NULL,GINT_TO_POINTER(MOZILLA_EXISTING));
+}
+void openMozillaNewWindow(){
+    cb_web(NULL,GINT_TO_POINTER(MOZILLA_NEW_WINDOW));
+}
+void openMozillaNewTab(){
+    cb_web(NULL,GINT_TO_POINTER(MOZILLA_NEW_TAB));
+}
+void openMozillaNew(){
+    cb_web(NULL,GINT_TO_POINTER(MOZILLA_NEW));
+}
+void openGaleonExisting(){
+    cb_web(NULL,GINT_TO_POINTER(GALEON_EXISTING));
+}
+void openGaleonNewWindow(){
+    cb_web(NULL,GINT_TO_POINTER(GALEON_NEW_WINDOW));
+}
+void openGaleonNewTab(){
+    cb_web(NULL,GINT_TO_POINTER(GALEON_NEW_TAB));
+}
+void openGaleonNew(){
+    cb_web(NULL,GINT_TO_POINTER(GALEON_NEW));
+}
+void openOperaExisting(){
+    cb_web(NULL,GINT_TO_POINTER(OPERA_EXISTING));
+}
+void openOperaNewWindow(){
+    cb_web(NULL,GINT_TO_POINTER(OPERA_NEW_WINDOW));
+}
+void openOperaNew(){
+    cb_web(NULL,GINT_TO_POINTER(OPERA_NEW));
+}
+void openGnomeNew(){
+    cb_web(NULL,GINT_TO_POINTER(GNOME_URL));
+}
+void openLynxNew(){
+    cb_web(NULL,GINT_TO_POINTER(LYNX_NEW));
+}
+void openLinksNew(){
+    cb_web(NULL,GINT_TO_POINTER(LINKS_NEW));
+}
+void openW3MNew(){
+    cb_web(NULL,GINT_TO_POINTER(W3M_NEW));
+}
+void openKonquerorNew(){
+    cb_web(NULL,GINT_TO_POINTER(KONQUEROR_NEW));
+}
 static void cb_web(GtkWidget *widget, gpointer data)
 {
    int sel;
@@ -1155,33 +1216,33 @@ static void get_main_menu(GtkWidget *my_window,
     static GtkActionEntry webEntries[] = {
             {"WebMenuAction",       NULL, "Web",      "<alt>W"},
             {"NetscapeMenuAction",  NULL, "Netscape", ""},
-            {"NetscapeExisting",  NULL, "open jpilot.org in existing", ""},
-            {"NetscapeNewWindow",  NULL, "open jpilot.org in new window", ""},
-            {"NetscapeNewNetscape",  NULL, "open jpilot.org in new Netscape", ""},
+            {"NetscapeExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openNetscapeExisting)},
+            {"NetscapeNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openNetscapeNewWindow)},
+            {"NetscapeNewNetscape",  NULL, "open jpilot.org in new Netscape", "","",G_CALLBACK(openNetscapeNew)},
             {"MozillaMenuAction",   NULL, "Mozilla",  ""},
-            {"MozillaExisting",  NULL, "open jpilot.org in existing", ""},
-            {"MozillaNewWindow",  NULL, "open jpilot.org in new window", ""},
-            {"MozillaNewTab",  NULL, "open jpilot.org in new tab", ""},
-            {"MozillaNewMozilla",  NULL, "open jpilot.org in new Mozilla", ""},
+            {"MozillaExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openMozillaExisting)},
+            {"MozillaNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openMozillaNewWindow)},
+            {"MozillaNewTab",  NULL, "open jpilot.org in new tab", "","",G_CALLBACK(openMozillaNewTab)},
+            {"MozillaNewMozilla",  NULL, "open jpilot.org in new Mozilla", "","",G_CALLBACK(openMozillaNew)},
             {"GaleonMenuAction",    NULL, "Galeon",  ""},
-            {"GaleonExisting",  NULL, "open jpilot.org in existing", ""},
-            {"GaleonNewWindow",  NULL, "open jpilot.org in new window", ""},
-            {"GaleonNewTab",  NULL, "open jpilot.org in new tab", ""},
-            {"GaleonNewGaleon",  NULL, "open jpilot.org in new Galeon", ""},
+            {"GaleonExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openGaleonExisting)},
+            {"GaleonNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openGaleonNewWindow)},
+            {"GaleonNewTab",  NULL, "open jpilot.org in new tab", "","",G_CALLBACK(openGaleonNewTab)},
+            {"GaleonNewGaleon",  NULL, "open jpilot.org in new Galeon", "","",G_CALLBACK(openGaleonNew)},
             {"OperaMenuAction",     NULL, "Opera",  ""},
-            {"OperaExisting",  NULL, "open jpilot.org in existing", ""},
-            {"OperaNewWindow",  NULL, "open jpilot.org in new window", ""},
-            {"OperaNewOpera",  NULL, "open jpilot.org in new Opera", ""},
+            {"OperaExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openOperaExisting)},
+            {"OperaNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openOperaNewWindow)},
+            {"OperaNewOpera",  NULL, "open jpilot.org in new Opera", "","",G_CALLBACK(openOperaNew)},
             {"GnomeUrlMenuAction",  NULL, "GnomeUrl",  ""},
-            {"Gnome",  NULL, "Gnome URL Handler for jpilot.org",  ""},
+            {"Gnome",  NULL, "Gnome URL Handler for jpilot.org",  "","",G_CALLBACK(openGnomeNew)},
             {"LynxMenuAction",      NULL, "Lynx",  ""},
-            {"Lynx",  NULL, "Lynx jpilot.org",  ""},
+            {"Lynx",  NULL, "Lynx jpilot.org",  "","",G_CALLBACK(openLynxNew)},
             {"LinksMenuAction",     NULL, "Links",  ""},
-            {"Links",  NULL, "Links jpilot.org",  ""},
+            {"Links",  NULL, "Links jpilot.org",  "","",G_CALLBACK(openLinksNew)},
             {"W3MMenuAction",       NULL, "W3M",  ""},
-            {"W3M",  NULL, "w3m jpilot.org",  ""},
+            {"W3M",  NULL, "w3m jpilot.org",  "","",G_CALLBACK(openW3MNew)},
             {"KonquerorMenuAction", NULL, "Konqueror",  ""},
-            {"Konqueror",  NULL, "Konqueror jpilot.org",  ""},
+            {"Konqueror",  NULL, "Konqueror jpilot.org",  "","",G_CALLBACK(openKonquerorNew)},
 
     };
 
