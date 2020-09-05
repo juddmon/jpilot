@@ -134,6 +134,8 @@ char *getViewMenuXmlString();
 
 static void cb_plugin_setup();
 
+GString *concatMenuItemStr(GString *currentString, gchar *name);
+
 #endif
 
 /****************************** Main Code *************************************/
@@ -1204,7 +1206,7 @@ static void get_main_menu(GtkWidget *my_window,
 #ifdef WEBMENU
     const char *webMenuXml = getWebMenuXmlString();
 #endif
-    const char *helpMenuXml = getHelpMenuXmlString();
+    const char *helpMenuXml = getHelpMenuXmlString(plugin_list);
 
     static GtkRadioActionEntry radioEntries[] = {
             {"HidePrivateRecordsAction", "jpilot-hide-private", "Hide Private Records", NULL, "Exit application", HIDE_PRIVATES},
@@ -1531,16 +1533,30 @@ static void get_main_menu(GtkWidget *my_window,
             _("/View/Mask Private Records")));
 }
 
-static const char *getHelpMenuXmlString() {
-    return "<ui>\n"
-           "    <menubar name=\"MainMenu\">\n"
-           "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n"
-           "            <placeholder name=\"PluginHelpAdditions\" />\n"
-           "        </menu>\n"
-           "    </menubar>\n"
-           "</ui>";
+static const char *getHelpMenuXmlString(GList *plugin_list) {
+    GString *finalString = g_string_new("<ui>\n"
+                                        "    <menubar name=\"MainMenu\">\n"
+                                        "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
+                                        "            <separator/>\n"
+                                        "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n");
+    gchar *endMenu = "</menu>\n"
+                     "    </menubar>\n"
+                     "</ui>";
+#ifdef ENABLE_PLUGINS
+    GList *temp_list;
+    struct plugin_s *plugin;
+    if (plugin_list != NULL) {
+        for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+
+            plugin = (struct plugin_s *) temp_list->data;
+            if (plugin != NULL && plugin->menu_name != NULL) {
+                finalString = concatMenuItemStr(finalString, plugin->help_name);
+            }
+        }
+    }
+#endif
+    g_string_append(finalString, endMenu);
+    return finalString->str;
 }
 
 #ifdef WEBMENU
@@ -1595,18 +1611,18 @@ static const char *getWebMenuXmlString() {
 #endif
 #ifdef ENABLE_PLUGINS
 
-GString * concatPluginMenuStr(GString *currentString, struct plugin_s *currentPlugin) {
+GString *concatMenuItemStr(GString *currentString, gchar *name) {
     const gchar *beginMenuItem = "  <menuitem name=\"";
     const gchar *beginMenuItemAction = "\" action=\"";
-    const gchar *endMenuItem = "\"/>\n";
+    const gchar *endMenuItem = "Action\"/>\n";
     gchar temp_str[255];
 
-    g_snprintf(temp_str, sizeof(temp_str), _("%s"), currentPlugin->menu_name);
-    g_string_append(currentString,beginMenuItem);
-    g_string_append(currentString,temp_str);
-    g_string_append(currentString,beginMenuItemAction);
-    g_string_append(currentString,temp_str);
-    g_string_append(currentString,endMenuItem);
+    g_snprintf(temp_str, sizeof(temp_str), _("%s"), name);
+    g_string_append(currentString, beginMenuItem);
+    g_string_append(currentString, temp_str);
+    g_string_append(currentString, beginMenuItemAction);
+    g_string_append(currentString, temp_str);
+    g_string_append(currentString, endMenuItem);
     return currentString;
 }
 
@@ -1623,18 +1639,13 @@ static const char *getPluginMenuXmlString(GList *plugin_list) {
     endMenu = "</menu>\n"
               "    </menubar>\n"
               "</ui>";
-
-    // <menuitem name=\"_Find\" action=\"FindAction\"/>\n"
-    int sizeOfPluginList = 0;
-
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-        sizeOfPluginList++;
         plugin = (struct plugin_s *) temp_list->data;
         if (plugin != NULL && plugin->menu_name != NULL) {
-            finalString = concatPluginMenuStr(finalString, plugin);
+            finalString = concatMenuItemStr(finalString, plugin->menu_name);
         }
     }
-    g_string_append(finalString,endMenu);
+    g_string_append(finalString, endMenu);
     return finalString->str;
 }
 
