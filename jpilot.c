@@ -1549,7 +1549,7 @@ static const char *getHelpMenuXmlString(GList *plugin_list) {
         for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
 
             plugin = (struct plugin_s *) temp_list->data;
-            if (plugin != NULL && plugin->menu_name != NULL) {
+            if (plugin != NULL && plugin->help_name != NULL) {
                 finalString = concatMenuItemStr(finalString, plugin->help_name);
             }
         }
