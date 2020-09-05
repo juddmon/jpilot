@@ -1128,87 +1128,85 @@ static void get_main_menu(GtkWidget *my_window,
     const char *helpMenuXml = getHelpMenuXmlString();
 
     static GtkRadioActionEntry radioEntries[] = {
-            {"HidePrivateRecordsAction", "jpilot-hide-private",
-                    "Hide Private Records", NULL,
-                    "Exit application",
-                    HIDE_PRIVATES},
-            {"ShowPrivateRecordsAction", "jpilot-show-private",
-                    "Show Private Records", NULL,
-                    "Exit application",
-                    SHOW_PRIVATES},
-            {"MasKPrivateRecordsAction", "jpilot-mask-private",
-                    "Mask Private Records", NULL,
-                    "Exit application",
-                    MASK_PRIVATES},
+            {"HidePrivateRecordsAction", "jpilot-hide-private", "Hide Private Records", NULL, "Exit application", HIDE_PRIVATES},
+            {"ShowPrivateRecordsAction", "jpilot-show-private", "Show Private Records", NULL, "Exit application", SHOW_PRIVATES},
+            {"MasKPrivateRecordsAction", "jpilot-mask-private", "Mask Private Records", NULL, "Exit application", MASK_PRIVATES},
     };
     static GtkActionEntry helpEntries[] = {
-            {"HelpMenuAction",    NULL, "_Help",      "<alt>H"},
-            {"AboutJPilotAction", GTK_STOCK_ABOUT,
-                                        "About J-Pilot", NULL,
-                    "About J-Pilot",
-                    G_CALLBACK (cb_about)},
+            {"HelpMenuAction",    NULL,            "_Help", "<alt>H"},
+            {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
     };
     static GtkActionEntry viewEntries[] = {
-            {"ViewMenuAction", NULL, "_View",     "<alt>V"},
-            {"DatebookAction",  "jpilot-datebook",
-                                     "Datebook",  "F1",
-                    "Open Datebook",
-                    G_CALLBACK (cb_datebook_app_button)},
-            {"AddressesAction", "jpilot-address",
-                                     "Addresses", "F2",
-                    "Open Addresses",
-                    G_CALLBACK (cb_address_app_button)},
-            {"TodosAction",     "jpilot-todo",
-                                     "Todos",     "F3",
-                    "Open Todos",
-                    G_CALLBACK (cb_todo_app_button)},
-            {"MemosAction",     "jpilot-memo",
-                                     "Memos",     "F4",
-                    "Open Memos",
-                    G_CALLBACK (cb_memo_app_button)},
-            /*    {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},
-                {"WebMenuAction",     NULL, "Web",       "<alt>W"}, */
+            {"ViewMenuAction", NULL,               "_View",     "<alt>V"},
+            {"DatebookAction",  "jpilot-datebook", "Datebook",  "F1", "Open Datebook",  G_CALLBACK (
+                                                                                                cb_datebook_app_button)},
+            {"AddressesAction", "jpilot-address",  "Addresses", "F2", "Open Addresses", G_CALLBACK (
+                                                                                                cb_address_app_button)},
+            {"TodosAction",     "jpilot-todo",     "Todos",     "F3", "Open Todos",     G_CALLBACK (
+                                                                                                cb_todo_app_button)},
+            {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
+                                                                                                cb_memo_app_button)},
+            /*    {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},*/
+            /*      {"WebMenuAction",     NULL, "Web",       "<alt>W"},
+              {"NetscapeMenuAction",     NULL, "Netscape",       ""},
+              {"MozillaMenuAction",     NULL, "Mozilla",       ""} */
 
     };
+    static GtkActionEntry webEntries[] = {
+            {"WebMenuAction",       NULL, "Web",      "<alt>W"},
+            {"NetscapeMenuAction",  NULL, "Netscape", ""},
+            {"NetscapeExisting",  NULL, "open jpilot.org in existing", ""},
+            {"NetscapeNewWindow",  NULL, "open jpilot.org in new window", ""},
+            {"NetscapeNewNetscape",  NULL, "open jpilot.org in new Netscape", ""},
+            {"MozillaMenuAction",   NULL, "Mozilla",  ""},
+            {"MozillaExisting",  NULL, "open jpilot.org in existing", ""},
+            {"MozillaNewWindow",  NULL, "open jpilot.org in new window", ""},
+            {"MozillaNewTab",  NULL, "open jpilot.org in new tab", ""},
+            {"MozillaNewMozilla",  NULL, "open jpilot.org in new Mozilla", ""},
+            {"GaleonMenuAction",    NULL, "Galeon",  ""},
+            {"GaleonExisting",  NULL, "open jpilot.org in existing", ""},
+            {"GaleonNewWindow",  NULL, "open jpilot.org in new window", ""},
+            {"GaleonNewTab",  NULL, "open jpilot.org in new tab", ""},
+            {"GaleonNewGaleon",  NULL, "open jpilot.org in new Galeon", ""},
+            {"OperaMenuAction",     NULL, "Opera",  ""},
+            {"OperaExisting",  NULL, "open jpilot.org in existing", ""},
+            {"OperaNewWindow",  NULL, "open jpilot.org in new window", ""},
+            {"OperaNewOpera",  NULL, "open jpilot.org in new Opera", ""},
+            {"GnomeUrlMenuAction",  NULL, "GnomeUrl",  ""},
+            {"Gnome",  NULL, "Gnome URL Handler for jpilot.org",  ""},
+            {"LynxMenuAction",      NULL, "Lynx",  ""},
+            {"Lynx",  NULL, "Lynx jpilot.org",  ""},
+            {"LinksMenuAction",     NULL, "Links",  ""},
+            {"Links",  NULL, "Links jpilot.org",  ""},
+            {"W3MMenuAction",       NULL, "W3M",  ""},
+            {"W3M",  NULL, "w3m jpilot.org",  ""},
+            {"KonquerorMenuAction", NULL, "Konqueror",  ""},
+            {"Konqueror",  NULL, "Konqueror jpilot.org",  ""},
+
+    };
+
     static GtkActionEntry fileEntries[] =
             {
-                    {"FileMenuAction", NULL,           "_File",       "<alt>F"},
+                    {"FileMenuAction", NULL,                            "_File",       "<alt>F"},
                     /* name, stock id, label */
-                    {"FindAction",     GTK_STOCK_FIND, "_Find",       "<control>F",
-                            "Find an entry by text",
-                            G_CALLBACK (cb_search_gui)},
-                    {"InstallAction",  GTK_STOCK_OPEN,
-                                                       "_Install",    "<control>I",
-                            "Install an application",
-                            G_CALLBACK (cb_install_gui)},
-                    {"ImportAction",   GTK_STOCK_GO_FORWARD,
-                                                       "Import",           NULL,
-                            "Import data",
-                            G_CALLBACK (cb_import)},
-                    {"ExportAction",   GTK_STOCK_GO_BACK,
-                                                       "Export",           NULL,
-                            "Export data",
-                            G_CALLBACK (cb_export)},
-                    {"PreferencesAction",     "jpilot-preferences",
-                                                       "Preferences", "<control>S",
-                            "Manage settings for J-Pilot",
-                            G_CALLBACK (cb_prefs_gui)},
-                    {"PrintAction",    GTK_STOCK_PRINT,
-                                                       "_Print",      "<control>P",
-                            "Print",
-                            G_CALLBACK (cb_print)},
-                    {"InstallUserAction",     "jpilot-installUser",
-                                                       "Install User",     NULL,
-                            "Install a user",
-                            G_CALLBACK (cb_install_user)},
-                    {"RestoreHandheldAction", "jpilot-restoreHandheld",
-                                                       "Restore Handheld", NULL,
-                            "Restore Handheld device",
-                            G_CALLBACK (cb_restore)},
-                    {"QuitAction",     GTK_STOCK_QUIT,
-                                                       "_Quit",       "<control>Q",
-                            "Exit application",
-                            G_CALLBACK (cb_delete_event)},
+                    {"FindAction",     GTK_STOCK_FIND,                  "_Find",       "<control>F", "Find an entry by text",       G_CALLBACK (
+                                                                                                                                            cb_search_gui)},
+                    {"InstallAction",  GTK_STOCK_OPEN,                  "_Install",    "<control>I", "Install an application",      G_CALLBACK (
+                                                                                                                                            cb_install_gui)},
+                    {"ImportAction",   GTK_STOCK_GO_FORWARD,            "Import",           NULL,    "Import data",                 G_CALLBACK (
+                                                                                                                                            cb_import)},
+                    {"ExportAction",   GTK_STOCK_GO_BACK,               "Export",           NULL,    "Export data",                 G_CALLBACK (
+                                                                                                                                            cb_export)},
+                    {"PreferencesAction",     "jpilot-preferences",     "Preferences", "<control>S", "Manage settings for J-Pilot", G_CALLBACK (
+                                                                                                                                            cb_prefs_gui)},
+                    {"PrintAction",    GTK_STOCK_PRINT,                 "_Print",      "<control>P", "Print",                       G_CALLBACK (
+                                                                                                                                            cb_print)},
+                    {"InstallUserAction",     "jpilot-installUser",     "Install User",     NULL,    "Install a user",              G_CALLBACK (
+                                                                                                                                            cb_install_user)},
+                    {"RestoreHandheldAction", "jpilot-restoreHandheld", "Restore Handheld", NULL,    "Restore Handheld device",     G_CALLBACK (
+                                                                                                                                            cb_restore)},
+                    {"QuitAction",     GTK_STOCK_QUIT,                  "_Quit",       "<control>Q", "Exit application",            G_CALLBACK (
+                                                                                                                                            cb_delete_event)},
 
             };
     static guint n_entries = G_N_ELEMENTS (fileEntries);
@@ -1216,6 +1214,7 @@ static void get_main_menu(GtkWidget *my_window,
 
     gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
     gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
+    gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
     gtk_action_group_add_actions(action_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
     //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
     gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
@@ -1227,7 +1226,9 @@ static void get_main_menu(GtkWidget *my_window,
                                gtk_ui_manager_get_accel_group(uiManager));
     addUiFromString(uiManager, fileMenuXml);
     addUiFromString(uiManager, viewMenuXml);
+    addUiFromString(uiManager, webMenuXml);
     addUiFromString(uiManager, helpMenuXml);
+
     //gtk_ui_manager_
     GtkItemFactoryEntry menu_items1[] = {
             {_("/_File"), NULL, NULL, 0, "<Branch>", NULL},
@@ -1506,7 +1507,7 @@ static void get_main_menu(GtkWidget *my_window,
 }
 
 static const char *getHelpMenuXmlString() {
-   return "<ui>\n"
+    return "<ui>\n"
            "    <menubar name=\"MainMenu\">\n"
            "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
            "            <separator/>\n"
@@ -1518,7 +1519,52 @@ static const char *getHelpMenuXmlString() {
 }
 
 static const char *getWebMenuXmlString() {
-    return NULL;
+    return "<ui>\n"
+           "    <menubar name=\"MainMenu\">\n"
+           "        <menu name=\"_Web\" action=\"WebMenuAction\">\n"
+           "            <separator/>\n"
+           "            <menu name=\"_Netscape\" action=\"NetscapeMenuAction\">\n"
+           "\n"
+           "                <menuitem name=\"open jpilot.org in existing\" action=\"NetscapeExisting\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new window\" action=\"NetscapeNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new Netscape\" action=\"NetscapeNewNetscape\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_Mozilla\" action=\"MozillaMenuAction\">\n"
+           "                <menuitem name=\"open jpilot.org in existing\" action=\"MozillaExisting\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new window\" action=\"MozillaNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new tab\" action=\"MozillaNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new Mozilla\" action=\"MozillaNewMozilla\"/>\n"
+           "\n"
+           "            </menu>\n"
+           "            <menu name=\"_Galeon\" action=\"GaleonMenuAction\">\n"
+           "                <menuitem name=\"open jpilot.org in existing\" action=\"GaleonExisting\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new window\" action=\"GaleonNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new tab\" action=\"GaleonNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new Galeon\" action=\"GaleonNewGaleon\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_Opera\" action=\"OperaMenuAction\">\n"
+           "                <menuitem name=\"open jpilot.org in existing\" action=\"OperaExisting\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new window\" action=\"OperaNewWindow\"/>\n"
+           "                <menuitem name=\"open jpilot.org in new Opera\" action=\"OperaNewOpera\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_GnomeUrl\" action=\"GnomeUrlMenuAction\">\n"
+           "                <menuitem name=\"Gnome URL Handler for jpilot.org\" action=\"Gnome\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_Lynx\" action=\"LynxMenuAction\">\n"
+           "                <menuitem name=\"Lynx jpilot.org\" action=\"Lynx\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_Links\" action=\"LinksMenuAction\">\n"
+           "                <menuitem name=\"Links jpilot.org\" action=\"Links\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_W3M\" action=\"W3MMenuAction\">\n"
+           "                <menuitem name=\"w3m jpilot.org\" action=\"W3M\"/>\n"
+           "            </menu>\n"
+           "            <menu name=\"_Konqueror\" action=\"KonquerorMenuAction\">\n"
+           "                <menuitem name=\"Konqueror jpilot.org\" action=\"Konqueror\"/>\n"
+           "            </menu>\n"
+           "        </menu>\n"
+           "    </menubar>\n"
+           "</ui>";
 }
 
 static const char *getPluginMenuXmlString() {
