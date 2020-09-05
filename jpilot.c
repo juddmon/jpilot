@@ -1202,6 +1202,8 @@ static void get_main_menu(GtkWidget *my_window,
     const char *fileMenuXml = getFileMenuXmlString();
 #ifdef ENABLE_PLUGINS
     const char *pluginMenuXml = getPluginMenuXmlString(plugin_list);
+    GList *temp_list;
+    struct plugin_s *plugin;
 #endif
 #ifdef WEBMENU
     const char *webMenuXml = getWebMenuXmlString();
@@ -1291,21 +1293,39 @@ static void get_main_menu(GtkWidget *my_window,
             };
     static guint n_entries = G_N_ELEMENTS (fileEntries);
     GtkActionGroup *action_group = gtk_action_group_new("MainMenu");
+    GtkActionGroup *actionHelp_group = gtk_action_group_new("HelpMenu");
 
     gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
     gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
 #ifdef WEBMENU
     gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
 #endif
+    gtk_action_group_add_actions(actionHelp_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
 #ifdef ENABLE_PLUGINS
+    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+        plugin = (struct plugin_s *) temp_list->data;
+        if (plugin != NULL && plugin->help_name != NULL) {
+            // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
+            GString * actionName = g_string_new(plugin->help_name);
+            g_string_append(actionName,"Action");
+            g_print("action name is %s\n",actionName->str);
+            GtkAction * helpPluginAction = gtk_action_new(actionName->str,plugin->help_name,"",GTK_STOCK_ABOUT);
+
+            //gtk_action_get_name()
+            gtk_action_group_add_action(actionHelp_group,helpPluginAction);
+        }
+    }
 
 #endif
-    gtk_action_group_add_actions(action_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
+
+
+
     //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
     gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
                                        show_privates(GET_PRIVATES), G_CALLBACK(cb_private_from_radio), NULL);
 
     gtk_ui_manager_insert_action_group(uiManager, action_group, 0);
+    gtk_ui_manager_insert_action_group(uiManager, actionHelp_group, 10);
 
     gtk_window_add_accel_group(GTK_WINDOW (my_window),
                                gtk_ui_manager_get_accel_group(uiManager));
@@ -1340,7 +1360,7 @@ static void get_main_menu(GtkWidget *my_window,
     int str_i;
     char **plugin_menu_strings;
     char **plugin_help_strings;
-    GList *temp_list;
+    //GList *temp_list;
     char *F_KEYS[] = {"F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"};
     int f_key_count;
 #endif
