@@ -1319,7 +1319,6 @@ static void get_main_menu(GtkWidget *my_window,
             // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
             GString *actionName = g_string_new(plugin->help_name);
             g_string_append(actionName, "Action");
-            g_print("action name is %s\n", actionName->str);
             GtkAction *helpPluginAction = gtk_action_new(actionName->str, plugin->help_name, "", GTK_STOCK_ABOUT);
             gtk_action_set_sensitive(helpPluginAction,TRUE);
             g_signal_connect (helpPluginAction, "activate",
@@ -1331,7 +1330,6 @@ static void get_main_menu(GtkWidget *my_window,
             // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
             GString *actionName = g_string_new(plugin->menu_name);
             g_string_append(actionName, "Action");
-            g_print("action name is %s\n", actionName->str);
             GtkAction *pluginAction = gtk_action_new(actionName->str, plugin->menu_name, "", GTK_STOCK_ABOUT);
             gtk_action_set_sensitive(pluginAction,TRUE);
             g_signal_connect (pluginAction, "activate",
@@ -1345,8 +1343,8 @@ static void get_main_menu(GtkWidget *my_window,
                 gtk_action_group_add_action(actionPlugin_group, pluginAction);
             } else {
                 gtk_action_group_add_action_with_accel(actionPlugin_group,pluginAction,acceleratorPath);
-                gtk_action_set_accel_group(actionPlugin_group,accelGroup);
-                gtk_action_connect_accelerator(actionPlugin_group);
+                gtk_action_set_accel_group(pluginAction,accelGroup);
+                gtk_action_connect_accelerator(pluginAction);
             }
         }
     }
