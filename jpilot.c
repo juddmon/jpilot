@@ -101,7 +101,7 @@ unsigned char skip_plugins;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
 pid_t jpilot_master_pid;
-
+int plugin_number = DATEBOOK + 100;
 /* jpilot.c file globals */
 static GtkWidget *g_hbox, *g_vbox0;
 static GtkWidget *g_hbox2, *g_vbox0_1;
@@ -129,7 +129,9 @@ static void install_gui_and_size(GtkWidget *main_window);
 static void cb_private(GtkWidget *widget, gpointer data);
 
 char *getViewMenuXmlString();
-
+#ifdef ENABLE_PLUGINS
+static void cb_plugin_setup();
+#endif
 /****************************** Main Code *************************************/
 
 static int create_main_boxes(void) {
@@ -221,7 +223,10 @@ void call_plugin_gui(int number, int unique_id) {
         }
     }
 }
-
+static void cb_plugin_setup()
+{
+    call_plugin_gui(plugin_number++, 0);
+}
 static void cb_plugin_gui(GtkWidget *widget, int number) {
     call_plugin_gui(number, 0);
 }
@@ -1212,7 +1217,7 @@ static void get_main_menu(GtkWidget *my_window,
                                                                                                 cb_todo_app_button)},
             {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
                                                                                                 cb_memo_app_button)},
-            /*    {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},*/
+                {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},
 
 
     };
@@ -1282,6 +1287,9 @@ static void get_main_menu(GtkWidget *my_window,
 #ifdef WEBMENU
     gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
 #endif
+#ifdef ENABLE_PLUGINS
+
+#endif
     gtk_action_group_add_actions(action_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
     //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
     gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
@@ -1295,6 +1303,9 @@ static void get_main_menu(GtkWidget *my_window,
     addUiFromString(uiManager, viewMenuXml);
 #ifdef WEBMENU
     addUiFromString(uiManager, webMenuXml);
+#endif
+#ifdef ENABLE_PLUGINS
+    addUiFromString(uiManager, pluginMenuXml);
 #endif
     addUiFromString(uiManager, helpMenuXml);
 
@@ -1575,7 +1586,23 @@ static const char *getWebMenuXmlString() {
 #endif
 #ifdef ENABLE_PLUGINS
 static const char *getPluginMenuXmlString() {
-    return NULL;
+    char * finalString = NULL;
+    char * beginMenu;
+    char * endMenu;
+    beginMenu = "<ui>\n"
+                "    <menubar name=\"MainMenu\">\n"
+                "        <menu name=\"_Plugins\" action=\"PluginMenuAction\">";
+    endMenu = "</menu>\n"
+              "    </menubar>\n"
+              "</ui>";
+    finalString = malloc(strlen(beginMenu) + strlen(endMenu));
+    strncpy(finalString,beginMenu,strlen(beginMenu));
+    strncat(finalString,endMenu,strlen(endMenu));
+    g_print("string = %s, length = %d",finalString,strlen(finalString));
+
+    return finalString;
+
+
 }
 #endif
 
