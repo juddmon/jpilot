@@ -129,9 +129,9 @@ static void install_gui_and_size(GtkWidget *main_window);
 static void cb_private(GtkWidget *widget, gpointer data);
 
 char *getViewMenuXmlString();
-
+static const char *getHelpMenuXmlString(GList *plugin_list);
 #ifdef ENABLE_PLUGINS
-
+static const char *getPluginMenuXmlString(GList *plugin_list);
 static void cb_plugin_setup();
 
 
@@ -237,7 +237,7 @@ static void cb_plugin_setup() {
     call_plugin_gui(plugin_number++, 0);
 }
 
-static void cb_plugin_gui(GtkWidget *widget, int number) {
+static void cb_plugin_gui(GtkAction *action, int number) {
     call_plugin_gui(number, 0);
 }
 
@@ -684,16 +684,12 @@ char *getFileMenuXmlString();
 
 void addUiFromString(const GtkUIManager *uiManager, const char *menuXml);
 
-#ifdef ENABLE_PLUGINS
 
-static const char *getPluginMenuXmlString();
-
-#endif
 #ifdef WEBMENU
 static const char *getWebMenuXmlString();
 #endif
 
-static const char *getHelpMenuXmlString();
+
 
 void cb_cancel_sync(GtkWidget *widget, unsigned int flags) {
     if (glob_child_pid) {
@@ -1233,7 +1229,7 @@ static void get_main_menu(GtkWidget *my_window,
                                                                                                 cb_todo_app_button)},
             {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
                                                                                                 cb_memo_app_button)},
-            {"PluginMenuAction", NULL,             "Plugins",   "<alt>P"},
+
 
 
     };
@@ -1299,10 +1295,18 @@ static void get_main_menu(GtkWidget *my_window,
     GtkActionGroup *action_group = gtk_action_group_new("MainMenu");
     GtkActionGroup *actionHelp_group = gtk_action_group_new("HelpMenu");
 
+    GtkActionGroup *actionPlugin_group = gtk_action_group_new("PluginMenu");
+
     gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
     gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
 #ifdef WEBMENU
     gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
+#endif
+#ifdef ENABLE_PLUGINS
+    static GtkActionEntry pluginEntries[] = {
+            {"PluginMenuAction", NULL,             "_Plugins",   "<alt>P"}
+    };
+    gtk_action_group_add_actions(actionPlugin_group, pluginEntries, G_N_ELEMENTS (pluginEntries), NULL);
 #endif
     gtk_action_group_add_actions(actionHelp_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
 #ifdef ENABLE_PLUGINS
@@ -1321,6 +1325,18 @@ static void get_main_menu(GtkWidget *my_window,
                               GINT_TO_POINTER(plugin->number));
             gtk_action_group_add_action(actionHelp_group,helpPluginAction);
         }
+        if (plugin != NULL && plugin->menu_name != NULL) {
+            // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
+            GString *actionName = g_string_new(plugin->menu_name);
+            g_string_append(actionName, "Action");
+            g_print("action name is %s\n", actionName->str);
+            GtkAction *pluginAction = gtk_action_new(actionName->str, plugin->menu_name, "", GTK_STOCK_ABOUT);
+            gtk_action_set_sensitive(pluginAction,TRUE);
+            g_signal_connect (pluginAction, "activate",
+                              G_CALLBACK(cb_plugin_gui),
+                              GINT_TO_POINTER(plugin->number));
+            gtk_action_group_add_action(actionPlugin_group,pluginAction);
+        }
     }
 
 
@@ -1334,6 +1350,7 @@ static void get_main_menu(GtkWidget *my_window,
                                        show_privates(GET_PRIVATES), G_CALLBACK(cb_private_from_radio), NULL);
 
     gtk_ui_manager_insert_action_group(uiManager, action_group, 0);
+    gtk_ui_manager_insert_action_group(uiManager, actionPlugin_group, 9);
     gtk_ui_manager_insert_action_group(uiManager, actionHelp_group, 10);
 
     gtk_window_add_accel_group(GTK_WINDOW (my_window),
@@ -1468,7 +1485,7 @@ static void get_main_menu(GtkWidget *my_window,
             } else {
                 menu_items2[i2].accelerator = NULL;
             }
-            menu_items2[i2].callback = cb_plugin_gui;
+          //  menu_items2[i2].callback = cb_plugin_gui;
             menu_items2[i2].callback_action = p->number;
             menu_items2[i2].item_type = 0;
             str_i++;
