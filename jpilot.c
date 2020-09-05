@@ -1310,6 +1310,8 @@ static void get_main_menu(GtkWidget *my_window,
 #endif
     gtk_action_group_add_actions(actionHelp_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
 #ifdef ENABLE_PLUGINS
+    GtkAccelGroup * accelGroup = gtk_accel_group_new();
+    gtk_window_add_accel_group(window,accelGroup);
     int current = 5;
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
         plugin = (struct plugin_s *) temp_list->data;
@@ -1335,7 +1337,17 @@ static void get_main_menu(GtkWidget *my_window,
             g_signal_connect (pluginAction, "activate",
                               G_CALLBACK(cb_plugin_gui),
                               GINT_TO_POINTER(plugin->number));
-            gtk_action_group_add_action(actionPlugin_group,pluginAction);
+            char acceleratorPath[10] = "";
+            if(current <= 8){
+                sprintf(acceleratorPath, "F%d", current++);
+            }
+            if(strcmp(acceleratorPath,"") == 0) {
+                gtk_action_group_add_action(actionPlugin_group, pluginAction);
+            } else {
+                gtk_action_group_add_action_with_accel(actionPlugin_group,pluginAction,acceleratorPath);
+                gtk_action_set_accel_group(actionPlugin_group,accelGroup);
+                gtk_action_connect_accelerator(actionPlugin_group);
+            }
         }
     }
 
