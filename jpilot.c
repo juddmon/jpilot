@@ -134,6 +134,9 @@ char *getViewMenuXmlString();
 
 static void cb_plugin_setup();
 
+
+static void call_plugin_help(int number);
+
 GString *concatMenuItemStr(GString *currentString, gchar *name);
 
 #endif
@@ -242,7 +245,10 @@ static void cb_plugin_gui(GtkWidget *widget, int number) {
 void plugin_gui_refresh(int unique_id) {
     call_plugin_gui(glob_app, unique_id);
 }
-
+static void cb_plugin_help(GtkAction *action,
+                        gpointer   user_data){
+   call_plugin_help(GPOINTER_TO_INT(user_data));
+}
 static void call_plugin_help(int number) {
     struct plugin_s *plugin;
     GList *plugin_list, *temp_list;
@@ -277,9 +283,7 @@ static void call_plugin_help(int number) {
     }
 }
 
-static void cb_plugin_help(GtkWidget *widget, int number) {
-    call_plugin_help(number);
-}
+
 
 #endif
 
@@ -1302,19 +1306,24 @@ static void get_main_menu(GtkWidget *my_window,
 #endif
     gtk_action_group_add_actions(actionHelp_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
 #ifdef ENABLE_PLUGINS
+    int current = 5;
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
         plugin = (struct plugin_s *) temp_list->data;
         if (plugin != NULL && plugin->help_name != NULL) {
             // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
-            GString * actionName = g_string_new(plugin->help_name);
-            g_string_append(actionName,"Action");
-            g_print("action name is %s\n",actionName->str);
-            GtkAction * helpPluginAction = gtk_action_new(actionName->str,plugin->help_name,"",GTK_STOCK_ABOUT);
-
-            //gtk_action_get_name()
+            GString *actionName = g_string_new(plugin->help_name);
+            g_string_append(actionName, "Action");
+            g_print("action name is %s\n", actionName->str);
+            GtkAction *helpPluginAction = gtk_action_new(actionName->str, plugin->help_name, "", GTK_STOCK_ABOUT);
+            gtk_action_set_sensitive(helpPluginAction,TRUE);
+            g_signal_connect (helpPluginAction, "activate",
+                              G_CALLBACK(cb_plugin_help),
+                              GINT_TO_POINTER(plugin->number));
             gtk_action_group_add_action(actionHelp_group,helpPluginAction);
         }
     }
+
+
 
 #endif
 
@@ -1490,7 +1499,7 @@ static void get_main_menu(GtkWidget *my_window,
             }
             menu_items2[i2].path = plugin_help_strings[str_i];
             menu_items2[i2].accelerator = NULL;
-            menu_items2[i2].callback = cb_plugin_help;
+           // menu_items2[i2].callback = cb_plugin_help;
             menu_items2[i2].callback_action = p->number;
             menu_items2[i2].item_type = 0;
             str_i++;
