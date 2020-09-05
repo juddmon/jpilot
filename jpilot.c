@@ -75,8 +75,7 @@
 #include "icons/sync.xpm"
 #include "icons/cancel_sync.xpm"
 #include "icons/backup.xpm"
-//todo: remove this after finishing webmenu.
-#define WEBMENU 1
+
 /********************************* Constants **********************************/
 #define OUTPUT_MINIMIZE 383
 #define OUTPUT_RESIZE   384
@@ -1185,7 +1184,9 @@ static void get_main_menu(GtkWidget *my_window,
     const char *viewMenuXml = getViewMenuXmlString();
     const char *fileMenuXml = getFileMenuXmlString();
     const char *pluginMenuXml = getPluginMenuXmlString();
+#ifdef WEBMENU
     const char *webMenuXml = getWebMenuXmlString();
+#endif
     const char *helpMenuXml = getHelpMenuXmlString();
 
     static GtkRadioActionEntry radioEntries[] = {
@@ -1208,11 +1209,10 @@ static void get_main_menu(GtkWidget *my_window,
             {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
                                                                                                 cb_memo_app_button)},
             /*    {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},*/
-            /*      {"WebMenuAction",     NULL, "Web",       "<alt>W"},
-              {"NetscapeMenuAction",     NULL, "Netscape",       ""},
-              {"MozillaMenuAction",     NULL, "Mozilla",       ""} */
+
 
     };
+#ifdef WEBMENU
     static GtkActionEntry webEntries[] = {
             {"WebMenuAction",       NULL, "Web",      "<alt>W"},
             {"NetscapeMenuAction",  NULL, "Netscape", ""},
@@ -1245,7 +1245,7 @@ static void get_main_menu(GtkWidget *my_window,
             {"Konqueror",  NULL, "Konqueror jpilot.org",  "","",G_CALLBACK(openKonquerorNew)},
 
     };
-
+#endif
     static GtkActionEntry fileEntries[] =
             {
                     {"FileMenuAction", NULL,                            "_File",       "<alt>F"},
@@ -1275,7 +1275,9 @@ static void get_main_menu(GtkWidget *my_window,
 
     gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
     gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
+#ifdef WEBMENU
     gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
+#endif
     gtk_action_group_add_actions(action_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
     //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
     gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
@@ -1287,7 +1289,9 @@ static void get_main_menu(GtkWidget *my_window,
                                gtk_ui_manager_get_accel_group(uiManager));
     addUiFromString(uiManager, fileMenuXml);
     addUiFromString(uiManager, viewMenuXml);
+#ifdef WEBMENU
     addUiFromString(uiManager, webMenuXml);
+#endif
     addUiFromString(uiManager, helpMenuXml);
 
     //gtk_ui_manager_
@@ -1578,7 +1582,7 @@ static const char *getHelpMenuXmlString() {
            "    </menubar>\n"
            "</ui>";
 }
-
+#ifdef WEBMENU
 static const char *getWebMenuXmlString() {
     return "<ui>\n"
            "    <menubar name=\"MainMenu\">\n"
@@ -1627,7 +1631,7 @@ static const char *getWebMenuXmlString() {
            "    </menubar>\n"
            "</ui>";
 }
-
+#endif
 static const char *getPluginMenuXmlString() {
     return NULL;
 }
