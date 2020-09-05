@@ -129,9 +129,13 @@ static void install_gui_and_size(GtkWidget *main_window);
 static void cb_private(GtkWidget *widget, gpointer data);
 
 char *getViewMenuXmlString();
+
 #ifdef ENABLE_PLUGINS
+
 static void cb_plugin_setup();
+
 #endif
+
 /****************************** Main Code *************************************/
 
 static int create_main_boxes(void) {
@@ -223,10 +227,11 @@ void call_plugin_gui(int number, int unique_id) {
         }
     }
 }
-static void cb_plugin_setup()
-{
+
+static void cb_plugin_setup() {
     call_plugin_gui(plugin_number++, 0);
 }
+
 static void cb_plugin_gui(GtkWidget *widget, int number) {
     call_plugin_gui(number, 0);
 }
@@ -672,8 +677,11 @@ void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 char *getFileMenuXmlString();
 
 void addUiFromString(const GtkUIManager *uiManager, const char *menuXml);
+
 #ifdef ENABLE_PLUGINS
+
 static const char *getPluginMenuXmlString();
+
 #endif
 #ifdef WEBMENU
 static const char *getWebMenuXmlString();
@@ -1191,7 +1199,7 @@ static void get_main_menu(GtkWidget *my_window,
     const char *viewMenuXml = getViewMenuXmlString();
     const char *fileMenuXml = getFileMenuXmlString();
 #ifdef ENABLE_PLUGINS
-    const char *pluginMenuXml = getPluginMenuXmlString();
+    const char *pluginMenuXml = getPluginMenuXmlString(plugin_list);
 #endif
 #ifdef WEBMENU
     const char *webMenuXml = getWebMenuXmlString();
@@ -1208,7 +1216,7 @@ static void get_main_menu(GtkWidget *my_window,
             {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
     };
     static GtkActionEntry viewEntries[] = {
-            {"ViewMenuAction", NULL,               "_View",     "<alt>V"},
+            {"ViewMenuAction",   NULL,             "_View",     "<alt>V"},
             {"DatebookAction",  "jpilot-datebook", "Datebook",  "F1", "Open Datebook",  G_CALLBACK (
                                                                                                 cb_datebook_app_button)},
             {"AddressesAction", "jpilot-address",  "Addresses", "F2", "Open Addresses", G_CALLBACK (
@@ -1217,7 +1225,7 @@ static void get_main_menu(GtkWidget *my_window,
                                                                                                 cb_todo_app_button)},
             {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
                                                                                                 cb_memo_app_button)},
-                {"PluginMenuAction",  NULL, "Plugins",   "<alt>P"},
+            {"PluginMenuAction", NULL,             "Plugins",   "<alt>P"},
 
 
     };
@@ -1313,7 +1321,7 @@ static void get_main_menu(GtkWidget *my_window,
     GtkItemFactoryEntry menu_items1[] = {
 
             {_("/_Plugins"), NULL, NULL, 0, "<Branch>", NULL},
-            {"END", NULL, NULL, 0, NULL, NULL}
+            {"END",          NULL, NULL, 0, NULL,       NULL}
     };
     GtkBuilder *item_builder;
     GtkItemFactory *item_factory;
@@ -1534,6 +1542,7 @@ static const char *getHelpMenuXmlString() {
            "    </menubar>\n"
            "</ui>";
 }
+
 #ifdef WEBMENU
 static const char *getWebMenuXmlString() {
     return "<ui>\n"
@@ -1585,25 +1594,50 @@ static const char *getWebMenuXmlString() {
 }
 #endif
 #ifdef ENABLE_PLUGINS
-static const char *getPluginMenuXmlString() {
-    char * finalString = NULL;
-    char * beginMenu;
-    char * endMenu;
-    beginMenu = "<ui>\n"
-                "    <menubar name=\"MainMenu\">\n"
-                "        <menu name=\"_Plugins\" action=\"PluginMenuAction\">";
+
+GString * concatPluginMenuStr(GString *currentString, struct plugin_s *currentPlugin) {
+    const gchar *beginMenuItem = "  <menuitem name=\"";
+    const gchar *beginMenuItemAction = "\" action=\"";
+    const gchar *endMenuItem = "\"/>\n";
+    gchar temp_str[255];
+
+    g_snprintf(temp_str, sizeof(temp_str), _("%s"), currentPlugin->menu_name);
+    g_string_append(currentString,beginMenuItem);
+    g_string_append(currentString,temp_str);
+    g_string_append(currentString,beginMenuItemAction);
+    g_string_append(currentString,temp_str);
+    g_string_append(currentString,endMenuItem);
+    return currentString;
+}
+
+static const char *getPluginMenuXmlString(GList *plugin_list) {
+    GString *finalString = g_string_new("<ui>\n"
+                                        "    <menubar name=\"MainMenu\">\n"
+                                        "        <menu name=\"_Plugins\" action=\"PluginMenuAction\">\n ");
+    char *currentString = NULL;
+    GString *beginMenu;
+    GString *endMenu;
+    GList *temp_list;
+    struct plugin_s *plugin;
+
     endMenu = "</menu>\n"
               "    </menubar>\n"
               "</ui>";
-    finalString = malloc(strlen(beginMenu) + strlen(endMenu));
-    strncpy(finalString,beginMenu,strlen(beginMenu));
-    strncat(finalString,endMenu,strlen(endMenu));
-    g_print("string = %s, length = %d",finalString,strlen(finalString));
 
-    return finalString;
+    // <menuitem name=\"_Find\" action=\"FindAction\"/>\n"
+    int sizeOfPluginList = 0;
 
-
+    for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
+        sizeOfPluginList++;
+        plugin = (struct plugin_s *) temp_list->data;
+        if (plugin != NULL && plugin->menu_name != NULL) {
+            finalString = concatPluginMenuStr(finalString, plugin);
+        }
+    }
+    g_string_append(finalString,endMenu);
+    return finalString->str;
 }
+
 #endif
 
 void addUiFromString(const GtkUIManager *uiManager, const char *menuXml) {
