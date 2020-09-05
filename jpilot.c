@@ -667,10 +667,12 @@ void cb_cancel_sync(GtkWidget *widget, unsigned int flags);
 char *getFileMenuXmlString();
 
 void addUiFromString(const GtkUIManager *uiManager, const char *menuXml);
-
+#ifdef ENABLE_PLUGINS
 static const char *getPluginMenuXmlString();
-
+#endif
+#ifdef WEBMENU
 static const char *getWebMenuXmlString();
+#endif
 
 static const char *getHelpMenuXmlString();
 
@@ -1183,7 +1185,9 @@ static void get_main_menu(GtkWidget *my_window,
     GtkUIManager *uiManager = gtk_ui_manager_new();
     const char *viewMenuXml = getViewMenuXmlString();
     const char *fileMenuXml = getFileMenuXmlString();
+#ifdef ENABLE_PLUGINS
     const char *pluginMenuXml = getPluginMenuXmlString();
+#endif
 #ifdef WEBMENU
     const char *webMenuXml = getWebMenuXmlString();
 #endif
@@ -1296,63 +1300,8 @@ static void get_main_menu(GtkWidget *my_window,
 
     //gtk_ui_manager_
     GtkItemFactoryEntry menu_items1[] = {
-            {_("/_File"), NULL, NULL, 0, "<Branch>", NULL},
-            {_("/File/tear"), NULL, NULL, 0, "<Tearoff>", NULL},
-            {_("/File/_Find"), "<control>F", cb_search_gui, 0, ICON(GTK_STOCK_FIND)},
-            {_("/File/sep1"), NULL, NULL, 0, "<Separator>", NULL},
-            {_("/File/_Install"), "<control>I", cb_install_gui, 0, ICON(GTK_STOCK_OPEN)},
-            {_("/File/Import"), NULL, cb_import, 0, ICON(GTK_STOCK_GO_FORWARD)},
-            {_("/File/Export"), NULL, cb_export, 0, ICON(GTK_STOCK_GO_BACK)},
-            {_("/File/Preferences"), "<control>S", cb_prefs_gui, 0, ICON(GTK_STOCK_PREFERENCES)},
-            {_("/File/_Print"), "<control>P", cb_print, 0, ICON(GTK_STOCK_PRINT)},
-            {_("/File/sep1"), NULL, NULL, 0, "<Separator>", NULL},
-            {_("/File/Install User"), NULL, cb_install_user, 0, ICON_XPM(user_icon, 16)},
-            {_("/File/Restore Handheld"), NULL, cb_restore, 0, ICON(GTK_STOCK_REDO)},
-            {_("/File/sep1"), NULL, NULL, 0, "<Separator>", NULL},
-            {_("/File/_Quit"), "<control>Q", cb_delete_event, 0, ICON(GTK_STOCK_QUIT)},
-            {_("/_View"), NULL, NULL, 0, "<Branch>", NULL},
-            {_("/View/Hide Private Records"), NULL, cb_private, HIDE_PRIVATES, "<RadioItem>", NULL},
-            {_("/View/Show Private Records"), NULL, cb_private, SHOW_PRIVATES, _("/View/Hide Private Records"), NULL},
-            {_("/View/Mask Private Records"), NULL, cb_private, MASK_PRIVATES, _("/View/Hide Private Records"), NULL},
-            {_("/View/sep1"), NULL, NULL, 0, "<Separator>", NULL},
-            {_("/View/Datebook"), "F1", cb_app_button, DATEBOOK, ICON_XPM(date_menu_icon, 16)},
-            {_("/View/Addresses"), "F2", cb_app_button, ADDRESS, ICON_XPM(addr_menu_icon, 16)},
-            {_("/View/Todos"), "F3", cb_app_button, TODO, ICON_XPM(todo_menu_icon, 14)},
-            {_("/View/Memos"), "F4", cb_app_button, MEMO, ICON(GTK_STOCK_JUSTIFY_LEFT)},
+
             {_("/_Plugins"), NULL, NULL, 0, "<Branch>", NULL},
-#ifdef WEBMENU
-            { _("/_Web"),                            NULL,         NULL,           0,                  "<Branch>", NULL },/* web */
-            { _("/Web/Netscape"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[NETSCAPE_EXISTING].desc,  NULL,         cb_web,         NETSCAPE_EXISTING,  NULL, NULL },
-            { url_commands[NETSCAPE_NEW_WINDOW].desc,NULL,         cb_web,         NETSCAPE_NEW_WINDOW,NULL, NULL },
-            { url_commands[NETSCAPE_NEW].desc,       NULL,         cb_web,         NETSCAPE_NEW,       NULL, NULL },
-            { _("/Web/Mozilla"),                     NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[MOZILLA_EXISTING].desc,   NULL,         cb_web,         MOZILLA_EXISTING,   NULL, NULL },
-            { url_commands[MOZILLA_NEW_WINDOW].desc, NULL,         cb_web,         MOZILLA_NEW_WINDOW, NULL, NULL },
-            { url_commands[MOZILLA_NEW_TAB].desc,    NULL,         cb_web,         MOZILLA_NEW_TAB,    NULL, NULL },
-            { url_commands[MOZILLA_NEW].desc,        NULL,         cb_web,         MOZILLA_NEW,        NULL, NULL },
-            { _("/Web/Galeon"),                      NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[GALEON_EXISTING].desc,    NULL,         cb_web,         GALEON_EXISTING,    NULL, NULL },
-            { url_commands[GALEON_NEW_WINDOW].desc,  NULL,         cb_web,         GALEON_NEW_WINDOW,  NULL, NULL },
-            { url_commands[GALEON_NEW_TAB].desc,     NULL,         cb_web,         GALEON_NEW_TAB,     NULL, NULL },
-            { url_commands[GALEON_NEW].desc,         NULL,         cb_web,         GALEON_NEW,         NULL, NULL },
-            { _("/Web/Opera"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[OPERA_EXISTING].desc,     NULL,         cb_web,         OPERA_EXISTING,     NULL, NULL },
-            { url_commands[OPERA_NEW_WINDOW].desc,   NULL,         cb_web,         OPERA_NEW_WINDOW,   NULL, NULL },
-            { url_commands[OPERA_NEW].desc,          NULL,         cb_web,         OPERA_NEW,          NULL, NULL },
-            { _("/Web/GnomeUrl"),                    NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[GNOME_URL].desc,          NULL,         cb_web,         GNOME_URL,          NULL, NULL },
-            { _("/Web/Lynx"),                        NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[LYNX_NEW].desc,           NULL,         cb_web,         LYNX_NEW,           NULL, NULL },
-            { _("/Web/Links"),                       NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[LINKS_NEW].desc,          NULL,         cb_web,         LINKS_NEW,          NULL, NULL },
-            { _("/Web/W3M"),                         NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[W3M_NEW].desc,            NULL,         cb_web,         W3M_NEW,            NULL, NULL },
-            { _("/Web/Konqueror"),                   NULL,         NULL,           0,                  "<Branch>", NULL },
-            { url_commands[KONQUEROR_NEW].desc,      NULL,         cb_web,         KONQUEROR_NEW,      NULL, NULL },
-#endif
-            {_("/_Help"), NULL, NULL, 0, "<LastBranch>", NULL},
-            {_("/Help/About J-Pilot"), NULL, cb_about, 0, ICON(GTK_STOCK_DIALOG_INFO)},
             {"END", NULL, NULL, 0, NULL, NULL}
     };
     GtkBuilder *item_builder;
@@ -1375,14 +1324,6 @@ static void get_main_menu(GtkWidget *my_window,
     int f_key_count;
 #endif
 
-    /* Irix doesn't like non-constant expressions in a static initializer */
-    /* So we have to do this to keep the compiler happy */
-    for (i = 0; i < sizeof(menu_items1) / sizeof(menu_items1[0]); i++) {
-        if (menu_items1[i].callback == cb_prefs_gui) {
-            menu_items1[i].callback_action = GPOINTER_TO_INT(my_window);
-            break;
-        }
-    }
 
 #ifdef ENABLE_PLUGINS
     /* Count the plugin/ entries */
@@ -1632,9 +1573,11 @@ static const char *getWebMenuXmlString() {
            "</ui>";
 }
 #endif
+#ifdef ENABLE_PLUGINS
 static const char *getPluginMenuXmlString() {
     return NULL;
 }
+#endif
 
 void addUiFromString(const GtkUIManager *uiManager, const char *menuXml) {
     GError *error = NULL;
@@ -1683,33 +1626,7 @@ char *getFileMenuXmlString() {
            "        </menu>\n"
            "    </menubar>\n"
            "</ui>";
-    /*
-           "        <menu name=\"View\" action=\"ViewMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\"/>\n"
-           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\"/>\n"
-           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\"/>\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Datebook\" action=\"DatebookAction\"/>\n"
-           "            <menuitem name=\"Addresses\" action=\"AddressesAction\"/>\n"
-           "            <menuitem name=\"Todos\" action=\"TodosAction\"/>\n"
-           "            <menuitem name=\"Memos\" action=\"MemosAction\"/>\n"
-           "        </menu>\n"
-           "        <menu name=\"Plugins\" action=\"PluginMenuAction\">\n"
-           "            <separator/>\n"
-           "            <placeholder name=\"PluginAdditions\" />\n"
-           "        </menu>\n"
-           "        <menu name=\"Web\" action=\"WebMenuAction\">\n"
-           "            <separator/>\n"
-           "            <placeholder name=\"WebAdditions\" />\n"
-           "        </menu>\n"
-           "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n"
-           "            <placeholder name=\"PluginHelpAdditions\" />\n"
-           "        </menu>\n"
-           "    </menubar>\n"
-           "</ui>";*/
+
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
