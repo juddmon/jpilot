@@ -146,9 +146,7 @@ static int make_serial_port_menu(GtkWidget **port_menu)
 
       gtk_widget_show(port_menu_item[i]);
    }
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(*port_menu), menu);
-
-   gtk_option_menu_set_history(GTK_OPTION_MENU(*port_menu), selected);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(*port_menu),selected);
 
    return EXIT_SUCCESS;
 }
