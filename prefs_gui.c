@@ -94,14 +94,14 @@ static void set_colors()
 #endif /* #ifdef COLORS */
 
 /* Sync Port menu code */
-static void cb_serial_port_menu(GtkWidget *widget,
+static void cb_serial_port_menu(GtkComboBox *widget,
                                 gpointer   data)
 {
    if (!widget)
       return;
-   if (!(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))) {
-      return;
-   }
+    if(gtk_combo_box_get_active(GTK_COMBO_BOX(widget)) < 0){
+        return;
+    }
 
    const char *port_str = port_choices[GPOINTER_TO_INT(data)]; 
    gtk_entry_set_text(GTK_ENTRY(port_entry), port_str);
@@ -122,28 +122,25 @@ static int make_serial_port_menu(GtkWidget **port_menu)
    int i, selected;
    const char *entry_text;
 
-   *port_menu = gtk_option_menu_new();
+   *port_menu = gtk_combo_box_text_new();
 
-   menu = gtk_menu_new();
-   group = NULL;
+  // menu = gtk_menu_new();
+  // group = NULL;
    selected=0;
 
    entry_text = gtk_entry_get_text(GTK_ENTRY(port_entry));
 
    for (i=0; port_choices[i]; i++) {
-      port_menu_item[i] = gtk_radio_menu_item_new_with_label(group, port_choices[i]);
-      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(port_menu_item[i]));
-      gtk_menu_append(GTK_MENU(menu), port_menu_item[i]);
-
+       gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (*port_menu), port_choices[i]);
       if (!strcmp(entry_text, port_choices[i])) {
-         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[i]), TRUE);
+          gtk_combo_box_set_active(GTK_COMBO_BOX (*port_menu),i);
          selected=i;
       }
 
       /* We don't want a callback if "other" is selected */
       if (i) {
-         gtk_signal_connect(GTK_OBJECT(port_menu_item[i]), "activate", 
-                            GTK_SIGNAL_FUNC(cb_serial_port_menu),
+          g_signal_connect(G_OBJECT(port_menu_item[i]), "changed",
+                           G_CALLBACK(cb_serial_port_menu),
                             GINT_TO_POINTER(i));
       }
 
