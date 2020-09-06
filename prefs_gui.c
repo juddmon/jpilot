@@ -165,9 +165,10 @@ static void cb_pref_menu(GtkWidget *widget, gpointer data)
 
    if (!widget)
       return;
-   if (!(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))) {
-      return;
+   if(!gtk_combo_box_get_active(GTK_COMBO_BOX(widget))){
+       return;
    }
+
 
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
@@ -197,11 +198,10 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
 
    time(&ltime);
    now = localtime(&ltime);
+   *pref_menu = gtk_combo_box_text_new();
 
-   *pref_menu = gtk_option_menu_new();
-
-   menu = gtk_menu_new();
-   group = NULL;
+   //menu = gtk_menu_new();
+   ///group = NULL;
 
    get_pref(pref_num, &ivalue, &svalue);
 
@@ -222,21 +222,18 @@ int make_pref_menu(GtkWidget **pref_menu, int pref_num)
          strncpy(human_text, format_text, MAX_PREF_LEN);
          break;
       }
-      menu_item = gtk_radio_menu_item_new_with_label(
-                     group, human_text);
-      group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-      gtk_menu_append(GTK_MENU(menu), menu_item);
+       gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (*pref_menu), human_text);
 
       if (ivalue == i) {
-         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), ivalue);
+          gtk_combo_box_set_active(GTK_COMBO_BOX (*pref_menu),i);
       }
+      g_signal_connect(G_OBJECT(*pref_menu),"changed",G_CALLBACK(cb_pref_menu),
+                       GINT_TO_POINTER(((pref_num*0x100) + (i & 0xFF))));
 
-      gtk_signal_connect(GTK_OBJECT(menu_item), "activate", GTK_SIGNAL_FUNC(cb_pref_menu),
-                         GINT_TO_POINTER(((pref_num*0x100) + (i & 0xFF))));
 
-      gtk_widget_show(menu_item);
+     // gtk_widget_show(menu_item);
    }
-   gtk_option_menu_set_menu(GTK_OPTION_MENU(*pref_menu), menu);
+   //gtk_option_menu_set_menu(GTK_(*pref_menu), menu);
 
    return EXIT_SUCCESS;
 }

@@ -200,7 +200,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_box_pack_start(GTK_BOX(hbox), pref_menu, FALSE, FALSE, 0);
 
    get_pref(PREF_PAPER_SIZE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+   gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
 
    /* Radio buttons for Datebook */
    radio_button_daily=radio_button_weekly=radio_button_monthly=NULL;
