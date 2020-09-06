@@ -142,7 +142,6 @@ static GObject *addr_all_buffer;
 static GtkWidget *notebook_label[NUM_CONTACT_NOTEBOOK_PAGES];
 static GtkWidget *phone_type_list_menu[NUM_PHONE_ENTRIES];
 static GtkWidget *address_type_list_menu[NUM_ADDRESSES];
-static GtkWidget *address_type_menu_item[NUM_ADDRESSES][NUM_ADDRESSES]; /* 3 menus with 3 possible entries */
 static GtkWidget *IM_type_list_menu[NUM_IMS];
 static int address_phone_label_selected[NUM_PHONE_ENTRIES];
 static int address_type_selected[NUM_ADDRESSES];
@@ -2227,30 +2226,32 @@ static void cb_IM_type_menu(GtkComboBox *item, unsigned int value) {
  * i.e., which item is chosen (Work, Office, Home).
  * The next to least significant byte is the address type menu
  * that is being selected (there are 3 addresses and 3 pulldown menus) */
-static void cb_address_type_menu(GtkWidget *item, unsigned int value) {
+static void cb_address_type_menu(GtkComboBox *item, unsigned int value) {
     int menu, selection;
     int address_i, i;
 
     if (!item)
         return;
-    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
-        menu = (value & 0xFF00) >> 8;
-        selection = value & 0xFF;
-        jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
-        jp_logf(JP_LOG_DEBUG, "selection = %d\n", selection);
-        address_type_selected[menu] = selection;
-        /* We want to make the notebook page tab label match the type of
-       * address from the menu.  So, we'll find the nth address menu
-       * and set whatever page the schema says it resides on */
-        address_i = 0;
-        for (i = 0; i < schema_size; i++) {
-            if (schema[i].type == ADDRESS_GUI_ADDR_MENU_TEXT) {
-                if (address_i == menu) {
-                    gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]),
-                                       contact_app_info.addrLabels[selection]);
-                }
-                address_i++;
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
+        return;
+    }
+    int selectedIndex = gtk_combo_box_get_active(GTK_COMBO_BOX(item));
+    menu = value;
+    selection = selectedIndex;
+    jp_logf(JP_LOG_DEBUG, "addr_type_menu = %d\n", menu);
+    jp_logf(JP_LOG_DEBUG, "selection = %d\n", selection);
+    address_type_selected[menu] = selection;
+    /* We want to make the notebook page tab label match the type of
+   * address from the menu.  So, we'll find the nth address menu
+   * and set whatever page the schema says it resides on */
+    address_i = 0;
+    for (i = 0; i < schema_size; i++) {
+        if (schema[i].type == ADDRESS_GUI_ADDR_MENU_TEXT) {
+            if (address_i == menu) {
+                gtk_label_set_text(GTK_LABEL(notebook_label[schema[i].notebook_page]),
+                                   contact_app_info.addrLabels[selection]);
             }
+            address_i++;
         }
     }
 }
@@ -2345,14 +2346,11 @@ static void addr_clear_details(void) {
                 phone_i++;
                 break;
             case ADDRESS_GUI_IM_MENU_TEXT:
-                gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[IM_i]),IM_i);
+                gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[IM_i]), IM_i);
                 IM_i++;
                 break;
             case ADDRESS_GUI_ADDR_MENU_TEXT:
-                if (address_type_menu_item[address_i][address_i])
-                    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                                   (address_type_menu_item[address_i][address_i]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]), address_i);
+                gtk_combo_box_set_active(GTK_COMBO_BOX(address_type_list_menu[address_i]),address_i);
                 address_i++;
                 break;
             case ADDRESS_GUI_WEBSITE_TEXT:
@@ -3425,10 +3423,10 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
             changed_list = g_list_prepend(changed_list, IM_type_list_menu[set]);
         }
     }
-    g_signal_connect(G_OBJECT(IM_type_list_menu[set]),"changed",G_CALLBACK(cb_IM_type_menu),
+    g_signal_connect(G_OBJECT(IM_type_list_menu[set]), "changed", G_CALLBACK(cb_IM_type_menu),
                      GINT_TO_POINTER(set));
 
-    gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[set]),default_set);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[set]), default_set);
 
 
     return EXIT_SUCCESS;
@@ -3443,38 +3441,18 @@ static int make_address_type_menu(int default_set, int set) {
     GSList *group;
     GtkWidget *menu;
 
-    address_type_list_menu[set] = gtk_option_menu_new();
-
-    menu = gtk_menu_new();
-    group = NULL;
-
+    address_type_list_menu[set] = gtk_combo_box_text_new();
     for (i = 0; i < NUM_ADDRESSES; i++) {
         if (contact_app_info.addrLabels[i][0]) {
-            address_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-                    group, contact_app_info.addrLabels[i]);
-            gtk_signal_connect(GTK_OBJECT(address_type_menu_item[set][i]), "activate",
-                               GTK_SIGNAL_FUNC(cb_address_type_menu),
-                               GINT_TO_POINTER(set << 8 | i));
-            group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(address_type_menu_item[set][i]));
-            gtk_menu_append(GTK_MENU(menu), address_type_menu_item[set][i]);
-            gtk_widget_show(address_type_menu_item[set][i]);
-
-            changed_list = g_list_prepend(changed_list, address_type_menu_item[set][i]);
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (address_type_list_menu[set]),
+                                           contact_app_info.addrLabels[i]);
+            changed_list = g_list_prepend(changed_list, address_type_list_menu[set]);
         }
     }
-    /* Set this one to active */
-    if (GTK_IS_WIDGET(address_type_menu_item[set][default_set])) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
-                                               address_type_menu_item[set][default_set]), TRUE);
-    }
+    g_signal_connect(G_OBJECT(address_type_list_menu[set]), "changed", G_CALLBACK(cb_address_type_menu),
+                     GINT_TO_POINTER(set));
 
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(address_type_list_menu[set]), menu);
-    /* Make this one show up by default */
-    gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[set]),
-                                default_set);
-
-    gtk_widget_show(address_type_list_menu[set]);
-
+    gtk_combo_box_set_active(GTK_COMBO_BOX(address_type_list_menu[set]), default_set);
     return EXIT_SUCCESS;
 }
 
@@ -3881,17 +3859,13 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                     goto set_text;
                 case ADDRESS_GUI_IM_MENU_TEXT:
                     if (GTK_IS_WIDGET(IM_type_list_menu[IM_i])) {
-                       gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[IM_i]),cont->IMLabel[IM_i]);
+                        gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[IM_i]), cont->IMLabel[IM_i]);
                     }
                     IM_i++;
                     goto set_text;
                 case ADDRESS_GUI_ADDR_MENU_TEXT:
-                    if (GTK_IS_WIDGET(address_type_menu_item[address_i][cont->addressLabel[address_i]])) {
-                        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                                       (address_type_menu_item[address_i][cont->addressLabel[address_i]]),
-                                                       TRUE);
-                        gtk_option_menu_set_history(GTK_OPTION_MENU(address_type_list_menu[address_i]),
-                                                    cont->addressLabel[address_i]);
+                    if (GTK_IS_WIDGET(address_type_list_menu[address_i])) {
+                        gtk_combo_box_set_active(GTK_COMBO_BOX(address_type_list_menu[address_i]),cont->addressLabel[address_i]);
                         /* We want to make the notebook page tab label match the type of
                  * address from the menu.  So, we'll find the nth address menu
                  * and set whatever page the schema says it resides on */
@@ -4305,7 +4279,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Clear GTK option menus before use */
     for (i = 0; i < NUM_ADDRESSES; i++) {
         for (j = 0; j < NUM_PHONE_LABELS; j++) {
-            if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) && gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
+            if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) &&
+                gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
                 gtk_combo_box_remove_text(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
             }
         }
