@@ -158,14 +158,14 @@ static int make_serial_port_menu(GtkWidget **port_menu)
 
 /* End Sync Port Menu code */
 
-static void cb_pref_menu(GtkWidget *widget, gpointer data)
+static void cb_pref_menu(GtkComboBox *widget, gpointer data)
 {
    int pref;
    int value;
 
    if (!widget)
       return;
-   if(!gtk_combo_box_get_active(GTK_COMBO_BOX(widget))){
+   if(gtk_combo_box_get_active(GTK_COMBO_BOX(widget)) < 0){
        return;
    }
 
@@ -173,7 +173,7 @@ static void cb_pref_menu(GtkWidget *widget, gpointer data)
    pref = GPOINTER_TO_INT(data);
    value = pref & 0xFF;
    pref = pref >> 8;
-   set_pref_possibility(pref, value, TRUE);
+   set_pref_possibility(pref, gtk_combo_box_get_active(GTK_COMBO_BOX(widget)), TRUE);
    jp_logf(JP_LOG_DEBUG, "pref %d, value %d\n", pref, value);
 #ifdef COLORS
    if (pref==PREF_RCFILE) {
