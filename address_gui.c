@@ -408,7 +408,7 @@ static void connect_changed_signals(int con_or_dis) {
             }
             if (GTK_IS_TEXT_BUFFER(w) ||
                 GTK_IS_ENTRY(w) ||
-                GTK_IS_TEXT_VIEW(w)  ||
+                GTK_IS_TEXT_VIEW(w) ||
                 GTK_IS_COMBO_BOX(w)
                     ) {
                 g_signal_connect(w, "changed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -1756,7 +1756,7 @@ int address_export(GtkWidget *window) {
 /* End Export Code */
 
 static void cb_resize_column(GtkTreeViewColumn *column) {
-    if(column == NULL){
+    if (column == NULL) {
         return;
     }
     int width = gtk_tree_view_column_get_width(column);
@@ -2207,16 +2207,12 @@ static void cb_resortNameColumn(GtkTreeViewColumn *nameColumn) {
 static void cb_phone_menu(GtkComboBox *item, unsigned int value) {
     if (!item)
         return;
-    if(gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0){
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
         return;
     }
     int selectedIndex = gtk_combo_box_get_active(GTK_COMBO_BOX(item));
-   // if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
-        g_print("box = %d: selected Value = %d\n",value,selectedIndex);
-       // jp_logf(JP_LOG_DEBUG, "phone_menu = %d\n", (value & 0xFF00) >> 8);
-      //  jp_logf(JP_LOG_DEBUG, "selection = %d\n", value & 0xFF);
-        address_phone_label_selected[value] = selectedIndex;
-    //}
+    address_phone_label_selected[value] = selectedIndex;
+
 }
 
 static void cb_IM_type_menu(GtkWidget *item, unsigned int value) {
@@ -2344,9 +2340,9 @@ static void addr_clear_details(void) {
                     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button[0]), TRUE);
                 }
                 if (address_version) {
-                    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]),phone_btn_order[phone_i]);
+                    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]), phone_btn_order[phone_i]);
                 } else {
-                    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]),phone_i);
+                    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]), phone_i);
                 }
                 phone_i++;
                 break;
@@ -3084,11 +3080,11 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
     char *list_text;
-    char * entry_text = data;
+    char *entry_text = data;
 
     //int i, r;
 
-    gtk_tree_model_get(model, iter, ADDRESS_NAME_COLUMN_ENUM, &list_text,-1);
+    gtk_tree_model_get(model, iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
     int result = strncasecmp(list_text, entry_text, strlen(entry_text));
     if (!result) {
         GtkTreeSelection *selection = NULL;
@@ -3515,43 +3511,19 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
 
     phone_type_list_menu[set] = gtk_combo_box_text_new();
 
-    menu = gtk_menu_new();
-    group = NULL;
-
     for (i = 0; i < NUM_PHONE_LABELS; i++) {
         utf = charset_p2newj(contact_app_info.phoneLabels[i], 16, char_set);
         if (contact_app_info.phoneLabels[i][0]) {
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (phone_type_list_menu[set]), utf);
-
-          //  phone_type_menu_item[set][i] = gtk_radio_menu_item_new_with_label(
-           //         group, utf);
-          //  gtk_signal_connect(GTK_OBJECT(phone_type_menu_item[set][i]), "activate",
-           //                    GTK_SIGNAL_FUNC(cb_phone_menu),
-          //                     GINT_TO_POINTER(callback_id << 8 | i));
-          //  group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(phone_type_menu_item[set][i]));
-          //  gtk_menu_append(GTK_MENU(menu), phone_type_menu_item[set][i]);
-          //  gtk_widget_show(phone_type_menu_item[set][i]);
-
             changed_list = g_list_prepend(changed_list, phone_type_list_menu[set]);
         }
         g_free(utf);
     }
-    g_signal_connect(G_OBJECT(phone_type_list_menu[set] ),"changed",G_CALLBACK(cb_phone_menu),
+    g_signal_connect(G_OBJECT(phone_type_list_menu[set]), "changed", G_CALLBACK(cb_phone_menu),
                      GINT_TO_POINTER(set));
 
     /* Set this one to active */
-  //  if (GTK_IS_WIDGET(phone_type_menu_item[set][default_set])) {
-  //      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
-          //                                     phone_type_menu_item[set][default_set]), TRUE);
- //   }
-
-   // gtk_option_menu_set_menu(GTK_OPTION_MENU(phone_type_list_menu[set]), menu);
-    /* Make this one show up by default */
-  //  gtk_option_menu_set_history(GTK_OPTION_MENU(phone_type_list_menu[set]),
-   //                             default_set);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[set]),default_set);
-
-   // gtk_widget_show(phone_type_list_menu[set]);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[set]), default_set);
 
     return EXIT_SUCCESS;
 }
@@ -3920,7 +3892,8 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                     }
                     if ((phone_i < NUM_PHONE_ENTRIES) && (cont->phoneLabel[phone_i] < NUM_PHONE_LABELS)) {
                         if (GTK_IS_WIDGET(phone_type_list_menu[phone_i])) {
-                            gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]),cont->phoneLabel[phone_i]);
+                            gtk_combo_box_set_active(GTK_COMBO_BOX(phone_type_list_menu[phone_i]),
+                                                     cont->phoneLabel[phone_i]);
                         }
 
                     }
@@ -4233,9 +4206,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_min_width(nameColumn, 60);
 
 
-
-
-
     gtk_tree_view_column_set_resizable(nameColumn, TRUE);
     gtk_tree_view_column_set_resizable(noteColumn, FALSE);
     gtk_tree_view_column_set_resizable(phoneColumn, FALSE);
@@ -4358,7 +4328,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Clear GTK option menus before use */
     for (i = 0; i < NUM_ADDRESSES; i++) {
         for (j = 0; j < NUM_PHONE_LABELS; j++) {
-            if(gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
+            if (gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
                 gtk_combo_box_remove_text(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
             }
         }
