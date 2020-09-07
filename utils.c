@@ -2465,6 +2465,76 @@ int make_category_menu(GtkWidget **category_menu,
     return EXIT_SUCCESS;
 }
 
+int make_category_menu_box(GtkWidget **category_menu,
+                       struct sorted_cats *sort_l,
+                       void (*selection_callback)
+                               (GtkComboBox *item, int selection),
+                       int add_an_all_item,
+                       int add_edit_cat_item) {
+
+    int i;
+    int offset = 0;
+    GtkListStore *catListStore = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
+    GtkTreeIter iter;
+
+    if (add_an_all_item) {
+        gtk_list_store_append (catListStore, &iter);
+        gtk_list_store_set (catListStore, &iter, 0, _("All"), 1, CATEGORY_ALL, -1);
+        offset = 1;
+   }
+
+    for (i = 0; i < NUM_CAT_ITEMS; i++) {
+        if (sort_l[i].Pcat[0]) {
+            gtk_list_store_append (catListStore, &iter);
+            gtk_list_store_set (catListStore, &iter, 0, sort_l[i].Pcat, 1, sort_l[i].cat_num, -1);
+        }
+    }
+
+    if (add_edit_cat_item) {
+        gtk_list_store_append (catListStore, &iter);
+        gtk_list_store_set (catListStore, &iter, 0, _("Edit Categories..."), 1, CATEGORY_EDIT, -1);
+    }
+    *category_menu = gtk_combo_box_new_with_model (GTK_TREE_MODEL (catListStore));
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (*category_menu), renderer, TRUE);
+    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (*category_menu), renderer,
+                                    "text", 0,
+                                    NULL);
+    if (selection_callback) {
+        g_signal_connect(G_OBJECT(*category_menu),"changed",G_CALLBACK(selection_callback),
+                         GINT_TO_POINTER(add_an_all_item));
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int findSortedPostion(int sorted_position,GtkComboBox * box) {
+    GtkTreeModel * model = gtk_combo_box_get_model(GTK_COMBO_BOX(box));
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter_first(model,&iter);
+    int  pos;
+    gchar * label;
+    gtk_tree_model_get(model,&iter,0,&label,1,&pos,-1);
+    while(pos != sorted_position && gtk_tree_model_iter_next(model,&iter)){
+        gtk_tree_model_get(model,&iter,0,&label,1,&pos,-1);
+    }
+    return pos;
+}
+/** assuming the gtkcombobox box was made from make_category_menu_box
+ * If the box is not active or null, it will return -1;
+ */
+int get_selected_category_from_combo_box(GtkComboBox * box){
+    if(box == NULL || gtk_combo_box_get_active(GTK_COMBO_BOX(box)) < 0){
+        return -1;
+    }
+    GtkTreeIter activeIter;
+    gtk_combo_box_get_active_iter(GTK_COMBO_BOX(box),&activeIter);
+    GtkTreeModel* model = gtk_combo_box_get_model(GTK_COMBO_BOX(box));
+    int selectedItem = -1;
+    gtk_tree_model_get(model,&activeIter,1,&selectedItem,-1);
+    return selectedItem;
+}
+
 time_t mktime_dst_adj(struct tm *tm) {
     struct tm t;
 

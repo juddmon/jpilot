@@ -73,6 +73,7 @@
 
 /* Constant used by J-Pilot to indicate "All" category */
 #define CATEGORY_ALL 300
+#define CATEGORY_EDIT 301
 
 /* Used to mark the entry in the treeView to add a record */
 #define LIST_NEW_ENTRY_DATA 100
@@ -469,6 +470,14 @@ int make_category_menu(GtkWidget **category_menu,
                        (GtkWidget *item, int selection),
                        int add_an_all_item,
                        int add_edit_cat_item);
+int make_category_menu_box(GtkWidget **category_menu,
+                       struct sorted_cats *sort_l,
+                       void (*selection_callback)
+                               (GtkComboBox *item, int selection),
+                       int add_an_all_item,
+                       int add_edit_cat_item);
+int get_selected_category_from_combo_box(GtkComboBox * box);
+int findSortedPostion(int sorted_position,GtkComboBox * box);
 
 int jp_copy_file(char *src, char *dest);
 FILE *jp_open_home_file(const char *filename, const char *mode);
