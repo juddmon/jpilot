@@ -2126,7 +2126,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
     cale->end.tm_min = end_date.tm_min;
     cale->end.tm_sec = 0;
 
-    if ((GTK_TOGGLE_BUTTON(radio_button_no_time))) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_no_time))) {
         cale->event = 1;
         /* This event doesn't have a time */
         cale->begin.tm_hour = 0;
