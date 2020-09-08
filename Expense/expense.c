@@ -1436,13 +1436,13 @@ static void make_menus(void) {
         exp_category = CATEGORY_ALL;
     }
 
-    make_category_menu_box(&category_menu1,
+    make_category_menu(&category_menu1,
                        sort_l, cb_category, TRUE, TRUE);
     if(exp_category == CATEGORY_ALL){
         gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), 0);
     }
     /* Skip the ALL category for this menu */
-    make_category_menu_box(&category_menu2,
+    make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
     make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
     make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);

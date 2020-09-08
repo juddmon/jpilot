@@ -2568,8 +2568,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     hbox_temp = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-    make_category_menu_box(&category_menu1,
-                           sort_l, cb_category, TRUE, FALSE);
+    make_category_menu(&category_menu1,
+                       sort_l, cb_category, TRUE, FALSE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Scrolled window */
@@ -2719,7 +2719,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Category menu */
     label = gtk_label_new(_("Category: "));
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
-    make_category_menu_box(&category_menu2,
+    make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2), 1, 10, 0, 1);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);

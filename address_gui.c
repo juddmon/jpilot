@@ -4072,8 +4072,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     /* Left-side Category menu */
-    make_category_menu_box(&category_menu1,
-                           sort_l, cb_category, TRUE, TRUE);
+    make_category_menu(&category_menu1,
+                       sort_l, cb_category, TRUE, TRUE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Address list scrolled window */
@@ -4251,8 +4251,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
         gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
-    make_category_menu_box(&category_menu2,
-                           sort_l, NULL, FALSE, FALSE);
+    make_category_menu(&category_menu2,
+                       sort_l, NULL, FALSE, FALSE);
 
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 

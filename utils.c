@@ -2403,7 +2403,7 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len) {
         *end = 0;
 }
 
-int make_category_menu_box(GtkWidget **category_menu,
+int make_category_menu(GtkWidget **category_menu,
                        struct sorted_cats *sort_l,
                        void (*selection_callback)
                                (GtkComboBox *item, int selection),
@@ -2458,7 +2458,7 @@ int findSortedPostion(int sorted_position,GtkComboBox * box) {
     }
     return pos;
 }
-/** assuming the gtkcombobox box was made from make_category_menu_box
+/** assuming the gtkcombobox box was made from make_category_menu
  * If the box is not active or null, it will return -1;
  */
 int get_selected_category_from_combo_box(GtkComboBox * box){

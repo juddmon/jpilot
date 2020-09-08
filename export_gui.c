@@ -284,8 +284,8 @@ int export_gui(GtkWidget *main_window,
         GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu));
         gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
-    make_category_menu_box(&category_menu, sort_l,
-                           cb_export_category, TRUE, FALSE);
+    make_category_menu(&category_menu, sort_l,
+                       cb_export_category, TRUE, FALSE);
     gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu), 0);
     gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
 

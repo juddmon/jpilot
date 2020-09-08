@@ -463,7 +463,7 @@ void append_anni_years(char *desc, int max, struct tm *date,
                        struct Appointment *a, struct CalendarEvent *cale);
 int get_highlighted_today(struct tm *date);
 
-int make_category_menu_box(GtkWidget **category_menu,
+int make_category_menu(GtkWidget **category_menu,
                        struct sorted_cats *sort_l,
                        void (*selection_callback)
                                (GtkComboBox *item, int selection),
