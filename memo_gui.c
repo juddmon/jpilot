@@ -67,9 +67,6 @@ static GtkListStore *listStore;
 static GtkWidget *memo_text;
 static GObject *memo_text_buffer;
 static GtkWidget *private_checkbox;
-/* Need two extra slots for the ALL category and Edit Categories... */
-static GtkWidget *memo_cat_menu_item1[NUM_MEMO_CAT_ITEMS + 2];
-static GtkWidget *memo_cat_menu_item2[NUM_MEMO_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static GtkWidget *pane;
@@ -111,46 +108,53 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
                                    GtkTreePath *path,
                                    gboolean path_currently_selected,
                                    gpointer userdata);
+
 gboolean
 addNewRecordMemo(GtkTreeModel *model,
-              GtkTreePath  *path,
-              GtkTreeIter  *iter,
-              gpointer data);
+                 GtkTreePath *path,
+                 GtkTreeIter *iter,
+                 gpointer data);
 
 gboolean deleteRecordMemo(GtkTreeModel *model,
-                      GtkTreePath  *path,
-                      GtkTreeIter  *iter,
-                      gpointer data);
-void delete_memo(MyMemo * mmemo, gpointer data);
-void undelete_memo(MyMemo *mmemo, gpointer data);
-gboolean undeleteRecordMemo(GtkTreeModel *model,
-                            GtkTreePath  *path,
-                            GtkTreeIter  *iter,
-                            gpointer data);
-gboolean printRecordMemo(GtkTreeModel *model,
-                         GtkTreePath  *path,
-                         GtkTreeIter  *iter,
-                         gpointer data);
-gboolean
-findRecordMemo (GtkTreeModel *model,
-                GtkTreePath  *path,
-                GtkTreeIter  *iter,
-                gpointer data);
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data);
 
-        enum {
+void delete_memo(MyMemo *mmemo, gpointer data);
+
+void undelete_memo(MyMemo *mmemo, gpointer data);
+
+gboolean undeleteRecordMemo(GtkTreeModel *model,
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
+                            gpointer data);
+
+gboolean printRecordMemo(GtkTreeModel *model,
+                         GtkTreePath *path,
+                         GtkTreeIter *iter,
+                         gpointer data);
+
+gboolean
+findRecordMemo(GtkTreeModel *model,
+               GtkTreePath *path,
+               GtkTreeIter *iter,
+               gpointer data);
+
+enum {
     MEMO_COLUMN_ENUM = 0,
     MEMO_DATA_COLUMN_ENUM,
     MEMO_BACKGROUND_COLOR_ENUM,
     MEMO_BACKGROUND_COLOR_ENABLED_ENUM,
     MEMO_NUM_COLS
 };
-gboolean
-selectRecordByRowMemo (GtkTreeModel *model,
-                       GtkTreePath  *path,
-                       GtkTreeIter  *iter,
-                       gpointer data);
 
-int print_memo(MyMemo *mmemo );
+gboolean
+selectRecordByRowMemo(GtkTreeModel *model,
+                      GtkTreePath *path,
+                      GtkTreeIter *iter,
+                      gpointer data);
+
+int print_memo(MyMemo *mmemo);
 
 gboolean addNewMemo(MyMemo *mmemo, const void *data);
 
@@ -218,7 +222,7 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
     jp_logf(JP_LOG_DEBUG, "cb_record_changed\n");
     if (record_changed == CLEAR_FLAG) {
         connect_changed_signals(DISCONNECT_SIGNALS);
-        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore),NULL) > 0) {
+        if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) > 0) {
             set_new_button_to(MODIFY_FLAG);
         } else {
             set_new_button_to(NEW_FLAG);
@@ -238,12 +242,7 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == CONNECT_SIGNALS) && (!connected)) {
         connected = 1;
 
-        for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
-            if (memo_cat_menu_item2[i]) {
-                gtk_signal_connect(GTK_OBJECT(memo_cat_menu_item2[i]), "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
-        }
+        g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         g_signal_connect(memo_text_buffer, "changed",
                          GTK_SIGNAL_FUNC(cb_record_changed), NULL);
 
@@ -255,12 +254,7 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == DISCONNECT_SIGNALS) && (connected)) {
         connected = 0;
 
-        for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
-            if (memo_cat_menu_item2[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(memo_cat_menu_item2[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
-        }
+        g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2),G_CALLBACK(cb_record_changed),NULL);
         g_signal_handlers_disconnect_by_func(memo_text_buffer,
                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(private_checkbox),
@@ -268,7 +262,7 @@ static void connect_changed_signals(int con_or_dis) {
     }
 }
 
-int print_memo(MyMemo *mmemo ) {
+int print_memo(MyMemo *mmemo) {
     long this_many;
     MemoList *memo_list;
     MemoList memo_list1;
@@ -301,13 +295,13 @@ int print_memo(MyMemo *mmemo ) {
 }
 
 gboolean printRecordMemo(GtkTreeModel *model,
-                     GtkTreePath  *path,
-                     GtkTreeIter  *iter,
-                     gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == row_selected){
+                         GtkTreePath *path,
+                         GtkTreeIter *iter,
+                         gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == row_selected) {
         MyMemo *mmemo = NULL;
-        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+        gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         print_memo(mmemo);
         return TRUE;
     }
@@ -380,7 +374,7 @@ static int cb_memo_import(GtkWidget *parent_window,
 
         /* convert to valid UTF-8 and recalculate the length */
         jp_charset_p2j(text, sizeof(text));
-        text_len = (unsigned int)  strlen(text);
+        text_len = (unsigned int) strlen(text);
 #ifdef JPILOT_DEBUG
         printf("text=[%s]\n", text);
         printf("text_len=%d\n", text_len);
@@ -459,7 +453,7 @@ static int cb_memo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
-                     (priv ? dlpRecAttrSecret : 0));
+                                      (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
@@ -523,7 +517,7 @@ static int cb_memo_import(GtkWidget *parent_window,
             if (ret == DIALOG_SAID_IMPORT_ALL) import_all = TRUE;
 
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
-                     ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0));
+                                      ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
                 pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
@@ -657,14 +651,14 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
-    list = gtk_tree_selection_get_selected_rows(selection,&model);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection, &model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        GtkTreePath * path = temp_list->data;
+        GtkTreePath *path = temp_list->data;
         GtkTreeIter iter;
-        if(gtk_tree_model_get_iter(model,&iter,path)) {
+        if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
             if (!mmemo) {
                 continue;
@@ -806,17 +800,22 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
 
 //TODO: update this when ready todo export function
 static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
-    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list, category, FALSE);
+    memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list,
+                          category, FALSE);
 }
-static GtkWidget * cb_memo_init_export_treeView() {
-    GtkListStore * listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
-                                                            G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    GtkWidget * treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
+
+static GtkWidget *cb_memo_init_export_treeView() {
+    GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                 G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+    GtkWidget *treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
     GtkTreeSelection *treeSelection = NULL;
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-                                                                         "cell-background-gdk",MEMO_BACKGROUND_COLOR_ENUM, "cell-background-set",MEMO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
+                                                                         "cell-background-gdk",
+                                                                         MEMO_BACKGROUND_COLOR_ENUM,
+                                                                         "cell-background-set",
+                                                                         MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
     gtk_tree_view_column_set_fixed_width(column, (gint) 50);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
@@ -831,6 +830,7 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
 
     set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename, TRUE);
 }
+
 //TODO: implement this when ready to handle export functions
 int memo_export(GtkWidget *window) {
     int w, h, x, y;
@@ -898,14 +898,14 @@ static int find_menu_cat_pos(int cat) {
 }
 
 gboolean deleteRecordMemo(GtkTreeModel *model,
-                      GtkTreePath  *path,
-                      GtkTreeIter  *iter,
-                      gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == row_selected){
+                          GtkTreePath *path,
+                          GtkTreeIter *iter,
+                          gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == row_selected) {
         MyMemo *mmemo = NULL;
-        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
-        delete_memo(mmemo,data);
+        gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
+        delete_memo(mmemo, data);
         return TRUE;
     }
 
@@ -913,10 +913,11 @@ gboolean deleteRecordMemo(GtkTreeModel *model,
 
 
 }
+
 gboolean undeleteRecordMemo(GtkTreeModel *model,
-                          GtkTreePath  *path,
-                          GtkTreeIter  *iter,
-                          gpointer data) {
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
+                            gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
     if (i[0] == row_selected) {
         MyMemo *mmemo = NULL;
@@ -929,7 +930,7 @@ gboolean undeleteRecordMemo(GtkTreeModel *model,
 
 }
 
-void delete_memo(MyMemo * mmemo, gpointer data) {
+void delete_memo(MyMemo *mmemo, gpointer data) {
 
     int flag;
     int show_priv;
@@ -1087,49 +1088,54 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
     cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
-static void cb_category(GtkWidget *item, int selection) {
+static void cb_category(GtkComboBox *item, int selection) {
     int b;
-
-    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
-        if (memo_category == selection) { return; }
-
-        b = dialog_save_changed_record_with_cancel(pane, record_changed);
-        if (b == DIALOG_SAID_1) { /* Cancel */
-            int index, index2;
-
-            if (memo_category == CATEGORY_ALL) {
-                index = 0;
-                index2 = 0;
-            } else {
-                index = find_sort_cat_pos(memo_category);
-                index2 = find_menu_cat_pos(index) + 1;
-                index += 1;
-            }
-
-            if (index < 0) {
-                jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-            } else {
-                gtk_check_menu_item_set_active
-                        (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
-            }
-
-            return;
-        }
-        if (b == DIALOG_SAID_3) { /* Save */
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
-
-        if (selection == NUM_MEMO_CAT_ITEMS + 1) {
-            cb_edit_cats(item, NULL);
-        } else {
-            memo_category = selection;
-        }
-        row_selected = 0;
-        jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
-        memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
-        jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
+    if (!item) return;
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
+        return;
     }
+    int selectedItem = get_selected_category_from_combo_box(item);
+    if (selectedItem == -1) {
+        return;
+    }
+
+    if (memo_category == selectedItem) { return; }
+
+    b = dialog_save_changed_record_with_cancel(pane, record_changed);
+    if (b == DIALOG_SAID_1) { /* Cancel */
+        int index, index2;
+
+        if (memo_category == CATEGORY_ALL) {
+            index = 0;
+            index2 = 0;
+        } else {
+            index = find_sort_cat_pos(memo_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
+        }
+
+        if (index < 0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+        } else {
+            gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
+        }
+
+        return;
+    }
+    if (b == DIALOG_SAID_3) { /* Save */
+        cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+    }
+
+    if (selection == CATEGORY_EDIT) {
+        cb_edit_cats(item, NULL);
+    } else {
+        memo_category = selectedItem;
+    }
+    row_selected = 0;
+    jp_logf(JP_LOG_DEBUG, "cb_category() cat=%d\n", memo_category);
+    memo_update_liststore(listStore, category_menu1, &glob_memo_list, memo_category, TRUE);
+    jp_logf(JP_LOG_DEBUG, "Leaving cb_category()\n");
+
 }
 
 static int memo_clear_details(void) {
@@ -1154,10 +1160,7 @@ static int memo_clear_details(void) {
     if (sorted_position < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    (guint) find_menu_cat_pos(sorted_position));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -1180,30 +1183,26 @@ static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
     }
 
     /* Get the category that is set from the menu */
-    for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
-        if (GTK_IS_WIDGET(memo_cat_menu_item2[i])) {
-            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[i]))) {
-                *attrib = (unsigned char) sort_l[i].cat_num;
-                break;
-            }
-        }
+    if (GTK_IS_WIDGET(category_menu2)) {
+        *attrib = get_selected_category_from_combo_box(GTK_COMBO_BOX(category_menu2));
     }
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
     }
     return EXIT_SUCCESS;
 }
+
 gboolean
-addNewRecordMemo (GtkTreeModel *model,
-              GtkTreePath  *path,
-              GtkTreeIter  *iter,
-              gpointer data) {
+addNewRecordMemo(GtkTreeModel *model,
+                 GtkTreePath *path,
+                 GtkTreeIter *iter,
+                 gpointer data) {
 
-    int * i = gtk_tree_path_get_indices ( path ) ;
+    int *i = gtk_tree_path_get_indices(path);
 
-    if(i[0] == row_selected){
-        MyMemo * mmemo = NULL;
-        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+    if (i[0] == row_selected) {
+        MyMemo *mmemo = NULL;
+        gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         return addNewMemo(mmemo, data);
 
     }
@@ -1292,11 +1291,11 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
-    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+    if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewRecordMemo, data);
-    }else {
+    } else {
         //no records exist in category yet.
-        addNewMemo(NULL,data);
+        addNewMemo(NULL, data);
     }
 }
 
@@ -1431,13 +1430,13 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
 }
 
 gboolean
-selectRecordByRowMemo (GtkTreeModel *model,
-                   GtkTreePath  *path,
-                   GtkTreeIter  *iter,
-                   gpointer data) {
-    int * i = gtk_tree_path_get_indices ( path ) ;
-    if(i[0] == row_selected){
-        GtkTreeSelection * selection = NULL;
+selectRecordByRowMemo(GtkTreeModel *model,
+                      GtkTreePath *path,
+                      GtkTreeIter *iter,
+                      gpointer data) {
+    int *i = gtk_tree_path_get_indices(path);
+    if (i[0] == row_selected) {
+        GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -1502,15 +1501,15 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
             continue;
         }
 
-       sprintf(str, "%d. ", entries_shown + 1);
+        sprintf(str, "%d. ", entries_shown + 1);
 
-        len1 = ( int) strlen(str);
+        len1 = (int) strlen(str);
         len = ((int) strlen(temp_memo->mmemo.memo.text)) + 1;
         /* ..memo treeView does not display '/n' */
         if ((copy_max_length = (size_t) len) > MEMO_LIST_CHAR_WIDTH) {
             copy_max_length = MEMO_LIST_CHAR_WIDTH;
         }
-        last =  multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
+        last = multibyte_safe_memccpy(str + len1, temp_memo->mmemo.memo.text, '\n', copy_max_length);
         if (last) {
             *(last - 1) = '\0';
         } else {
@@ -1549,7 +1548,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
                            MEMO_COLUMN_ENUM, str2,
                            MEMO_DATA_COLUMN_ENUM, &(temp_memo->mmemo),
                            MEMO_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
-                           MEMO_BACKGROUND_COLOR_ENABLED_ENUM,showBgColor,
+                           MEMO_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
                            -1);
         entries_shown++;
     }
@@ -1577,10 +1576,10 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
         if (memo_list == NULL) {
-            set_tooltip((int) show_tooltips,  tooltip_widget, _("0 records"));
+            set_tooltip((int) show_tooltips, tooltip_widget, _("0 records"));
         } else {
             sprintf(str, _("%d of %d records"), entries_shown, num_entries);
-            set_tooltip((int) show_tooltips,  tooltip_widget, str);
+            set_tooltip((int) show_tooltips, tooltip_widget, str);
         }
     }
 
@@ -1595,17 +1594,17 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 }
 
 gboolean
-findRecordMemo (GtkTreeModel *model,
-            GtkTreePath  *path,
-            GtkTreeIter  *iter,
-            gpointer data) {
+findRecordMemo(GtkTreeModel *model,
+               GtkTreePath *path,
+               GtkTreeIter *iter,
+               gpointer data) {
 
     if (glob_find_id) {
         MyMemo *mmemo = NULL;
-        gtk_tree_model_get(model,iter,MEMO_DATA_COLUMN_ENUM,&mmemo,-1);
+        gtk_tree_model_get(model, iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
 
-        if(mmemo->unique_id == glob_find_id){
-            GtkTreeSelection * selection = NULL;
+        if (mmemo->unique_id == glob_find_id) {
+            GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_DATA_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -1622,7 +1621,7 @@ static int memo_find(void) {
 }
 
 static int memo_redraw(void) {
-    memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
+    memo_update_liststore(listStore, category_menu1, &glob_memo_list, memo_category, TRUE);
     return EXIT_SUCCESS;
 }
 
@@ -1672,13 +1671,11 @@ int memo_refresh(void) {
         index2 = find_menu_cat_pos(index) + 1;
         index += 1;
     }
-    memo_update_liststore(listStore,category_menu1, &glob_memo_list, memo_category, TRUE);
+    memo_update_liststore(listStore, category_menu1, &glob_memo_list, memo_category, TRUE);
     if (index < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(memo_cat_menu_item1[index]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
     }
 
     return EXIT_SUCCESS;
@@ -1791,8 +1788,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     hbox_temp = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-    make_category_menu(&category_menu1, memo_cat_menu_item1,
-                       sort_l, cb_category, TRUE, TRUE);
+    make_category_menu_box(&category_menu1,
+                           sort_l, cb_category, TRUE, TRUE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Memo list scrolled window */
@@ -1876,10 +1873,11 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right-side Category menu */
     /* Clear GTK option menus before use */
-    for (i = 0; i < NUM_MEMO_CAT_ITEMS; i++) {
-        memo_cat_menu_item2[i] = NULL;
+    if (category_menu2 != NULL) {
+        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
+        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
-    make_category_menu(&category_menu2, memo_cat_menu_item2,
+    make_category_menu_box(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
@@ -1930,7 +1928,10 @@ void initializeTreeView() {
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-            "cell-background-gdk",MEMO_BACKGROUND_COLOR_ENUM, "cell-background-set",MEMO_BACKGROUND_COLOR_ENABLED_ENUM,NULL);
+                                                                         "cell-background-gdk",
+                                                                         MEMO_BACKGROUND_COLOR_ENUM,
+                                                                         "cell-background-set",
+                                                                         MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
     gtk_tree_view_column_set_fixed_width(column, (gint) 50);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), FALSE);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
@@ -1954,7 +1955,7 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
     int unique_id;
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
-        int * i = gtk_tree_path_get_indices ( path ) ;
+        int *i = gtk_tree_path_get_indices(path);
         row_selected = i[0];
         gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
@@ -1994,7 +1995,8 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
 
         index = mmemo->attrib & 0x0F;
         sorted_position = find_sort_cat_pos(index);
-        if (memo_cat_menu_item2[sorted_position] == NULL) {
+        int pos = findSortedPostion(sorted_position, GTK_COMBO_BOX(category_menu2));
+        if (pos != sorted_position && index != 0) {
             /* Illegal category */
             jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
             index = sorted_position = 0;
@@ -2002,12 +2004,8 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
 
         if (sorted_position < 0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-        } else {
-            gtk_check_menu_item_set_active
-                    (GTK_CHECK_MENU_ITEM(memo_cat_menu_item2[sorted_position]), TRUE);
         }
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    (guint) find_menu_cat_pos(sorted_position));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
 
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(memo_text_buffer), memo->text, -1);
 
