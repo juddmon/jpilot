@@ -72,9 +72,6 @@ static struct tm due_date;
 static GtkWidget *due_date_button;
 static GtkWidget *todo_no_due_date_checkbox;
 static GtkWidget *radio_button_todo[NUM_TODO_PRIORITIES];
-/* Need two extra slots for the ALL category and Edit Categories... */
-static GtkWidget *todo_cat_menu_item1[NUM_TODO_CAT_ITEMS + 2];
-static GtkWidget *todo_cat_menu_item2[NUM_TODO_CAT_ITEMS];
 static GtkWidget *new_record_button;
 static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
@@ -331,12 +328,8 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == CONNECT_SIGNALS) && (!connected)) {
         connected = 1;
 
-        for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
-            if (todo_cat_menu_item2[i]) {
-                gtk_signal_connect(GTK_OBJECT(todo_cat_menu_item2[i]), "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
-        }
+
+        g_signal_connect(G_OBJECT(category_menu2), "changed", G_CALLBACK(cb_record_changed), NULL);
         for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
             if (radio_button_todo[i]) {
                 gtk_signal_connect(GTK_OBJECT(radio_button_todo[i]), "toggled",
@@ -362,12 +355,7 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == DISCONNECT_SIGNALS) && (connected)) {
         connected = 0;
 
-        for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
-            if (todo_cat_menu_item2[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(todo_cat_menu_item2[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
-        }
+        g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2), G_CALLBACK(cb_record_changed), NULL);
         for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
             gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_todo[i]),
                                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -1258,48 +1246,52 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
     cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
-static void cb_category(GtkWidget *item, int selection) {
+static void cb_category(GtkComboBox *item, int selection) {
     int b;
-
-    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
-        if (todo_category == selection) { return; }
-
-        b = dialog_save_changed_record_with_cancel(pane, record_changed);
-        if (b == DIALOG_SAID_1) { /* Cancel */
-            int index, index2;
-
-            if (todo_category == CATEGORY_ALL) {
-                index = 0;
-                index2 = 0;
-            } else {
-                index = find_sort_cat_pos(todo_category);
-                index2 = find_menu_cat_pos(index) + 1;
-                index += 1;
-            }
-
-            if (index < 0) {
-                jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-            } else {
-                gtk_check_menu_item_set_active
-                        (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
-            }
-
-            return;
-        }
-        if (b == DIALOG_SAID_3) { /* Save */
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
-
-        if (selection == NUM_TODO_CAT_ITEMS + 1) {
-            cb_edit_cats(item, NULL);
-        } else {
-            todo_category = selection;
-        }
-        row_selected = 0;
-        jp_logf(JP_LOG_DEBUG, "todo_category = %d\n", todo_category);
-        todo_update_liststore(listStore, category_menu1, &glob_todo_list, todo_category, TRUE);
+    if (!item) return;
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
+        return;
     }
+    int selectedItem = get_selected_category_from_combo_box(item);
+    if (selectedItem == -1) {
+        return;
+    }
+
+    if (todo_category == selectedItem) { return; }
+
+    b = dialog_save_changed_record_with_cancel(pane, record_changed);
+    if (b == DIALOG_SAID_1) { /* Cancel */
+        int index, index2;
+
+        if (todo_category == CATEGORY_ALL) {
+            index = 0;
+            index2 = 0;
+        } else {
+            index = find_sort_cat_pos(todo_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
+        }
+
+        if (index < 0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+        } else {
+            gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
+        }
+
+        return;
+    }
+    if (b == DIALOG_SAID_3) { /* Save */
+        cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+    }
+
+    if (selectedItem == CATEGORY_EDIT) {
+        cb_edit_cats(item, NULL);
+    } else {
+        todo_category = selectedItem;
+    }
+    row_selected = 0;
+    jp_logf(JP_LOG_DEBUG, "todo_category = %d\n", todo_category);
+    todo_update_liststore(listStore, category_menu1, &glob_todo_list, todo_category, TRUE);
 }
 
 static void cb_check_button_no_due_date(GtkWidget *widget, gpointer data) {
@@ -1372,10 +1364,7 @@ static int todo_clear_details(void) {
     if (sorted_position < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    (guint) find_menu_cat_pos(sorted_position));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2), find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -1423,13 +1412,8 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
         new_todo->note = NULL;
     }
 
-    for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
-        if (GTK_IS_WIDGET(todo_cat_menu_item2[i])) {
-            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[i]))) {
-                *attrib = (unsigned char) sort_l[i].cat_num;
-                break;
-            }
-        }
+    if (GTK_IS_WIDGET(category_menu2)) {
+        *attrib = get_selected_category_from_combo_box(GTK_COMBO_BOX(category_menu2));
     }
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(private_checkbox))) {
         *attrib |= dlpRecAttrSecret;
@@ -1718,7 +1702,8 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(todo_note_buffer), "", -1);
         index = mtodo->attrib & 0x0F;
         sorted_position = find_sort_cat_pos(index);
-        if (todo_cat_menu_item2[sorted_position] == NULL) {
+        int pos = findSortedPostion(sorted_position, GTK_COMBO_BOX(category_menu2));
+        if (pos != sorted_position && index != 0) {
             /* Illegal category */
             jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
             index = sorted_position = 0;
@@ -1726,12 +1711,8 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
         }
         if (sorted_position < 0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-        } else {
-            gtk_check_menu_item_set_active
-                    (GTK_CHECK_MENU_ITEM(todo_cat_menu_item2[sorted_position]), TRUE);
         }
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    (guint) find_menu_cat_pos(sorted_position));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2), find_menu_cat_pos(sorted_position));
 
         if (todo->description) {
             if (todo->description[0]) {
@@ -1992,9 +1973,7 @@ int todo_refresh(void) {
     if (index < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(todo_cat_menu_item1[index]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), (guint) index2);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
     }
 
     return EXIT_SUCCESS;
@@ -2380,8 +2359,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     /* Left-side Category menu */
-    make_category_menu(&category_menu1, todo_cat_menu_item1,
-                       sort_l, cb_category, TRUE, TRUE);
+    make_category_menu_box(&category_menu1,
+                           sort_l, cb_category, TRUE, TRUE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Todo list scrolled window */
@@ -2591,11 +2570,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right-side Category menu */
     /* Clear GTK option menus before use */
-    for (i = 0; i < NUM_TODO_CAT_ITEMS; i++) {
-        todo_cat_menu_item2[i] = NULL;
+    if (category_menu2 != NULL) {
+        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
+        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
-    make_category_menu(&category_menu2, todo_cat_menu_item2,
-                       sort_l, NULL, FALSE, FALSE);
+    make_category_menu_box(&category_menu2,
+                           sort_l, NULL, FALSE, FALSE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
     /* Private checkbox */

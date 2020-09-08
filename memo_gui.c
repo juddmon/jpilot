@@ -1126,7 +1126,7 @@ static void cb_category(GtkComboBox *item, int selection) {
         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
     }
 
-    if (selection == CATEGORY_EDIT) {
+    if (selectedItem == CATEGORY_EDIT) {
         cb_edit_cats(item, NULL);
     } else {
         memo_category = selectedItem;
