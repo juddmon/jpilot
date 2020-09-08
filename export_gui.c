@@ -188,20 +188,25 @@ static void cb_export_type(GtkWidget *widget, gpointer data) {
     glob_export_type = GPOINTER_TO_INT(data);
 }
 
-static void cb_export_category(GtkComboBox * item, int selection) {
+static void cb_export_category(GtkComboBox *item, int selection) {
     if (!item) return;
     if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
         return;
     }
     int selectedItem = get_selected_category_from_combo_box(item);
-        export_category = selectedItem;
-        jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
-        if (glob_cb_export_menu) {
-            glob_cb_export_menu(export_treeView, export_category);
-        }
+    if (selectedItem == -1) {
+        return;
+    }
+    export_category = selectedItem;
+    jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
+    if (glob_cb_export_menu && export_treeView != NULL) {
+        glob_cb_export_menu(export_treeView, export_category);
         gtk_tree_selection_select_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)));
-        jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
-       //gtk_combo_box_set_active(GTK_COMBO_BOX(item), pos);
+    }
+
+
+    jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
+    //gtk_combo_box_set_active(GTK_COMBO_BOX(item), pos);
 
 }
 
@@ -281,7 +286,7 @@ int export_gui(GtkWidget *main_window,
     }
     make_category_menu_box(&category_menu, sort_l,
                            cb_export_category, TRUE, FALSE);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu),0);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu), 0);
     gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
 
     /* Put the record list window up */
@@ -297,7 +302,9 @@ int export_gui(GtkWidget *main_window,
     } else {
         export_treeView = gtk_tree_view_new();
     }
-    GtkWidget *temp = export_treeView;
+    if(!GTK_IS_TREE_VIEW(export_treeView)){
+        g_print("export_treeView is not a treeView");
+    }
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)),
                                 GTK_SELECTION_MULTIPLE);
     gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(export_treeView), gtk_false());
@@ -356,7 +363,7 @@ int export_gui(GtkWidget *main_window,
                        GTK_SIGNAL_FUNC(cb_ok), export_window);
 
     if (glob_cb_export_menu) {
-        glob_cb_export_menu(export_treeView, export_category);
+        glob_cb_export_menu(GTK_WIDGET(export_treeView), export_category);
     }
 
     gtk_widget_show_all(export_window);
