@@ -2403,68 +2403,6 @@ void lstrncpy_remove_cr_lfs(char *dest, char *src, int len) {
         *end = 0;
 }
 
-int make_category_menu(GtkWidget **category_menu,
-                       GtkWidget **cat_menu_item,
-                       struct sorted_cats *sort_l,
-                       void (*selection_callback)
-                               (GtkWidget *item, int selection),
-                       int add_an_all_item,
-                       int add_edit_cat_item) {
-    GtkWidget *menu;
-    GSList *group;
-    int i;
-    int offset;
-
-    *category_menu = gtk_option_menu_new();
-
-    menu = gtk_menu_new();
-    group = NULL;
-
-    offset = 0;
-    if (add_an_all_item) {
-        cat_menu_item[0] = gtk_radio_menu_item_new_with_label(group, _("All"));
-        if (selection_callback) {
-            gtk_signal_connect(GTK_OBJECT(cat_menu_item[0]), "activate",
-                               GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(CATEGORY_ALL));
-        }
-        group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[0]));
-        gtk_menu_append(GTK_MENU(menu), cat_menu_item[0]);
-        gtk_widget_show(cat_menu_item[0]);
-        offset = 1;
-    }
-
-    for (i = 0; i < NUM_CAT_ITEMS; i++) {
-        if (sort_l[i].Pcat[0]) {
-            cat_menu_item[i + offset] = gtk_radio_menu_item_new_with_label(
-                    group, sort_l[i].Pcat);
-            if (selection_callback) {
-                gtk_signal_connect(GTK_OBJECT(cat_menu_item[i + offset]), "activate",
-                                   GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(sort_l[i].cat_num));
-            }
-            group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i + offset]));
-            gtk_menu_append(GTK_MENU(menu), cat_menu_item[i + offset]);
-            gtk_widget_show(cat_menu_item[i + offset]);
-        } else
-            cat_menu_item[i + offset] = NULL;
-    }
-
-    if (add_edit_cat_item) {
-        cat_menu_item[i + offset] = gtk_radio_menu_item_new_with_label(group,
-                                                                       _("Edit Categories..."));
-        if (selection_callback) {
-            gtk_signal_connect(GTK_OBJECT(cat_menu_item[i + offset]), "activate",
-                               GTK_SIGNAL_FUNC(selection_callback), GINT_TO_POINTER(i + offset));
-        }
-        group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(cat_menu_item[i + offset]));
-        gtk_menu_append(GTK_MENU(menu), cat_menu_item[i + offset]);
-        gtk_widget_show(cat_menu_item[i + offset]);
-    }
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(*category_menu), menu);
-
-    return EXIT_SUCCESS;
-}
-
 int make_category_menu_box(GtkWidget **category_menu,
                        struct sorted_cats *sort_l,
                        void (*selection_callback)

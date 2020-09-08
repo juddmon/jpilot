@@ -329,7 +329,9 @@ static void connect_changed_signals(int con_or_dis) {
         connected = 1;
 
 
-        g_signal_connect(G_OBJECT(category_menu2), "changed", G_CALLBACK(cb_record_changed), NULL);
+        if(category_menu2){
+            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
+        }
         for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
             if (radio_button_todo[i]) {
                 gtk_signal_connect(GTK_OBJECT(radio_button_todo[i]), "toggled",
@@ -354,8 +356,9 @@ static void connect_changed_signals(int con_or_dis) {
     /* DISCONNECT */
     if ((con_or_dis == DISCONNECT_SIGNALS) && (connected)) {
         connected = 0;
-
-        g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2), G_CALLBACK(cb_record_changed), NULL);
+        if(category_menu2) {
+            g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2), G_CALLBACK(cb_record_changed), NULL);
+        }
         for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
             gtk_signal_disconnect_by_func(GTK_OBJECT(radio_button_todo[i]),
                                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);

@@ -127,9 +127,6 @@ static GtkWidget *entry_account;
 static GtkWidget *entry_password;
 static GtkWidget *keyr_note;
 static GObject *keyr_note_buffer;
-/* Need 1 extra slot for All category */
-static GtkWidget *keyr_cat_menu_item1[NUM_KEYRING_CAT_ITEMS + 1];
-static GtkWidget *keyr_cat_menu_item2[NUM_KEYRING_CAT_ITEMS];
 static GtkWidget *category_menu1;
 static GtkWidget *category_menu2;
 static struct sorted_cats sort_l[NUM_KEYRING_CAT_ITEMS];
@@ -193,7 +190,8 @@ void deleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 void undeleteKeyRing(struct MyKeyRing *mkr, gpointer data);
 
 void addKeyRing(struct MyKeyRing *mkr, gpointer data);
-static GtkWidget * cb_keyr_export_init_treeView();
+
+static GtkWidget *cb_keyr_export_init_treeView();
 
 /****************************** Main Code *************************************/
 
@@ -795,13 +793,8 @@ static void connect_changed_signals(int con_or_dis) {
         jp_logf(JP_LOG_DEBUG, "KeyRing: connect_changed_signals\n");
         connected = 1;
 
-        for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
-            if (keyr_cat_menu_item2[i] != NULL) {
-                gtk_signal_connect(GTK_OBJECT(keyr_cat_menu_item2[i]),
-                                   "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed),
-                                   NULL);
-            }
+        if(category_menu2){
+            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
         gtk_signal_connect(GTK_OBJECT(entry_name), "changed",
@@ -822,12 +815,8 @@ static void connect_changed_signals(int con_or_dis) {
         jp_logf(JP_LOG_DEBUG, "KeyRing: disconnect_changed_signals\n");
         connected = 0;
 
-        for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
-            if (keyr_cat_menu_item2[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(keyr_cat_menu_item2[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed),
-                                              NULL);
-            }
+        if(category_menu2){
+            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
         gtk_signal_disconnect_by_func(GTK_OBJECT(entry_name),
@@ -1050,10 +1039,7 @@ static int keyr_clear_details(void) {
     if (sorted_position < 0) {
         jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
     } else {
-        gtk_check_menu_item_set_active
-                (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
     }
 
     set_new_button_to(CLEAR_FLAG);
@@ -1140,13 +1126,8 @@ void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
 
     /* Any attributes go here.  Usually just the category */
     /* grab category from menu */
-    for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
-        if (GTK_IS_WIDGET(keyr_cat_menu_item2[i])) {
-            if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[i]))) {
-                br.attrib = sort_l[i].cat_num;
-                break;
-            }
-        }
+    if (GTK_IS_WIDGET(category_menu2)) {
+        br.attrib = get_selected_category_from_combo_box(GTK_COMBO_BOX(category_menu2));
     }
     jp_logf(JP_LOG_DEBUG, "category is %d\n", br.attrib);
 
@@ -1206,11 +1187,11 @@ void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
  */
 static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 
-    if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
+    if (gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addKeyRingRecord, data);
-    }else {
+    } else {
         //no records exist in category yet.
-        addKeyRing(NULL,data);
+        addKeyRing(NULL, data);
     }
 
 
@@ -1360,7 +1341,7 @@ display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, 
     gtk_list_store_append(pListStore, iter);
     gtk_list_store_set(pListStore, iter,
                        KEYRING_CHANGED_COLUMN_ENUM, nameTxt,
-                       KEYRING_DATA_COLUMN_ENUM, mkr,-1);
+                       KEYRING_DATA_COLUMN_ENUM, mkr, -1);
     return EXIT_SUCCESS;
 }
 
@@ -1456,7 +1437,8 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
 
         index = mkr->attrib & 0x0F;
         sorted_position = find_sort_cat_pos(index);
-        if (keyr_cat_menu_item2[sorted_position] == NULL) {
+        int pos = findSortedPostion(sorted_position, GTK_COMBO_BOX(category_menu2));
+        if (pos != sorted_position && index != 0) {
             /* Illegal category */
             jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
             sorted_position = 0;
@@ -1465,11 +1447,9 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
         if (sorted_position < 0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
         } else {
-            gtk_check_menu_item_set_active
-                    (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item2[sorted_position]), TRUE);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
         }
-        gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu2),
-                                    find_menu_cat_pos(sorted_position));
+
 
         if (mkr->kr.name) {
             gtk_entry_set_text(GTK_ENTRY(entry_name), mkr->kr.name);
@@ -1503,45 +1483,50 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
     return TRUE;
 }
 
-static void cb_category(GtkWidget *item, int selection) {
+static void cb_category(GtkComboBox *item, int selection) {
     int b;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: cb_category\n");
-
-    if (gtk_check_menu_item_get_active((GTK_CHECK_MENU_ITEM(item)))) {
-        if (keyr_category == selection) { return; }
-
-        b = dialog_save_changed_record_with_cancel(pane, record_changed);
-        if (b == DIALOG_SAID_1) { /* Cancel */
-            int index, index2;
-
-            if (keyr_category == CATEGORY_ALL) {
-                index = 0;
-                index2 = 0;
-            } else {
-                index = find_sort_cat_pos(keyr_category);
-                index2 = find_menu_cat_pos(index) + 1;
-                index += 1;
-            }
-
-            if (index < 0) {
-                jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
-            } else {
-                gtk_check_menu_item_set_active
-                        (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
-                gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
-            }
-
-            return;
-        }
-        if (b == DIALOG_SAID_3) { /* Save */
-            cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
-        }
-
-        keyr_category = selection;
-        row_selected = 0;
-        keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
+    if (!item) return;
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
+        return;
     }
+    int selectedItem = get_selected_category_from_combo_box(item);
+    if (selectedItem == -1) {
+        return;
+    }
+
+    if (keyr_category == selectedItem) { return; }
+
+    b = dialog_save_changed_record_with_cancel(pane, record_changed);
+    if (b == DIALOG_SAID_1) { /* Cancel */
+        int index, index2;
+
+        if (keyr_category == CATEGORY_ALL) {
+            index = 0;
+            index2 = 0;
+        } else {
+            index = find_sort_cat_pos(keyr_category);
+            index2 = find_menu_cat_pos(index) + 1;
+            index += 1;
+        }
+
+        if (index < 0) {
+            jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
+        } else {
+            gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
+        }
+
+        return;
+    }
+    if (b == DIALOG_SAID_3) { /* Save */
+        cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+    }
+
+    keyr_category = selectedItem;
+    row_selected = 0;
+    keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
+
 }
 
 /***** PASSWORD GUI *****/
@@ -1985,17 +1970,17 @@ int plugin_search(const char *search_string, int case_sense,
 }
 
 gboolean
-findKeyRingRecord (GtkTreeModel *model,
-            GtkTreePath  *path,
-            GtkTreeIter  *iter,
-            gpointer data) {
+findKeyRingRecord(GtkTreeModel *model,
+                  GtkTreePath *path,
+                  GtkTreeIter *iter,
+                  gpointer data) {
     int uniqueId = GPOINTER_TO_INT(data);
     if (uniqueId) {
         struct MyKeyRing *mkr = NULL;
 
-        gtk_tree_model_get(model,iter,KEYRING_DATA_COLUMN_ENUM,&mkr,-1);
-        if(mkr->unique_id == uniqueId){
-            GtkTreeSelection * selection = NULL;
+        gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
+        if (mkr->unique_id == uniqueId) {
+            GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, KEYRING_CHANGED_COLUMN_ENUM, FALSE, 1.0, 0.0);
@@ -2004,13 +1989,15 @@ findKeyRingRecord (GtkTreeModel *model,
     }
     return FALSE;
 }
+
 static int keyring_find(int unique_id) {
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findKeyRingRecord, GINT_TO_POINTER(unique_id));
     return EXIT_SUCCESS;
 }
 
 static void cb_keyr_update_listStore(GtkWidget *treeView, int category) {
-    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), &export_keyring_list, category, FALSE);
+    keyr_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), &export_keyring_list,
+                          category, FALSE);
 }
 
 static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
@@ -2018,6 +2005,7 @@ static void cb_keyr_export_done(GtkWidget *widget, const char *filename) {
 
     set_pref(PREF_KEYR_EXPORT_FILENAME, 0, filename, TRUE);
 }
+
 static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     struct MyKeyRing *mkr;
@@ -2137,14 +2125,14 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
-    GtkTreeSelection  * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-    GtkTreeModel * model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
-    list = gtk_tree_selection_get_selected_rows(selection,&model);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    list = gtk_tree_selection_get_selected_rows(selection, &model);
 
     for (i = 0, temp_list = list; temp_list; temp_list = temp_list->next, i++) {
-        GtkTreePath * path = temp_list->data;
+        GtkTreePath *path = temp_list->data;
         GtkTreeIter iter;
-        if(gtk_tree_model_get_iter(model,&iter,path)) {
+        if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
             if (!mkr) {
                 continue;
@@ -2300,11 +2288,12 @@ int plugin_export(GtkWidget *window) {
     return EXIT_SUCCESS;
 }
 
-static GtkWidget * cb_keyr_export_init_treeView() {
-    GtkListStore * listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+static GtkWidget *cb_keyr_export_init_treeView() {
+    GtkListStore *listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                                 G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                                 G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
-    GtkTreeView *keyr_treeView  = gtk_tree_view_new_with_model(model);
+    GtkTreeView *keyr_treeView = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
@@ -2518,8 +2507,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     row_selected = 0;
 
     /* Do some initialization */
-    for (i = 0; i < NUM_KEYRING_CAT_ITEMS; i++) {
-        keyr_cat_menu_item2[i] = NULL;
+    if (category_menu2 && category_menu2 != NULL) {
+        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
+        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
 
     get_keyr_cat_info(&keyr_app_info);
@@ -2578,8 +2568,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     hbox_temp = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
-    make_category_menu(&category_menu1, keyr_cat_menu_item1,
-                       sort_l, cb_category, TRUE, FALSE);
+    make_category_menu_box(&category_menu1,
+                           sort_l, cb_category, TRUE, FALSE);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Scrolled window */
@@ -2647,7 +2637,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
-                                           gtk_true());
+                                            gtk_true());
 
     g_signal_connect (changedColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (nameColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
@@ -2729,7 +2719,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Category menu */
     label = gtk_label_new(_("Category: "));
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
-    make_category_menu(&category_menu2, keyr_cat_menu_item2,
+    make_category_menu_box(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2), 1, 10, 0, 1);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
@@ -2832,9 +2822,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         if (index < 0) {
             jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
         } else {
-            gtk_check_menu_item_set_active
-                    (GTK_CHECK_MENU_ITEM(keyr_cat_menu_item1[index]), TRUE);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(category_menu1), index2);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), index2);
         }
     } else {
         keyr_category = CATEGORY_ALL;

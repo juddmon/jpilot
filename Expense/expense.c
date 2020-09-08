@@ -408,7 +408,7 @@ static void connect_changed_signals(int con_or_dis) {
         connected = 0;
 
         if(category_menu2){
-            g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2),G_CALLBACK(cb_record_changed),NULL);
+            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
         for (i = 0; i < MAX_EXPENSE_TYPES; i++) {
             if (menu_item_expense_type[i]) {

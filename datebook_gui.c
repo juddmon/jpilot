@@ -4515,7 +4515,7 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == CONNECT_SIGNALS) && (!connected)) {
         connected = 1;
 
-        if (datebook_version) {
+        if (datebook_version && category_menu2) {
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
@@ -4610,7 +4610,7 @@ static void connect_changed_signals(int con_or_dis) {
     if ((con_or_dis == DISCONNECT_SIGNALS) && (connected)) {
         connected = 0;
 
-        if (datebook_version) {
+        if (datebook_version && category_menu2) {
             g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2),G_CALLBACK(cb_record_changed),NULL);
         }
 
