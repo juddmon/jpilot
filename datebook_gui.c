@@ -3840,7 +3840,9 @@ static void cb_category(GtkComboBox *item, int selection) {
         return;
     }
     int selectedItem = get_selected_category_from_combo_box(item);
-
+    if (selectedItem == -1) {
+        return;
+    }
     if (dbook_category == selectedItem) { return; }
 
 #ifdef JPILOT_DEBUG

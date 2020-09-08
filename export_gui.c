@@ -48,6 +48,7 @@ static int glob_pref_export;
 static GtkWidget *export_radio_type[10];
 static int glob_export_type;
 static GtkWidget *save_as_entry;
+GtkWidget *category_menu;
 
 /****************************** Prototypes ************************************/
 static void (*glob_cb_export_menu)(GtkWidget *treeView, int category);
@@ -80,7 +81,7 @@ static void cb_export_browse_ok(GtkWidget *widget, gpointer data) {
 
     glob_export_browse_pressed = BROWSE_OK;
     if (glob_pref_export) {
-        sel = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+        sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
         set_pref(glob_pref_export, 0, sel, TRUE);
     }
     gtk_widget_destroy(widget);
@@ -118,13 +119,14 @@ int export_browse(GtkWidget *main_window, int pref_export) {
             jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
         }
     }
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"),main_window,GTK_FILE_CHOOSER_ACTION_OPEN,GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,NULL);
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                                    GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
-    if (gtk_dialog_run (GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT)
-    {
-        cb_export_browse_ok(fileChooserWidget,NULL);
+    if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
+        cb_export_browse_ok(fileChooserWidget, NULL);
     } else {
-        cb_export_browse_cancel(fileChooserWidget,NULL);
+        cb_export_browse_cancel(fileChooserWidget, NULL);
     }
     gtk_main();
 
@@ -144,6 +146,10 @@ static gboolean cb_export_destroy(GtkWidget *widget) {
         glob_cb_export_done(widget, filename);
     }
     gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(export_treeView))));
+    if (category_menu != NULL) {
+        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu));
+        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
+    }
     gtk_main_quit();
 
     return FALSE;
@@ -182,16 +188,21 @@ static void cb_export_type(GtkWidget *widget, gpointer data) {
     glob_export_type = GPOINTER_TO_INT(data);
 }
 
-static void cb_export_category(GtkWidget *item, int selection) {
-    if ((gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item)))) {
-        export_category = selection;
+static void cb_export_category(GtkComboBox * item, int selection) {
+    if (!item) return;
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
+        return;
+    }
+    int selectedItem = get_selected_category_from_combo_box(item);
+        export_category = selectedItem;
         jp_logf(JP_LOG_DEBUG, "cb_export_category() cat=%d\n", export_category);
         if (glob_cb_export_menu) {
             glob_cb_export_menu(export_treeView, export_category);
         }
         gtk_tree_selection_select_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)));
         jp_logf(JP_LOG_DEBUG, "Leaving cb_export_category()\n");
-    }
+       //gtk_combo_box_set_active(GTK_COMBO_BOX(item), pos);
+
 }
 
 int export_gui(GtkWidget *main_window,
@@ -214,8 +225,8 @@ int export_gui(GtkWidget *main_window,
     GtkWidget *button;
     GtkWidget *vbox;
     GtkWidget *hbox;
-    GtkWidget *category_menu;
-    GtkWidget *cat_menu_item[NUM_CAT_ITEMS + 1];
+
+
     GtkWidget *scrolled_window;
     GtkWidget *label;
     char title[256];
@@ -264,8 +275,13 @@ int export_gui(GtkWidget *main_window,
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
     /* Put the export category menu up */
-    make_category_menu(&category_menu, cat_menu_item, sort_l,
-                       cb_export_category, TRUE, FALSE);
+    if (category_menu != NULL) {
+        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu));
+        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
+    }
+    make_category_menu_box(&category_menu, sort_l,
+                           cb_export_category, TRUE, FALSE);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu),0);
     gtk_box_pack_start(GTK_BOX(vbox), category_menu, FALSE, FALSE, 0);
 
     /* Put the record list window up */
