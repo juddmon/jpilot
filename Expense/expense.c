@@ -154,11 +154,8 @@ static GtkWidget *copy_record_button;
 static GtkWidget *table;
 static GtkWidget *category_menu2;
 static GtkWidget *menu_payment;
-static GtkWidget *menu_item_payment[MAX_PAYMENTS];
 static GtkWidget *menu_expense_type;
-static GtkWidget *menu_item_expense_type[MAX_EXPENSE_TYPES];
 static GtkWidget *menu_currency;
-static GtkWidget *menu_item_currency[MAX_CURRENCYS];
 static GtkWidget *spinner_mon, *spinner_day, *spinner_year;
 static GtkAdjustment *adj_mon, *adj_day, *adj_year;
 static GtkWidget *entry_amount;
@@ -206,10 +203,9 @@ static void connect_changed_signals(int con_or_dis);
 
 static void cb_add_new_record(GtkWidget *widget, gpointer data);
 
-static void cb_pulldown_menu(GtkWidget *item, unsigned int value);
+static void cb_pulldown_menu(GtkComboBox *item, unsigned int value);
 
-static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu,
-                     GtkWidget *menu_items[]);
+static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu);
 
 static int expense_find(int unique_id);
 
@@ -359,30 +355,14 @@ static void connect_changed_signals(int con_or_dis) {
         if(category_menu2){
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
-
-        for (i = 0; i < MAX_EXPENSE_TYPES; i++) {
-            if (menu_item_expense_type[i]) {
-                gtk_signal_connect(GTK_OBJECT(menu_item_expense_type[i]),
-                                   "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed),
-                                   NULL);
-            }
+        if(menu_expense_type){
+            g_signal_connect(G_OBJECT(menu_expense_type),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
-        for (i = 0; i < MAX_PAYMENTS; i++) {
-            if (menu_item_payment[i]) {
-                gtk_signal_connect(GTK_OBJECT(menu_item_payment[i]),
-                                   "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed),
-                                   NULL);
-            }
+        if(menu_payment){
+            g_signal_connect(G_OBJECT(menu_payment),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
-        for (i = 0; i < MAX_CURRENCYS; i++) {
-            if (menu_item_currency[i]) {
-                gtk_signal_connect(GTK_OBJECT(menu_item_currency[i]),
-                                   "toggled",
-                                   GTK_SIGNAL_FUNC(cb_record_changed),
-                                   NULL);
-            }
+        if(menu_currency){
+            g_signal_connect(G_OBJECT(menu_currency),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
         gtk_signal_connect(GTK_OBJECT(spinner_mon), "changed",
                            GTK_SIGNAL_FUNC(cb_record_changed), NULL);
@@ -410,24 +390,20 @@ static void connect_changed_signals(int con_or_dis) {
         if(category_menu2){
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
-        for (i = 0; i < MAX_EXPENSE_TYPES; i++) {
-            if (menu_item_expense_type[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_expense_type[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
+
+        if(menu_expense_type){
+            g_signal_handlers_disconnect_by_func(G_OBJECT(menu_expense_type),
+                                                 G_CALLBACK(cb_record_changed), NULL);
         }
-        for (i = 0; i < MAX_PAYMENTS; i++) {
-            if (menu_item_payment[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_payment[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
+        if(menu_payment){
+            g_signal_handlers_disconnect_by_func(G_OBJECT(menu_payment),
+                                                 G_CALLBACK(cb_record_changed), NULL);
         }
-        for (i = 0; i < MAX_CURRENCYS; i++) {
-            if (menu_item_currency[i]) {
-                gtk_signal_disconnect_by_func(GTK_OBJECT(menu_item_currency[i]),
-                                              GTK_SIGNAL_FUNC(cb_record_changed), NULL);
-            }
+        if(menu_currency){
+            g_signal_handlers_disconnect_by_func(G_OBJECT(menu_currency),
+                                                 G_CALLBACK(cb_record_changed), NULL);
         }
+
         gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_mon),
                                       GTK_SIGNAL_FUNC(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_day),
@@ -1198,24 +1174,18 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
         gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
 
         if (mexp->ex.type < MAX_EXPENSE_TYPES) {
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                           (menu_item_expense_type[mexp->ex.type]), TRUE);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(menu_expense_type),mexp->ex.type);
         } else {
             jp_logf(JP_LOG_WARN, _("Expense: Unknown expense type\n"));
         }
         if (mexp->ex.payment < MAX_PAYMENTS) {
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                           (menu_item_payment[mexp->ex.payment]), TRUE);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(menu_payment),mexp->ex.payment);
         } else {
             jp_logf(JP_LOG_WARN, _("Expense: Unknown payment type\n"));
         }
         currency_position = currency_id_to_position(mexp->ex.currency);
 
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                       (menu_item_currency[currency_position]), TRUE);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_expense_type), mexp->ex.type);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_payment), mexp->ex.payment);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(menu_currency), (guint) currency_position);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(menu_currency),currency_position);
 
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_mon), mexp->ex.date.tm_mon + 1);
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinner_day), mexp->ex.date.tm_mday);
@@ -1261,21 +1231,20 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
  * All menus use this same callback function.  I use the value parameter
  * to determine which menu was changed and which item was selected from it.
  */
-static void cb_pulldown_menu(GtkWidget *item, unsigned int value) {
+static void cb_pulldown_menu(GtkComboBox *item, unsigned int value) {
     int menu, sel;
 
     jp_logf(JP_LOG_DEBUG, "Expense: cb_pulldown_menu\n");
 
-    if (!item){
+    if (!item)
         return;
-    }
-    if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(item))) {
+    if(gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0){
         return;
     }
 
-    menu = (value & 0xFF00) >> 8;
-    sel = value & 0x00FF;
 
+    sel = gtk_combo_box_get_active(GTK_COMBO_BOX(item));
+    menu = findSortedPostion(sel,GTK_COMBO_BOX(item));
     switch (menu) {
         case EXPENSE_TYPE:
             glob_detail_type = sel;
@@ -1295,8 +1264,7 @@ static void cb_pulldown_menu(GtkWidget *item, unsigned int value) {
  * Just a convenience function for passing in an array of strings and getting
  * them all stuffed into a menu.
  */
-static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu,
-                     GtkWidget *menu_items[]) {
+static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu) {
     int i, item_num;
     GSList *group;
     GtkWidget *option_menu;
@@ -1304,30 +1272,21 @@ static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_me
     GtkWidget *menu;
 
     jp_logf(JP_LOG_DEBUG, "Expense: make_menu\n");
-
-    *Poption_menu = option_menu = gtk_option_menu_new();
-
-    menu = gtk_menu_new();
-
-    group = NULL;
+    GtkListStore *catListStore = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
+    GtkTreeIter iter;
 
     for (i = 0; items[i]; i++) {
-        menu_item = gtk_radio_menu_item_new_with_label(group, _(items[i]));
-        menu_items[i] = menu_item;
-        item_num = i;
-        gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
-                           GTK_SIGNAL_FUNC(cb_pulldown_menu),
-                           GINT_TO_POINTER(menu_index << 8 | item_num));
-        group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(menu_item));
-        gtk_menu_append(GTK_MENU(menu), menu_item);
-        gtk_widget_show(menu_item);
+        gtk_list_store_append (catListStore, &iter);
+        gtk_list_store_set (catListStore, &iter, 0, _(items[i]), 1, menu_index, -1);
     }
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(option_menu), menu);
-    /* Make this one show up by default */
-    gtk_option_menu_set_history(GTK_OPTION_MENU(option_menu), 0);
-
-    gtk_widget_show(option_menu);
+    *Poption_menu =  gtk_combo_box_new_with_model (GTK_TREE_MODEL (catListStore));
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (*Poption_menu), renderer, TRUE);
+    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (*Poption_menu), renderer,
+                                    "text", 0,
+                                    NULL);
+    g_signal_connect(G_OBJECT( *Poption_menu),"changed",G_CALLBACK(cb_pulldown_menu),
+                     GINT_TO_POINTER(menu_index << 8 | item_num));
 
     return EXIT_SUCCESS;
 }
@@ -1444,9 +1403,9 @@ static void make_menus(void) {
     /* Skip the ALL category for this menu */
     make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
-    make_menu(payment, EXPENSE_PAYMENT, &menu_payment, menu_item_payment);
-    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type, menu_item_expense_type);
-    make_menu(currency, EXPENSE_CURRENCY, &menu_currency, menu_item_currency);
+    make_menu(payment, EXPENSE_PAYMENT, &menu_payment);
+    make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type);
+    make_menu(currency, EXPENSE_CURRENCY, &menu_currency);
 }
 
 
