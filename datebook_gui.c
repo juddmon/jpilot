@@ -1944,10 +1944,11 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags) {
         }
     }
     if (flags & UPDATE_DATE_MENUS) {
-        gtk_option_menu_set_history(GTK_OPTION_MENU(option1), (guint) begin_date.tm_hour);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(option2), (guint) (begin_date.tm_min / 5));
-        gtk_option_menu_set_history(GTK_OPTION_MENU(option3), (guint) end_date.tm_hour);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(option4), (guint) (end_date.tm_min / 5));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option1),begin_date.tm_hour);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option2),(begin_date.tm_min / 5));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option3),end_date.tm_hour);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option4),(end_date.tm_min / 5));
+
     }
 }
 
@@ -4167,26 +4168,38 @@ int datebook_refresh(int first, int do_init) {
     return EXIT_SUCCESS;
 }
 
-static void cb_menu_time(GtkWidget *item, gint data) {
+static void cb_menu_time(GtkComboBox *item, gint data) {
     int span;
-
-    if (END_TIME_FLAG & data) {
-        if (HOURS_FLAG & data) {
-            end_date.tm_hour = data & 0x3F;
+    int flag;
+    int timeValue;
+    int combined;
+    if (!item)
+        return;
+    if(gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0){
+        return;
+    }
+    GtkTreeModel * model = gtk_combo_box_get_model(GTK_COMBO_BOX(item));
+    GtkTreeIter iter;
+    gtk_combo_box_get_active_iter(GTK_COMBO_BOX(item),&iter);
+    gtk_tree_model_get(model,&iter,1,&flag,2,&timeValue,-1);
+    combined = timeValue | flag;
+    if (END_TIME_FLAG & combined) {
+        if (HOURS_FLAG & combined) {
+            end_date.tm_hour = combined & 0x3F;
         } else {
-            end_date.tm_min = data & 0x3F;
+            end_date.tm_min = combined & 0x3F;
         }
     } else {
         /* If start time changed then update end time to keep same appt. length */
-        if (HOURS_FLAG & data) {
+        if (HOURS_FLAG & combined) {
             span = end_date.tm_hour - begin_date.tm_hour;
-            begin_date.tm_hour = data & 0x3F;
+            begin_date.tm_hour = combined & 0x3F;
             span = (begin_date.tm_hour + span) % 24;
             span < 0 ? span += 24 : span;
             end_date.tm_hour = span;
         } else {
             span = end_date.tm_min - begin_date.tm_min;
-            begin_date.tm_min = data & 0x3F;
+            begin_date.tm_min = combined & 0x3F;
             span = begin_date.tm_min + span;
             if (span >= 60) {
                 span -= 60;
@@ -4200,7 +4213,7 @@ static void cb_menu_time(GtkWidget *item, gint data) {
     }
 
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_appt_time), TRUE);
-    set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES);
+    set_begin_end_labels(&begin_date, &end_date,UPDATE_DATE_MENUS | UPDATE_DATE_ENTRIES);
 }
 
 static gboolean cb_hide_menu_time(GtkWidget *widget, gpointer data) {
@@ -4707,16 +4720,15 @@ static void connect_changed_signals(int con_or_dis) {
 
 static GtkWidget *create_time_menu(int flags) {
     GtkWidget *option;
-    GtkWidget *menu;
     GtkWidget *item;
     char str[64];
     char buf[64];
     int i, i_stop;
     int cb_factor;
     struct tm t;
+    GtkListStore *catListStore = gtk_list_store_new(3,G_TYPE_STRING,G_TYPE_INT,G_TYPE_INT);
+    GtkTreeIter iter;
 
-    option = gtk_option_menu_new();
-    menu = gtk_menu_new();
 
     memset(&t, 0, sizeof(t));
 
@@ -4736,16 +4748,26 @@ static GtkWidget *create_time_menu(int flags) {
         } else {
             snprintf(buf, sizeof(buf), "%02d", i * cb_factor);
         }
-        item = gtk_menu_item_new_with_label(buf);
-        gtk_signal_connect(GTK_OBJECT(item), "select",
-                           GTK_SIGNAL_FUNC(cb_menu_time),
-                           GINT_TO_POINTER(i * cb_factor | flags));
-        gtk_menu_append(GTK_MENU(menu), item);
-    }
+        gtk_list_store_append (catListStore, &iter);
+        gtk_list_store_set (catListStore, &iter, 0, buf, 1, flags,2,i * cb_factor, -1);
 
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(option), menu);
-    gtk_signal_connect(GTK_OBJECT(menu), "hide",
-                       GTK_SIGNAL_FUNC(cb_hide_menu_time), NULL);
+       // gtk_signal_connect(GTK_OBJECT(item), "select",
+       //                    GTK_SIGNAL_FUNC(cb_menu_time),
+        //                   GINT_TO_POINTER(i * cb_factor | flags));
+
+    }
+    option = gtk_combo_box_new_with_model (GTK_TREE_MODEL (catListStore));
+    g_signal_connect(G_OBJECT(option), "changed",
+                     G_CALLBACK(cb_menu_time),
+                       GINT_TO_POINTER(i * cb_factor | flags));
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (option), renderer, TRUE);
+    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (option), renderer,
+                                    "text", 0,
+                                    NULL);
+
+    g_signal_connect(G_OBJECT(option), "hide",
+                       G_CALLBACK(cb_hide_menu_time), NULL);
 
     return option;
 }
