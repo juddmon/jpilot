@@ -260,7 +260,7 @@ static void connect_changed_signals(int con_or_dis) {
         }
         g_signal_handlers_disconnect_by_func(memo_text_buffer,
                                              G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_disconnect_by_func(G_OBJECT(private_checkbox),
+        g_signal_handlers_disconnect_by_func(G_OBJECT(private_checkbox),
                                       G_CALLBACK(cb_record_changed), NULL);
     }
 }

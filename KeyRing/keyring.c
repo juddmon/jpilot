@@ -819,14 +819,14 @@ static void connect_changed_signals(int con_or_dis) {
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
-        gtk_signal_disconnect_by_func(G_OBJECT(entry_name),
+        g_signal_handlers_disconnect_by_func(G_OBJECT(entry_name),
                                       G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_disconnect_by_func(G_OBJECT(entry_account),
+        g_signal_handlers_disconnect_by_func(G_OBJECT(entry_account),
                                       G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_disconnect_by_func(G_OBJECT(entry_password),
+        g_signal_handlers_disconnect_by_func(G_OBJECT(entry_password),
                                       G_CALLBACK(cb_record_changed),
                                       GINT_TO_POINTER(PASSWD_FLAG));
-        gtk_signal_disconnect_by_func(G_OBJECT(date_button),
+        g_signal_handlers_disconnect_by_func(G_OBJECT(date_button),
                                       G_CALLBACK(cb_record_changed), NULL);
         g_signal_handlers_disconnect_by_func(keyr_note_buffer,
                                              G_CALLBACK(cb_record_changed), NULL);
