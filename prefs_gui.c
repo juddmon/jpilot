@@ -281,14 +281,12 @@ static void cb_text_entry(GtkWidget *widget, gpointer data)
          found=0;
          for (i=0; port_choices[i]; i++) {
             if (!strcmp(entry_text, port_choices[i])) {
-               gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[i]), TRUE);
-               gtk_option_menu_set_history(GTK_OPTION_MENU(port_menu), i);
+                gtk_combo_box_set_active(GTK_COMBO_BOX(port_menu),i);
                found=1;
             }
          }
          if (!found) {
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(port_menu_item[0]), TRUE);
-            gtk_option_menu_set_history(GTK_OPTION_MENU(port_menu), 0);
+             gtk_combo_box_set_active(GTK_COMBO_BOX(port_menu),0);
          }
       }
    }
@@ -507,8 +505,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 0, 1);
 
    get_pref(PREF_CHAR_SET, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
-
+   gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
    /* Shortdate */
    label = gtk_label_new(_("Short date format"));
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
@@ -520,7 +517,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 1, 2);
 
    get_pref(PREF_SHORTDATE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
 
    /* Longdate */
    label = gtk_label_new(_("Long date format"));
@@ -533,7 +530,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 2, 3);
 
    get_pref(PREF_LONGDATE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
 
    /* Time */
    label = gtk_label_new(_("Time format"));
@@ -546,7 +543,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              1, 2, 3, 4);
 
    get_pref(PREF_TIME, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
 
    /**********************************************************************/
    /* Settings preference tab */
@@ -566,7 +563,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              2, 3, 0, 1);
 
    get_pref(PREF_RCFILE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
 
    /* Port */
    label = gtk_label_new(_("Sync Port"));
@@ -603,7 +600,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              2, 3, 2, 3);
 
    get_pref(PREF_RATE, &ivalue, NULL);
-   gtk_option_menu_set_history(GTK_OPTION_MENU(rate_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu),ivalue);
 
    /* Disable Serial Rate menu if sync port is USB */
    if (! strcmp(cstr, "usb:")) {
