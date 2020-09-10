@@ -4785,7 +4785,7 @@ static void cb_todos_show(GtkWidget *widget, gpointer data) {
         gtk_paned_set_position(GTK_PANED(todo_pane), (gint) ivalue);
         gtk_widget_show_all(GTK_WIDGET(todo_vbox));
     } else {
-        gtk_widget_hide_all(GTK_WIDGET(todo_vbox));
+        gtk_widget_hide(GTK_WIDGET(todo_vbox));
     }
 }
 
@@ -5634,7 +5634,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     get_pref(PREF_DATEBOOK_TODO_SHOW, &ivalue, NULL);
     if (!ivalue) {
-        gtk_widget_hide_all(todo_vbox);
+        gtk_widget_hide(todo_vbox);
         gtk_paned_set_position(GTK_PANED(todo_pane), 100000);
     } else {
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(show_todos_button), TRUE);
