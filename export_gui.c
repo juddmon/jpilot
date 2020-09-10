@@ -267,7 +267,7 @@ int export_gui(GtkWidget *main_window,
 
     gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
-    gtk_signal_connect(GTK_OBJECT(export_window), "destroy",
+    g_signal_connect(GTK_OBJECT(export_window), "destroy",
                        G_CALLBACK(cb_export_destroy), export_window);
 
     vbox = gtk_vbox_new(FALSE, 0);
@@ -318,7 +318,7 @@ int export_gui(GtkWidget *main_window,
         export_radio_type[i] = gtk_radio_button_new_with_label(group, _(type_text[i]));
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
         gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
-        gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
+        g_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
                            G_CALLBACK(cb_export_type),
                            GINT_TO_POINTER(type_int[i]));
     }
@@ -342,7 +342,7 @@ int export_gui(GtkWidget *main_window,
     /* Browse button */
     button = gtk_button_new_with_label(_("Browse"));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_browse), export_window);
 
     /* Cancel/OK buttons */
@@ -354,12 +354,12 @@ int export_gui(GtkWidget *main_window,
 
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_quit), export_window);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_ok), export_window);
 
     if (glob_cb_export_menu) {

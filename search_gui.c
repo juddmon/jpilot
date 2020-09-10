@@ -639,7 +639,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     g_snprintf(temp, sizeof(temp), "%s %s", PN, _("Search"));
     gtk_window_set_title(GTK_WINDOW(window), temp);
 
-    gtk_signal_connect(GTK_OBJECT(window), "destroy",
+    g_signal_connect(GTK_OBJECT(window), "destroy",
                        G_CALLBACK(cb_destroy), window);
 
     accel_group = gtk_accel_group_new();
@@ -701,13 +701,13 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleSearchRowSelection, NULL, NULL);
 
 
-    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
+    g_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        G_CALLBACK(cb_key_pressed_in_list),
                        NULL);
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
-    gtk_signal_connect(GTK_OBJECT(entry), "activate",
+    g_signal_connect(GTK_OBJECT(entry), "activate",
                        G_CALLBACK(cb_entry),
                        treeView);
 
@@ -719,17 +719,17 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
 
     /* Search button */
     button = gtk_button_new_from_stock(GTK_STOCK_FIND);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_search), treeView);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
     /* clicking on "Case Sensitive" also starts a search */
-    gtk_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
+    g_signal_connect(GTK_OBJECT(case_sense_checkbox), "clicked",
                        G_CALLBACK(cb_search), treeView);
 
     /* Done button */
     button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_quit), window);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_KEY_Escape, 0, 0);

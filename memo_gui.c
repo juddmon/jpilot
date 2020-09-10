@@ -248,7 +248,7 @@ static void connect_changed_signals(int con_or_dis) {
         g_signal_connect(memo_text_buffer, "changed",
                          G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
+        g_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
     }
 
@@ -1813,39 +1813,39 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Cancel button */
     CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
-    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                        G_CALLBACK(cb_cancel), NULL);
 
     /* Delete Button */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
                   "Ctrl+D")
-    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        G_CALLBACK(cb_delete_memo),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     /* Undelete Button */
     CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
-    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
                        G_CALLBACK(cb_undelete_memo),
                        GINT_TO_POINTER(UNDELETE_FLAG));
 
     /* Copy button */
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
-    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     /* New button */
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
     /* "Add Record" button */
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -1856,7 +1856,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* "Apply Changes" button */
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -1905,10 +1905,10 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Capture the Enter & Shift-Enter key combinations to move back and
      * forth between the left- and right-hand sides of the display. */
-    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
+    g_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        G_CALLBACK(cb_key_pressed_left_side), memo_text);
 
-    gtk_signal_connect(GTK_OBJECT(memo_text), "key_press_event",
+    g_signal_connect(GTK_OBJECT(memo_text), "key_press_event",
                        G_CALLBACK(cb_key_pressed_right_side), treeView);
 
     /**********************************************************************/

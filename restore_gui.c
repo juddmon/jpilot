@@ -273,7 +273,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_window_set_modal(GTK_WINDOW(restore_window), TRUE);
     gtk_window_set_transient_for(GTK_WINDOW(restore_window), GTK_WINDOW(main_window));
 
-    gtk_signal_connect(GTK_OBJECT(restore_window), "destroy",
+    g_signal_connect(GTK_OBJECT(restore_window), "destroy",
                        G_CALLBACK(cb_restore_destroy), restore_window);
 
     vbox = gtk_vbox_new(FALSE, 0);
@@ -360,12 +360,12 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
 
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_restore_quit), restore_window);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_restore_ok), restore_window);
 
     populate_listStore();

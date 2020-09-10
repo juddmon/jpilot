@@ -797,14 +797,14 @@ static void connect_changed_signals(int con_or_dis) {
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
-        gtk_signal_connect(GTK_OBJECT(entry_name), "changed",
+        g_signal_connect(GTK_OBJECT(entry_name), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(entry_account), "changed",
+        g_signal_connect(GTK_OBJECT(entry_account), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(entry_password), "changed",
+        g_signal_connect(GTK_OBJECT(entry_password), "changed",
                            G_CALLBACK(cb_record_changed),
                            GINT_TO_POINTER(PASSWD_FLAG));
-        gtk_signal_connect(GTK_OBJECT(date_button), "pressed",
+        g_signal_connect(GTK_OBJECT(date_button), "pressed",
                            G_CALLBACK(cb_record_changed), NULL);
         g_signal_connect(keyr_note_buffer, "changed",
                          G_CALLBACK(cb_record_changed), NULL);
@@ -1604,7 +1604,7 @@ static int dialog_password(GtkWindow *main_window,
 
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 
-    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
+    g_signal_connect(GTK_OBJECT(dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), dialog);
 
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -1643,7 +1643,7 @@ static int dialog_password(GtkWindow *main_window,
 
     entry = gtk_entry_new_with_max_length(32);
     gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
-    gtk_signal_connect(GTK_OBJECT(entry), "activate",
+    g_signal_connect(GTK_OBJECT(entry), "activate",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_2));
     gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
@@ -1657,13 +1657,13 @@ static int dialog_password(GtkWindow *main_window,
 
     /* Buttons */
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_1));
     gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_2));
     gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
@@ -2467,7 +2467,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 #if 0
     /* Change Password button */
     button = gtk_button_new_with_label(_("Change\nKeyRing\nPassword"));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_change_password), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
 #endif
@@ -2657,39 +2657,39 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Cancel button */
     CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
-    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                        G_CALLBACK(cb_cancel), NULL);
 
     /* Delete button */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
                   "Ctrl+D");
-    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        G_CALLBACK(cb_delete_keyring),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     /* Undelete button */
     CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
-    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
                        G_CALLBACK(cb_undelete_keyring),
                        GINT_TO_POINTER(UNDELETE_FLAG));
 
     /* Copy button */
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
-    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     /* New Record button */
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
     /* Add Record button */
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -2699,7 +2699,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Apply Changes button */
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -2754,13 +2754,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     date_button = gtk_button_new_with_label("");
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
-    gtk_signal_connect(GTK_OBJECT(date_button), "clicked",
+    g_signal_connect(GTK_OBJECT(date_button), "clicked",
                        G_CALLBACK(cb_date_button), date_button);
 
     /* Generate Password button (creates random password) */
     button = gtk_button_new_with_label(_("Generate Password"));
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_gen_password), entry_password);
 
     /* Note textbox */

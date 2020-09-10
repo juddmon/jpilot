@@ -364,17 +364,17 @@ static void connect_changed_signals(int con_or_dis) {
         if(menu_currency){
             g_signal_connect(G_OBJECT(menu_currency),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
-        gtk_signal_connect(GTK_OBJECT(spinner_mon), "changed",
+        g_signal_connect(GTK_OBJECT(spinner_mon), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(spinner_day), "changed",
+        g_signal_connect(GTK_OBJECT(spinner_day), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(spinner_year), "changed",
+        g_signal_connect(GTK_OBJECT(spinner_year), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(entry_amount), "changed",
+        g_signal_connect(GTK_OBJECT(entry_amount), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(entry_vendor), "changed",
+        g_signal_connect(GTK_OBJECT(entry_vendor), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
+        g_signal_connect(GTK_OBJECT(entry_city), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
         g_signal_connect(attendees_buffer, "changed",
                          G_CALLBACK(cb_record_changed), NULL);
@@ -1601,24 +1601,24 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Delete, Copy, New, etc. buttons */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
                   "Ctrl+D")
-    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        G_CALLBACK(cb_delete),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
-    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -1628,7 +1628,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS

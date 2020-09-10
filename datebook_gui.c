@@ -1317,7 +1317,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
 
     gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
-    gtk_signal_connect(GTK_OBJECT(export_window), "destroy",
+    g_signal_connect(GTK_OBJECT(export_window), "destroy",
                        G_CALLBACK(cb_export_destroy), export_window);
 
     vbox = gtk_vbox_new(FALSE, 0);
@@ -1334,7 +1334,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
         export_radio_type[i] = gtk_radio_button_new_with_label(group, type_text[i]);
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
         gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
-        gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
+        g_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
                            G_CALLBACK(cb_export_type),
                            GINT_TO_POINTER(type_int[i]));
     }
@@ -1355,7 +1355,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     gtk_box_pack_start(GTK_BOX(hbox), save_as_entry, TRUE, TRUE, 0);
     button = gtk_button_new_with_label(_("Browse"));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_browse), export_window);
 
     hbox = gtk_hbutton_box_new();
@@ -1366,12 +1366,12 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
 
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_quit), export_window);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_ok), export_window);
 
     gtk_widget_show_all(export_window);
@@ -1497,7 +1497,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     g_snprintf(title, sizeof(title), "%s %s", PN, _("Datebook Categories"));
     gtk_window_set_title(GTK_WINDOW(window_datebk_cats), title);
 
-    gtk_signal_connect(GTK_OBJECT(window_datebk_cats), "destroy",
+    g_signal_connect(GTK_OBJECT(window_datebk_cats), "destroy",
                        G_CALLBACK(cb_destroy_datebk_cats), window_datebk_cats);
 
     vbox = gtk_vbox_new(FALSE, 0);
@@ -1523,7 +1523,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
                     (GTK_TABLE(table), GTK_WIDGET(toggle_button[i]),
                      (i > 7) ? 1 : 0, (i > 7) ? 2 : 1, (guint) ((i > 7) ? i - 8 : i),
                      (guint) ((i > 7) ? i - 7 : i + 1));
-            gtk_signal_connect(GTK_OBJECT(toggle_button[i]), "toggled",
+            g_signal_connect(GTK_OBJECT(toggle_button[i]), "toggled",
                                G_CALLBACK(cb_toggle), GINT_TO_POINTER(i));
         } else {
             toggle_button[i] = NULL;
@@ -1536,19 +1536,19 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
 
     /* Close button */
     button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_quit_datebk_cats), window_datebk_cats);
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
     /* All button */
     button = gtk_button_new_with_label(_("All"));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_datebk_category), GINT_TO_POINTER(1));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
     /* None button */
     button = gtk_button_new_with_label(_("None"));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_datebk_category), GINT_TO_POINTER(0));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
@@ -3921,7 +3921,7 @@ static void cb_cal_changed(GtkWidget *widget,
             gtk_calendar_select_month(GTK_CALENDAR(main_calendar), (guint) current_month,
                                       (guint) (1900 + current_year));
             gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) current_day);
-            gtk_signal_connect(GTK_OBJECT(main_calendar),
+            g_signal_connect(GTK_OBJECT(main_calendar),
                                "day_selected", G_CALLBACK(cb_cal_changed),
                                GINT_TO_POINTER(CAL_DAY_SELECTED));
             return;
@@ -3945,7 +3945,7 @@ static void cb_cal_changed(GtkWidget *widget,
             gtk_calendar_select_day(GTK_CALENDAR(main_calendar), cal_day);
             gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 
-            gtk_signal_connect(GTK_OBJECT(main_calendar),
+            g_signal_connect(GTK_OBJECT(main_calendar),
                                "day_selected", G_CALLBACK(cb_cal_changed),
                                GINT_TO_POINTER(CAL_DAY_SELECTED));
         }
@@ -4150,7 +4150,7 @@ int datebook_refresh(int first, int do_init) {
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) copy_current_day);
         gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
     }
-    gtk_signal_connect(GTK_OBJECT(main_calendar),
+    g_signal_connect(GTK_OBJECT(main_calendar),
                        "day_selected", G_CALLBACK(cb_cal_changed),
                        GINT_TO_POINTER(CAL_DAY_SELECTED));
 
@@ -4532,31 +4532,31 @@ static void connect_changed_signals(int con_or_dis) {
             g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
 
-        gtk_signal_connect(GTK_OBJECT(radio_button_alarm_min), "toggled",
+        g_signal_connect(GTK_OBJECT(radio_button_alarm_min), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(radio_button_alarm_hour), "toggled",
+        g_signal_connect(GTK_OBJECT(radio_button_alarm_hour), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(radio_button_alarm_day), "toggled",
-                           G_CALLBACK(cb_record_changed), NULL);
-
-        gtk_signal_connect(GTK_OBJECT(check_button_alarm), "toggled",
+        g_signal_connect(GTK_OBJECT(radio_button_alarm_day), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "toggled",
+        g_signal_connect(GTK_OBJECT(check_button_alarm), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(radio_button_appt_time), "toggled",
+        g_signal_connect(GTK_OBJECT(radio_button_no_time), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(begin_date_button), "pressed",
+        g_signal_connect(GTK_OBJECT(radio_button_appt_time), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(begin_time_entry), "changed",
-                           G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(end_time_entry), "changed",
+        g_signal_connect(GTK_OBJECT(begin_date_button), "pressed",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(units_entry), "changed",
+        g_signal_connect(GTK_OBJECT(begin_time_entry), "changed",
+                           G_CALLBACK(cb_record_changed), NULL);
+        g_signal_connect(GTK_OBJECT(end_time_entry), "changed",
+                           G_CALLBACK(cb_record_changed), NULL);
+
+        g_signal_connect(GTK_OBJECT(units_entry), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
 
         g_signal_connect(dbook_desc_buffer, "changed",
@@ -4570,51 +4570,51 @@ static void connect_changed_signals(int con_or_dis) {
 #ifdef ENABLE_DATEBK
         if (use_db3_tags) {
             if (datebk_entry) {
-                gtk_signal_connect(GTK_OBJECT(datebk_entry), "changed",
+                g_signal_connect(GTK_OBJECT(datebk_entry), "changed",
                                    G_CALLBACK(cb_record_changed), NULL);
             }
         }
 #endif
 
-        gtk_signal_connect(GTK_OBJECT(notebook), "switch-page",
+        g_signal_connect(GTK_OBJECT(notebook), "switch-page",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(repeat_day_entry), "changed",
+        g_signal_connect(GTK_OBJECT(repeat_day_entry), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(repeat_week_entry), "changed",
+        g_signal_connect(GTK_OBJECT(repeat_week_entry), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(repeat_mon_entry), "changed",
+        g_signal_connect(GTK_OBJECT(repeat_mon_entry), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(repeat_year_entry), "changed",
-                           G_CALLBACK(cb_record_changed), NULL);
-
-        gtk_signal_connect(GTK_OBJECT(check_button_day_endon), "toggled",
-                           G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(check_button_week_endon), "toggled",
-                           G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(check_button_mon_endon), "toggled",
-                           G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(check_button_year_endon), "toggled",
+        g_signal_connect(GTK_OBJECT(repeat_year_entry), "changed",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(glob_endon_day_button), "pressed",
+        g_signal_connect(GTK_OBJECT(check_button_day_endon), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(glob_endon_week_button), "pressed",
+        g_signal_connect(GTK_OBJECT(check_button_week_endon), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(glob_endon_mon_button), "pressed",
+        g_signal_connect(GTK_OBJECT(check_button_mon_endon), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(glob_endon_year_button), "pressed",
+        g_signal_connect(GTK_OBJECT(check_button_year_endon), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
-        gtk_signal_connect(GTK_OBJECT(toggle_button_repeat_mon_byday), "toggled",
+        g_signal_connect(GTK_OBJECT(glob_endon_day_button), "pressed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(toggle_button_repeat_mon_bydate), "toggled",
+        g_signal_connect(GTK_OBJECT(glob_endon_week_button), "pressed",
                            G_CALLBACK(cb_record_changed), NULL);
-        gtk_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
+        g_signal_connect(GTK_OBJECT(glob_endon_mon_button), "pressed",
+                           G_CALLBACK(cb_record_changed), NULL);
+        g_signal_connect(GTK_OBJECT(glob_endon_year_button), "pressed",
+                           G_CALLBACK(cb_record_changed), NULL);
+
+        g_signal_connect(GTK_OBJECT(toggle_button_repeat_mon_byday), "toggled",
+                           G_CALLBACK(cb_record_changed), NULL);
+        g_signal_connect(GTK_OBJECT(toggle_button_repeat_mon_bydate), "toggled",
+                           G_CALLBACK(cb_record_changed), NULL);
+        g_signal_connect(GTK_OBJECT(private_checkbox), "toggled",
                            G_CALLBACK(cb_record_changed), NULL);
 
         for (i = 0; i < 7; i++) {
-            gtk_signal_connect(GTK_OBJECT(toggle_button_repeat_days[i]), "toggled",
+            g_signal_connect(GTK_OBJECT(toggle_button_repeat_days[i]), "toggled",
                                G_CALLBACK(cb_record_changed), NULL);
         }
     }
@@ -4751,7 +4751,7 @@ static GtkWidget *create_time_menu(int flags) {
         gtk_list_store_append (catListStore, &iter);
         gtk_list_store_set (catListStore, &iter, 0, buf, 1, flags,2,i * cb_factor, -1);
 
-       // gtk_signal_connect(GTK_OBJECT(item), "select",
+       // g_signal_connect(GTK_OBJECT(item), "select",
        //                    G_CALLBACK(cb_menu_time),
         //                   GINT_TO_POINTER(i * cb_factor | flags));
 
@@ -4799,7 +4799,7 @@ static void cb_resize(GtkWidget *widget, gpointer data)
 static gint cb_datebook_idle(gpointer data)
 {
    update_daily_view_undo(NULL);
-   gtk_signal_connect(GTK_OBJECT(scrolled_window), "configure_event",
+   g_signal_connect(GTK_OBJECT(scrolled_window), "configure_event",
                       G_CALLBACK(cb_resize), NULL);
    return FALSE; /* Cause this function not to be called again */
 }
@@ -4978,13 +4978,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     // This way produces a centered, small calendar
     // gtk_box_pack_start(GTK_BOX(hbox_temp), main_calendar, TRUE, FALSE, 0);
 
-    gtk_signal_connect(GTK_OBJECT(main_calendar),
+    g_signal_connect(GTK_OBJECT(main_calendar),
                        "day_selected", G_CALLBACK(cb_cal_changed),
                        GINT_TO_POINTER(CAL_DAY_SELECTED));
 
     /* Weekview button */
     button = gtk_button_new_with_label(_("Week"));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_weekview), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
     gtk_widget_show(button);
@@ -4996,7 +4996,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Monthview button */
     button = gtk_button_new_with_label(_("Month"));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(GTK_OBJECT(button), "clicked",
                        G_CALLBACK(cb_monthview), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
     gtk_widget_show(button);
@@ -5010,7 +5010,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     if (use_db3_tags) {
         /* Make Category button */
         button = gtk_button_new_with_label(_("Cats"));
-        gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        g_signal_connect(GTK_OBJECT(button), "clicked",
                            G_CALLBACK(cb_datebk_cats), NULL);
         gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
         gtk_widget_show(button);
@@ -5069,7 +5069,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* "Show ToDos" button */
     show_todos_button = gtk_check_button_new_with_label(_("Show ToDos"));
     gtk_box_pack_start(GTK_BOX(vbox1), show_todos_button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(show_todos_button), "clicked",
+    g_signal_connect(GTK_OBJECT(show_todos_button), "clicked",
                        G_CALLBACK(cb_todos_show), NULL);
 
     /* ToDo  */
@@ -5084,40 +5084,40 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Add record modification buttons */
     /* Cancel button */
     CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
-    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                        G_CALLBACK(cb_cancel), NULL);
 
     /* Delete button */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_KEY_d,
                   GDK_CONTROL_MASK,
                   "Ctrl+D")
-    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
                        G_CALLBACK(cb_delete_appt),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     /* Undelete button */
     CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
-    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
                        G_CALLBACK(cb_undelete_appt),
                        GINT_TO_POINTER(UNDELETE_FLAG));
 
     /* Copy button */
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_KEY_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
-    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     /* New button */
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(new_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
     /* "Add Record" button */
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -5128,7 +5128,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* "Apply Changes" button */
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
+    g_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
@@ -5168,7 +5168,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
         check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 2);
-        gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
+        g_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
                            G_CALLBACK(cb_check_button_alarm), NULL);
 
         hbox_alarm2 = gtk_hbox_new(FALSE, 0);
@@ -5210,7 +5210,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     begin_date_button = gtk_button_new_with_label("");
     gtk_box_pack_start(GTK_BOX(hbox_temp), begin_date_button, FALSE, FALSE, 1);
-    gtk_signal_connect(GTK_OBJECT(begin_date_button), "clicked",
+    g_signal_connect(GTK_OBJECT(begin_date_button), "clicked",
                        G_CALLBACK(cb_cal_dialog),
                        GINT_TO_POINTER(BEGIN_DATE_BUTTON));
 
@@ -5225,7 +5225,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     radio_button_no_time = gtk_radio_button_new(NULL);
     gtk_button_set_alignment(GTK_BUTTON(radio_button_no_time), 1.0, 0.0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_no_time, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "clicked",
+    g_signal_connect(GTK_OBJECT(radio_button_no_time), "clicked",
                        G_CALLBACK(cb_radio_button_no_time), NULL);
 
     label = gtk_label_new(_("No Time"));
@@ -5238,7 +5238,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     radio_button_appt_time = gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(radio_button_no_time));
     gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_appt_time, FALSE, FALSE, 0);
     /* Currently no need to do anything with appt_time radio button
-   gtk_signal_connect(GTK_OBJECT(radio_button_appt_time), "clicked",
+   g_signal_connect(GTK_OBJECT(radio_button_appt_time), "clicked",
                       G_CALLBACK(cb_radio_button_appt_time), NULL); */
 
     table = gtk_table_new(2, 4, FALSE);
@@ -5284,19 +5284,19 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                      3, 4, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
 
     /* Need to connect these signals after the menus are created to avoid errors */
-    gtk_signal_connect(GTK_OBJECT(begin_time_entry), "key_press_event",
+    g_signal_connect(GTK_OBJECT(begin_time_entry), "key_press_event",
                        G_CALLBACK(cb_entry_key_pressed), NULL);
-    gtk_signal_connect(GTK_OBJECT(end_time_entry), "key_press_event",
+    g_signal_connect(GTK_OBJECT(end_time_entry), "key_press_event",
                        G_CALLBACK(cb_entry_key_pressed), NULL);
-    gtk_signal_connect(GTK_OBJECT(begin_time_entry), "button_press_event",
+    g_signal_connect(GTK_OBJECT(begin_time_entry), "button_press_event",
                        G_CALLBACK(cb_entry_pressed), GINT_TO_POINTER(1));
-    gtk_signal_connect(GTK_OBJECT(end_time_entry), "button_press_event",
+    g_signal_connect(GTK_OBJECT(end_time_entry), "button_press_event",
                        G_CALLBACK(cb_entry_pressed), GINT_TO_POINTER(2));
 
-    gtk_signal_connect(GTK_OBJECT(begin_date_button), "key_press_event",
+    g_signal_connect(GTK_OBJECT(begin_date_button), "key_press_event",
                        G_CALLBACK(cb_key_pressed_tab),
                        radio_button_no_time);
-    gtk_signal_connect(GTK_OBJECT(radio_button_no_time), "key_press_event",
+    g_signal_connect(GTK_OBJECT(radio_button_no_time), "key_press_event",
                        G_CALLBACK(cb_key_pressed_tab),
                        begin_time_entry);
 
@@ -5324,7 +5324,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
         check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), check_button_alarm, FALSE, FALSE, 2);
-        gtk_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
+        g_signal_connect(GTK_OBJECT(check_button_alarm), "clicked",
                            G_CALLBACK(cb_check_button_alarm), NULL);
 
         hbox_alarm2 = gtk_hbox_new(FALSE, 0);
@@ -5438,7 +5438,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
 
     check_button_day_endon = gtk_check_button_new_with_label(_("End on"));
-    gtk_signal_connect(GTK_OBJECT(check_button_day_endon), "clicked",
+    g_signal_connect(GTK_OBJECT(check_button_day_endon), "clicked",
                        G_CALLBACK(cb_check_button_endon),
                        GINT_TO_POINTER(PAGE_DAY));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day2), check_button_day_endon, FALSE, FALSE, 0);
@@ -5448,7 +5448,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_endon_day_button = gtk_button_new_with_label(_("No Date"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day2),
                        glob_endon_day_button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(glob_endon_day_button), "clicked",
+    g_signal_connect(GTK_OBJECT(glob_endon_day_button), "clicked",
                        G_CALLBACK(cb_cal_dialog),
                        GINT_TO_POINTER(PAGE_DAY));
 
@@ -5471,7 +5471,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), label, FALSE, FALSE, 2);
 
     check_button_week_endon = gtk_check_button_new_with_label(_("End on"));
-    gtk_signal_connect(GTK_OBJECT(check_button_week_endon), "clicked",
+    g_signal_connect(GTK_OBJECT(check_button_week_endon), "clicked",
                        G_CALLBACK(cb_check_button_endon),
                        GINT_TO_POINTER(PAGE_WEEK));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week2), check_button_week_endon, FALSE, FALSE, 0);
@@ -5479,7 +5479,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_endon_week_button = gtk_button_new_with_label(_("No Date"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week2),
                        glob_endon_week_button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(glob_endon_week_button), "clicked",
+    g_signal_connect(GTK_OBJECT(glob_endon_week_button), "clicked",
                        G_CALLBACK(cb_cal_dialog),
                        GINT_TO_POINTER(PAGE_WEEK));
 
@@ -5523,7 +5523,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
 
     check_button_mon_endon = gtk_check_button_new_with_label(_("End on"));
-    gtk_signal_connect(GTK_OBJECT(check_button_mon_endon), "clicked",
+    g_signal_connect(GTK_OBJECT(check_button_mon_endon), "clicked",
                        G_CALLBACK(cb_check_button_endon),
                        GINT_TO_POINTER(PAGE_MONTH));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon2), check_button_mon_endon, FALSE, FALSE, 0);
@@ -5531,7 +5531,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_endon_mon_button = gtk_button_new_with_label(_("No Date"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon2),
                        glob_endon_mon_button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(glob_endon_mon_button), "clicked",
+    g_signal_connect(GTK_OBJECT(glob_endon_mon_button), "clicked",
                        G_CALLBACK(cb_cal_dialog),
                        GINT_TO_POINTER(PAGE_MONTH));
 
@@ -5567,7 +5567,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);
 
     check_button_year_endon = gtk_check_button_new_with_label(_("End on"));
-    gtk_signal_connect(GTK_OBJECT(check_button_year_endon), "clicked",
+    g_signal_connect(GTK_OBJECT(check_button_year_endon), "clicked",
                        G_CALLBACK(cb_check_button_endon),
                        GINT_TO_POINTER(PAGE_YEAR));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year2), check_button_year_endon, FALSE, FALSE, 0);
@@ -5577,7 +5577,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_endon_year_button = gtk_button_new_with_label(_("No Date"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year2),
                        glob_endon_year_button, FALSE, FALSE, 0);
-    gtk_signal_connect(GTK_OBJECT(glob_endon_year_button), "clicked",
+    g_signal_connect(GTK_OBJECT(glob_endon_year_button), "clicked",
                        G_CALLBACK(cb_cal_dialog),
                        GINT_TO_POINTER(PAGE_YEAR));
 
@@ -5594,31 +5594,31 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* end notebook details */
 
     /* Capture the TAB key in text fields */
-    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
+    g_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
                        G_CALLBACK(cb_key_pressed_tab_entry), dbook_note);
-    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
+    g_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
                        G_CALLBACK(cb_key_pressed_shift_tab), end_time_entry);
 
-    gtk_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
+    g_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
                        G_CALLBACK(cb_key_pressed_shift_tab), dbook_desc);
 
     /* Capture the Enter & Shift-Enter key combinations to move back and
     * forth between the left- and right-hand sides of the display. */
-    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
+    g_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        G_CALLBACK(cb_key_pressed_left_side), dbook_desc);
 
-    gtk_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
+    g_signal_connect(GTK_OBJECT(dbook_desc), "key_press_event",
                        G_CALLBACK(cb_key_pressed_right_side), NULL);
 
-    gtk_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
+    g_signal_connect(GTK_OBJECT(dbook_note), "key_press_event",
                        G_CALLBACK(cb_key_pressed_right_side),
                        GINT_TO_POINTER(1));
 
     /* Allow PgUp and PgDown to move selected day in calendar */
-    gtk_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
+    g_signal_connect(GTK_OBJECT(main_calendar), "key_press_event",
                        G_CALLBACK(cb_keyboard), NULL);
 
-    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
+    g_signal_connect(GTK_OBJECT(treeView), "key_press_event",
                        G_CALLBACK(cb_keyboard), NULL);
 
     /**********************************************************************/
