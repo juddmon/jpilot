@@ -387,7 +387,7 @@ static void add_checkbutton(const char *text,
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
 
    /* Set button callback */
-   gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", GTK_SIGNAL_FUNC(cb),
+   gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked", G_CALLBACK(cb),
                       GINT_TO_POINTER(which));
 }
 
@@ -444,7 +444,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_window_set_title(GTK_WINDOW(window), temp);
 
    gtk_signal_connect(GTK_OBJECT(window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), window);
+                      G_CALLBACK(cb_destroy), window);
 
    vbox = gtk_vbox_new(FALSE, 5);
    gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -583,7 +583,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
    }
    gtk_signal_connect(GTK_OBJECT(port_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+                      "changed", G_CALLBACK(cb_text_entry),
                       GINT_TO_POINTER(PREF_PORT));
 
    /* Sync Port Menu */
@@ -627,7 +627,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    sprintf(temp_str, "%ld", ivalue);
    gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
    gtk_signal_connect(GTK_OBJECT(backups_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_backups_entry),
+                      "changed", G_CALLBACK(cb_backups_entry),
                       NULL);
 
    /* Show deleted files check box */
@@ -665,10 +665,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                       FALSE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(radio_button_datebook_version[0]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_DATEBOOK_VERSION<<16)|0));
    gtk_signal_connect(GTK_OBJECT(radio_button_datebook_version[1]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_DATEBOOK_VERSION<<16)|1));
 
    get_pref(PREF_DATEBOOK_VERSION, &ivalue, NULL);
@@ -724,10 +724,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                       FALSE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(radio_button_address_version[0]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|0));
    gtk_signal_connect(GTK_OBJECT(radio_button_address_version[1]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_ADDRESS_VERSION<<16)|1));
 
    get_pref(PREF_ADDRESS_VERSION, &ivalue, NULL);
@@ -755,7 +755,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_entry_set_text(GTK_ENTRY(mail_command_entry), cstr);
    }
    gtk_signal_connect(GTK_OBJECT(mail_command_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+                      "changed", G_CALLBACK(cb_text_entry),
                       GINT_TO_POINTER(PREF_MAIL_COMMAND));
    gtk_box_pack_start(GTK_BOX(hbox_temp), mail_command_entry, TRUE, TRUE, 1);
 
@@ -782,10 +782,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                       FALSE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(radio_button_todo_version[0]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_TODO_VERSION<<16)|0));
    gtk_signal_connect(GTK_OBJECT(radio_button_todo_version[1]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_TODO_VERSION<<16)|1));
 
    get_pref(PREF_TODO_VERSION, &ivalue, NULL);
@@ -834,7 +834,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    gtk_box_pack_start(GTK_BOX(hbox_temp), todo_days_due_entry, FALSE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(todo_days_due_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_checkbox_todo_days_till_due),
+                      "changed", G_CALLBACK(cb_checkbox_todo_days_till_due),
                       NULL);
 
    gtk_widget_show_all(hbox_temp);
@@ -860,13 +860,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                       FALSE, FALSE, 0);
 
    gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[0]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|0));
    gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[1]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|1));
    gtk_signal_connect(GTK_OBJECT(radio_button_memo_version[2]), "pressed",
-                      GTK_SIGNAL_FUNC(cb_radio_set_pref),
+                      G_CALLBACK(cb_radio_set_pref),
                       GINT_TO_POINTER((PREF_MEMO_VERSION<<16)|2));
 
    get_pref(PREF_MEMO_VERSION, &ivalue, NULL);
@@ -899,7 +899,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_entry_set_text(GTK_ENTRY(ext_editor_entry), cstr);
    }
    gtk_signal_connect(GTK_OBJECT(ext_editor_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+                      "changed", G_CALLBACK(cb_text_entry),
                       GINT_TO_POINTER(PREF_EXTERNAL_EDITOR));
    gtk_box_pack_start(GTK_BOX(hbox_temp), ext_editor_entry, TRUE, TRUE, 1);
 
@@ -936,7 +936,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
       gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);
    }
    gtk_signal_connect(GTK_OBJECT(alarm_command_entry),
-                      "changed", GTK_SIGNAL_FUNC(cb_text_entry),
+                      "changed", G_CALLBACK(cb_text_entry),
                       GINT_TO_POINTER(PREF_ALARM_COMMAND));
    gtk_box_pack_start(GTK_BOX(hbox_temp), alarm_command_entry, FALSE, FALSE, 0);
 
@@ -1016,7 +1016,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbutton), TRUE);
             }
             gtk_signal_connect(GTK_OBJECT(checkbutton), "clicked",
-                               GTK_SIGNAL_FUNC(cb_sync_plugin),
+                               G_CALLBACK(cb_sync_plugin),
                                GINT_TO_POINTER(Pplugin->number));
          }
       }
@@ -1031,7 +1031,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
 
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_quit), window);
+                      G_CALLBACK(cb_quit), window);
    gtk_box_pack_end(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    gtk_widget_show_all(window);

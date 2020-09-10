@@ -257,9 +257,9 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
             gtk_container_add(GTK_CONTAINER(event_box), text);
 
             gtk_signal_connect(GTK_OBJECT(event_box), "enter_notify_event",
-                               GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
+                               G_CALLBACK(cb_enter_notify), GINT_TO_POINTER(n));
             gtk_signal_connect(GTK_OBJECT(text), "button_release_event",
-                               GTK_SIGNAL_FUNC(cb_enter_selected_day),
+                               G_CALLBACK(cb_enter_selected_day),
                                GINT_TO_POINTER(n));
 
             gtk_box_pack_start(GTK_BOX(vbox), event_box, TRUE, TRUE, 0);
@@ -444,7 +444,7 @@ void monthview_gui(struct tm *date_in)
    gtk_container_set_border_width(GTK_CONTAINER(monthview_window), 10);
 
    gtk_signal_connect(GTK_OBJECT(monthview_window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), monthview_window);
+                      G_CALLBACK(cb_destroy), monthview_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(monthview_window), vbox);
@@ -466,7 +466,7 @@ void monthview_gui(struct tm *date_in)
    /* Make a left arrow for going back a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_move),
+                      G_CALLBACK(cb_month_move),
                       GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
@@ -479,22 +479,22 @@ void monthview_gui(struct tm *date_in)
    /* Close button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_monthview_quit), monthview_window);
+                      G_CALLBACK(cb_monthview_quit), monthview_window);
    /* Closing the window via a delete event uses the same cleanup routine */
    gtk_signal_connect(GTK_OBJECT(monthview_window), "delete_event",
-                      GTK_SIGNAL_FUNC(cb_monthview_quit), NULL);
+                      G_CALLBACK(cb_monthview_quit), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Print button */
    button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_print), monthview_window);
+                      G_CALLBACK(cb_month_print), monthview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Make a right arrow for going forward a week */
    button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_move),
+                      G_CALLBACK(cb_month_move),
                       GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 

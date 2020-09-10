@@ -268,7 +268,7 @@ int export_gui(GtkWidget *main_window,
     gtk_container_set_border_width(GTK_CONTAINER(export_window), 5);
 
     gtk_signal_connect(GTK_OBJECT(export_window), "destroy",
-                       GTK_SIGNAL_FUNC(cb_export_destroy), export_window);
+                       G_CALLBACK(cb_export_destroy), export_window);
 
     vbox = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(export_window), vbox);
@@ -319,7 +319,7 @@ int export_gui(GtkWidget *main_window,
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
         gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
         gtk_signal_connect(GTK_OBJECT(export_radio_type[i]), "pressed",
-                           GTK_SIGNAL_FUNC(cb_export_type),
+                           G_CALLBACK(cb_export_type),
                            GINT_TO_POINTER(type_int[i]));
     }
     export_radio_type[i] = NULL;
@@ -343,7 +343,7 @@ int export_gui(GtkWidget *main_window,
     button = gtk_button_new_with_label(_("Browse"));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_export_browse), export_window);
+                       G_CALLBACK(cb_export_browse), export_window);
 
     /* Cancel/OK buttons */
     hbox = gtk_hbutton_box_new();
@@ -355,12 +355,12 @@ int export_gui(GtkWidget *main_window,
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_export_quit), export_window);
+                       G_CALLBACK(cb_export_quit), export_window);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_ok), export_window);
+                       G_CALLBACK(cb_ok), export_window);
 
     if (glob_cb_export_menu) {
         glob_cb_export_menu(GTK_WIDGET(export_treeView), export_category);

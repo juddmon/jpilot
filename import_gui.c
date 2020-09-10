@@ -270,7 +270,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_window_set_transient_for(GTK_WINDOW(import_record_ask_window), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(import_record_ask_window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_import_record_ask_destroy),
+                      G_CALLBACK(cb_import_record_ask_destroy),
                       import_record_ask_window);
 
    vbox=gtk_vbox_new(FALSE, 0);
@@ -333,28 +333,28 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    button = gtk_button_new_with_label(_("Import"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),
+                      G_CALLBACK(cb_import_record_ask_quit),
                       GINT_TO_POINTER(DIALOG_SAID_IMPORT_YES));
 
    /* Import All button */
    button = gtk_button_new_with_label(_("Import All"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),
+                      G_CALLBACK(cb_import_record_ask_quit),
                       GINT_TO_POINTER(DIALOG_SAID_IMPORT_ALL));
 
    /* Skip button */
    button = gtk_button_new_with_label(_("Skip"));
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),
+                      G_CALLBACK(cb_import_record_ask_quit),
                       GINT_TO_POINTER(DIALOG_SAID_IMPORT_SKIP));
 
    /* Quit button */
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_import_record_ask_quit),
+                      G_CALLBACK(cb_import_record_ask_quit),
                       GINT_TO_POINTER(DIALOG_SAID_IMPORT_QUIT));
 
    gtk_widget_show_all(import_record_ask_window);
@@ -408,7 +408,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_types[i]));
         gtk_box_pack_start(GTK_BOX(vbox), radio_types[i], TRUE, TRUE, 0);
         gtk_signal_connect(GTK_OBJECT(radio_types[i]), "clicked",
-                           GTK_SIGNAL_FUNC(cb_type), GINT_TO_POINTER(type_int[i]));
+                           G_CALLBACK(cb_type), GINT_TO_POINTER(type_int[i]));
     }
     radio_types[i] = NULL;
     radio_file_types[i] = 0;
@@ -429,7 +429,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
 
     gtk_signal_connect(GTK_OBJECT(fileChooserWidget), "destroy",
-                       GTK_SIGNAL_FUNC(cb_destroy), fileChooserWidget);
+                       G_CALLBACK(cb_destroy), fileChooserWidget);
 }
 
 

@@ -442,7 +442,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_widget_show_all(extraWidget);
     gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));
     gtk_signal_connect(GTK_OBJECT(fileChooserWidget), "destroy",
-                       GTK_SIGNAL_FUNC(cb_destroy), fileChooserWidget);
+                       G_CALLBACK(cb_destroy), fileChooserWidget);
     int dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
     do {
      if(dialogResponse == GTK_RESPONSE_DELETE_EVENT){

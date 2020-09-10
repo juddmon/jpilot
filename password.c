@@ -286,7 +286,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
    gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
+                      G_CALLBACK(cb_destroy_dialog), dialog);
 
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(dialog), hbox1);
@@ -313,7 +313,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    entry = gtk_entry_new_with_max_length(PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    gtk_signal_connect(GTK_OBJECT(entry), "activate",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
@@ -327,14 +327,14 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    /* Cancel Button */
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    /* OK Button */
    button = gtk_button_new_from_stock(GTK_STOCK_OK);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
    gtk_widget_set_can_default(button,TRUE);

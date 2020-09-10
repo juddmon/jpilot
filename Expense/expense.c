@@ -365,21 +365,21 @@ static void connect_changed_signals(int con_or_dis) {
             g_signal_connect(G_OBJECT(menu_currency),"changed",G_CALLBACK(cb_record_changed),NULL);
         }
         gtk_signal_connect(GTK_OBJECT(spinner_mon), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_connect(GTK_OBJECT(spinner_day), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_connect(GTK_OBJECT(spinner_year), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_connect(GTK_OBJECT(entry_amount), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_connect(GTK_OBJECT(entry_vendor), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_connect(GTK_OBJECT(entry_city), "changed",
-                           GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                           G_CALLBACK(cb_record_changed), NULL);
         g_signal_connect(attendees_buffer, "changed",
-                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                         G_CALLBACK(cb_record_changed), NULL);
         g_signal_connect(note_buffer, "changed",
-                         GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                         G_CALLBACK(cb_record_changed), NULL);
     }
 
     /* DISCONNECT */
@@ -405,21 +405,21 @@ static void connect_changed_signals(int con_or_dis) {
         }
 
         gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_mon),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_day),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(spinner_year),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(entry_amount),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(entry_vendor),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         gtk_signal_disconnect_by_func(GTK_OBJECT(entry_city),
-                                      GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                      G_CALLBACK(cb_record_changed), NULL);
         g_signal_handlers_disconnect_by_func(attendees_buffer,
-                                             GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                             G_CALLBACK(cb_record_changed), NULL);
         g_signal_handlers_disconnect_by_func(note_buffer,
-                                             GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                                             G_CALLBACK(cb_record_changed), NULL);
     }
 }
 
@@ -1602,24 +1602,24 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
                   "Ctrl+D")
     gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_delete),
+                       G_CALLBACK(cb_delete),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
     gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
     gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
@@ -1629,7 +1629,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),

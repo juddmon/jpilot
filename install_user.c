@@ -121,7 +121,7 @@ static int dialog_install_user(GtkWindow *main_window,
    }
 
    gtk_signal_connect(GTK_OBJECT(install_user_dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
+                      G_CALLBACK(cb_destroy_dialog), install_user_dialog);
 
    gtk_object_set_data(GTK_OBJECT(install_user_dialog),
                        "install_dialog_data", &data);
@@ -211,13 +211,13 @@ static int dialog_install_user(GtkWindow *main_window,
 
    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_install_user_button),
+                      G_CALLBACK(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
    button = gtk_button_new_with_label(_("Install User"));
    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_install_user_button),
+                      G_CALLBACK(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
    gtk_widget_set_can_default(button,TRUE);
