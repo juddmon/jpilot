@@ -4088,7 +4088,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeView = gtk_tree_view_new_with_model(model);
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
-    nameRenderer->width = ivalue;
+    //nameRenderer->
+   // nameRenderer->width = ;
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
@@ -4096,6 +4097,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
+                                                                             "width",
+                                                                             ivalue,
                                                                              NULL);
     gtk_tree_view_column_set_clickable(nameColumn, TRUE);
 
