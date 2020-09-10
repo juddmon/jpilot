@@ -1896,7 +1896,7 @@ static gboolean cb_key_pressed_tab(GtkWidget *widget,
     GtkTextIter cursor_pos_iter;
     GtkTextBuffer *text_buffer;
 
-    if (event->keyval == GDK_Tab) {
+    if (event->keyval == GDK_KEY_Tab) {
         /* See if they are at the end of the text */
         text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
         gtk_text_buffer_get_iter_at_mark(text_buffer, &cursor_pos_iter, gtk_text_buffer_get_insert(text_buffer));
@@ -1912,7 +1912,7 @@ static gboolean cb_key_pressed_tab(GtkWidget *widget,
 static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
                                          GdkEventKey *event,
                                          gpointer next_widget) {
-    if (event->keyval == GDK_ISO_Left_Tab) {
+    if (event->keyval == GDK_KEY_ISO_Left_Tab) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         return TRUE;
@@ -2603,7 +2603,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
         radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
         gtk_widget_add_accelerator(radio_button_todo[i], "clicked", accel_group,
-                                   (guint) GDK_1 + i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+                                   (guint) GDK_KEY_1 + i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
         gtk_box_pack_start(GTK_BOX(hbox_temp),
                            radio_button_todo[i], FALSE, FALSE, 0);
     }
