@@ -1948,7 +1948,7 @@ void get_compile_options(char *string, int len) {
 #else
             _("no"),
 #endif
-               _("GTK2 support"),
+               _("GTK3 support"),
                _("yes")
     );
 }

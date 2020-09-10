@@ -774,9 +774,10 @@ void output_to_pane(const char *str) {
      * to the user. */
 
     /* Get position of scrollbar */
-    sbar_value = g_output_text->vadjustment->value;
-    sbar_page_size = g_output_text->vadjustment->page_size;
-    sbar_upper = g_output_text->vadjustment->upper;
+    GtkAdjustment * vadjustment =  gtk_text_view_get_vadjustment (g_output_text);
+    sbar_value = gtk_adjustment_get_value(vadjustment);
+    sbar_page_size = gtk_adjustment_get_page_size(vadjustment);
+    sbar_upper =gtk_adjustment_get_upper(vadjustment);
     /* Keep scrolling to the end only if we are already near(1 window) of the end
      * OR the window has just been created and is blank */
     if ((abs((sbar_value + sbar_page_size) - sbar_upper) < sbar_page_size)
