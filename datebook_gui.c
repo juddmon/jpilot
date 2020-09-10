@@ -3271,7 +3271,7 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
             }
         }
 
-        gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+
         /* Unselect current day before changing to a new month.
        * This prevents a GTK error when the new month does not have the
        * same number of days.  Example: attempting to switch from
@@ -3938,7 +3938,7 @@ static void cb_cal_changed(GtkWidget *widget,
 
             cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
 
-            gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+
             gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
                                       cal_month,
                                       cal_year);
@@ -4046,7 +4046,7 @@ static void highlight_days(void) {
 
     appointment_on_day_list(current_month, current_year, &mask, dbook_category, (int) datebook_version);
 
-    gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+
 
     for (i = 1, bit = 1; i <= ndim; i++, bit = bit << 1) {
         if (bit & mask) {
@@ -4142,7 +4142,7 @@ int datebook_refresh(int first, int do_init) {
         copy_current_day = current_day;
         copy_current_month = current_month;
         copy_current_year = current_year;
-        gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+
         /* Unselect current day before changing to a new month */
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
         gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
@@ -4462,7 +4462,7 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
        * e.g.  If the day were 31 and the next month has <31 days then the
        * select month call will cause an error message since the 31st isn't
        * valid in that month.  0 is code for unselect the day */
-        gtk_calendar_freeze(GTK_CALENDAR(main_calendar));
+
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
         gtk_calendar_select_month(GTK_CALENDAR(main_calendar), (guint) day.tm_mon, (guint) (day.tm_year + 1900));
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) day.tm_mday);
