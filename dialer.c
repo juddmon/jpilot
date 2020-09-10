@@ -52,7 +52,7 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data) {
     GtkWidget *w;
 
     w = gtk_widget_get_toplevel(widget);
-    gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
+    gtk_object_get_data(G_OBJECT(w), "dialog_data");
     gtk_widget_destroy(GTK_WIDGET(w));
 }
 
@@ -60,7 +60,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget) {
     struct dialog_data *Pdata;
     const gchar *txt;
 
-    Pdata = gtk_object_get_data(GTK_OBJECT(widget), "dialog_data");
+    Pdata = gtk_object_get_data(G_OBJECT(widget), "dialog_data");
     if (!Pdata) {
         return TRUE;
     }
@@ -189,7 +189,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_MOUSE);
 
-    g_signal_connect(GTK_OBJECT(dialog), "destroy",
+    g_signal_connect(G_OBJECT(dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), dialog);
 
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -199,7 +199,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
     /* Set up a data structure for the window */
     Pdata = malloc(sizeof(struct dialog_data));
 
-    gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", Pdata);
+    gtk_object_set_data(G_OBJECT(dialog), "dialog_data", Pdata);
 
     vbox1 = gtk_vbox_new(FALSE, 2);
 
@@ -289,7 +289,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     entry = gtk_entry_new_with_max_length(32);
     gtk_entry_set_text(GTK_ENTRY(entry), string);
-    g_signal_connect(GTK_OBJECT(entry), "activate",
+    g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_dial_ext), Pdata);
     gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
@@ -297,7 +297,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     /* Dial Phone Button */
     button = gtk_button_new_with_label(_("Dial"));
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dial_phone), Pdata);
     gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
@@ -313,7 +313,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     entry = gtk_entry_new_with_max_length(32);
     gtk_entry_set_text(GTK_ENTRY(entry), ext);
-    g_signal_connect(GTK_OBJECT(entry), "activate",
+    g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_dial_ext), Pdata);
     gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
@@ -321,7 +321,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     /* Dial Phone Button */
     button = gtk_button_new_with_label(_("Dial"));
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dial_ext), Pdata);
     gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
@@ -352,23 +352,23 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
 
     /* Buttons */
     button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_1));
     gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
 
     /* We do this down here because the Pdata structure wasn't complete earlier */
-    g_signal_connect(GTK_OBJECT(checkbox1), "clicked",
+    g_signal_connect(G_OBJECT(checkbox1), "clicked",
                        G_CALLBACK(cb_prefix_change), Pdata);
-    g_signal_connect(GTK_OBJECT(checkbox2), "clicked",
+    g_signal_connect(G_OBJECT(checkbox2), "clicked",
                        G_CALLBACK(cb_prefix_change), Pdata);
-    g_signal_connect(GTK_OBJECT(checkbox3), "clicked",
+    g_signal_connect(G_OBJECT(checkbox3), "clicked",
                        G_CALLBACK(cb_prefix_change), Pdata);
-    g_signal_connect(GTK_OBJECT(Pdata->entry_pre1), "changed",
+    g_signal_connect(G_OBJECT(Pdata->entry_pre1), "changed",
                        G_CALLBACK(cb_prefix_change), Pdata);
-    g_signal_connect(GTK_OBJECT(Pdata->entry_pre2), "changed",
+    g_signal_connect(G_OBJECT(Pdata->entry_pre2), "changed",
                        G_CALLBACK(cb_prefix_change), Pdata);
-    g_signal_connect(GTK_OBJECT(Pdata->entry_pre3), "changed",
+    g_signal_connect(G_OBJECT(Pdata->entry_pre3), "changed",
                        G_CALLBACK(cb_prefix_change), Pdata);
 
     gtk_widget_show_all(dialog);

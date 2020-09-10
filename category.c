@@ -485,7 +485,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
 
     get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA be prepared to make conversions */
     button = GPOINTER_TO_INT(data);
-    Pdata = gtk_object_get_data(GTK_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
+    Pdata = gtk_object_get_data(G_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
 
     /* JPA get the selected category number */
     catnum = 0;
@@ -745,7 +745,7 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data) {
     GtkWidget *w;
 
     w = gtk_widget_get_toplevel(widget);
-    Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_cats_data");
+    Pdata = gtk_object_get_data(G_OBJECT(w), "dialog_cats_data");
     Pdata->button_hit = GPOINTER_TO_INT(data);
 
     gtk_widget_destroy(GTK_WIDGET(w));
@@ -812,7 +812,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 
-    g_signal_connect(GTK_OBJECT(dialog), "destroy",
+    g_signal_connect(G_OBJECT(dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), dialog);
 
     vbox3 = gtk_vbox_new(FALSE, 0);
@@ -887,13 +887,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 #else
     button = gtk_button_new_with_label(_("New"));
 #endif
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_NEW));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
     button = gtk_button_new_with_label(_("Rename"));
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_RENAME));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
@@ -903,7 +903,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 #else
     button = gtk_button_new_with_label(_("Delete"));
 #endif
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_DELETE));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
@@ -923,7 +923,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     Pdata.label = label;
 
     entry = gtk_entry_new_with_max_length(HOSTCAT_NAME_SZ - 1);
-    g_signal_connect(GTK_OBJECT(entry), "activate",
+    g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
     gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 0);
@@ -934,13 +934,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_CANCEL));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
@@ -960,20 +960,20 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 
     /* Buttons */
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_2));
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_1));
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
 #ifdef EDIT_CATS_DEBUG
     button = gtk_button_new_with_label("DEBUG");
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_cats_debug), &Pdata);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 #endif
@@ -983,7 +983,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     /* Initialize data structures */
     memcpy(&(Pdata.cai1), cai, sizeof(struct CategoryAppInfo));
     memcpy(&(Pdata.cai2), cai, sizeof(struct CategoryAppInfo));
-    gtk_object_set_data(GTK_OBJECT(dialog), "dialog_cats_data", &Pdata);
+    gtk_object_set_data(G_OBJECT(dialog), "dialog_cats_data", &Pdata);
 
     gtk_widget_show_all(dialog);
     gtk_widget_hide(Pdata.entry_box);

@@ -1981,7 +1981,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Set a handler for delete_event that immediately exits GTK. */
-    g_signal_connect(GTK_OBJECT(window), "delete_event",
+    g_signal_connect(G_OBJECT(window), "delete_event",
                        G_CALLBACK(cb_delete_event), NULL);
 
     gtk_container_set_border_width(GTK_CONTAINER(window), 0);
@@ -1993,7 +1993,7 @@ int main(int argc, char *argv[]) {
     /* Output Pane */
     output_pane = gtk_vpaned_new();
 
-    g_signal_connect(GTK_OBJECT(output_pane), "button_release_event",
+    g_signal_connect(G_OBJECT(output_pane), "button_release_event",
                        G_CALLBACK(cb_output2),
                        GINT_TO_POINTER(OUTPUT_RESIZE));
 
@@ -2037,20 +2037,20 @@ int main(int argc, char *argv[]) {
 
     button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_output),
                        GINT_TO_POINTER(OUTPUT_CLEAR));
 
     button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_output),
                        GINT_TO_POINTER(OUTPUT_MINIMIZE));
 
     /* "Datebook" button */
     temp_hbox = gtk_hbox_new(FALSE, 0);
     button_datebook = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_datebook), "clicked",
+    g_signal_connect(G_OBJECT(button_datebook), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(DATEBOOK));
     gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
@@ -2058,7 +2058,7 @@ int main(int argc, char *argv[]) {
     /* "Address" button */
     temp_hbox = gtk_hbox_new(FALSE, 0);
     button_address = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_address), "clicked",
+    g_signal_connect(G_OBJECT(button_address), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(ADDRESS));
     gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
@@ -2066,7 +2066,7 @@ int main(int argc, char *argv[]) {
     /* "Todo" button */
     temp_hbox = gtk_hbox_new(FALSE, 0);
     button_todo = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_todo), "clicked",
+    g_signal_connect(G_OBJECT(button_todo), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(TODO));
     gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
@@ -2074,7 +2074,7 @@ int main(int argc, char *argv[]) {
     /* "Memo" button */
     temp_hbox = gtk_hbox_new(FALSE, 0);
     button_memo = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_memo), "clicked",
+    g_signal_connect(G_OBJECT(button_memo), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(MEMO));
     gtk_box_pack_start(GTK_BOX(g_vbox0), temp_hbox, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_memo, TRUE, FALSE, 0);
@@ -2096,13 +2096,13 @@ int main(int argc, char *argv[]) {
     button_locked = gtk_button_new();
     button_masklocked = gtk_button_new();
     button_unlocked = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_locked), "clicked",
+    g_signal_connect(G_OBJECT(button_locked), "clicked",
                        G_CALLBACK(cb_private),
                        GINT_TO_POINTER(SHOW_PRIVATES));
-    g_signal_connect(GTK_OBJECT(button_masklocked), "clicked",
+    g_signal_connect(G_OBJECT(button_masklocked), "clicked",
                        G_CALLBACK(cb_private),
                        GINT_TO_POINTER(HIDE_PRIVATES));
-    g_signal_connect(GTK_OBJECT(button_unlocked), "clicked",
+    g_signal_connect(G_OBJECT(button_unlocked), "clicked",
                        G_CALLBACK(cb_private),
                        GINT_TO_POINTER(MASK_PRIVATES));
     gtk_box_pack_start(GTK_BOX(g_vbox0), button_locked, FALSE, FALSE, 20);
@@ -2126,7 +2126,7 @@ int main(int argc, char *argv[]) {
 
     /* "Sync" button */
     button_sync = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_sync), "clicked",
+    g_signal_connect(G_OBJECT(button_sync), "clicked",
                        G_CALLBACK(cb_sync),
                        GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
     gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
@@ -2138,7 +2138,7 @@ int main(int argc, char *argv[]) {
 
     /* "Cancel Sync" button */
     button_cancel_sync = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_cancel_sync), "clicked",
+    g_signal_connect(G_OBJECT(button_cancel_sync), "clicked",
                        G_CALLBACK(cb_cancel_sync),
                        NULL);
     gtk_box_pack_start(GTK_BOX(g_vbox0), button_cancel_sync, FALSE, FALSE, 3);
@@ -2148,7 +2148,7 @@ int main(int argc, char *argv[]) {
 
     /* "Backup" button in left column */
     button_backup = gtk_button_new();
-    g_signal_connect(GTK_OBJECT(button_backup), "clicked",
+    g_signal_connect(G_OBJECT(button_backup), "clicked",
                        G_CALLBACK(cb_sync),
                        GINT_TO_POINTER
                                (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP

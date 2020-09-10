@@ -297,7 +297,7 @@ int cal_dialog(GtkWindow *main_window,
     gtk_window_set_modal(GTK_WINDOW(window), TRUE);
     gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(main_window));
 
-    g_signal_connect(GTK_OBJECT(window), "destroy",
+    g_signal_connect(G_OBJECT(window), "destroy",
                        G_CALLBACK(cb_destroy), window);
 
     vbox = gtk_vbox_new(FALSE, 0);
@@ -317,8 +317,8 @@ int cal_dialog(GtkWindow *main_window,
                                  GTK_CALENDAR_SHOW_DAY_NAMES |
                                  GTK_CALENDAR_SHOW_WEEK_NUMBERS);
 
-    /* g_signal_connect(GTK_OBJECT(cal), "day_selected", cb_cal_sel, NULL); */
-    g_signal_connect(GTK_OBJECT(cal), "day_selected_double_click", G_CALLBACK(cb_quit),
+    /* g_signal_connect(G_OBJECT(cal), "day_selected", cb_cal_sel, NULL); */
+    g_signal_connect(G_OBJECT(cal), "day_selected_double_click", G_CALLBACK(cb_quit),
                        GINT_TO_POINTER(CAL_DONE));
 
     gtk_calendar_select_month(GTK_CALENDAR(cal), *mon, (*year) + 1900);
@@ -327,24 +327,24 @@ int cal_dialog(GtkWindow *main_window,
     /* Cancel/Today/OK buttons */
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    g_signal_connect(GTK_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
+    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
                        GINT_TO_POINTER(CAL_CANCEL));
 
     button = gtk_button_new_with_label(_("Today"));
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    g_signal_connect(GTK_OBJECT(button), "clicked",
+    g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_today), cal);
 
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    g_signal_connect(GTK_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
+    g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
                        GINT_TO_POINTER(CAL_DONE));
 
-    gtk_object_set_data(GTK_OBJECT(window), "mon", mon);
-    gtk_object_set_data(GTK_OBJECT(window), "day", day);
-    gtk_object_set_data(GTK_OBJECT(window), "year", year);
-    gtk_object_set_data(GTK_OBJECT(window), "return_code", &return_code);
-    gtk_object_set_data(GTK_OBJECT(window), "cal", cal);
+    gtk_object_set_data(G_OBJECT(window), "mon", mon);
+    gtk_object_set_data(G_OBJECT(window), "day", day);
+    gtk_object_set_data(G_OBJECT(window), "year", year);
+    gtk_object_set_data(G_OBJECT(window), "return_code", &return_code);
+    gtk_object_set_data(G_OBJECT(window), "cal", cal);
 
     gtk_widget_show_all(window);
 
@@ -398,16 +398,16 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 
     window = gtk_widget_get_toplevel(widget);
 
-    Preturn_code = gtk_object_get_data(GTK_OBJECT(window), "return_code");
+    Preturn_code = gtk_object_get_data(G_OBJECT(window), "return_code");
     if (Preturn_code) *Preturn_code = GPOINTER_TO_INT(data);
-    cal = gtk_object_get_data(GTK_OBJECT(window), "cal");
+    cal = gtk_object_get_data(G_OBJECT(window), "cal");
 
     if (Preturn_code && *Preturn_code == CAL_DONE) {
         if (cal) {
             gtk_calendar_get_date(GTK_CALENDAR(cal), &y, &m, &d);
-            Pm = gtk_object_get_data(GTK_OBJECT(window), "mon");
-            Pd = gtk_object_get_data(GTK_OBJECT(window), "day");
-            Py = gtk_object_get_data(GTK_OBJECT(window), "year");
+            Pm = gtk_object_get_data(G_OBJECT(window), "mon");
+            Pd = gtk_object_get_data(G_OBJECT(window), "day");
+            Py = gtk_object_get_data(G_OBJECT(window), "year");
             if (Pm) *Pm = m;
             if (Pd) *Pd = d;
             if (Py) *Py = y;
@@ -1169,7 +1169,7 @@ int dialog_generic(GtkWindow *main_window,
         gtk_window_set_transient_for(GTK_WINDOW(glob_dialog), GTK_WINDOW(main_window));
     }
 
-    g_signal_connect(GTK_OBJECT(glob_dialog), "destroy",
+    g_signal_connect(G_OBJECT(glob_dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), glob_dialog);
 
     vbox1 = gtk_vbox_new(FALSE, 5);
@@ -1227,7 +1227,7 @@ int dialog_generic(GtkWindow *main_window,
             button = gtk_button_new_from_stock(GTK_STOCK_NO);
         else
             button = gtk_button_new_with_label(_(button_text[i]));
-        g_signal_connect(GTK_OBJECT(button), "clicked",
+        g_signal_connect(G_OBJECT(button), "clicked",
                            G_CALLBACK(cb_dialog_button),
                            GINT_TO_POINTER(DIALOG_SAID_1 + i));
         gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 1);
