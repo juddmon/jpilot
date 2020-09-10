@@ -409,18 +409,18 @@ static void connect_changed_signals(int con_or_dis) {
                 GTK_IS_TEXT_VIEW(w) ||
                 GTK_IS_COMBO_BOX(w)
                     ) {
-                g_signal_connect(w, "changed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                g_signal_connect(w, "changed", G_CALLBACK(cb_record_changed), NULL);
                 continue;
             }
             if (GTK_IS_CHECK_MENU_ITEM(w) ||
                 GTK_IS_RADIO_BUTTON(w) ||
                 GTK_IS_CHECK_BUTTON(w)
                     ) {
-                g_signal_connect(w, "toggled", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                g_signal_connect(w, "toggled", G_CALLBACK(cb_record_changed), NULL);
                 continue;
             }
             if (GTK_IS_BUTTON(w)) {
-                g_signal_connect(w, "pressed", GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+                g_signal_connect(w, "pressed", G_CALLBACK(cb_record_changed), NULL);
                 continue;
             }
             jp_logf(JP_LOG_DEBUG, "connect_changed_signals(): Encountered unknown object type.  Skipping\n");
@@ -437,7 +437,7 @@ static void connect_changed_signals(int con_or_dis) {
                 continue;
             }
             w = temp_list->data;
-            g_signal_handlers_disconnect_by_func(w, GTK_SIGNAL_FUNC(cb_record_changed), NULL);
+            g_signal_handlers_disconnect_by_func(w, G_CALLBACK(cb_record_changed), NULL);
         }
     }
 }
@@ -2913,7 +2913,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
     GtkTextIter iter;
 
     if (event->keyval == GDK_KEY_Return) {
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+        g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
         if (address_version == 0) {
             switch (gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook))) {
@@ -2973,14 +2973,14 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer data) {
     if ((event->keyval == GDK_KEY_Return) && (event->state & GDK_SHIFT_MASK)) {
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+        g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
     if (data != NULL &&
         (event->keyval == GDK_KEY_e) && (event->state & GDK_CONTROL_MASK)) {
-        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+        g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
         /* Get current text and place in temporary file */
         GtkTextIter start_iter;
@@ -3579,7 +3579,7 @@ cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     row_count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL);
     if (!row_count) return FALSE;
 
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
     select_row = rowSelected + add;
     if (select_row > row_count - 1) {
@@ -3612,7 +3612,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
             return FALSE;
         }
     }
-    gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
     /* Initialize page and next widget in case search fails */
     page = schema[0].notebook_page;
@@ -4174,10 +4174,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     address_quickfind_entry = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(address_quickfind_entry), TRUE);
-    gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "key_press_event",
-                       GTK_SIGNAL_FUNC(cb_key_pressed_quickfind), NULL);
-    gtk_signal_connect(GTK_OBJECT(address_quickfind_entry), "changed",
-                       GTK_SIGNAL_FUNC(cb_address_quickfind),
+    g_signal_connect(G_OBJECT(address_quickfind_entry), "key_press_event",
+                       G_CALLBACK(cb_key_pressed_quickfind), NULL);
+    g_signal_connect(G_OBJECT(address_quickfind_entry), "changed",
+                     G_CALLBACK(cb_address_quickfind),
                        NULL);
     gtk_box_pack_start(GTK_BOX(hbox_temp), address_quickfind_entry, TRUE, TRUE, 0);
 
@@ -4188,39 +4188,39 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Cancel button */
     CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
-    gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_cancel), NULL);
+    g_signal_connect(G_OBJECT(cancel_record_button), "clicked",
+                     G_CALLBACK(cb_cancel), NULL);
 
     /* Delete Button */
     CREATE_BUTTON(delete_record_button, _("Delete"), DELETE, _("Delete the selected record"), GDK_d, GDK_CONTROL_MASK,
                   "Ctrl+D")
-    gtk_signal_connect(GTK_OBJECT(delete_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_delete_address_or_contact),
+    g_signal_connect(G_OBJECT(delete_record_button), "clicked",
+                       G_CALLBACK(cb_delete_address_or_contact),
                        GINT_TO_POINTER(DELETE_FLAG));
 
     /* Undelete Button */
     CREATE_BUTTON(undelete_record_button, _("Undelete"), UNDELETE, _("Undelete the selected record"), 0, 0, "")
-    gtk_signal_connect(GTK_OBJECT(undelete_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_undelete_address),
+    g_signal_connect(G_OBJECT(undelete_record_button), "clicked",
+                       G_CALLBACK(cb_undelete_address),
                        GINT_TO_POINTER(UNDELETE_FLAG));
 
     /* Copy button */
     CREATE_BUTTON(copy_record_button, _("Copy"), COPY, _("Copy the selected record"), GDK_c,
                   GDK_CONTROL_MASK | GDK_SHIFT_MASK, "Ctrl+Shift+C")
-    gtk_signal_connect(GTK_OBJECT(copy_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+    g_signal_connect(G_OBJECT(copy_record_button), "clicked",
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(COPY_FLAG));
 
     /* New button */
     CREATE_BUTTON(new_record_button, _("New Record"), NEW, _("Add a new record"), GDK_n, GDK_CONTROL_MASK, "Ctrl+N")
-    gtk_signal_connect(GTK_OBJECT(new_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_address_clear), NULL);
+    g_signal_connect(G_OBJECT(new_record_button), "clicked",
+                       G_CALLBACK(cb_address_clear), NULL);
 
     /* "Add Record" button */
     CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+    g_signal_connect(G_OBJECT(add_record_button), "clicked",
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
@@ -4230,8 +4230,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* "Apply Changes" button */
     CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
-    gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
-                       GTK_SIGNAL_FUNC(cb_add_new_record),
+    g_signal_connect(G_OBJECT(apply_record_button), "clicked",
+                       G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(MODIFY_FLAG));
 #ifndef ENABLE_STOCK_BUTTONS
     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(apply_record_button)))),
@@ -4270,8 +4270,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
-    gtk_signal_connect(GTK_OBJECT(notebook), "switch-page",
-                       GTK_SIGNAL_FUNC(cb_notebook_changed), NULL);
+    g_signal_connect(G_OBJECT(notebook), "switch-page",
+                       G_CALLBACK(cb_notebook_changed), NULL);
 
     gtk_box_pack_start(GTK_BOX(vbox2), notebook, TRUE, TRUE, 0);
 
@@ -4353,12 +4353,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
             menu_item = gtk_menu_item_new_with_label(_("Change Photo"));
             gtk_widget_show(menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+            g_signal_connect(G_OBJECT(menu_item), "activate",
                                G_CALLBACK(cb_photo_menu_select), GINT_TO_POINTER(1));
             gtk_menu_attach(GTK_MENU(menu), menu_item, 0, 1, 0, 1);
             menu_item = gtk_menu_item_new_with_label(_("Remove Photo"));
             gtk_widget_show(menu_item);
-            gtk_signal_connect(GTK_OBJECT(menu_item), "activate",
+            g_signal_connect(G_OBJECT(menu_item), "activate",
                                G_CALLBACK(cb_photo_menu_select), GINT_TO_POINTER(2));
             gtk_menu_attach(GTK_MENU(menu), menu_item, 0, 1, 1, 2);
 
@@ -4450,8 +4450,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
                                               x - 1, x, table_y_i, table_y_i + 1);
 
-                    gtk_signal_connect(GTK_OBJECT(dial_button[phone_i]), "clicked",
-                                       GTK_SIGNAL_FUNC(cb_dial_or_mail),
+                    g_signal_connect(G_OBJECT(dial_button[phone_i]), "clicked",
+                                       G_CALLBACK(cb_dial_or_mail),
                                        addr_text[schema[i].record_field]);
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     phone_i++;
@@ -4520,8 +4520,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     birthday_checkbox = gtk_check_button_new_with_label(
                             contact_app_info.labels[schema[i].record_field]);
                     gtk_box_pack_start(GTK_BOX(hbox_temp), birthday_checkbox, FALSE, FALSE, 0);
-                    gtk_signal_connect(GTK_OBJECT(birthday_checkbox), "clicked",
-                                       GTK_SIGNAL_FUNC(cb_check_button_birthday), NULL);
+                    g_signal_connect(G_OBJECT(birthday_checkbox), "clicked",
+                                       G_CALLBACK(cb_check_button_birthday), NULL);
 
                     changed_list = g_list_prepend(changed_list, birthday_checkbox);
 
@@ -4530,15 +4530,15 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                     birthday_button = gtk_button_new_with_label("");
                     gtk_box_pack_start(GTK_BOX(birthday_box), birthday_button, FALSE, FALSE, 0);
-                    gtk_signal_connect(GTK_OBJECT(birthday_button), "clicked",
-                                       GTK_SIGNAL_FUNC(cb_button_birthday), NULL);
+                    g_signal_connect(G_OBJECT(birthday_button), "clicked",
+                                       G_CALLBACK(cb_button_birthday), NULL);
 
                     changed_list = g_list_prepend(changed_list, birthday_button);
 
                     reminder_checkbox = gtk_check_button_new_with_label(_("Reminder"));
                     gtk_box_pack_start(GTK_BOX(birthday_box), reminder_checkbox, FALSE, FALSE, 0);
-                    gtk_signal_connect(GTK_OBJECT(reminder_checkbox), "clicked",
-                                       GTK_SIGNAL_FUNC(cb_check_button_reminder), NULL);
+                    g_signal_connect(G_OBJECT(reminder_checkbox), "clicked",
+                                       G_CALLBACK(cb_check_button_reminder), NULL);
 
                     changed_list = g_list_prepend(changed_list, reminder_checkbox);
 
@@ -4565,8 +4565,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Connect keypress signals to callbacks */
 
     /* Capture the Enter key to move to the left-hand side of the display */
-    gtk_signal_connect(GTK_OBJECT(treeView), "key_press_event",
-                       GTK_SIGNAL_FUNC(cb_key_pressed_left_side),
+    g_signal_connect(G_OBJECT(treeView), "key_press_event",
+                       G_CALLBACK(cb_key_pressed_left_side),
                        NULL);
 
     for (i = 0; i < schema_size; i++) {
@@ -4579,19 +4579,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                 /* Capture the Shift-Enter key combination to move back to
           * the right-hand side of the display. */
                 if (schema[i].record_field != contNote) {
-                    gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]),
+                    g_signal_connect(G_OBJECT(addr_text[schema[i].record_field]),
                                        "key_press_event",
-                                       GTK_SIGNAL_FUNC(cb_key_pressed_right_side),
+                                       G_CALLBACK(cb_key_pressed_right_side),
                                        NULL);
                 } else {
-                    gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]),
+                    g_signal_connect(G_OBJECT(addr_text[schema[i].record_field]),
                                        "key_press_event",
-                                       GTK_SIGNAL_FUNC(cb_key_pressed_right_side),
+                                       G_CALLBACK(cb_key_pressed_right_side),
                                        GINT_TO_POINTER(i));
                 }
 
-                gtk_signal_connect(GTK_OBJECT(addr_text[schema[i].record_field]), "key_press_event",
-                                   GTK_SIGNAL_FUNC(cb_key_pressed), 0);
+                g_signal_connect(G_OBJECT(addr_text[schema[i].record_field]), "key_press_event",
+                                   G_CALLBACK(cb_key_pressed), 0);
                 break;
             default:
                 break;
