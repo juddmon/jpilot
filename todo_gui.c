@@ -1776,7 +1776,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
     GtkTextBuffer *text_buffer;
     GtkTextIter iter;
 
-    if (event->keyval == GDK_Return) {
+    if (event->keyval == GDK_KEY_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         /* Position cursor at start of text */
@@ -1792,14 +1792,14 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
 static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer data) {
-    if ((event->keyval == GDK_Return) && (event->state & GDK_SHIFT_MASK)) {
+    if ((event->keyval == GDK_KEY_Return) && (event->state & GDK_SHIFT_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
     if (data != NULL &&
-        (event->keyval == GDK_e) && (event->state & GDK_CONTROL_MASK)) {
+        (event->keyval == GDK_KEY_e) && (event->state & GDK_CONTROL_MASK)) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
 
         /* Get current text and place in temporary file */
@@ -2512,7 +2512,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Cancel button */
-    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_Escape, 0, "ESC")
+    CREATE_BUTTON(cancel_record_button, _("Cancel"), CANCEL, _("Cancel the modifications"), GDK_KEY_Escape, 0, "ESC")
     gtk_signal_connect(GTK_OBJECT(cancel_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_cancel), NULL);
 
@@ -2543,7 +2543,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                      GINT_TO_POINTER(CLEAR_FLAG));
 
     /* "Add Record" button */
-    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK,
+    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -2554,7 +2554,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     /* "Apply Changes" button */
-    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return,
+    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),

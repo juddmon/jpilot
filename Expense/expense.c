@@ -1616,7 +1616,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                        GTK_SIGNAL_FUNC(cb_add_new_record),
                        GINT_TO_POINTER(CLEAR_FLAG));
 
-    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_Return, GDK_CONTROL_MASK,
+    CREATE_BUTTON(add_record_button, _("Add Record"), ADD, _("Add the new record"), GDK_KEY_Return, GDK_CONTROL_MASK,
                   "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(add_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),
@@ -1626,7 +1626,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                         "label_high");
 #endif
 
-    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_Return,
+    CREATE_BUTTON(apply_record_button, _("Apply Changes"), APPLY, _("Commit the modifications"), GDK_KEY_Return,
                   GDK_CONTROL_MASK, "Ctrl+Enter")
     gtk_signal_connect(GTK_OBJECT(apply_record_button), "clicked",
                        GTK_SIGNAL_FUNC(cb_add_new_record),

@@ -472,7 +472,7 @@ void monthview_gui(struct tm *date_in)
 
    /* Accelerator key for left arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_KEY_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    set_tooltip(show_tooltips,
                button, _("Last month   Alt+LeftArrow"));
 
@@ -500,7 +500,7 @@ void monthview_gui(struct tm *date_in)
 
    /* Accelerator key for right arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+                              GDK_KEY_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
    set_tooltip(show_tooltips,
                button, _("Next month   Alt+RightArrow"));
 

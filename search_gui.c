@@ -604,7 +604,7 @@ static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
 static gboolean cb_key_pressed_in_list(GtkWidget *widget,
                                        GdkEventKey *event,
                                        gpointer data) {
-    if (event->keyval == GDK_Return) {
+    if (event->keyval == GDK_KEY_Return) {
         gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "key_press_event");
         return TRUE;
     }
@@ -732,7 +732,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
                        GTK_SIGNAL_FUNC(cb_quit), window);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-    gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_Escape, 0, 0);
+    gtk_widget_add_accelerator(button, "clicked", accel_group, GDK_KEY_Escape, 0, 0);
 
     gtk_widget_show_all(window);
 }
