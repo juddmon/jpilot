@@ -190,8 +190,8 @@ static int dialog_alarm(char *title, char *reason,
                                  "title", title,
                                  NULL);
 
-   gtk_signal_connect(GTK_OBJECT(alarm_dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), alarm_dialog);
+   g_signal_connect(G_OBJECT(alarm_dialog), "destroy",
+                      G_CALLBACK(cb_destroy_dialog), alarm_dialog);
 
    gtk_window_set_transient_for(GTK_WINDOW(alarm_dialog), GTK_WINDOW(window));
    gtk_window_stick(GTK_WINDOW(alarm_dialog));
@@ -251,14 +251,14 @@ static int dialog_alarm(char *title, char *reason,
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
 
    button = gtk_button_new_with_label(_("Remind me"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
