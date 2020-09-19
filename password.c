@@ -310,7 +310,8 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    /* Password entry field */
-   entry = gtk_entry_new_with_max_length(PASSWD_LEN);
+   entry = gtk_entry_new();
+    gtk_entry_set_max_length(entry,PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    g_signal_connect(G_OBJECT(entry), "activate",
                       G_CALLBACK(cb_dialog_button),

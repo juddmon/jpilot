@@ -1345,7 +1345,8 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-    save_as_entry = gtk_entry_new_with_max_length(250);
+    save_as_entry = gtk_entry_new();
+    gtk_entry_set_max_length(save_as_entry,250);
     svalue = NULL;
     get_pref(PREF_DATEBOOK_EXPORT_FILENAME, NULL, &svalue);
 
@@ -5175,7 +5176,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
 
         /* Units entry for alarm */
-        units_entry = gtk_entry_new_with_max_length(2);
+        units_entry = gtk_entry_new();
+        gtk_entry_set_max_length(units_entry,2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
         gtk_widget_set_usize(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
@@ -5251,7 +5253,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1,
                      GTK_SHRINK, GTK_SHRINK, 0, 0);
 
-    begin_time_entry = gtk_entry_new_with_max_length(7);
+    begin_time_entry = gtk_entry_new();
+    gtk_entry_set_max_length(begin_time_entry,7);
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(begin_time_entry),
                      1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
@@ -5268,7 +5271,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
                      0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
-    end_time_entry = gtk_entry_new_with_max_length(7);
+    end_time_entry = gtk_entry_new();
+    gtk_entry_set_max_length(end_time_entry,7);
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(end_time_entry),
                      1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
@@ -5331,7 +5335,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
 
         /* Units entry for alarm */
-        units_entry = gtk_entry_new_with_max_length(2);
+        units_entry = gtk_entry_new();
+        gtk_entry_set_max_length(units_entry,2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
         gtk_widget_set_usize(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
@@ -5399,7 +5404,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         label = gtk_label_new(_("DateBk Tags"));
         gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 5);
 
-        datebk_entry = gtk_entry_new_with_max_length(30);
+        datebk_entry = gtk_entry_new();
+        gtk_entry_set_max_length(datebk_entry,30);
         gtk_box_pack_start(GTK_BOX(hbox_temp), datebk_entry, TRUE, TRUE, 0);
     }
 #endif
@@ -5430,7 +5436,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox_repeat_day), hbox_repeat_day2, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
-    repeat_day_entry = gtk_entry_new_with_max_length(2);
+    repeat_day_entry = gtk_entry_new();
+    gtk_entry_set_max_length(repeat_day_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_day_entry), TRUE);
     gtk_widget_set_usize(repeat_day_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), repeat_day_entry, FALSE, FALSE, 0);
@@ -5463,7 +5470,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox_repeat_week), hbox_repeat_week3, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), label, FALSE, FALSE, 2);
-    repeat_week_entry = gtk_entry_new_with_max_length(2);
+    repeat_week_entry = gtk_entry_new();
+    gtk_entry_set_max_length(repeat_week_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_week_entry), TRUE);
     gtk_widget_set_usize(repeat_week_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), repeat_week_entry, FALSE, FALSE, 0);
@@ -5515,7 +5523,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox_repeat_mon), hbox_repeat_mon3, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
-    repeat_mon_entry = gtk_entry_new_with_max_length(2);
+    repeat_mon_entry = gtk_entry_new();
+    gtk_entry_set_max_length(repeat_mon_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_mon_entry), TRUE);
     gtk_widget_set_usize(repeat_mon_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), repeat_mon_entry, FALSE, FALSE, 0);
@@ -5559,7 +5568,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox_repeat_year), hbox_repeat_year2, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);
-    repeat_year_entry = gtk_entry_new_with_max_length(2);
+    repeat_year_entry = gtk_entry_new();
+    gtk_entry_set_max_length(repeat_year_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_year_entry), TRUE);
     gtk_widget_set_usize(repeat_year_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), repeat_year_entry, FALSE, FALSE, 0);

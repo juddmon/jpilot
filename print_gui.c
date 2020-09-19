@@ -302,7 +302,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       hbox = gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-      lines_entry = gtk_entry_new_with_max_length(2);
+      lines_entry = gtk_entry_new();
+       gtk_entry_set_max_length(lines_entry,2);
       entry_set_multiline_truncate(GTK_ENTRY(lines_entry), TRUE);
       gtk_widget_set_usize(lines_entry, 30, 0);
       gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
@@ -319,7 +320,8 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    label = gtk_label_new(_("Print Command (e.g. lpr, or cat > file.ps)"));
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
-   print_command_entry = gtk_entry_new_with_max_length(250);
+   print_command_entry = gtk_entry_new();
+    gtk_entry_set_max_length(print_command_entry,250);
    gtk_box_pack_start(GTK_BOX(vbox), print_command_entry, FALSE, FALSE, 0);
 
    get_pref(PREF_PRINT_COMMAND, NULL, &svalue);

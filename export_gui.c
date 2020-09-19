@@ -329,7 +329,8 @@ int export_gui(GtkWidget *main_window,
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-    save_as_entry = gtk_entry_new_with_max_length(250);
+    save_as_entry = gtk_entry_new();
+    gtk_entry_set_max_length(save_as_entry,250);
     svalue = NULL;
     if (glob_pref_export) {
         get_pref(glob_pref_export, NULL, &svalue);

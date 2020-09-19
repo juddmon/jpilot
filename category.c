@@ -922,7 +922,8 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 
     Pdata.label = label;
 
-    entry = gtk_entry_new_with_max_length(HOSTCAT_NAME_SZ - 1);
+    entry =  gtk_entry_new();
+    gtk_entry_set_max_length(entry,HOSTCAT_NAME_SZ - 1);
     g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));

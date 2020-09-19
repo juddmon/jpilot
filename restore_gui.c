@@ -325,7 +325,8 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("User Name"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-    user_entry = gtk_entry_new_with_max_length(126);
+    user_entry = gtk_entry_new();
+    gtk_entry_set_max_length(user_entry,126);
     entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
     get_pref(PREF_USER, NULL, &svalue);
     if ((svalue) && (svalue[0])) {
@@ -344,7 +345,8 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("User ID"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-    user_id_entry = gtk_entry_new_with_max_length(10);
+    user_id_entry = gtk_entry_new();
+    gtk_entry_set_max_length(user_id_entry,10);
     entry_set_multiline_truncate(GTK_ENTRY(user_id_entry), TRUE);
     get_pref(PREF_USER_ID, &ivalue, NULL);
     sprintf(str_int, "%ld", ivalue);

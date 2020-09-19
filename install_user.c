@@ -172,7 +172,8 @@ static int dialog_install_user(GtkWindow *main_window,
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User Name"));
-   user_entry = gtk_entry_new_with_max_length(128);
+   user_entry = gtk_entry_new();
+    gtk_entry_set_max_length(user_entry,128);
    entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    data.user_entry = user_entry;
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
@@ -190,7 +191,8 @@ static int dialog_install_user(GtkWindow *main_window,
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User ID"));
-   ID_entry = gtk_entry_new_with_max_length(32);
+   ID_entry = gtk_entry_new();
+    gtk_entry_set_max_length(ID_entry,32);
    entry_set_multiline_truncate(GTK_ENTRY(ID_entry), TRUE);
    data.ID_entry = ID_entry;
    gtk_entry_set_text(GTK_ENTRY(ID_entry), s_id);

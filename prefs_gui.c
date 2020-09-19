@@ -571,7 +571,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              0, 1, 1, 2);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   port_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   port_entry = gtk_entry_new();
+    gtk_entry_set_max_length(port_entry,MAX_PREF_LEN - 2);
    entry_set_multiline_truncate(GTK_ENTRY(port_entry), TRUE);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
                              2, 3, 1, 2);
@@ -615,7 +616,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
                              0, 2, 3, 4);
    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-   backups_entry = gtk_entry_new_with_max_length(2);
+   backups_entry = gtk_entry_new();
+    gtk_entry_set_max_length(backups_entry,2);
    entry_set_multiline_truncate(GTK_ENTRY(backups_entry), TRUE);
    gtk_widget_set_usize(backups_entry, 30, 0);
    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
@@ -745,7 +747,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("Mail Command"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
-   mail_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   mail_command_entry = gtk_entry_new();
+    gtk_entry_set_max_length(mail_command_entry,MAX_PREF_LEN - 2);
 
    get_pref(PREF_MAIL_COMMAND, NULL, &cstr);
    if (cstr) {
@@ -822,7 +825,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    add_checkbutton(_("Use default number of days due"),
                    PREF_TODO_DAYS_DUE, hbox_temp, cb_checkbox_set_pref);
 
-   todo_days_due_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   todo_days_due_entry = gtk_entry_new();
+    gtk_entry_set_max_length(todo_days_due_entry,MAX_PREF_LEN - 2);
    entry_set_multiline_truncate(GTK_ENTRY(todo_days_due_entry), TRUE);
    get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
    temp[0]='\0';
@@ -890,7 +894,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("External Editor"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
-   ext_editor_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   ext_editor_entry = gtk_entry_new();
+    gtk_entry_set_max_length(ext_editor_entry,MAX_PREF_LEN - 2);
    get_pref(PREF_EXTERNAL_EDITOR, NULL, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(ext_editor_entry), cstr);
@@ -927,7 +932,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    label = gtk_label_new(_("Alarm Command"));
    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 10);
 
-   alarm_command_entry = gtk_entry_new_with_max_length(MAX_PREF_LEN - 2);
+   alarm_command_entry = gtk_entry_new();
+    gtk_entry_set_max_length(alarm_command_entry,MAX_PREF_LEN - 2);
    get_pref(PREF_ALARM_COMMAND, NULL, &cstr);
    if (cstr) {
       gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);

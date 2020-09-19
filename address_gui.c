@@ -4545,7 +4545,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     reminder_box = gtk_hbox_new(FALSE, 0);
                     gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
 
-                    reminder_entry = gtk_entry_new_with_max_length(2);
+                    reminder_entry = gtk_entry_new();
+                    gtk_entry_set_max_length(reminder_entry,2);
                     entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
                     gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 
