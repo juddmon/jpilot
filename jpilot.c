@@ -215,7 +215,7 @@ void call_plugin_gui(int number, int unique_id) {
     gtk_widget_destroy(g_hbox2);
     create_main_boxes();
     if (glob_date_timer_tag) {
-        gtk_timeout_remove(glob_date_timer_tag);
+        g_source_remove(glob_date_timer_tag);
     }
 
     /* Find out which plugin we are calling */
@@ -576,7 +576,7 @@ void cb_app_button(GtkWidget *widget, gpointer data) {
     if ((!refresh) || (app == REDRAW)) {
         gui_cleanup();
         if (glob_date_timer_tag) {
-            gtk_timeout_remove(glob_date_timer_tag);
+            g_source_remove(glob_date_timer_tag);
         }
         gtk_widget_destroy(g_vbox0_1);
         gtk_widget_destroy(g_hbox2);
