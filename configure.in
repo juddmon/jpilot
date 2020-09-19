@@ -20,7 +20,7 @@ AC_CANONICAL_HOST # determine build host
 AC_PROG_CC
 dnl AC_ISC_POSIX only needed for Interacive Systems UNIX which Sun
 dnl is discontinuing support on as of 7/23/2006.
-dnl This obsolete macro should probably be removed. 
+dnl This obsolete macro should probably be removed.
 AC_ISC_POSIX
 dnl Need intltool for i18n support
 AC_PROG_INTLTOOL()
@@ -48,7 +48,7 @@ dnl Name of language files
 GETTEXT_PACKAGE=jpilot
 AC_SUBST(GETTEXT_PACKAGE)
 dnl 9/29/2006: Work around a bug in current versions of gettext/intltool
-dnl            which leave this macro undefined.  
+dnl            which leave this macro undefined.
 DATADIRNAME=share
 AC_SUBST(DATADIRNAME)
 
@@ -101,7 +101,7 @@ else
    AC_MSG_RESULT(Plugin support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(private,
    AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
@@ -114,7 +114,7 @@ else
    AC_MSG_RESULT(Private record support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(datebk,
    AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
@@ -127,7 +127,7 @@ else
    AC_MSG_RESULT(Datebk support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(manana,
    AC_HELP_STRING([--disable-manana],[Disable Manana support]),
@@ -140,7 +140,7 @@ else
    AC_MSG_RESULT(Manana support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(prometheon,
    AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
@@ -157,7 +157,7 @@ fi
 
 AC_SUBST(PROGNAME)
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(alarm-shell-danger,
    AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
@@ -169,7 +169,7 @@ if test "$enable_alarm_shell_danger" = "yes"; then
    AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(stock_buttons,
    AC_HELP_STRING([--disable-stock-buttons],[Disable stock buttons (icons on GUI buttons)]),
@@ -184,13 +184,13 @@ else
 fi
 
 dnl ############################################################################
-dnl Check for libraries needed 
+dnl Check for libraries needed
 dnl ############################################################################
 dnl ******************************
-dnl * GTK3 libraries
+dnl * GTK2 libraries
 dnl ******************************
-AM_PATH_GTK_3_0(3.24.12, ,
-  AC_MSG_ERROR([*** GTK >= 3.24.12 not found ***]))
+AM_PATH_GTK_2_0(2.0.3, ,
+  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
 
 dnl ******************************
 dnl * pilot-link libs
@@ -567,7 +567,7 @@ AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
 AC_MSG_RESULT(Cryptographic library..................   $crypto_lib)
-AC_MSG_RESULT(GTK-3 support..........................   yes)
+AC_MSG_RESULT(GTK-2 support..........................   yes)
 AC_MSG_RESULT(Stock buttons (icons on buttons in GUI)   $enable_stock_buttons)
 AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
 AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)
