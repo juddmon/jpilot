@@ -1474,6 +1474,8 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     if (main) {
         memo_clear_details();
     }
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     gtk_list_store_clear(GTK_LIST_STORE(pListStore));
 
     show_priv = show_privates(GET_PRIVATES);
@@ -1593,7 +1595,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_liststore()\n");
 }
 
@@ -1696,6 +1698,8 @@ int memo_gui_cleanup(void) {
     connect_changed_signals(DISCONNECT_SIGNALS);
     set_pref(PREF_MEMO_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_LAST_MEMO_CATEGORY, memo_category, NULL, TRUE);
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     gtk_list_store_clear(GTK_LIST_STORE(listStore));
 
     return EXIT_SUCCESS;

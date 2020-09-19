@@ -2498,7 +2498,8 @@ static int datebook_update_listStore(void) {
 #ifdef ENABLE_DATEBK
     jp_logf(JP_LOG_DEBUG, "datebk_category = 0x%x\n", datebk_category);
 #endif
-
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     gtk_list_store_clear(GTK_LIST_STORE(listStore));
 
 #ifdef __APPLE__
@@ -2703,7 +2704,7 @@ static int datebook_update_listStore(void) {
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-
+    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
     return EXIT_SUCCESS;
 }
 
@@ -4489,6 +4490,8 @@ int datebook_gui_cleanup(void) {
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(show_todos_button))) {
         set_pref(PREF_DATEBOOK_TODO_PANE, gtk_paned_get_position(GTK_PANED(todo_pane)), NULL, TRUE);
     }
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     todo_liststore_clear(GTK_LIST_STORE(todo_listStore));
 
 #ifdef ENABLE_DATEBK
