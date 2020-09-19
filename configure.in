@@ -187,10 +187,10 @@ dnl ############################################################################
 dnl Check for libraries needed
 dnl ############################################################################
 dnl ******************************
-dnl * GTK2 libraries
+dnl * GTK3 libraries
 dnl ******************************
-AM_PATH_GTK_2_0(2.0.3, ,
-  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+AM_PATH_GTK_3_0(3.24.12, ,
+  AC_MSG_ERROR([*** GTK >= 3.24.12 not found ***]))
 
 dnl ******************************
 dnl * pilot-link libs
@@ -567,7 +567,7 @@ AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
 AC_MSG_RESULT(Cryptographic library..................   $crypto_lib)
-AC_MSG_RESULT(GTK-2 support..........................   yes)
+AC_MSG_RESULT(GTK-3 support..........................   yes)
 AC_MSG_RESULT(Stock buttons (icons on buttons in GUI)   $enable_stock_buttons)
 AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
 AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)
