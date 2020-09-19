@@ -3190,7 +3190,8 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         addr_clear_details();
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(addr_all_buffer), "", -1);
     }
-
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     gtk_list_store_clear(GTK_LIST_STORE(pListStore));
     /* Collect preferences and pixmaps before loop */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -3399,7 +3400,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             set_tooltip(show_tooltips, category_menu1, str);
         }
     }
-
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
@@ -3672,6 +3673,8 @@ int address_gui_cleanup(void) {
     connect_changed_signals(DISCONNECT_SIGNALS);
     set_pref(PREF_ADDRESS_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
     set_pref(PREF_LAST_ADDR_CATEGORY, address_category, NULL, TRUE);
+    GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     gtk_list_store_clear(GTK_LIST_STORE(listStore));
     if (image) {
         gtk_widget_destroy(image);
