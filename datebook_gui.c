@@ -4937,7 +4937,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_date_label = gtk_label_new(" ");
     gtk_box_pack_start(GTK_BOX(vbox1), glob_date_label, FALSE, FALSE, 0);
     timeout_date(NULL);
-    glob_date_timer_tag = gtk_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
+    glob_date_timer_tag = g_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
 
     /* Separator */
     separator = gtk_hseparator_new();

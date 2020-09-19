@@ -1062,7 +1062,7 @@ int alarms_init(unsigned char skip_past_alarms,
     * rather than waiting ALARM_INTERVAL seconds and then doing it */
    cb_timer_alarms(NULL);
 
-   gtk_timeout_add(ALARM_INTERVAL*CLOCK_TICK, cb_timer_alarms, NULL);
+   g_timeout_add(ALARM_INTERVAL*CLOCK_TICK, cb_timer_alarms, NULL);
 
    return EXIT_SUCCESS;
 }

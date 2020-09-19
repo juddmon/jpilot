@@ -3335,17 +3335,17 @@ gint timeout_sync_up(gpointer data) {
     int timeout_interval = get_timeout_interval();
 
     if (timeout_interval == CLOCK_TICK) {
-        glob_date_timer_tag = gtk_timeout_add(timeout_interval, timeout_date, NULL);
+        glob_date_timer_tag = g_timeout_add(timeout_interval, timeout_date, NULL);
     } else {
         /* Interval is in minutes.  Sync up with current time */
         time(&ltime);
         now = localtime(&ltime);
         secs = now->tm_sec;
         if (secs < 2) {
-            glob_date_timer_tag = gtk_timeout_add(timeout_interval, timeout_date, NULL);
+            glob_date_timer_tag = g_timeout_add(timeout_interval, timeout_date, NULL);
         } else {
             diff_secs = (secs < 61) ? 60 - secs : 59;   // Account for leap seconds
-            glob_date_timer_tag = gtk_timeout_add(diff_secs * CLOCK_TICK, timeout_sync_up, NULL);
+            glob_date_timer_tag = g_timeout_add(diff_secs * CLOCK_TICK, timeout_sync_up, NULL);
         }
     }
 
