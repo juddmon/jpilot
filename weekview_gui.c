@@ -61,7 +61,8 @@ void cb_weekview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_drawable_get_size(gtk_widget_get_window(weekview_window), &w, &h);
+    w = gdk_window_get_width(gtk_widget_get_window(weekview_window));
+    h = gdk_window_get_height(gtk_widget_get_window(weekview_window));
    set_pref(PREF_WEEKVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_WEEKVIEW_HEIGHT, h, NULL, FALSE);
 

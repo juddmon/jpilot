@@ -2269,7 +2269,8 @@ int plugin_export(GtkWidget *window) {
     char *type_text[] = {N_("Text"), N_("CSV"), N_("B-Folders CSV"), N_("KeePassX XML"), NULL};
     int type_int[] = {EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS, EXPORT_TYPE_KEEPASSX};
 
-    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
+    w = gdk_window_get_width(gtk_widget_get_window(window));
+    h = gdk_window_get_height(gtk_widget_get_window(window));
     gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));
