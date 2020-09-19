@@ -605,7 +605,7 @@ static gboolean cb_key_pressed_in_list(GtkWidget *widget,
                                        GdkEventKey *event,
                                        gpointer data) {
     if (event->keyval == GDK_KEY_Return) {
-        gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         return TRUE;
     }
 

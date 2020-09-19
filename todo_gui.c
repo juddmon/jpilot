@@ -1777,7 +1777,7 @@ static gboolean cb_key_pressed_left_side(GtkWidget *widget,
     GtkTextIter iter;
 
     if (event->keyval == GDK_KEY_Return) {
-        gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         /* Position cursor at start of text */
         text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(next_widget));
@@ -1793,14 +1793,14 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
                                           GdkEventKey *event,
                                           gpointer data) {
     if ((event->keyval == GDK_KEY_Return) && (event->state & GDK_SHIFT_MASK)) {
-        gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(treeView));
         return TRUE;
     }
     /* Call external editor for note text */
     if (data != NULL &&
         (event->keyval == GDK_KEY_e) && (event->state & GDK_CONTROL_MASK)) {
-        gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
         /* Get current text and place in temporary file */
         GtkTextIter start_iter;
@@ -1901,7 +1901,7 @@ static gboolean cb_key_pressed_tab(GtkWidget *widget,
         text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
         gtk_text_buffer_get_iter_at_mark(text_buffer, &cursor_pos_iter, gtk_text_buffer_get_insert(text_buffer));
         if (gtk_text_iter_is_end(&cursor_pos_iter)) {
-            gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+             g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
             gtk_widget_grab_focus(GTK_WIDGET(next_widget));
             return TRUE;
         }
@@ -1913,7 +1913,7 @@ static gboolean cb_key_pressed_shift_tab(GtkWidget *widget,
                                          GdkEventKey *event,
                                          gpointer next_widget) {
     if (event->keyval == GDK_KEY_ISO_Left_Tab) {
-        gtk_signal_emit_stop_by_name(G_OBJECT(widget), "key_press_event");
+         g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
         gtk_widget_grab_focus(GTK_WIDGET(next_widget));
         return TRUE;
     }

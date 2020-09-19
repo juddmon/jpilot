@@ -187,10 +187,10 @@ dnl ############################################################################
 dnl Check for libraries needed 
 dnl ############################################################################
 dnl ******************************
-dnl * GTK2 libraries
+dnl * GTK3 libraries
 dnl ******************************
-AM_PATH_GTK_2_0(2.0.3, ,
-  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+AM_PATH_GTK_3_0(3.24.12, ,
+  AC_MSG_ERROR([*** GTK >= 3.24.12 not found ***]))
 
 dnl ******************************
 dnl * pilot-link libs
@@ -267,7 +267,7 @@ dnl Substitute macros now that LIB & FLAG detection is done
 AC_SUBST(PILOT_LIBS)
 AC_SUBST(PILOT_FLAGS)
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(pl-test,
    AC_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
@@ -391,7 +391,7 @@ else
 fi
 
 dnl ############################################################################
-dnl Check for headers needed 
+dnl Check for headers needed
 dnl ############################################################################
 dnl 10/2/06: only headers used for true code portability right now are locale.h, langinfo.h
 AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/socket.h sys/time.h sys/wait.h unistd.h utime.h])
@@ -410,7 +410,7 @@ AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
 AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
 
 dnl ############################################################################
-dnl Check for typedefs and structures needed 
+dnl Check for typedefs and structures needed
 dnl ############################################################################
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
@@ -430,7 +430,7 @@ AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
 AC_TRY_LINK([#include <langinfo.h>], [
 char c;
 c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
-], 
+],
 nl_ok=yes, nl_ok=no)
 AC_MSG_RESULT($nl_ok)
 
@@ -440,7 +440,7 @@ if test "$nl_ok" = "yes"; then
 fi
 
 dnl ############################################################################
-dnl Check for individual functions needed 
+dnl Check for individual functions needed
 dnl ############################################################################
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
@@ -462,7 +462,7 @@ if test "x$with_flock" = "xyes"; then
 fi
 
 dnl ############################################################################
-dnl Figure which programs can be built on this particular host with the 
+dnl Figure which programs can be built on this particular host with the
 dnl libraries available.
 dnl ############################################################################
 
@@ -502,7 +502,7 @@ if test "$have_termio" = "1"; then
       linux-gnu)     dialer=yes  ;;
 
       *) AC_MSG_WARN(
-		   [Operating system ${build_os} not supported by jpilot-dialer]) ; 
+		   [Operating system ${build_os} not supported by jpilot-dialer]) ;
 			dialer=no ;;
 
    esac
@@ -543,13 +543,13 @@ AC_CONFIG_FILES([Makefile
                  icons/Makefile
                  docs/Makefile
                  empty/Makefile
-                 jpilot.spec 
+                 jpilot.spec
                  SlackBuild ])
 
 AC_OUTPUT
 
 dnl Make SlackBuild executable
-chmod +x SlackBuild 
+chmod +x SlackBuild
 
 dnl ******************************
 dnl Configuration messages
@@ -567,7 +567,7 @@ AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
 AC_MSG_RESULT(Cryptographic library..................   $crypto_lib)
-AC_MSG_RESULT(GTK-2 support..........................   yes)
+AC_MSG_RESULT(GTK-3 support..........................   yes)
 AC_MSG_RESULT(Stock buttons (icons on buttons in GUI)   $enable_stock_buttons)
 AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
 AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)
