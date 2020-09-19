@@ -305,7 +305,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       lines_entry = gtk_entry_new();
        gtk_entry_set_max_length(lines_entry,2);
       entry_set_multiline_truncate(GTK_ENTRY(lines_entry), TRUE);
-      gtk_widget_set_usize(lines_entry, 30, 0);
+      gtk_widget_set_size_request(lines_entry, 30, 0);
       gtk_box_pack_start(GTK_BOX(hbox), lines_entry, FALSE, FALSE, 0);
 
       label = gtk_label_new(_("Blank lines between each record"));

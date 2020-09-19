@@ -4343,7 +4343,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
             GtkWidget *menu, *menu_item;
 
             picture_button = gtk_button_new();
-            gtk_widget_set_usize(GTK_WIDGET(picture_button), PHOTO_X_SZ + 10, PHOTO_Y_SZ + 10);
+            gtk_widget_set_size_request(GTK_WIDGET(picture_button), PHOTO_X_SZ + 10, PHOTO_Y_SZ + 10);
             gtk_container_set_border_width(GTK_CONTAINER(picture_button), 0);
             gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(picture_button),
                              0, 2, 0, 4, GTK_SHRINK, GTK_SHRINK, 0, 0);

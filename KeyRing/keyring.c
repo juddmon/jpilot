@@ -2559,8 +2559,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
-    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
+    gtk_widget_set_size_request(GTK_WIDGET(vbox1), 0, 230);
+    gtk_widget_set_size_request(GTK_WIDGET(vbox2), 0, 230);
 
     /**********************************************************************/
     /* Left half of screen */

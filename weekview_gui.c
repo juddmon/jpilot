@@ -389,7 +389,7 @@ void weekview_gui(struct tm *date_in)
       gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(week_day_text_buffer[i]),
                                  "gray_background", "background", "gray",
                                  NULL);
-      gtk_widget_set_usize(GTK_WIDGET(week_day_text[i]), 10, 10);
+      gtk_widget_set_size_request(GTK_WIDGET(week_day_text[i]), 10, 10);
       g_signal_connect(G_OBJECT(week_day_text[i]), "button_release_event",
                          G_CALLBACK(cb_enter_selected_day),
                          GINT_TO_POINTER(i));

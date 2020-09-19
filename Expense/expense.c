@@ -1497,8 +1497,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
-    gtk_widget_set_usize(GTK_WIDGET(vbox1), 0, 230);
-    gtk_widget_set_usize(GTK_WIDGET(vbox2), 0, 230);
+    gtk_widget_set_size_request(GTK_WIDGET(vbox1), 0, 230);
+    gtk_widget_set_size_request(GTK_WIDGET(vbox2), 0, 230);
 
     /* Make accelerators for some buttons window */
 #ifndef ENABLE_STOCK_BUTTONS
@@ -1726,7 +1726,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner_year), FALSE);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinner_year), TRUE);
     gtk_box_pack_start(GTK_BOX(temp_vbox), spinner_year, FALSE, TRUE, 0);
-    gtk_widget_set_usize(spinner_year, 55, 0);
+    gtk_widget_set_size_request(spinner_year, 55, 0);
 
     /* Amount Entry */
     label = gtk_label_new(_("Amount:"));
@@ -1764,7 +1764,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Attendees textbox */
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
+    /*gtk_widget_set_size_request(GTK_WIDGET(scrolled_window), 150, 0); */
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -1781,7 +1781,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Note textbox */
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    /*gtk_widget_set_usize(GTK_WIDGET(scrolled_window), 150, 0); */
+    /*gtk_widget_set_size_request(GTK_WIDGET(scrolled_window), 150, 0); */
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);

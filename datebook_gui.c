@@ -5179,7 +5179,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         units_entry = gtk_entry_new();
         gtk_entry_set_max_length(units_entry,2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
-        gtk_widget_set_usize(units_entry, 30, 0);
+        gtk_widget_set_size_request(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
 
         radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
@@ -5276,8 +5276,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(end_time_entry),
                      1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
-    gtk_widget_set_usize(GTK_WIDGET(begin_time_entry), 70, 0);
-    gtk_widget_set_usize(GTK_WIDGET(end_time_entry), 70, 0);
+    gtk_widget_set_size_request(GTK_WIDGET(begin_time_entry), 70, 0);
+    gtk_widget_set_size_request(GTK_WIDGET(end_time_entry), 70, 0);
 
     option3 = create_time_menu(END_TIME_FLAG | HOURS_FLAG);
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option3),
@@ -5338,7 +5338,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         units_entry = gtk_entry_new();
         gtk_entry_set_max_length(units_entry,2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
-        gtk_widget_set_usize(units_entry, 30, 0);
+        gtk_widget_set_size_request(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
 
         radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
@@ -5439,7 +5439,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     repeat_day_entry = gtk_entry_new();
     gtk_entry_set_max_length(repeat_day_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_day_entry), TRUE);
-    gtk_widget_set_usize(repeat_day_entry, 30, 0);
+    gtk_widget_set_size_request(repeat_day_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), repeat_day_entry, FALSE, FALSE, 0);
     label = gtk_label_new(_("Day(s)"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
@@ -5473,7 +5473,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     repeat_week_entry = gtk_entry_new();
     gtk_entry_set_max_length(repeat_week_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_week_entry), TRUE);
-    gtk_widget_set_usize(repeat_week_entry, 30, 0);
+    gtk_widget_set_size_request(repeat_week_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), repeat_week_entry, FALSE, FALSE, 0);
     label = gtk_label_new(_("Week(s)"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), label, FALSE, FALSE, 2);
@@ -5526,7 +5526,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     repeat_mon_entry = gtk_entry_new();
     gtk_entry_set_max_length(repeat_mon_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_mon_entry), TRUE);
-    gtk_widget_set_usize(repeat_mon_entry, 30, 0);
+    gtk_widget_set_size_request(repeat_mon_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), repeat_mon_entry, FALSE, FALSE, 0);
     label = gtk_label_new(_("Month(s)"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
@@ -5571,7 +5571,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     repeat_year_entry = gtk_entry_new();
     gtk_entry_set_max_length(repeat_year_entry,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_year_entry), TRUE);
-    gtk_widget_set_usize(repeat_year_entry, 30, 0);
+    gtk_widget_set_size_request(repeat_year_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), repeat_year_entry, FALSE, FALSE, 0);
     label = gtk_label_new(_("Year(s)"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);

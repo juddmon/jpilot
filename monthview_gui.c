@@ -245,7 +245,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
             text = month_day[n] = gtk_text_view_new();
             month_day_buffer[n] =
               G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
-            gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+            gtk_widget_set_size_request(GTK_WIDGET(text), 10, 10);
             gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
             gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
             gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
@@ -274,7 +274,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
-   gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+   gtk_widget_set_size_request(GTK_WIDGET(text), 10, 10);
    gtk_box_pack_start(GTK_BOX(month_vbox), text, TRUE, TRUE, 4);
 }
 
