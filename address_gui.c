@@ -1731,7 +1731,7 @@ int address_export(GtkWidget *window) {
                       EXPORT_TYPE_LDIF,
                       EXPORT_TYPE_BFOLDERS};
 
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
     gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));

@@ -254,7 +254,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
 
    glob_import_record_ask_button_pressed = DIALOG_SAID_IMPORT_QUIT;
 
-   gdk_window_get_size(gtk_widget_get_window(main_window), &pw, &ph);
+    gdk_drawable_get_size(gtk_widget_get_window(main_window), &pw, &ph);
    gdk_window_get_root_origin(gtk_widget_get_window(main_window), &px, &py);
    pw = gtk_paned_get_position(GTK_PANED(pane));
    px+=40;

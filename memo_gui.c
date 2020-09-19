@@ -844,7 +844,7 @@ int memo_export(GtkWidget *window) {
                          NULL};
     int type_int[] = {EXPORT_TYPE_TEXT, EXPORT_TYPE_CSV, EXPORT_TYPE_BFOLDERS, EXPORT_TYPE_KEEPASSX};
 
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
     gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = gtk_paned_get_position(GTK_PANED(pane));

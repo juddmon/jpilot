@@ -344,7 +344,7 @@ static void cb_restore(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "cb_restore()\n");
 
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
     gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = w / 2;
@@ -758,7 +758,7 @@ void output_to_pane(const char *str) {
         ivalue = size_requisition.height + 1;
         set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
     }
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
     new_y = h - ivalue;
     gtk_paned_set_position(GTK_PANED(output_pane), new_y);
 
@@ -995,7 +995,7 @@ static void cb_about(GtkWidget *widget, gpointer data) {
     char options[1024];
     int w, h;
 
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
 
     w = w / 2;
     h = 1;
@@ -1146,7 +1146,7 @@ static void cb_web(GtkWidget *widget, gpointer data)
 static void install_gui_and_size(GtkWidget *main_window) {
     int w, h, x, y;
 
-    gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
     gdk_window_get_root_origin(gtk_widget_get_window(window), &x, &y);
 
     w = w / 2;
@@ -1568,7 +1568,7 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
     gdk_window_get_origin(gtk_widget_get_window(window), &x, &y);
     jp_logf(JP_LOG_DEBUG, "x=%d, y=%d\n", x, y);
 
-    gdk_window_get_size(gtk_widget_get_window(window), &pw, &ph);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &pw, &ph);
     set_pref(PREF_WINDOW_WIDTH, pw, NULL, FALSE);
     set_pref(PREF_WINDOW_HEIGHT, ph, NULL, FALSE);
     set_pref(PREF_LAST_APP, glob_app, NULL, TRUE);
@@ -1616,7 +1616,7 @@ static void cb_output(GtkWidget *widget, gpointer data) {
 
     if ((flags == OUTPUT_MINIMIZE) || (flags == OUTPUT_RESIZE)) {
         jp_logf(JP_LOG_DEBUG, "paned pos = %d\n", gtk_paned_get_position(GTK_PANED(output_pane)));
-        gdk_window_get_size(gtk_widget_get_window(window), &w, &h);
+        gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
         output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
         set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
         if (flags == OUTPUT_MINIMIZE) {
@@ -2283,7 +2283,7 @@ int main(int argc, char *argv[]) {
 
     /* Set the pane size */
     width = height = 0;
-    gdk_window_get_size(gtk_widget_get_window(window), &width, &height);
+    gdk_drawable_get_size(gtk_widget_get_window(window), &width, &height);
     gtk_paned_set_position(GTK_PANED(output_pane), height);
 
     alarms_init(skip_past_alarms, skip_all_alarms);
