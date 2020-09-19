@@ -280,7 +280,7 @@ int export_gui(GtkWidget *main_window,
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
     /* Put the export category menu up */
-    if (category_menu != NULL) {
+    if (category_menu  && GTK_IS_COMBO_BOX(category_menu)) {
         GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu));
         gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }

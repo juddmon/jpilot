@@ -4247,7 +4247,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right-side Category menu */
     /* Clear GTK option menus before use */
-    if (category_menu2 && category_menu2 != NULL) {
+    if (category_menu2  && GTK_IS_COMBO_BOX(category_menu2)) {
         GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
         gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
     }
