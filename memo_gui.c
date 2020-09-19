@@ -1901,8 +1901,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), memo_text);
-    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-
+    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
     /* Capture the Enter & Shift-Enter key combinations to move back and
      * forth between the left- and right-hand sides of the display. */
     g_signal_connect(G_OBJECT(treeView), "key_press_event",

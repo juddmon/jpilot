@@ -318,7 +318,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
    gtk_container_add(GTK_CONTAINER(scrolled_window), textw);
-   gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+   gtk_box_pack_start(GTK_BOX(temp_hbox), scrolled_window,TRUE,TRUE,0);
 
    if (text) {
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);

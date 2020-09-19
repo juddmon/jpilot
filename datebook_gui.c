@@ -5377,7 +5377,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_desc);
-    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
 
     /* Note text box */
     hbox_temp = gtk_hbox_new(FALSE, 0);
@@ -5393,7 +5393,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), dbook_note);
-    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
+    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
 
     /* Datebk tags entry */
 #ifdef ENABLE_DATEBK

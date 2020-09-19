@@ -2033,7 +2033,7 @@ int main(int argc, char *argv[]) {
                                    GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
-    gtk_box_pack_start_defaults(GTK_BOX(temp_hbox), scrolled_window);
+    gtk_box_pack_start(GTK_BOX(temp_hbox), scrolled_window,TRUE,TRUE,0);
 
     button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);

@@ -2781,8 +2781,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), keyr_note);
-    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-
+    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
     /**********************************************************************/
 
     gtk_widget_show_all(hbox);

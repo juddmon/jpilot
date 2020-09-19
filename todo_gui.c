@@ -2650,8 +2650,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
-    gtk_box_pack_start_defaults(GTK_BOX(hbox_temp), scrolled_window);
-
+    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
     /* Note text box */
     vbox_temp = gtk_vbox_new(FALSE, 0);
     gtk_paned_pack2(GTK_PANED(note_pane), vbox_temp, TRUE, FALSE);
@@ -2671,7 +2670,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), todo_note);
-    gtk_box_pack_start_defaults(GTK_BOX(vbox_temp), scrolled_window);
+    gtk_box_pack_start(GTK_BOX(vbox_temp), scrolled_window,TRUE,TRUE,0);
 
     /* Capture the TAB key to change focus with it */
     g_signal_connect(G_OBJECT(todo_desc), "key_press_event",
