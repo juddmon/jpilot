@@ -652,10 +652,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    group = NULL;
    radio_button_datebook_version[0] = 
      gtk_radio_button_new_with_label(group, _("Use Datebook database (Palm OS < 5.2.1)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[0]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_datebook_version[0]));
    radio_button_datebook_version[1] = 
      gtk_radio_button_new_with_label(group, _("Use Calendar database (Palm OS > 5.2)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_datebook_version[1]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_datebook_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_datebook), radio_button_datebook_version[0],
                       FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_datebook), radio_button_datebook_version[1],
@@ -711,10 +711,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    group = NULL;
    radio_button_address_version[0] = 
      gtk_radio_button_new_with_label(group, _("Use Address database (Palm OS < 5.2.1)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_address_version[0]));
    radio_button_address_version[1] = 
      gtk_radio_button_new_with_label(group, _("Use Contacts database (Palm OS > 5.2)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_address_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[0],
                       FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_address), radio_button_address_version[1],
@@ -769,10 +769,10 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    group = NULL;
    radio_button_task_version[0] = 
      gtk_radio_button_new_with_label(group, _("Use ToDo database (Palm OS < 5.2.1)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[0]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_todo_version[0]));
    radio_button_todo_version[1] = 
      gtk_radio_button_new_with_label(group, _("Use Task database (Palm OS > 5.2)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo_version[1]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_todo_version[1]));
    gtk_box_pack_start(GTK_BOX(vbox_todo), radio_button_todo_version[0],
                       FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_todo), radio_button_todo_version[1],
@@ -842,13 +842,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data)
    group = NULL;
    radio_button_memo_version[0] = 
      gtk_radio_button_new_with_label(group, _("Use Memo database (Palm OS < 5.2.1)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[0]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_memo_version[0]));
    radio_button_memo_version[1] = 
      gtk_radio_button_new_with_label(group, _("Use Memos database (Palm OS > 5.2)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[1]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_memo_version[1]));
    radio_button_memo_version[2] = 
      gtk_radio_button_new_with_label(group, _("Use Memo32 database (pedit32)"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_memo_version[2]));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_memo_version[2]));
    gtk_box_pack_start(GTK_BOX(vbox_memo), radio_button_memo_version[0],
                       FALSE, FALSE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_memo), radio_button_memo_version[1],

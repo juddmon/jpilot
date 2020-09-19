@@ -4430,7 +4430,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                      x - 4, x - 3, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
 
                     radio_button[phone_i] = gtk_radio_button_new_with_label(group, _("Show In List"));
-                    group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
+                    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
                     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(radio_button[phone_i]),
                                      x - 3, x - 2, table_y_i, table_y_i + 1, GTK_SHRINK, 0, 2, 0);
 

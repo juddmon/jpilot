@@ -2601,7 +2601,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     for (i = 0; i < NUM_TODO_PRIORITIES; i++) {
         sprintf(str, "%d", i + 1);
         radio_button_todo[i] = gtk_radio_button_new_with_label(group, str);
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_todo[i]));
         gtk_widget_add_accelerator(radio_button_todo[i], "clicked", accel_group,
                                    (guint) GDK_KEY_1 + i, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
         gtk_box_pack_start(GTK_BOX(hbox_temp),

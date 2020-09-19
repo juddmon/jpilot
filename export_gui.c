@@ -316,7 +316,7 @@ int export_gui(GtkWidget *main_window,
     for (i = 0; i < 100; i++) {
         if (type_text[i] == NULL) break;
         export_radio_type[i] = gtk_radio_button_new_with_label(group, _(type_text[i]));
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(export_radio_type[i]));
         gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
         g_signal_connect(G_OBJECT(export_radio_type[i]), "pressed",
                            G_CALLBACK(cb_export_type),

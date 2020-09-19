@@ -405,7 +405,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
         if (type_desc[i] == NULL) break;
         radio_types[i] = gtk_radio_button_new_with_label(group, _(type_desc[i]));
         radio_file_types[i] = type_int[i];
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_types[i]));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_types[i]));
         gtk_box_pack_start(GTK_BOX(vbox), radio_types[i], TRUE, TRUE, 0);
         g_signal_connect(G_OBJECT(radio_types[i]), "clicked",
                            G_CALLBACK(cb_type), GINT_TO_POINTER(type_int[i]));

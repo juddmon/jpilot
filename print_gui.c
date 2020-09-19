@@ -210,13 +210,13 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       if (mon_week_day & 0x01) {
          radio_button_daily = gtk_radio_button_new_with_label
            (group, _("Daily Printout"));
-         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_daily));
+         group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_daily));
       }
 
       if (mon_week_day & 0x02) {
          radio_button_weekly = gtk_radio_button_new_with_label
            (group, _("Weekly Printout"));
-         group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_weekly));
+         group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_weekly));
       }
 
       if (mon_week_day & 0x04) {
@@ -263,11 +263,11 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
       radio_button_one = gtk_radio_button_new_with_label
         (group, _("Selected record"));
 
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_one));
+      group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_one));
       radio_button_shown = gtk_radio_button_new_with_label
         (group, _("All records in this category"));
 
-      group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_shown));
+      group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_shown));
       radio_button_all = gtk_radio_button_new_with_label
         (group, _("Print all records"));
 

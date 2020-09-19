@@ -1332,7 +1332,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     for (i = 0; i < NUM_EXPORT_TYPES; i++) {
         if (type_text[i] == NULL) break;
         export_radio_type[i] = gtk_radio_button_new_with_label(group, type_text[i]);
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(export_radio_type[i]));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(export_radio_type[i]));
         gtk_box_pack_start(GTK_BOX(vbox), export_radio_type[i], FALSE, FALSE, 0);
         g_signal_connect(G_OBJECT(export_radio_type[i]), "pressed",
                            G_CALLBACK(cb_export_type),
@@ -5182,9 +5182,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
         radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
 
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
         radio_button_alarm_hour = gtk_radio_button_new_with_label(group, _("Hours"));
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
         radio_button_alarm_day = gtk_radio_button_new_with_label(group, _("Days"));
 
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min), TRUE);
@@ -5338,9 +5338,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
         radio_button_alarm_min = gtk_radio_button_new_with_label(NULL, _("Minutes"));
 
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_alarm_min));
         radio_button_alarm_hour = gtk_radio_button_new_with_label(group, _("Hours"));
-        group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
+        group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_alarm_hour));
         radio_button_alarm_day = gtk_radio_button_new_with_label(group, _("Days"));
 
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_alarm_min), TRUE);
@@ -5545,7 +5545,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon3),
                        toggle_button_repeat_mon_byday, FALSE, FALSE, 0);
 
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(toggle_button_repeat_mon_byday));
+    group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(toggle_button_repeat_mon_byday));
     toggle_button_repeat_mon_bydate = gtk_radio_button_new_with_label
             (group, _("Date"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon3),

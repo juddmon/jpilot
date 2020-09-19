@@ -228,9 +228,9 @@ static int dialog_alarm(char *title, char *reason,
    gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, FALSE, TRUE, 4);
 
    radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));
-   group = gtk_radio_button_group(GTK_RADIO_BUTTON(radio1));
+   group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1));
    radio2 = gtk_radio_button_new_with_label(group, _("Hours"));
-   gtk_radio_button_group(GTK_RADIO_BUTTON(radio2));
+   gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio2));
 
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio1, TRUE, TRUE, 0);
    gtk_box_pack_start(GTK_BOX(vbox_temp), radio2, TRUE, TRUE, 0);
