@@ -3282,7 +3282,6 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
                                   (guint) next_tm.tm_mon,
                                   (guint) (next_tm.tm_year + 1900));
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) next_tm.tm_mday);
-        gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
     }
 
     free_CalendarEvent(&new_cale);
@@ -3944,7 +3943,6 @@ static void cb_cal_changed(GtkWidget *widget,
                                       cal_month,
                                       cal_year);
             gtk_calendar_select_day(GTK_CALENDAR(main_calendar), cal_day);
-            gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 
             g_signal_connect(G_OBJECT(main_calendar),
                                "day_selected", G_CALLBACK(cb_cal_changed),
@@ -4056,7 +4054,6 @@ static void highlight_days(void) {
             gtk_calendar_unmark_day(GTK_CALENDAR(main_calendar), (guint) i);
         }
     }
-    gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 }
 
 gboolean
@@ -4149,7 +4146,6 @@ int datebook_refresh(int first, int do_init) {
         gtk_calendar_select_month(GTK_CALENDAR(main_calendar),
                                   (guint) copy_current_month, (guint) (copy_current_year + 1900));
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) copy_current_day);
-        gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
     }
     g_signal_connect(G_OBJECT(main_calendar),
                        "day_selected", G_CALLBACK(cb_cal_changed),
@@ -4467,7 +4463,6 @@ static gboolean cb_keyboard(GtkWidget *widget, GdkEventKey *event, gpointer *p) 
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), 0);
         gtk_calendar_select_month(GTK_CALENDAR(main_calendar), (guint) day.tm_mon, (guint) (day.tm_year + 1900));
         gtk_calendar_select_day(GTK_CALENDAR(main_calendar), (guint) day.tm_mday);
-        gtk_calendar_thaw(GTK_CALENDAR(main_calendar));
 
         return TRUE;
     }
