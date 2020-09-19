@@ -2005,7 +2005,7 @@ static void appt_clear_details(void) {
     }
 
     /* Clear the notebook pages */
-    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
 
     gtk_entry_set_text(GTK_ENTRY(units_entry), "5");
     gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), "1");
@@ -3644,7 +3644,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
         /* Do the Repeat information */
         switch (cale->repeatType) {
             case calendarRepeatNone:
-                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
+                gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_NONE);
                 break;
             case calendarRepeatDaily:
                 if ((cale->repeatForever)) {
@@ -3660,7 +3660,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                 }
                 sprintf(tempstr, "%d", cale->repeatFrequency);
                 gtk_entry_set_text(GTK_ENTRY(repeat_day_entry), tempstr);
-                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_DAY);
+                gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_DAY);
                 break;
             case calendarRepeatWeekly:
                 if ((cale->repeatForever)) {
@@ -3681,7 +3681,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                             (GTK_TOGGLE_BUTTON(toggle_button_repeat_days[i]),
                              cale->repeatDays[i]);
                 }
-                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_WEEK);
+                gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_WEEK);
                 break;
             case calendarRepeatMonthlyByDate:
             case calendarRepeatMonthlyByDay:
@@ -3707,7 +3707,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
                                                  (toggle_button_repeat_mon_bydate), TRUE);
                 }
-                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_MONTH);
+                gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_MONTH);
                 break;
             case calendarRepeatYearly:
                 if ((cale->repeatForever)) {
@@ -3725,7 +3725,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                 sprintf(tempstr, "%d", cale->repeatFrequency);
                 gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), tempstr);
 
-                gtk_notebook_set_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
+                gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), PAGE_YEAR);
                 break;
             default:
                 jp_logf(JP_LOG_WARN, _("Unknown repeatType (%d) found in DatebookDB\n"), cale->repeatFrequency);
@@ -5598,7 +5598,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_entry_set_text(GTK_ENTRY(repeat_mon_entry), "1");
     gtk_entry_set_text(GTK_ENTRY(repeat_year_entry), "1");
 
-    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 0);
     gtk_notebook_popup_enable(GTK_NOTEBOOK(notebook));
 
     /* end notebook details */

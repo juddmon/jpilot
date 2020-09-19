@@ -2398,7 +2398,7 @@ static void addr_clear_details(void) {
 static void cb_address_clear(GtkWidget *widget,
                              gpointer data) {
     addr_clear_details();
-    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), 0);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 0);
     connect_changed_signals(DISCONNECT_SIGNALS);
     set_new_button_to(NEW_FLAG);
     gtk_widget_grab_focus(GTK_WIDGET(addr_text[0]));
@@ -3649,7 +3649,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
         next = schema[j].record_field;
     }
 
-    gtk_notebook_set_page(GTK_NOTEBOOK(notebook), page);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), page);
     gtk_widget_grab_focus(GTK_WIDGET(addr_text[next]));
 
     return TRUE;
@@ -4640,7 +4640,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_ADDRESS_NOTEBOOK_PAGE, &notebook_page, NULL);
 
     if ((notebook_page < 6) && (notebook_page > -1)) {
-        gtk_notebook_set_page(GTK_NOTEBOOK(notebook), notebook_page);
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), notebook_page);
     }
 
     address_refresh();
