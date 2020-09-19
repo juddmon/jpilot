@@ -331,7 +331,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    hbox = gtk_hbutton_box_new();
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
    /* Cancel button */

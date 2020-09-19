@@ -315,7 +315,7 @@ void weekview_gui(struct tm *date_in)
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
 
    hbox_temp = gtk_hbutton_box_new();
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox_temp), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox_temp), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox_temp), 6);
 
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);

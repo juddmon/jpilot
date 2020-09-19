@@ -1362,7 +1362,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     hbox = gtk_hbutton_box_new();
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX(hbox), GTK_BUTTONBOX_END);
-    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
+     gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
@@ -1532,7 +1532,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     }
 
     hbox = gtk_hbutton_box_new();
-    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
+     gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     /* Close button */

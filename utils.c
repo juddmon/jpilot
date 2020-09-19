@@ -309,7 +309,7 @@ int cal_dialog(GtkWindow *main_window,
     hbox = gtk_hbutton_box_new();
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
+     gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
     gtk_calendar_display_options(GTK_CALENDAR(cal),
@@ -1212,7 +1212,7 @@ int dialog_generic(GtkWindow *main_window,
     hbox1 = gtk_hbutton_box_new();
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
-    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox1), 6);
+     gtk_box_set_spacing(GTK_BOX(hbox1), 6);
 
     gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
