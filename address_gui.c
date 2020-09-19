@@ -4281,7 +4281,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         for (j = 0; j < NUM_PHONE_LABELS; j++) {
             if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) &&
                 gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
-                gtk_combo_box_remove_text(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
+                gtk_combo_box_text_remove(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
             }
         }
     }

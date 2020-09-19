@@ -265,7 +265,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
                                              "title", _("Import"),
                                              NULL);
    gtk_window_set_default_size(GTK_WINDOW(import_record_ask_window), pw, ph);
-   gtk_widget_set_uposition(GTK_WIDGET(import_record_ask_window), px, py);
+   //gtk_widget_set_uposition(GTK_WIDGET(import_record_ask_window), px, py);
    gtk_container_set_border_width(GTK_CONTAINER(import_record_ask_window), 5);
    gtk_window_set_modal(GTK_WINDOW(import_record_ask_window), TRUE);
    gtk_window_set_transient_for(GTK_WINDOW(import_record_ask_window), GTK_WINDOW(main_window));

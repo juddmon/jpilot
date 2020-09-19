@@ -260,7 +260,7 @@ int export_gui(GtkWidget *main_window,
                                    NULL);
 
     gtk_window_set_default_size(GTK_WINDOW(export_window), w, h);
-    gtk_widget_set_uposition(GTK_WIDGET(export_window), x, y);
+    //gtk_widget_set_uposition(GTK_WIDGET(export_window), x, y);
 
     gtk_window_set_modal(GTK_WINDOW(export_window), TRUE);
     gtk_window_set_transient_for(GTK_WINDOW(export_window), GTK_WINDOW(main_window));

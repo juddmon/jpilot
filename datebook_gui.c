@@ -1310,7 +1310,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
                                    "title", _("Export"),
                                    NULL);
 
-    gtk_widget_set_uposition(export_window, x, y);
+    //gtk_widget_set_uposition(export_window, x, y);
 
     gtk_window_set_modal(GTK_WINDOW(export_window), TRUE);
     gtk_window_set_transient_for(GTK_WINDOW(export_window), GTK_WINDOW(main_window));

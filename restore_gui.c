@@ -267,7 +267,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
                                     NULL);
 
     gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
-    gtk_widget_set_uposition(restore_window, x, y);
+    //gtk_widget_set_uposition(restore_window, x, y);
     gtk_container_set_border_width(GTK_CONTAINER(restore_window), 5);
     gtk_window_set_default_size(GTK_WINDOW(restore_window), w, h);
     gtk_window_set_modal(GTK_WINDOW(restore_window), TRUE);

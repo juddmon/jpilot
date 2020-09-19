@@ -312,7 +312,7 @@ int cal_dialog(GtkWindow *main_window,
      gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
-    gtk_calendar_display_options(GTK_CALENDAR(cal),
+    gtk_calendar_set_display_options(GTK_CALENDAR(cal),
                                  GTK_CALENDAR_SHOW_HEADING |
                                  GTK_CALENDAR_SHOW_DAY_NAMES |
                                  GTK_CALENDAR_SHOW_WEEK_NUMBERS);
