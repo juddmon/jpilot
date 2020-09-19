@@ -272,7 +272,7 @@ static int dialog_alarm(char *title, char *reason,
       Pdata->radio1=radio1;
       Pdata->radio2=radio2;
    }
-   gtk_object_set_data(G_OBJECT(alarm_dialog), "alarm", Pdata);
+    g_object_set_data(G_OBJECT(alarm_dialog), "alarm", Pdata);
 
    gtk_widget_show_all(alarm_dialog);
 

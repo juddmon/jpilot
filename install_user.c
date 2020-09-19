@@ -123,7 +123,7 @@ static int dialog_install_user(GtkWindow *main_window,
    g_signal_connect(G_OBJECT(install_user_dialog), "destroy",
                       G_CALLBACK(cb_destroy_dialog), install_user_dialog);
 
-   gtk_object_set_data(G_OBJECT(install_user_dialog),
+    g_object_set_data(G_OBJECT(install_user_dialog),
                        "install_dialog_data", &data);
 
    vbox = gtk_vbox_new(FALSE, 5);

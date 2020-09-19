@@ -1278,7 +1278,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                     /*
              for (i=0; i<schema_size; i++) {
                 if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
-                   gtk_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
+                    g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
                    gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
                 }
                 fprintf(out, "%s\",", csv_text);
@@ -3838,10 +3838,10 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                 case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
                     /* Set dial/email button text and callback data */
                     if (!strcasecmp(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], _("E-mail"))) {
-                        gtk_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
+                         g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
                         gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Mail"));
                     } else {
-                        gtk_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
+                         g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
                         gtk_button_set_label(GTK_BUTTON(dial_button[phone_i]), _("Dial"));
                     }
                     if ((phone_i < NUM_PHONE_ENTRIES) && (cont->phoneLabel[phone_i] < NUM_PHONE_LABELS)) {
@@ -4421,10 +4421,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                 case ADDRESS_GUI_DIAL_SHOW_PHONE_MENU_TEXT:
                     if (!strcasecmp(contact_app_info.phoneLabels[phone_i], _("E-mail"))) {
                         dial_button[phone_i] = gtk_button_new_with_label(_("Mail"));
-                        gtk_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
+                         g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", GINT_TO_POINTER(1));
                     } else {
                         dial_button[phone_i] = gtk_button_new_with_label(_("Dial"));
-                        gtk_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
+                         g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
                     }
                     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(dial_button[phone_i]),
                                      x - 4, x - 3, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);

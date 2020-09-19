@@ -1674,7 +1674,7 @@ static int dialog_password(GtkWindow *main_window,
     Pdata.entry = entry;
     Pdata.text[0] = '\0';
 
-    gtk_object_set_data(G_OBJECT(dialog), "dialog_data", &Pdata);
+     g_object_set_data(G_OBJECT(dialog), "dialog_data", &Pdata);
     gtk_widget_grab_focus(GTK_WIDGET(entry));
 
     gtk_widget_show_all(dialog);

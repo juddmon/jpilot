@@ -393,7 +393,7 @@ static int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
             gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), desc, -1);
          }
       }
-      gtk_object_set_data(G_OBJECT(texts[n]), "gstr", gstr);
+       g_object_set_data(G_OBJECT(texts[n]), "gstr", gstr);
    }
    free_CalendarEventList(&ce_list);
 

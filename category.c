@@ -984,7 +984,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     /* Initialize data structures */
     memcpy(&(Pdata.cai1), cai, sizeof(struct CategoryAppInfo));
     memcpy(&(Pdata.cai2), cai, sizeof(struct CategoryAppInfo));
-    gtk_object_set_data(G_OBJECT(dialog), "dialog_cats_data", &Pdata);
+     g_object_set_data(G_OBJECT(dialog), "dialog_cats_data", &Pdata);
 
     gtk_widget_show_all(dialog);
     gtk_widget_hide(Pdata.entry_box);
