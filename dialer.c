@@ -52,7 +52,7 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data) {
     GtkWidget *w;
 
     w = gtk_widget_get_toplevel(widget);
-    gtk_object_get_data(G_OBJECT(w), "dialog_data");
+     g_object_get_data(G_OBJECT(w), "dialog_data");
     gtk_widget_destroy(GTK_WIDGET(w));
 }
 
@@ -60,7 +60,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget) {
     struct dialog_data *Pdata;
     const gchar *txt;
 
-    Pdata = gtk_object_get_data(G_OBJECT(widget), "dialog_data");
+    Pdata =  g_object_get_data(G_OBJECT(widget), "dialog_data");
     if (!Pdata) {
         return TRUE;
     }

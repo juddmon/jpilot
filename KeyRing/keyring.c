@@ -1548,7 +1548,7 @@ static void cb_dialog_button(GtkWidget *widget, gpointer data) {
     w = GTK_WIDGET(gtk_widget_get_toplevel(widget));
 
     if (GTK_IS_WINDOW(w)) {
-        Pdata = gtk_object_get_data(G_OBJECT(w), "dialog_data");
+        Pdata =  g_object_get_data(G_OBJECT(w), "dialog_data");
         if (Pdata) {
             Pdata->button_hit = GPOINTER_TO_INT(data);
         }
@@ -1560,7 +1560,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget) {
     struct dialog_data *Pdata;
     const char *entry;
 
-    Pdata = gtk_object_get_data(G_OBJECT(widget), "dialog_data");
+    Pdata =  g_object_get_data(G_OBJECT(widget), "dialog_data");
     if (!Pdata) {
         return TRUE;
     }

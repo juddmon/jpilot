@@ -2479,7 +2479,7 @@ static void cb_dial_or_mail(GtkWidget *widget, gpointer data) {
     if (!str) return;
     printf("[%s]\n", str);
 
-    is_mail = GPOINTER_TO_INT(gtk_object_get_data(G_OBJECT(widget), "mail"));
+    is_mail = GPOINTER_TO_INT( g_object_get_data(G_OBJECT(widget), "mail"));
     if (is_mail) {
         email_contact(widget, str);
     } else {

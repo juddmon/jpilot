@@ -71,7 +71,7 @@ static void cb_install_user_button(GtkWidget *widget, gpointer data)
    struct install_dialog_data *Pdata;
 
    w = gtk_widget_get_toplevel(widget);
-   Pdata = gtk_object_get_data(G_OBJECT(w), "install_dialog_data");
+   Pdata =  g_object_get_data(G_OBJECT(w), "install_dialog_data");
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
       if (Pdata->button_hit == DIALOG_SAID_1) {
