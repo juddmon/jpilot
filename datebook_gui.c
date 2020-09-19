@@ -5056,7 +5056,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 #ifdef DAY_VIEW
                                                                                                                             create_daily_view(scrolled_window, vbox_no_time_appts);
-   gtk_idle_add(cb_datebook_idle, NULL);
+   g_idle_add(cb_datebook_idle, NULL);
 #else
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
