@@ -5145,11 +5145,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         hbox_temp = gtk_hbox_new(FALSE, 0);
         gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-        /* Clear GTK option menus before use */
-        if (category_menu2  && GTK_IS_COMBO_BOX(category_menu2)) {
-            GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
-            gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
-        }
+
         make_category_menu(&category_menu2,
                            sort_l, NULL, FALSE, FALSE);
         gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
