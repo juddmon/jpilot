@@ -385,7 +385,12 @@ static void add_checkbutton(const char *text,
 
 void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     GtkWidget *checkbutton;
-    GtkWidget *pref_menu;
+  //  GtkWidget *pref_menu;
+    GtkWidget * pref_char_set;
+    GtkWidget * pref_short_date;
+    GtkWidget * pref_long_date;
+    GtkWidget * pref_time;
+    GtkWidget * pref_rc_file;
     GtkWidget *label;
     GtkWidget *button;
     GtkWidget *table;
@@ -493,24 +498,24 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                               0, 1, 0, 1);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-    make_pref_menu(&pref_menu, PREF_CHAR_SET);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+    make_pref_menu(&pref_char_set, PREF_CHAR_SET);
+    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_char_set),
                               1, 2, 0, 1);
 
     get_pref(PREF_CHAR_SET, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_char_set), ivalue);
     /* Shortdate */
     label = gtk_label_new(_("Short date format"));
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
                               0, 1, 1, 2);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-    make_pref_menu(&pref_menu, PREF_SHORTDATE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+    make_pref_menu(&pref_short_date, PREF_SHORTDATE);
+    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_short_date),
                               1, 2, 1, 2);
 
     get_pref(PREF_SHORTDATE, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_short_date), ivalue);
 
     /* Longdate */
     label = gtk_label_new(_("Long date format"));
@@ -518,12 +523,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                               0, 1, 2, 3);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-    make_pref_menu(&pref_menu, PREF_LONGDATE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+    make_pref_menu(&pref_long_date, PREF_LONGDATE);
+    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_long_date),
                               1, 2, 2, 3);
 
     get_pref(PREF_LONGDATE, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_long_date), ivalue);
 
     /* Time */
     label = gtk_label_new(_("Time format"));
@@ -531,12 +536,12 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                               0, 1, 3, 4);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-    make_pref_menu(&pref_menu, PREF_TIME);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_menu),
+    make_pref_menu(&pref_time, PREF_TIME);
+    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_time),
                               1, 2, 3, 4);
 
     get_pref(PREF_TIME, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_time), ivalue);
 
     /**********************************************************************/
     /* Settings preference tab */
@@ -551,13 +556,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                               0, 2, 0, 1);
     gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
-    make_pref_menu(&pref_menu, PREF_RCFILE);
+    make_pref_menu(&pref_rc_file, PREF_RCFILE);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(
-                                      pref_menu),
+                                      pref_rc_file),
                               2, 3, 0, 1);
 
     get_pref(PREF_RCFILE, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_rc_file), ivalue);
 
     /* Port */
     label = gtk_label_new(_("Sync Port"));
@@ -595,7 +600,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                               2, 3, 2, 3);
 
     get_pref(PREF_RATE, &ivalue, NULL);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(pref_menu), ivalue);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(rate_menu), ivalue);
 
     /* Disable Serial Rate menu if sync port is USB */
     if (!strcmp(cstr, "usb:")) {
