@@ -1223,7 +1223,7 @@ static void get_main_menu(GtkWidget *my_window,
     };
     static GtkActionEntry helpEntries[] = {
             {"HelpMenuAction",    NULL,            "_Help", "<alt>H"},
-            {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
+            {"AboutJPilotAction", "_About", "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
     };
     static GtkActionEntry viewEntries[] = {
             {"ViewMenuAction",   NULL,             "_View",     "<alt>V"},
@@ -1277,23 +1277,23 @@ static void get_main_menu(GtkWidget *my_window,
             {
                     {"FileMenuAction", NULL,                            "_File",       "<alt>F"},
                     /* name, stock id, label */
-                    {"FindAction",     GTK_STOCK_FIND,                  "_Find",       "<control>F", "Find an entry by text",       G_CALLBACK (
+                    {"FindAction",     "_Find",                  "_Find",       "<control>F", "Find an entry by text",       G_CALLBACK (
                                                                                                                                             cb_search_gui)},
-                    {"InstallAction",  GTK_STOCK_OPEN,                  "_Install",    "<control>I", "Install an application",      G_CALLBACK (
+                    {"InstallAction",  "_Open",                  "_Install",    "<control>I", "Install an application",      G_CALLBACK (
                                                                                                                                             cb_install_gui)},
-                    {"ImportAction",   GTK_STOCK_GO_FORWARD,            "Import",           NULL,    "Import data",                 G_CALLBACK (
+                    {"ImportAction",   "go-next",            "Import",           NULL,    "Import data",                 G_CALLBACK (
                                                                                                                                             cb_import)},
-                    {"ExportAction",   GTK_STOCK_GO_BACK,               "Export",           NULL,    "Export data",                 G_CALLBACK (
+                    {"ExportAction",   "go-previous",              "Export",           NULL,    "Export data",                 G_CALLBACK (
                                                                                                                                             cb_export)},
                     {"PreferencesAction",     "jpilot-preferences",     "Preferences", "<control>S", "Manage settings for J-Pilot", G_CALLBACK (
                                                                                                                                             cb_prefs_gui)},
-                    {"PrintAction",    GTK_STOCK_PRINT,                 "_Print",      "<control>P", "Print",                       G_CALLBACK (
+                    {"PrintAction",    "Print",                 "_Print",      "<control>P", "Print",                       G_CALLBACK (
                                                                                                                                             cb_print)},
                     {"InstallUserAction",     "jpilot-installUser",     "Install User",     NULL,    "Install a user",              G_CALLBACK (
                                                                                                                                             cb_install_user)},
                     {"RestoreHandheldAction", "jpilot-restoreHandheld", "Restore Handheld", NULL,    "Restore Handheld device",     G_CALLBACK (
                                                                                                                                             cb_restore)},
-                    {"QuitAction",     GTK_STOCK_QUIT,                  "_Quit",       "<control>Q", "Exit application",            G_CALLBACK (
+                    {"QuitAction",     "_Quit",                  "_Quit",       "<control>Q", "Exit application",            G_CALLBACK (
                                                                                                                                             cb_delete_event)},
 
             };
@@ -1328,7 +1328,7 @@ static void get_main_menu(GtkWidget *my_window,
                 // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
                 GString *actionName = g_string_new(plugin->help_name);
                 g_string_append(actionName, "Action");
-                GtkAction *helpPluginAction = gtk_action_new(actionName->str, plugin->help_name, "", GTK_STOCK_ABOUT);
+                GtkAction *helpPluginAction = gtk_action_new(actionName->str, plugin->help_name, "", "_About");
                 gtk_action_set_sensitive(helpPluginAction, TRUE);
                 g_signal_connect (helpPluginAction, "activate",
                                   G_CALLBACK(cb_plugin_help),
@@ -1339,7 +1339,7 @@ static void get_main_menu(GtkWidget *my_window,
                 // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
                 GString *actionName = g_string_new(plugin->menu_name);
                 g_string_append(actionName, "Action");
-                GtkAction *pluginAction = gtk_action_new(actionName->str, plugin->menu_name, "", GTK_STOCK_ABOUT);
+                GtkAction *pluginAction = gtk_action_new(actionName->str, plugin->menu_name, "", "_About");
                 gtk_action_set_sensitive(pluginAction, TRUE);
                 g_signal_connect (pluginAction, "activate",
                                   G_CALLBACK(cb_plugin_gui),
@@ -2042,13 +2042,13 @@ int main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
     gtk_box_pack_start(GTK_BOX(temp_hbox), scrolled_window,TRUE,TRUE,0);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
+    button = gtk_button_new_with_label("Clear");
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_output),
                        GINT_TO_POINTER(OUTPUT_CLEAR));
 
-    button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+    button = gtk_button_new_with_label("Remove");
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_output),

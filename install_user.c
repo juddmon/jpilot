@@ -211,7 +211,7 @@ static int dialog_install_user(GtkWindow *main_window,
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 2);
 
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+   button = gtk_button_new_with_label("Cancel");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));

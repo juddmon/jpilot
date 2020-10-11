@@ -325,7 +325,7 @@ int cal_dialog(GtkWindow *main_window,
     gtk_calendar_select_day(GTK_CALENDAR(cal), *day);
 
     /* Cancel/Today/OK buttons */
-    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    button = gtk_button_new_with_label("Cancel");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
                        GINT_TO_POINTER(CAL_CANCEL));
@@ -335,7 +335,7 @@ int cal_dialog(GtkWindow *main_window,
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_today), cal);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
+    button = gtk_button_new_with_label("OK");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(cb_quit),
                        GINT_TO_POINTER(CAL_DONE));
@@ -1180,16 +1180,16 @@ int dialog_generic(GtkWindow *main_window,
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
     switch (type) {
         case DIALOG_INFO:
-            image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
+            image = gtk_image_new_from_icon_name("dialog-information", GTK_ICON_SIZE_DIALOG);
             break;
         case DIALOG_QUESTION:
-            image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+            image = gtk_image_new_from_icon_name("dialog-question", GTK_ICON_SIZE_DIALOG);
             break;
         case DIALOG_ERROR:
-            image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
+            image = gtk_image_new_from_icon_name("dialog-error", GTK_ICON_SIZE_DIALOG);
             break;
         case DIALOG_WARNING:
-            image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
+            image = gtk_image_new_from_icon_name("dialog-warning", GTK_ICON_SIZE_DIALOG);
             break;
         default:
             image = NULL;
@@ -1218,13 +1218,13 @@ int dialog_generic(GtkWindow *main_window,
 
     for (i = 0; i < nob; i++) {
         if (0 == strcmp("OK", button_text[i]))
-            button = gtk_button_new_from_stock(GTK_STOCK_OK);
+            button = gtk_button_new_with_label("OK");
         else if (0 == strcmp("Cancel", button_text[i]))
-            button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+            button = gtk_button_new_with_label("Cancel");
         else if (0 == strcmp("Yes", button_text[i]))
-            button = gtk_button_new_from_stock(GTK_STOCK_YES);
+            button = gtk_button_new_with_label("Yes");
         else if (0 == strcmp("No", button_text[i]))
-            button = gtk_button_new_from_stock(GTK_STOCK_NO);
+            button = gtk_button_new_with_label("No");
         else
             button = gtk_button_new_with_label(_(button_text[i]));
         g_signal_connect(G_OBJECT(button), "clicked",

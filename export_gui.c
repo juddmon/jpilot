@@ -120,7 +120,7 @@ int export_browse(GtkWidget *main_window, int pref_export) {
         }
     }
     fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                                    "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
     if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
@@ -353,12 +353,12 @@ int export_gui(GtkWidget *main_window,
      gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    button = gtk_button_new_with_label("Cancel");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_quit), export_window);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
+    button = gtk_button_new_with_label("OK");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_ok), export_window);

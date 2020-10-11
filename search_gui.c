@@ -718,7 +718,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     /* Search button */
-    button = gtk_button_new_from_stock(GTK_STOCK_FIND);
+    button = gtk_button_new_with_label("Search");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_search), treeView);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
@@ -728,7 +728,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
                        G_CALLBACK(cb_search), treeView);
 
     /* Done button */
-    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+    button = gtk_button_new_with_label("Done");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_quit), window);
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);

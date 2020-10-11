@@ -883,7 +883,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 1);
 
 #ifdef ENABLE_STOCK_BUTTONS
-    button = gtk_button_new_from_stock(GTK_STOCK_NEW);
+    button = gtk_button_new_with_label("_New");
 #else
     button = gtk_button_new_with_label(_("New"));
 #endif
@@ -899,7 +899,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
 #ifdef ENABLE_STOCK_BUTTONS
-    button = gtk_button_new_from_stock(GTK_STOCK_DELETE);
+    button = gtk_button_new_with_label("_Delete");
 #else
     button = gtk_button_new_with_label(_("Delete"));
 #endif
@@ -934,13 +934,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 1);
-    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    button = gtk_button_new_with_label("Cancel");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_CANCEL));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
+    button = gtk_button_new_with_label("OK");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
@@ -960,13 +960,13 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_box_pack_start(GTK_BOX(vbox3), hbox, FALSE, FALSE, 2);
 
     /* Buttons */
-    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    button = gtk_button_new_with_label("Cancel");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_2));
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
+    button = gtk_button_new_with_label("OK");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_1));

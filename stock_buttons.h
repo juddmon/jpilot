@@ -41,7 +41,7 @@
 #else
 
 #  define CREATE_BUTTON(widget, text, stock, tooltip, shortcut_key, shortcut_mask, shortcut_text) \
-   widget = gtk_button_new_from_stock(GTK_STOCK_ ## stock); \
+   widget = gtk_button_new_with_label(text); \
    set_tooltip(show_tooltips,  widget, tooltip); \
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 

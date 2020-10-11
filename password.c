@@ -290,7 +290,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(dialog), hbox1);
-   gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_icon_name("dialog-password", GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
 
    vbox1 = gtk_vbox_new(FALSE, 2);
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
@@ -326,14 +326,14 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Cancel Button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+   button = gtk_button_new_with_label("Cancel");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    /* OK Button */
-   button = gtk_button_new_from_stock(GTK_STOCK_OK);
+   button = gtk_button_new_with_label("OK");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));

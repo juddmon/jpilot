@@ -357,7 +357,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
     gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
     /* Buttons */
-    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+    button = gtk_button_new_with_label("_Close");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_dialog_button),
                        GINT_TO_POINTER(DIALOG_SAID_1));

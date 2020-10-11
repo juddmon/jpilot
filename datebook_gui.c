@@ -1365,12 +1365,12 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
      gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    button = gtk_button_new_with_label("Cancel");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_quit), export_window);
 
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
+    button = gtk_button_new_with_label("OK");
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_ok), export_window);
@@ -1536,7 +1536,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     /* Close button */
-    button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+    button = gtk_button_new_with_label("_Close");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_quit_datebk_cats), window_datebk_cats);
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);

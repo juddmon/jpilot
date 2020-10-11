@@ -352,7 +352,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
                       GINT_TO_POINTER(DIALOG_SAID_IMPORT_SKIP));
 
    /* Quit button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+   button = gtk_button_new_with_label("_Close");
    gtk_box_pack_start(GTK_BOX(temp_hbox), button, TRUE, TRUE, 0);
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_import_record_ask_quit),
@@ -385,7 +385,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
     g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
     fileChooserWidget = gtk_file_chooser_dialog_new(_("Import"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL, "Import", GTK_RESPONSE_ACCEPT,
+                                                    "_Close", GTK_RESPONSE_CANCEL, "Import", GTK_RESPONSE_ACCEPT,
                                                     NULL);
     get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
     if (svalue && svalue[0]) {

@@ -322,7 +322,7 @@ void weekview_gui(struct tm *date_in)
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
    /* Make a left arrow for going back a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
+   button = gtk_button_new_with_label("go-previous");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_week_move),
                       GINT_TO_POINTER(-1));
@@ -335,7 +335,7 @@ void weekview_gui(struct tm *date_in)
                button, _("Last week   Alt+LeftArrow"));
 
    /* Close button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+   button = gtk_button_new_with_label("_Close");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_weekview_quit), NULL);
    /* Closing the window via a delete event uses the same cleanup routine */
@@ -345,13 +345,13 @@ void weekview_gui(struct tm *date_in)
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Print button */
-   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
+   button = gtk_button_new_with_label("Print");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_week_print), weekview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Make a right arrow for going forward a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
+   button = gtk_button_new_with_label("go-next");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_week_move),
                       GINT_TO_POINTER(1));

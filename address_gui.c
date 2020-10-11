@@ -2843,7 +2843,7 @@ static int browse_photo(GtkWidget *main_window) {
     }
     selection = NULL;
     fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                                    "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     g_object_set_data(G_OBJECT(GTK_FILE_CHOOSER(fileChooserWidget)), "selection", &selection);
     if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {

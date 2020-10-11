@@ -335,13 +335,13 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
    /* Cancel button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+   button = gtk_button_new_with_label("Cancel");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_cancel), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
    /* Print button */
-   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
+   button = gtk_button_new_with_label("Print");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_print), window);
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);

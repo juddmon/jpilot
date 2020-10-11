@@ -202,7 +202,7 @@ static int dialog_alarm(char *title, char *reason,
    hbox1 = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-   image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_DIALOG);
+   image = gtk_image_new_from_icon_name("dialog-information", GTK_ICON_SIZE_DIALOG);
    gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 12);
 
    /* Label */
@@ -256,7 +256,7 @@ static int dialog_alarm(char *title, char *reason,
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+   button = gtk_button_new_with_label("_Close");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));

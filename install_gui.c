@@ -430,8 +430,8 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     install_update_listStore();
     g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
     fileChooserWidget = gtk_file_chooser_dialog_new(_("Install"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                    GTK_STOCK_ADD, GTK_RESPONSE_ACCEPT,GTK_STOCK_DELETE, GTK_RESPONSE_DELETE_EVENT,
-                                                    GTK_STOCK_CLOSE,GTK_RESPONSE_CLOSE,
+                                                    "_Add", GTK_RESPONSE_ACCEPT,"_Delete", GTK_RESPONSE_DELETE_EVENT,
+                                                    "_Close",GTK_RESPONSE_CLOSE,
                                                     NULL);
     get_pref(PREF_INSTALL_PATH, NULL, &svalue);
     if (svalue && svalue[0]) {
