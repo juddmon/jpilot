@@ -1536,7 +1536,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     /* Close button */
-    button = gtk_button_new_with_label("_Close");
+    button = gtk_button_new_with_label("Close");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_quit_datebk_cats), window_datebk_cats);
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
@@ -4983,6 +4983,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Weekview button */
     button = gtk_button_new_with_label(_("Week"));
+    gtk_widget_set_name(GTK_WIDGET(gtk_bin_get_child(GTK_BIN(button))),"button_label");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_weekview), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);
@@ -4995,6 +4996,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Monthview button */
     button = gtk_button_new_with_label(_("Month"));
+    gtk_widget_set_name(GTK_WIDGET(gtk_bin_get_child(GTK_BIN(button))),"button_label");
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_monthview), NULL);
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 3);

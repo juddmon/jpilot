@@ -2902,6 +2902,13 @@ int read_gtkrc_file(void) {
     struct stat buf;
     const char *svalue;
 
+    GtkStyleContext *context;
+    GtkCssProvider *provider;
+
+
+    provider = gtk_css_provider_new ();
+
+
     get_pref(PREF_RCFILE, NULL, &svalue);
     if (svalue) {
         jp_logf(JP_LOG_DEBUG, "rc file from prefs is %s\n", svalue);
@@ -2916,14 +2923,24 @@ int read_gtkrc_file(void) {
 
     if (stat(fullname, &buf) == 0) {
         jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
-        gtk_rc_parse(fullname);
+        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
+                                         "/home/althor/.jpilot/jpilotcss.default", NULL);
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                                  GTK_STYLE_PROVIDER (provider),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        g_object_unref (provider);
         return EXIT_SUCCESS;
     }
 
     g_snprintf(fullname, sizeof(fullname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
     if (stat(fullname, &buf) == 0) {
         jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
-        gtk_rc_parse(fullname);
+        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
+                                        "/home/althor/.jpilot/jpilotcss.default", NULL);
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                                  GTK_STYLE_PROVIDER (provider),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        g_object_unref (provider);
         return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;

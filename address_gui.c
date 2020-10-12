@@ -4226,6 +4226,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     g_signal_connect(G_OBJECT(add_record_button), "clicked",
                        G_CALLBACK(cb_add_new_record),
                        GINT_TO_POINTER(NEW_FLAG));
+
+
 #ifndef ENABLE_STOCK_BUTTONS
     gtk_widget_set_name(GTK_WIDGET(GTK_LABEL(gtk_bin_get_child(GTK_BIN(add_record_button)))),
                     "label_high");

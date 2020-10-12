@@ -64,18 +64,18 @@ static GtkWidget *rate_menu;
 /* This doesn't work quite right.  There is supposedly no way to do it in GTK. */
 static void r(GtkWidget *w, gpointer data)
 {
-   GtkStyle *style;
+  /* GtkStyle *style;
 
    style = gtk_rc_get_style(GTK_WIDGET(w));
    if (style) gtk_rc_style_unref(style);
    if (GTK_IS_CONTAINER(w)) {
       gtk_container_foreach(GTK_CONTAINER(w), r, w);
-   }
+   } */
 }
 
 static void set_colors()
 {
-   GtkStyle* style;
+ /*  GtkStyle* style;
    int i;
 
    r(main_window, NULL);
@@ -88,7 +88,7 @@ static void set_colors()
    gtk_widget_reset_rc_styles(main_window);
    gtk_rc_reparse_all();
    gtk_widget_queue_draw(window);
-   gtk_widget_queue_draw(main_window);
+   gtk_widget_queue_draw(main_window); */
 }
 #endif /* #ifdef COLORS */
 

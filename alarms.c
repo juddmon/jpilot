@@ -256,7 +256,7 @@ static int dialog_alarm(char *title, char *reason,
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 4);
 
-   button = gtk_button_new_with_label("_Close");
+   button = gtk_button_new_with_label("Close");
    g_signal_connect(G_OBJECT(button), "clicked",
                       G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
