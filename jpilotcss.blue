@@ -13,7 +13,10 @@
   outline-offset: -3px;
   outline-width: 1px;
   -gtk-outline-radius: 2px;
-  -gtk-secondary-caret-color: #E95420; }
+  -gtk-secondary-caret-color: #E95420;
+  font-family: Arial Black, sans-serif;
+  font-size: 10pt;
+      }
 
 /***************
  * Base States *
