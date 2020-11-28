@@ -2924,7 +2924,7 @@ int read_gtkrc_file(void) {
 
     if (stat(fullname, &buf) == 0) {
         jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
-        char loadedFullName[MAX_PREF_LEN];
+     /*   char loadedFullName[MAX_PREF_LEN];
         for (int i = 0; i < MAX_NUM_PREFS; i++) {
             get_rcfile_name(i, loadedFullName);
             if(loadedFullName != NULL && strncmp(loadedFullName, "jpilotcss", strlen("jpilotcss")) == 0) {
@@ -2940,22 +2940,21 @@ int read_gtkrc_file(void) {
         settings = gtk_settings_get_default();
         g_object_get(settings, "gtk-theme-name", &theme_name, NULL);
 
-       // provider = gtk_css_provider_get_named(theme_name,NULL);
+        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_get_named(theme_name,NULL)));
+        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_new()));
         gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                        "/home/althor/.jpilot/jpilotcss.reset", NULL);
-        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-                                                  GTK_STYLE_PROVIDER (gtk_css_provider_new()),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                         fullname, NULL);
+                                        fullname, NULL);
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_new()),GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
         gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                                   GTK_STYLE_PROVIDER (gtk_css_provider_get_named(theme_name,NULL)),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);*/
+        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
+                                        fullname, NULL);
            gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                                   GTK_STYLE_PROVIDER (provider),
                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
         g_object_unref (provider);
-        g_object_unref (providerold);
+        //g_object_unref (providerold);
         return EXIT_SUCCESS;
     }
 
