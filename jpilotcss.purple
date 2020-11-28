@@ -53,7 +53,7 @@ insensitive color on backdrop windows*/
 @define-color unfocused_insensitive_color #663399;
 /*-
 widgets main borders color */
-@define-color borders #729cc5;
+@define-color borders #c87caf;
 /*-
 widgets main borders color on backdrop windows */
 @define-color unfocused_borders #729cc5;
