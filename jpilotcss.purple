@@ -5,22 +5,22 @@
 
 @define-color theme_fg_color #3D3D3D;
 
-@define-color button_hover_bg_color #006aba;
+@define-color button_hover_bg_color #7339ac;
 /*-
 text color for entries, views and content in general */
-@define-color theme_text_color #2b3aff;
+@define-color theme_text_color #000ecc;
 /*-
 widget base background color */
-@define-color theme_bg_color  #004C99;
+@define-color theme_bg_color  #663399;
 /*-
 text widgets and the like base background color */
-@define-color theme_base_color #d9e6ff;
+@define-color theme_base_color #d6e9ff;
 /*-
 base background color of selections */
-@define-color theme_selected_bg_color #0066b3;
+@define-color theme_selected_bg_color #5162c2;
 /*-
 text/foreground color of selections */
-@define-color theme_selected_fg_color #d9e6ff;
+@define-color theme_selected_fg_color #d6e9ff;
 /*-
 base background color of insensitive widgets */
 @define-color insensitive_bg_color #f9fafa;
@@ -29,28 +29,28 @@ text foreground color of insensitive widgets */
 @define-color insensitive_fg_color #999a9a;
 /*-
 insensitive text widgets and the like base background color */
-@define-color insensitive_base_color #d9e6ff;
+@define-color insensitive_base_color #d6e9ff;
 /*-
 widget text/foreground color on backdrop windows */
-@define-color theme_unfocused_fg_color #004C99;
+@define-color theme_unfocused_fg_color #663399;
 /*-
 text color for entries, views and content in general on backdrop windows */
 @define-color theme_unfocused_text_color white;
 /*-
 widget base background color on backdrop windows */
-@define-color theme_unfocused_bg_color #004C99;
+@define-color theme_unfocused_bg_color #663399;
 /*-
 text widgets and the like base background color on backdrop windows */
-@define-color theme_unfocused_base_color #d9e6ff;
+@define-color theme_unfocused_base_color #d6e9ff;
 /*-
 base background color of selections on backdrop windows */
-@define-color theme_unfocused_selected_bg_color #0066b3;
+@define-color theme_unfocused_selected_bg_color #5162c2;
 /*-
 text/foreground color of selections on backdrop windows */
-@define-color theme_unfocused_selected_fg_color #d9e6ff;
+@define-color theme_unfocused_selected_fg_color #d6e9ff;
 /*-
 insensitive color on backdrop windows*/
-@define-color unfocused_insensitive_color #004C99;
+@define-color unfocused_insensitive_color #663399;
 /*-
 widgets main borders color */
 @define-color borders #729cc5;
@@ -73,11 +73,11 @@ these are pretty self explicative */
 
 
 @define-color notebook_stack @theme_bg_color ;
-@define-color notebook_unselected_tab #00408d;
-@define-color notebook_unselected_tab_text #616b6d;
+@define-color notebook_unselected_tab #4e1983;
+@define-color notebook_unselected_tab_text #645b6f;
 
-@define-color calendar_header #666699;
-@define-color calendar_header_text #F7F904;
+@define-color calendar_header #7f4cb3;
+@define-color calendar_header_text #e5dbef;
 
 #label_high {
     background-color: rgb(90%, 90%, 50%);
