@@ -108,6 +108,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/jpilot/jpilotrc.green
 %{_datadir}/jpilot/jpilotrc.purple
 %{_datadir}/jpilot/jpilotrc.steel
+%{_datadir}/jpilot/jpilotcss.blue
+%{_datadir}/jpilot/jpilotcss.default
+%{_datadir}/jpilot/jpilotcss.green
+%{_datadir}/jpilot/jpilotcss.purple
+%{_datadir}/jpilot/jpilotcss.steel
 %{_datadir}/locale/*/LC_MESSAGES/jpilot.mo
 %{_mandir}/man1/jpilot-dial.1.gz
 %{_mandir}/man1/jpilot-dump.1.gz

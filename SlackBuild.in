@@ -76,11 +76,11 @@ usr/share/$PACKAGE/TasksDB-PTod.pdb \
 usr/share/$PACKAGE/CalendarDB-PDat.pdb \
 usr/share/$PACKAGE/ContactsDB-PAdd.pdb \
 usr/share/$PACKAGE/MemosDB-PMem.pdb \
-usr/share/$PACKAGE/jpilotrc.blue \
-usr/share/$PACKAGE/jpilotrc.default \
-usr/share/$PACKAGE/jpilotrc.green \
-usr/share/$PACKAGE/jpilotrc.purple \
-usr/share/$PACKAGE/jpilotrc.steel \
+usr/share/$PACKAGE/jpilotcss.blue \
+usr/share/$PACKAGE/jpilotcss.default \
+usr/share/$PACKAGE/jpilotcss.green \
+usr/share/$PACKAGE/jpilotcss.purple \
+usr/share/$PACKAGE/jpilotcss.steel \
 usr/share/locale/ca/LC_MESSAGES/jpilot.mo \
 usr/share/locale/cs/LC_MESSAGES/jpilot.mo \
 usr/share/locale/da/LC_MESSAGES/jpilot.mo \

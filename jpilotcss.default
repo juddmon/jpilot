@@ -1,0 +1,389 @@
+@define-color object_border #44ac53;
+@define-color disabled_checked #b4deba;
+@define-color object_border_bottom  #b1b9c1;
+@define-color image_border #f8f9f9;
+@define-color title_bar_border #2a7a36;
+@define-color object_backdrop #323232;
+@define-color title_bar_background #323030;
+
+
+@define-color notebook_stack @theme_bg_color ;
+@define-color notebook_unselected_tab #dcdad8;
+@define-color notebook_unselected_tab_text #8997a7;
+@define-color calendar_header #30309c;
+@define-color calendar_header_text white;
+
+#label_high {
+    background-color: rgb(0%, 0%, 90%);
+}
+
+#button_label {
+    font-size: 100%;
+}
+
+#today text {
+    color: #FBFCFE;
+    background-color: #30309C;
+}/************
+ * Calendar *
+ ***********/
+calendar {
+    color: @theme_unfocused_text_color;
+    border: 1px solid @borders;
+}
+calendar.view {
+    background-color: @theme_bg_color;
+    border: 1px solid @borders;
+}
+calendar:selected {
+    color: @calendar_header_text;
+    background-color: @calendar_header;
+    border-radius: 3px;
+}
+
+calendar.header {
+    color: @theme_unfocused_text_color;
+    background-color: @theme_bg_color;
+}
+
+calendar.button {
+    background-color: @theme_bg_color;}
+calendar.button:hover {
+    color: @theme_unfocused_text_color;
+    background-color: @theme_bg_color;
+}
+calendar.button:disabled {
+    background-color: @calendar_header; }
+calendar:indeterminate {
+    color: alpha(currentColor,0.55); }
+calendar.highlight {
+    color: @calendar_header_text;
+    background-color: @calendar_header; }
+
+notebook {
+    padding: 1px;
+    border-color: @borders;
+    background-color: @theme_bg_color;
+    color: @theme_unfocused_text_color;
+}
+
+notebook > header {
+    padding: 1px;
+    border-color: @borders;
+    border-width: 1px;
+    background-color: @notebook_unselected_tab;
+    color: @notebook_unselected_tab_text;
+}
+
+notebook > header:backdrop {
+    border-color: @unfocused_borders;
+    background-color: @notebook_unselected_tab;
+}
+
+notebook > header tabs {
+    margin: -1px;
+}
+
+notebook > header.top {
+    border-bottom-style: solid;
+}
+
+notebook > header.top > tabs {
+    margin-bottom: -2px;
+}
+
+notebook > header.top > tabs > tab:hover {
+    box-shadow: inset 0 -3px @borders;
+}
+
+notebook > header.top > tabs > tab:backdrop {
+    box-shadow: none;
+}
+
+notebook > header.top > tabs > tab:checked {
+    box-shadow: inset 0 -3px @theme_selected_bg_color;
+    background-color: @theme_bg_color;
+}
+notebook > header > tabs > tab:checked label {
+    padding: 2px;
+    color: @theme_unfocused_text_color;
+    background-color: @theme_bg_color;
+}
+
+notebook > header.bottom {
+    border-top-style: solid;
+}
+
+notebook > header.bottom > tabs {
+    margin-top: -2px;
+}
+
+notebook > header.bottom > tabs > tab:hover {
+    box-shadow: inset 0 3px @borders;
+}
+
+notebook > header.bottom > tabs > tab:backdrop {
+    box-shadow: none;
+}
+
+notebook > header.bottom > tabs > tab:checked {
+    box-shadow: inset 0 3px @theme_selected_bg_color;
+}
+
+notebook > header.left {
+    border-right-style: solid;
+}
+
+notebook > header.left > tabs {
+    margin-right: -2px;
+}
+
+notebook > header.left > tabs > tab:hover {
+    box-shadow: inset -3px 0 @borders;
+}
+
+notebook > header.left > tabs > tab:backdrop {
+    box-shadow: none;
+}
+
+notebook > header.left > tabs > tab:checked {
+    box-shadow: inset -3px 0 @theme_selected_bg_color;
+}
+
+notebook > header.right {
+    border-left-style: solid;
+}
+
+notebook > header.right > tabs {
+    margin-left: -2px;
+}
+
+notebook > header.right > tabs > tab:hover {
+    box-shadow: inset 3px 0 @borders;
+}
+
+notebook > header.right > tabs > tab:backdrop {
+    box-shadow: none;
+}
+
+notebook > header.right > tabs > tab:checked {
+    box-shadow: inset 3px 0 @theme_selected_bg_color;
+}
+
+notebook > header.top > tabs > arrow {
+    border-top-style: none;
+}
+
+notebook > header.bottom > tabs > arrow {
+    border-bottom-style: none;
+}
+
+notebook > header.top > tabs > arrow, notebook > header.bottom > tabs > arrow {
+    margin-left: -5px;
+    margin-right: -5px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+
+notebook > header.left > tabs > arrow {
+    border-left-style: none;
+}
+
+notebook > header.right > tabs > arrow {
+    border-right-style: none;
+}
+
+notebook > header.left > tabs > arrow, notebook > header.right > tabs > arrow {
+    margin-top: -5px;
+    margin-bottom: -5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+
+notebook > header > tabs > arrow {
+    min-height: 16px;
+    min-width: 16px;
+    border-radius: 0;
+}
+
+notebook > header > tabs > arrow:hover:not(:active):not(:backdrop) {
+    background-clip: padding-box;
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+notebook > header > tabs > arrow:disabled {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0);
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+}
+
+notebook > header tab {
+    min-height: 30px;
+    min-width: 30px;
+    padding: 3px 12px;
+    outline-offset: -5px;
+    color: @notebook_unselected_tab_text;;
+    font-weight: bold;
+    border-width: 1px;
+    border-color: transparent;
+    background-color: @notebook_unselected_tab;
+}
+notebook > header > tabs > tab:not(checked) label {
+    padding: 2px;
+    background-color: @notebook_unselected_tab;
+    color: @notebook_unselected_tab_text;;
+}
+notebook > header tab:hover {
+    color: #6b6c6c;
+}
+
+notebook > header tab:hover.reorderable-page {
+    border-color: rgba(194, 200, 206, 0.3);
+    background-color: rgba(245, 246, 247, 0.2);
+}
+
+notebook > header tab:backdrop {
+    color: #bebfbf;
+}
+
+notebook > header tab:backdrop.reorderable-page {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+notebook > header tab:checked {
+    color: @theme_fg_color;
+}
+
+notebook > header tab:checked.reorderable-page {
+    border-color: rgba(194, 200, 206, 0.5);
+    background-color: rgba(245, 246, 247, 0.5);
+}
+
+notebook > header tab:checked.reorderable-page:hover {
+    background-color: rgba(245, 246, 247, 0.7);
+}
+
+notebook > header tab:backdrop:checked {
+    color: @theme_unfocused_fg_color;
+}
+
+notebook > header tab:backdrop:checked.reorderable-page {
+    border-color: @unfocused_borders;
+    background-color: @theme_unfocused_bg_color;
+}
+
+notebook > header tab button.flat {
+    padding: 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+notebook > header tab button.flat:hover {
+    color: currentColor;
+}
+
+notebook > header tab button.flat, notebook > header tab button.flat:backdrop {
+    color: alpha(currentColor, 0.3);
+}
+
+notebook > header tab button.flat:last-child {
+    margin-left: 4px;
+    margin-right: -4px;
+}
+
+notebook > header tab button.flat:first-child {
+    margin-left: -4px;
+    margin-right: 4px;
+}
+
+notebook > header.top tabs, notebook > header.bottom tabs {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+notebook > header.top tabs:not(:only-child), notebook > header.bottom tabs:not(:only-child) {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+notebook > header.top tabs:not(:only-child):first-child, notebook > header.bottom tabs:not(:only-child):first-child {
+    margin-left: -1px;
+}
+
+notebook > header.top tabs:not(:only-child):last-child, notebook > header.bottom tabs:not(:only-child):last-child {
+    margin-right: -1px;
+}
+
+notebook > header.top tabs tab, notebook > header.bottom tabs tab {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+notebook > header.top tabs tab.reorderable-page, notebook > header.bottom tabs tab.reorderable-page {
+    border-style: none solid;
+}
+
+notebook > header.left tabs, notebook > header.right tabs {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+notebook > header.left tabs:not(:only-child), notebook > header.right tabs:not(:only-child) {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+notebook > header.left tabs:not(:only-child):first-child, notebook > header.right tabs:not(:only-child):first-child {
+    margin-top: -1px;
+}
+
+notebook > header.left tabs:not(:only-child):last-child, notebook > header.right tabs:not(:only-child):last-child {
+    margin-bottom: -1px;
+}
+
+notebook > header.left tabs tab, notebook > header.right tabs tab {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+notebook > header.left tabs tab.reorderable-page, notebook > header.right tabs tab.reorderable-page {
+    border-style: solid none;
+}
+
+notebook > header.top tab {
+    padding-bottom: 4px;
+}
+
+notebook > header.bottom tab {
+    padding-top: 4px;
+}
+
+notebook > stack:not(:only-child) {
+    background-color: @notebook_stack;
+}
+
+notebook > stack:not(:only-child):backdrop {
+    background-color:  @notebook_stack;
+}
+
+* {
+
+    font-family: Arial Black, sans-serif;
+    font-size: 10pt;
+
+}
+
+
+
+
