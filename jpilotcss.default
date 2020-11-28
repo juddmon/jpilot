@@ -11,7 +11,7 @@
 @define-color notebook_unselected_tab #dcdad8;
 @define-color notebook_unselected_tab_text #8997a7;
 @define-color calendar_header #30309c;
-@define-color calendar_header_text white
+@define-color calendar_header_text white;
 
 #label_high {
     background-color: rgb(0%, 0%, 90%);
