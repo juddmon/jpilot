@@ -457,7 +457,6 @@ selectCategoryRecordByRow(GtkTreeModel *model,
     if (Pdata->selected >= gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL)) {
         rowToCheck--;
     }
-    g_print("i = %d, rowToCheck = %d", i[0], rowToCheck);
     if (i[0] == rowToCheck) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(Pdata->treeView));

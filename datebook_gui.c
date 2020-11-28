@@ -1271,7 +1271,6 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
     int r;
     const char *svalue;
-    g_print("export from datebook was called\n");
     r = export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
 
 }

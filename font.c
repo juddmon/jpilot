@@ -11,7 +11,6 @@ static void SetFontRecursively2(GtkWidget *widget, gpointer data)
 
    font_desc = (char *)data;
 
-   g_print("font desc=[%s]\n", font_desc);
    style = gtk_widget_get_style(widget);
    pango_font_description_free(style->font_desc);
    style->font_desc = pango_font_description_from_string(font_desc);

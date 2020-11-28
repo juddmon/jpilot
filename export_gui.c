@@ -82,7 +82,6 @@ static void cb_export_browse_ok(GtkWidget *widget, gpointer data) {
     glob_export_browse_pressed = BROWSE_OK;
     if (pref) {
         sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
-        g_print("filename found is %s",sel);
         set_pref(pref, 0, sel, TRUE);
         gtk_entry_set_text(GTK_ENTRY(save_as_entry), sel);
     }
@@ -96,7 +95,6 @@ int export_browse(GtkWidget *main_window, int pref_export) {
     int i;
 
     glob_export_browse_pressed = 0;
-    g_print("pref_export is %d",pref_export);
     if (pref_export) {
         glob_pref_export = pref_export;
     } else {
@@ -126,7 +124,6 @@ int export_browse(GtkWidget *main_window, int pref_export) {
                                                     GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
     if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
-        g_print("callin gOK..\n");
         cb_export_browse_ok(fileChooserWidget, GINT_TO_POINTER(pref_export));
         glob_export_browse_pressed = BROWSE_OK;
     } else {
@@ -135,7 +132,6 @@ int export_browse(GtkWidget *main_window, int pref_export) {
     cb_export_browse_destroy(fileChooserWidget);
 
     gtk_main();
-    g_print("BROWSE_OK = %d\n",BROWSE_OK);
     return glob_export_browse_pressed;
 }
 
@@ -176,7 +172,6 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
     int r;
     const char *svalue;
-    g_print("I was called\n");
     r = export_browse(GTK_WIDGET(data), glob_pref_export);
 
 }
@@ -302,9 +297,6 @@ int export_gui(GtkWidget *main_window,
         export_treeView = glob_cb_init_menu();
     } else {
         export_treeView = gtk_tree_view_new();
-    }
-    if(!GTK_IS_TREE_VIEW(export_treeView)){
-        g_print("export_treeView is not a treeView");
     }
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(export_treeView)),
                                 GTK_SELECTION_MULTIPLE);
