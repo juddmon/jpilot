@@ -176,6 +176,11 @@ static int gui_cleanup(void) {
     }
 #endif
 
+    // if you uncomment this line, changing themes will switch live
+    // however, there are some side effects that I haven't figured out
+    // how to overcome. (things overridden in a theme, but not defined in another
+    // do not revert back to default.)
+    // read_gtkrc_file();
     switch (glob_app) {
         case DATEBOOK:
             datebook_gui_cleanup();

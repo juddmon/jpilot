@@ -93,6 +93,7 @@ static int forward_backward_in_ce_time(const struct CalendarEvent *cale,
                                        int forward_or_backward);
 
 static int str_to_iv_str(char *dest, int destsz, char *src, int isical);
+static struct name_list *dir_list=NULL;
 
 /****************************** Main Code *************************************/
 /*
@@ -2904,10 +2905,10 @@ int read_gtkrc_file(void) {
 
     GtkStyleContext *context;
     GtkCssProvider *provider;
-
+    GtkCssProvider *providerold;
 
     provider = gtk_css_provider_new ();
-
+    providerold = gtk_css_provider_new ();
 
     get_pref(PREF_RCFILE, NULL, &svalue);
     if (svalue) {
@@ -2923,12 +2924,38 @@ int read_gtkrc_file(void) {
 
     if (stat(fullname, &buf) == 0) {
         jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
+        char loadedFullName[MAX_PREF_LEN];
+        for (int i = 0; i < MAX_NUM_PREFS; i++) {
+            get_rcfile_name(i, loadedFullName);
+            if(loadedFullName != NULL && strncmp(loadedFullName, "jpilotcss", strlen("jpilotcss")) == 0) {
+                gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (providerold),
+                                                loadedFullName, NULL);
+                gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(providerold));
+            }
+        }
+
+        GtkSettings *settings;
+        gchar *theme_name;
+
+        settings = gtk_settings_get_default();
+        g_object_get(settings, "gtk-theme-name", &theme_name, NULL);
+
+       // provider = gtk_css_provider_get_named(theme_name,NULL);
         gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                         "/home/althor/.jpilot/jpilotcss.default", NULL);
+                                        "/home/althor/.jpilot/jpilotcss.reset", NULL);
         gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                                  GTK_STYLE_PROVIDER (gtk_css_provider_new()),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
+                                         fullname, NULL);
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                                  GTK_STYLE_PROVIDER (gtk_css_provider_get_named(theme_name,NULL)),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+           gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                                   GTK_STYLE_PROVIDER (provider),
                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
         g_object_unref (provider);
+        g_object_unref (providerold);
         return EXIT_SUCCESS;
     }
 
@@ -2936,7 +2963,7 @@ int read_gtkrc_file(void) {
     if (stat(fullname, &buf) == 0) {
         jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
         gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                        "/home/althor/.jpilot/jpilotcss.default", NULL);
+                                        fullname, NULL);
         gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                                   GTK_STYLE_PROVIDER (provider),
                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -2959,7 +2986,86 @@ void remove_cr_lfs(char *str) {
         }
     }
 }
+int get_rcfile_name(int n, char *rc_copy)
+{
+    DIR *dir;
+    struct dirent *dirent;
+    char full_name[FILENAME_MAX];
+    int i;
+    char filename[FILENAME_MAX];
+    int found, count;
+    struct name_list *temp_list, *new_entry;
 
+
+    if (dir_list == NULL) {
+        i = found = count = 0;
+        sprintf(filename, "%s/%s/%s/", BASE_DIR, "share", EPN);
+        jp_logf(JP_LOG_DEBUG, "opening dir %s\n", filename);
+        dir = opendir(filename);
+        if (dir) {
+            for(i=0; (dirent = readdir(dir)); i++) {
+                sprintf(filename, "%s%s", EPN, "css");
+                if (strncmp(filename, dirent->d_name, strlen(filename))) {
+                    continue;
+                } else {
+                    jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
+                    new_entry = malloc(sizeof(struct name_list));
+                    if (!new_entry) {
+                        jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
+                        return EXIT_FAILURE;
+                    }
+                    new_entry->name = strdup(dirent->d_name);
+                    new_entry->next = dir_list;
+                    dir_list = new_entry;
+                }
+            }
+        }
+        if (dir) {
+            closedir(dir);
+        }
+
+        get_home_file_name("", full_name, sizeof(full_name));
+        jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
+        dir = opendir(full_name);
+        if (dir) {
+            for(; (dirent = readdir(dir)); i++) {
+                sprintf(filename, "%s%s", EPN, "rc");
+                if (strncmp(filename, dirent->d_name, strlen(filename))) {
+                    continue;
+                } else {
+                    jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
+                    new_entry = malloc(sizeof(struct name_list));
+                    if (!new_entry) {
+                        jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
+                        return EXIT_FAILURE;
+                    }
+                    new_entry->name = strdup(dirent->d_name);
+                    new_entry->next = dir_list;
+                    dir_list = new_entry;
+                }
+            }
+        }
+        if (dir) {
+            closedir(dir);
+        }
+    }
+
+    found = 0;
+    for (i=0, temp_list=dir_list; temp_list; temp_list=temp_list->next, i++) {
+        if (i == n) {
+            g_strlcpy(rc_copy, temp_list->name, MAX_PREF_LEN);
+            found=1;
+            break;
+        }
+    }
+
+    if (found) {
+        return EXIT_SUCCESS;
+    } else {
+        rc_copy[0]='\0';
+        return EXIT_FAILURE;
+    }
+}
 void rename_dbnames(char dbname[][32]) {
     int i;
     long datebook_version, address_version, todo_version, memo_version;

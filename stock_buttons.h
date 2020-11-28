@@ -32,10 +32,10 @@
       char str[100]; \
       gtk_widget_add_accelerator(widget, "clicked", accel_group, shortcut_key, shortcut_mask, GTK_ACCEL_VISIBLE); \
       sprintf(str, "%s   %s", tooltip, shortcut_text); \
-      set_tooltip(show_tooltips, glob_tooltips, widget, str, NULL); \
+      set_tooltip(show_tooltips, widget, str, NULL); \
    } \
    else \
-      set_tooltip(show_tooltips, glob_tooltips, widget, tooltip, NULL);\
+      set_tooltip(show_tooltips,  widget, tooltip, NULL);\
    gtk_box_pack_start(GTK_BOX(hbox_temp), widget, TRUE, TRUE, 0);
 
 #else

@@ -266,6 +266,12 @@ typedef struct {
     char* textToSearch;
 } RestoreDataSearchElement;
 
+struct name_list {
+    char *name;
+    struct name_list *next;
+};
+
+
 /* utils.c: The subroutines below are all from utils.c */
 
 /* Takes an array of database names and changes the names
@@ -284,7 +290,7 @@ gint timeout_date(gpointer data);
 
 int get_pixbufs(int which_one,
                 GdkPixbuf **out_pixbuf);
-
+int get_rcfile_name(int n, char *rc_copy);
 int check_hidden_dir(void);
 
 int read_gtkrc_file(void);
