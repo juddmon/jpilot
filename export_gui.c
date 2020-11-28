@@ -78,11 +78,13 @@ static void cb_export_browse_cancel(GtkWidget *widget, gpointer data) {
 
 static void cb_export_browse_ok(GtkWidget *widget, gpointer data) {
     char *sel;
-
+    int pref = GPOINTER_TO_INT(data);
     glob_export_browse_pressed = BROWSE_OK;
-    if (glob_pref_export) {
+    if (pref) {
         sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
-        set_pref(glob_pref_export, 0, sel, TRUE);
+        g_print("filename found is %s",sel);
+        set_pref(pref, 0, sel, TRUE);
+        gtk_entry_set_text(GTK_ENTRY(save_as_entry), sel);
     }
     gtk_widget_destroy(widget);
 }
@@ -94,7 +96,7 @@ int export_browse(GtkWidget *main_window, int pref_export) {
     int i;
 
     glob_export_browse_pressed = 0;
-
+    g_print("pref_export is %d",pref_export);
     if (pref_export) {
         glob_pref_export = pref_export;
     } else {
@@ -119,17 +121,21 @@ int export_browse(GtkWidget *main_window, int pref_export) {
             jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
         }
     }
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_SAVE,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
     if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
-        cb_export_browse_ok(fileChooserWidget, NULL);
+        g_print("callin gOK..\n");
+        cb_export_browse_ok(fileChooserWidget, GINT_TO_POINTER(pref_export));
+        glob_export_browse_pressed = BROWSE_OK;
     } else {
         cb_export_browse_cancel(fileChooserWidget, NULL);
     }
-    gtk_main();
+    cb_export_browse_destroy(fileChooserWidget);
 
+    gtk_main();
+    g_print("BROWSE_OK = %d\n",BROWSE_OK);
     return glob_export_browse_pressed;
 }
 
@@ -170,14 +176,9 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
     int r;
     const char *svalue;
-
+    g_print("I was called\n");
     r = export_browse(GTK_WIDGET(data), glob_pref_export);
-    if (r == BROWSE_OK) {
-        if (glob_pref_export) {
-            get_pref(glob_pref_export, NULL, &svalue);
-            gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
-        }
-    }
+
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {

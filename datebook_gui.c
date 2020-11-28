@@ -1271,12 +1271,9 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
     int r;
     const char *svalue;
-
+    g_print("export from datebook was called\n");
     r = export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
-    if (r == BROWSE_OK) {
-        get_pref(PREF_DATEBOOK_EXPORT_FILENAME, NULL, &svalue);
-        gtk_entry_set_text(GTK_ENTRY(save_as_entry), svalue);
-    }
+
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {
