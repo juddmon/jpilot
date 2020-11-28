@@ -12,6 +12,8 @@ text color for entries, views and content in general */
 /*-
 widget base background color */
 @define-color theme_bg_color  #663399;
+
+@define-color theme_bg_color_grad  #8c53c6;
 /*-
 text widgets and the like base background color */
 @define-color theme_base_color #d6e9ff;
@@ -735,7 +737,7 @@ button {
     outline-color: rgba(61, 61, 61, 0.3);
     border-color: @borders;
     border-bottom-color: @object_border_bottom;
-    background-image: linear-gradient(to top, @theme_bg_color 0px, @theme_bg_color);
+    background-image: linear-gradient(to top, @theme_bg_color_grad 0px, @theme_bg_color);
     text-shadow: 0 1px rgba(255, 255, 255, 0.769231);
     -gtk-icon-shadow: 0 1px rgba(255, 255, 255, 0.769231);
     box-shadow: inset 0 1px white, 0 1px 2px rgba(0, 0, 0, 0.07);
