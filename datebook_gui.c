@@ -5247,6 +5247,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                      GTK_SHRINK, GTK_SHRINK, 0, 0);
 
     begin_time_entry = gtk_entry_new();
+    gtk_entry_set_overwrite_mode(GTK_ENTRY(begin_time_entry),FALSE);
+    gtk_widget_set_can_focus(begin_time_entry,FALSE);
     gtk_entry_set_max_length(begin_time_entry,7);
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(begin_time_entry),
                      1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
@@ -5265,6 +5267,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                      0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
     end_time_entry = gtk_entry_new();
+    gtk_entry_set_overwrite_mode(GTK_ENTRY(end_time_entry),FALSE);
+    gtk_widget_set_can_focus(end_time_entry,FALSE);
     gtk_entry_set_max_length(end_time_entry,7);
     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(end_time_entry),
                      1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
