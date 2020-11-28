@@ -2220,6 +2220,7 @@ findRecord(GtkTreeModel *model,
         if (mytodo->unique_id == glob_find_id) {
             GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
+            gtk_tree_selection_set_select_function(selection, handleRowSelection, NULL, NULL);
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
             glob_find_id = 0;
