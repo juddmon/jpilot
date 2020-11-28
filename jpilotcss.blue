@@ -5798,8 +5798,13 @@ scrolledwindow junction:backdrop {
     transition: 200ms ease-out;
 }
 
-separator {
+separator.horizontal {
     background: @borders;
+    min-width: 1px;
+    min-height: 1px;
+}
+separator.vertical {
+    background: transparent;
     min-width: 1px;
     min-height: 1px;
 }
