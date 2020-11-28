@@ -33,6 +33,20 @@
 #define TODO_DATE_COLUMN      3
 #define TODO_TEXT_COLUMN      4
 
+enum {
+    TODO_CHECK_COLUMN_ENUM = 0,
+    TODO_PRIORITY_COLUMN_ENUM,
+    TODO_NOTE_COLUMN_ENUM,
+    TODO_DATE_COLUMN_ENUM,
+    TODO_TEXT_COLUMN_ENUM,
+    TODO_DATA_COLUMN_ENUM,
+    TODO_BACKGROUND_COLOR_ENUM,
+    TODO_BACKGROUND_COLOR_ENABLED_ENUM,
+    TODO_FOREGROUND_COLOR_ENUM,
+    TODO_FORGROUND_COLOR_ENABLED_ENUM,
+    TODO_NUM_COLS
+};
+
 void free_ToDoList(ToDoList **todo);
 int get_todos(ToDoList **todo_list, int sort_order);
 int get_todos2(ToDoList **todo_list, int sort_order,
@@ -46,8 +60,9 @@ int todo_import(GtkWidget *window);
 int todo_export(GtkWidget *window);
 
 /* Exported for datebook use only.  Don't use these */
-void todo_update_clist(GtkWidget *clist, GtkWidget *tooltip_widget,
-                       ToDoList **todo_list, int category, int main);
-void todo_clist_clear(GtkCList *clist);
+
+void todo_liststore_clear(GtkListStore *pListStore);
+void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
+                           ToDoList **todo_list, int category, int main);
 
 #endif

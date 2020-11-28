@@ -71,7 +71,7 @@ static void cb_install_user_button(GtkWidget *widget, gpointer data)
    struct install_dialog_data *Pdata;
 
    w = gtk_widget_get_toplevel(widget);
-   Pdata = gtk_object_get_data(GTK_OBJECT(w), "install_dialog_data");
+   Pdata =  g_object_get_data(G_OBJECT(w), "install_dialog_data");
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
       if (Pdata->button_hit == DIALOG_SAID_1) {
@@ -120,10 +120,10 @@ static int dialog_install_user(GtkWindow *main_window,
       gtk_window_set_transient_for(GTK_WINDOW(install_user_dialog), GTK_WINDOW(main_window));
    }
 
-   gtk_signal_connect(GTK_OBJECT(install_user_dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), install_user_dialog);
+   g_signal_connect(G_OBJECT(install_user_dialog), "destroy",
+                      G_CALLBACK(cb_destroy_dialog), install_user_dialog);
 
-   gtk_object_set_data(GTK_OBJECT(install_user_dialog),
+    g_object_set_data(G_OBJECT(install_user_dialog),
                        "install_dialog_data", &data);
 
    vbox = gtk_vbox_new(FALSE, 5);
@@ -172,7 +172,8 @@ static int dialog_install_user(GtkWindow *main_window,
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User Name"));
-   user_entry = gtk_entry_new_with_max_length(128);
+   user_entry = gtk_entry_new();
+    gtk_entry_set_max_length(user_entry,128);
    entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
    data.user_entry = user_entry;
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
@@ -190,7 +191,8 @@ static int dialog_install_user(GtkWindow *main_window,
    hbox = gtk_hbox_new(FALSE, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User ID"));
-   ID_entry = gtk_entry_new_with_max_length(32);
+   ID_entry = gtk_entry_new();
+    gtk_entry_set_max_length(ID_entry,32);
    entry_set_multiline_truncate(GTK_ENTRY(ID_entry), TRUE);
    data.ID_entry = ID_entry;
    gtk_entry_set_text(GTK_ENTRY(ID_entry), s_id);
@@ -205,22 +207,22 @@ static int dialog_install_user(GtkWindow *main_window,
    /* Cancel/Install buttons */
    hbox = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 2);
 
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_install_user_button),
+   button = gtk_button_new_with_label("Cancel");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
 
    button = gtk_button_new_with_label(_("Install User"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_install_user_button),
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_install_user_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 1);
-   GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+   gtk_widget_set_can_default(button,TRUE);
    gtk_widget_grab_default(button);
    gtk_widget_grab_focus(button);
 

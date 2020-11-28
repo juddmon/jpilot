@@ -39,7 +39,6 @@
 /******************************* Global vars **********************************/
 extern int datebk_category;
 extern int glob_app;
-extern GtkTooltips *glob_tooltips;
 
 GtkWidget *monthview_window=NULL;
 static GtkWidget *month_day_label[37];
@@ -66,10 +65,10 @@ static gboolean cb_destroy(GtkWidget *widget)
 
    for (n=0; n<37; n++) {
       text = month_day[n];
-      gstr = gtk_object_get_data(GTK_OBJECT(text), "gstr");
+      gstr =  g_object_get_data(G_OBJECT(text), "gstr");
       if (gstr) {
          g_string_free(gstr, TRUE);
-         gtk_object_remove_data(GTK_OBJECT(text), "gstr");
+         g_object_set_data(G_OBJECT(text), "gstr",NULL);
       }
    }
    return FALSE;
@@ -79,7 +78,8 @@ void cb_monthview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_window_get_size(monthview_window->window, &w, &h);
+    w = gdk_window_get_width(gtk_widget_get_window(monthview_window));
+    h = gdk_window_get_height(gtk_widget_get_window(monthview_window));
    set_pref(PREF_MONTHVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_MONTHVIEW_HEIGHT, h, NULL, FALSE);
 
@@ -127,7 +127,7 @@ static void cb_enter_notify(GtkWidget *widget, GdkEvent *event, gpointer data)
    prev_day = GPOINTER_TO_INT(data)+1-glob_offset;
 
    textview = gtk_bin_get_child(GTK_BIN(widget));
-   gstr = gtk_object_get_data(GTK_OBJECT(textview), "gstr");
+   gstr =  g_object_get_data(G_OBJECT(textview), "gstr");
    if (gstr) {
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(all_appts_buffer), gstr->str, -1);
    } else {
@@ -246,7 +246,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
             text = month_day[n] = gtk_text_view_new();
             month_day_buffer[n] =
               G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)));
-            gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+            gtk_widget_set_size_request(GTK_WIDGET(text), 10, 10);
             gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
             gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
             gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
@@ -257,10 +257,10 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
             event_box = gtk_event_box_new();
             gtk_container_add(GTK_CONTAINER(event_box), text);
 
-            gtk_signal_connect(GTK_OBJECT(event_box), "enter_notify_event",
-                               GTK_SIGNAL_FUNC(cb_enter_notify), GINT_TO_POINTER(n));
-            gtk_signal_connect(GTK_OBJECT(text), "button_release_event",
-                               GTK_SIGNAL_FUNC(cb_enter_selected_day),
+            g_signal_connect(G_OBJECT(event_box), "enter_notify_event",
+                               G_CALLBACK(cb_enter_notify), GINT_TO_POINTER(n));
+            g_signal_connect(G_OBJECT(text), "button_release_event",
+                               G_CALLBACK(cb_enter_selected_day),
                                GINT_TO_POINTER(n));
 
             gtk_box_pack_start(GTK_BOX(vbox), event_box, TRUE, TRUE, 0);
@@ -275,7 +275,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
-   gtk_widget_set_usize(GTK_WIDGET(text), 10, 10);
+   gtk_widget_set_size_request(GTK_WIDGET(text), 10, 10);
    gtk_box_pack_start(GTK_BOX(month_vbox), text, TRUE, TRUE, 4);
 }
 
@@ -315,10 +315,10 @@ static int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
    
    for (n=0; n<37; n++) {
       temp_text = month_day[n];
-      gstr = gtk_object_get_data(GTK_OBJECT(temp_text), "gstr");
+      gstr =  g_object_get_data(G_OBJECT(temp_text), "gstr");
       if (gstr) {
          g_string_free(gstr, TRUE);
-         gtk_object_remove_data(GTK_OBJECT(temp_text), "gstr");
+          g_object_set_data(G_OBJECT(temp_text), "gstr",NULL);
       }
    }
 
@@ -394,7 +394,7 @@ static int display_months_appts(struct tm *date_in, GtkWidget **day_texts)
             gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(text_buffers[n]), desc, -1);
          }
       }
-      gtk_object_set_data(GTK_OBJECT(texts[n]), "gstr", gstr);
+       g_object_set_data(G_OBJECT(texts[n]), "gstr", gstr);
    }
    free_CalendarEventList(&ce_list);
 
@@ -444,8 +444,8 @@ void monthview_gui(struct tm *date_in)
 
    gtk_container_set_border_width(GTK_CONTAINER(monthview_window), 10);
 
-   gtk_signal_connect(GTK_OBJECT(monthview_window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), monthview_window);
+   g_signal_connect(G_OBJECT(monthview_window), "destroy",
+                      G_CALLBACK(cb_destroy), monthview_window);
 
    vbox = gtk_vbox_new(FALSE, 0);
    gtk_container_add(GTK_CONTAINER(monthview_window), vbox);
@@ -459,51 +459,51 @@ void monthview_gui(struct tm *date_in)
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
 
    hbox_temp = gtk_hbutton_box_new();
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox_temp), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox_temp), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox_temp), 6);
 
    gtk_container_add(GTK_CONTAINER(align), hbox_temp);
 
    /* Make a left arrow for going back a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_move),
+   button = gtk_button_new_with_label("Back");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_month_move),
                       GINT_TO_POINTER(-1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
    /* Accelerator key for left arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button, _("Last month   Alt+LeftArrow"), NULL);
+                              GDK_KEY_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   set_tooltip(show_tooltips,
+               button, _("Last month   Alt+LeftArrow"));
 
    /* Close button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_monthview_quit), monthview_window);
+   button = gtk_button_new_with_label("Close");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_monthview_quit), monthview_window);
    /* Closing the window via a delete event uses the same cleanup routine */
-   gtk_signal_connect(GTK_OBJECT(monthview_window), "delete_event",
-                      GTK_SIGNAL_FUNC(cb_monthview_quit), NULL);
+   g_signal_connect(G_OBJECT(monthview_window), "delete_event",
+                      G_CALLBACK(cb_monthview_quit), NULL);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Print button */
-   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_print), monthview_window);
+   button = gtk_button_new_with_label("Print");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_month_print), monthview_window);
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
 
    /* Make a right arrow for going forward a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_month_move),
+   button = gtk_button_new_with_label("Forward");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_month_move),
                       GINT_TO_POINTER(1));
    gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 3);
 
    /* Accelerator key for right arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips,
-               button, _("Next month   Alt+RightArrow"), NULL);
+                              GDK_KEY_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   set_tooltip(show_tooltips,
+               button, _("Next month   Alt+RightArrow"));
 
    /* Month name label */
    jp_strftime(str, sizeof(str), "%B %Y", &glob_month_date);

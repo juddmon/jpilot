@@ -231,7 +231,7 @@ static void cb_dialog_button(GtkWidget *widget,
 
    w = gtk_widget_get_toplevel(widget);
 
-   Pdata = gtk_object_get_data(GTK_OBJECT(w), "dialog_data");
+   Pdata =  g_object_get_data(G_OBJECT(w), "dialog_data");
    if (Pdata) {
       Pdata->button_hit = GPOINTER_TO_INT(data);
    }
@@ -243,7 +243,7 @@ static gboolean cb_destroy_dialog(GtkWidget *widget)
    struct dialog_data *Pdata;
    const char *entry;
 
-   Pdata = gtk_object_get_data(GTK_OBJECT(widget), "dialog_data");
+   Pdata =  g_object_get_data(G_OBJECT(widget), "dialog_data");
    if (!Pdata) {
       return TRUE;
    }
@@ -285,12 +285,12 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
 
-   gtk_signal_connect(GTK_OBJECT(dialog), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy_dialog), dialog);
+   g_signal_connect(G_OBJECT(dialog), "destroy",
+                      G_CALLBACK(cb_destroy_dialog), dialog);
 
    hbox1 = gtk_hbox_new(FALSE, 2);
    gtk_container_add(GTK_CONTAINER(dialog), hbox1);
-   gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
+   gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_icon_name("dialog-password", GTK_ICON_SIZE_DIALOG), FALSE, FALSE, 2);
 
    vbox1 = gtk_vbox_new(FALSE, 2);
    gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
@@ -310,41 +310,42 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
    /* Password entry field */
-   entry = gtk_entry_new_with_max_length(PASSWD_LEN);
+   entry = gtk_entry_new();
+    gtk_entry_set_max_length(entry,PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
-   gtk_signal_connect(GTK_OBJECT(entry), "activate",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+   g_signal_connect(G_OBJECT(entry), "activate",
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
    hbox1 = gtk_hbutton_box_new();
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox1), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox1), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
    /* Cancel Button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+   button = gtk_button_new_with_label("Cancel");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_1));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
 
    /* OK Button */
-   button = gtk_button_new_from_stock(GTK_STOCK_OK);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_dialog_button),
+   button = gtk_button_new_with_label("OK");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_dialog_button),
                       GINT_TO_POINTER(DIALOG_SAID_2));
    gtk_box_pack_start(GTK_BOX(hbox1), button, FALSE, FALSE, 1);
-   GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
+   gtk_widget_set_can_default(button,TRUE);
    gtk_widget_grab_default(button);
 
    /* Set the default button pressed to CANCEL */
    Pdata.button_hit = DIALOG_SAID_1;
    Pdata.entry=entry;
    Pdata.text[0]='\0';
-   gtk_object_set_data(GTK_OBJECT(dialog), "dialog_data", &Pdata);
+    g_object_set_data(G_OBJECT(dialog), "dialog_data", &Pdata);
 
    gtk_widget_grab_focus(GTK_WIDGET(entry));
 

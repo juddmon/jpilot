@@ -1,5 +1,5 @@
 /*******************************************************************************
- * clist_mini_icons.h
+ * list_mini_icons.h
  * A module of J-Pilot http://jpilot.org
  *
  * Copyright (C) 1999-2014 by Judd Montgomery
