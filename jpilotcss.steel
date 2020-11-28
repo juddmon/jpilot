@@ -5,19 +5,19 @@
 
 @define-color theme_fg_color #3D3D3D;
 
-@define-color button_hover_bg_color #006aba;
+@define-color button_hover_bg_color #7878a5;
 /*-
 text color for entries, views and content in general */
 @define-color theme_text_color #2b3aff;
 /*-
 widget base background color */
-@define-color theme_bg_color  #004C99;
+@define-color theme_bg_color  #666699;
 /*-
 text widgets and the like base background color */
 @define-color theme_base_color #d9e6ff;
 /*-
 base background color of selections */
-@define-color theme_selected_bg_color #0066b3;
+@define-color theme_selected_bg_color #0f63a3;
 /*-
 text/foreground color of selections */
 @define-color theme_selected_fg_color #d9e6ff;
@@ -32,25 +32,25 @@ insensitive text widgets and the like base background color */
 @define-color insensitive_base_color #d9e6ff;
 /*-
 widget text/foreground color on backdrop windows */
-@define-color theme_unfocused_fg_color #004C99;
+@define-color theme_unfocused_fg_color #666699;
 /*-
 text color for entries, views and content in general on backdrop windows */
 @define-color theme_unfocused_text_color white;
 /*-
 widget base background color on backdrop windows */
-@define-color theme_unfocused_bg_color #004C99;
+@define-color theme_unfocused_bg_color #666699;
 /*-
 text widgets and the like base background color on backdrop windows */
 @define-color theme_unfocused_base_color #d9e6ff;
 /*-
 base background color of selections on backdrop windows */
-@define-color theme_unfocused_selected_bg_color #0066b3;
+@define-color theme_unfocused_selected_bg_color #0f63a3;
 /*-
 text/foreground color of selections on backdrop windows */
 @define-color theme_unfocused_selected_fg_color #d9e6ff;
 /*-
 insensitive color on backdrop windows*/
-@define-color unfocused_insensitive_color #004C99;
+@define-color unfocused_insensitive_color #666699;
 /*-
 widgets main borders color */
 @define-color borders #729cc5;
