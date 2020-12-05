@@ -699,7 +699,13 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
     gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleSearchRowSelection, NULL, NULL);
-
+    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
 
     g_signal_connect(G_OBJECT(treeView), "key_press_event",
                        G_CALLBACK(cb_key_pressed_in_list),

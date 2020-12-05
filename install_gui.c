@@ -411,8 +411,14 @@ void intializeInstallTreeView(GtkWidget *pixbufwid, GdkPixbuf **pixbuf) {
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     column_selected = -1;
     gtk_tree_selection_set_select_function(treeSelection, handleInstallRowSelection, NULL, NULL);
-    //todo: set this up to work on a single click once on gtk3.
-
+    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
+    gtk_tree_view_set_activate_on_single_click(GTK_TREE_VIEW(treeView), TRUE);
     g_signal_connect (treeView, "row-activated", G_CALLBACK(columnClicked), NULL);
 }
 

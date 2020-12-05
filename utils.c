@@ -73,6 +73,7 @@ extern GtkWidget *glob_date_label;
 static int dialog_result;
 
 unsigned int glob_find_id;
+int glob_mouse_pressed = 0;
 
 /* GTK_TIMEOUT timer identifer for "Today:" label */
 extern gint glob_date_timer_tag;
@@ -2882,7 +2883,35 @@ int pdb_file_write_dbinfo(char *full_DB_name, struct DBInfo *Pinfo_in) {
 
     return EXIT_SUCCESS;
 }
-
+gboolean
+motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
+    GtkTreePath * path = NULL;
+    GtkTreeIter iter;
+    GtkTreeModel * model;
+    if(GTK_IS_TREE_VIEW(widget) && glob_mouse_pressed) {
+        gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget), event->x, event->y, &path, NULL, NULL, NULL);
+        if (path != NULL) {
+            GtkTreeSelection *selection = NULL;
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
+            gtk_tree_selection_select_path(selection, path);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget),path,0, FALSE, 1.0, 0.0);
+        }
+        // keep scrolling up/selecting after the mouse pointer is above the  treeview.
+        if(path == NULL && (gint) event->y < 0){
+            GtkTreeSelection *selection = NULL;
+            model = gtk_tree_view_get_model(GTK_TREE_VIEW(widget));
+            selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
+            gtk_tree_selection_get_selected(selection,&model,&iter);
+            path = gtk_tree_model_get_path(model,&iter);
+            if(gtk_tree_path_prev(path)){
+                gtk_tree_selection_select_path(selection, path);
+                gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget),path,0, FALSE, 1.0, 0.0);
+            }
+        }
+        gtk_tree_path_free(path);
+    }
+    return TRUE;
+}
 void print_string(char *str, int len) {
     unsigned char c;
     int i;
@@ -3767,4 +3796,19 @@ static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id) {
 
     return EXIT_SUCCESS;
 }
-
+gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+    guint button;
+    gdk_event_get_button(event,&button);
+    //left mouse button
+    if(button == 1) {
+        glob_mouse_pressed = 1;
+    }
+}
+gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+    guint button;
+    gdk_event_get_button(event,&button);
+    //left mouse button
+    if(button == 1) {
+        glob_mouse_pressed = 0;
+    }
+}
