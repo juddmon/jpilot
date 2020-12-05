@@ -2640,7 +2640,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     }
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                             gtk_true());
-
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
     g_signal_connect (changedColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (nameColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
     g_signal_connect (accountColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);

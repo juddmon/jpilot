@@ -842,6 +842,12 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 
     gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                            handleCategorySelection, &Pdata, NULL);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
     gtk_box_pack_start(GTK_BOX(vbox1), GTK_WIDGET(treeView), TRUE, TRUE, 1);
 
     /* Fill list with categories except for category 0, Unfiled,

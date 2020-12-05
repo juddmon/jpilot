@@ -935,7 +935,7 @@ static const char *vCardMapType(int label) {
     }
 }
 
-//TODO: fix this when working on exports
+
 static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                               int type, const char *filename) {
     MyContact *mcont;
@@ -4130,7 +4130,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
-
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
 
     switch (addr_sort_order) {
         case SORT_BY_LNAME:

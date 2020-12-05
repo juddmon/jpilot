@@ -882,7 +882,6 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 }
 
-//todo: this is used by export_gui.  ExportGui needs to be converted to liststore.
 static void cb_todo_update_listStore(GtkWidget *exportTreeView, int category) {
     if (exportTreeView == NULL || !GTK_IS_TREE_VIEW(exportTreeView)) {
         return;

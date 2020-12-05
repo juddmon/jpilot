@@ -801,7 +801,6 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
     }
 }
 
-//TODO: update this when ready todo export function
 static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
     memo_update_liststore(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView))), NULL, &export_memo_list,
                           category, FALSE);
@@ -834,7 +833,6 @@ static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
     set_pref(PREF_MEMO_EXPORT_FILENAME, 0, filename, TRUE);
 }
 
-//TODO: implement this when ready to handle export functions
 int memo_export(GtkWidget *window) {
     int w, h, x, y;
     char *type_text[] = {N_("Text"),
@@ -1941,6 +1939,12 @@ void initializeTreeView() {
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
     treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
 
 }
 

@@ -54,10 +54,6 @@
 #define MAX_DESC_LEN 255
 #define DATEBOOK_MAX_COLUMN_LEN 80
 
-//todo: these need to be replaced with
-// the enum.  treeview can always have all 5 columns
-// and just show/hide the 'float' column
-// as needed.
 #ifdef ENABLE_DATEBK
 static int DB_APPT_COLUMN = 4;
 #else
@@ -5737,6 +5733,12 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
 
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
     /* Put pretty pictures in the treeView column headings */
     //get_pixmaps((GtkWidget *) vbox, PIXMAP_NOTE, pixbuf, mask);
     get_pixbufs(PIXMAP_NOTE, &pixbuf);
