@@ -115,10 +115,16 @@ void undeleteTodo(MyToDo *mtodo, gpointer data);
 
 int printTodo(MyToDo *mtodo, gpointer data);
 
+
+
 gboolean printRecord(GtkTreeModel *model,
                      GtkTreePath *path,
                      GtkTreeIter *iter,
                      gpointer data);
+
+
+
+
 
 gboolean
 findRecord(GtkTreeModel *model,
@@ -2201,7 +2207,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             set_tooltip((int) show_tooltips, tooltip_widget, str);
         }
     }
-    if(main) {
+    if (main) {
         gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
     }
 
@@ -2276,6 +2282,7 @@ int todo_gui_cleanup(void) {
     todo_liststore_clear(listStore);
     return EXIT_SUCCESS;
 }
+
 
 /* Main function */
 int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
@@ -2496,7 +2503,13 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
-
+    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
+                      G_CALLBACK(motion_notify_event), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-press-event",
+                      G_CALLBACK(button_pressed_for_motion), NULL);
+    g_signal_connect (G_OBJECT(treeView), "button-release-event",
+                      G_CALLBACK(button_released_for_motion), NULL);
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
     column_selected = (int) ivalue;
