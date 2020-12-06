@@ -2653,7 +2653,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleKeyringRowSelection, NULL, NULL);
-
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
 
     /**********************************************************************/
