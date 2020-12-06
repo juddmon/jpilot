@@ -4915,6 +4915,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     vbox1 = gtk_vbox_new(FALSE, 0);
     vbox2 = gtk_vbox_new(FALSE, 0);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
     todo_vbox = gtk_vbox_new(FALSE, 0);
 
     gtk_paned_pack1(GTK_PANED(todo_pane), vbox1, TRUE, FALSE);
@@ -5040,7 +5043,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     * there.  The first one is the horizontal scrollbar, the second,
     * the vertical. */
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
@@ -5067,6 +5070,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        G_CALLBACK(cb_todos_show), NULL);
 
     /* ToDo  */
+
     buildToDoList(vbox);
     /* End ToDo code */
 
@@ -5773,7 +5777,7 @@ void buildToDoList(const GtkWidget *vbox) {
     todo_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_container_set_border_width(GTK_CONTAINER(todo_scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
     todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
                                         G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
