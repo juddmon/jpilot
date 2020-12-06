@@ -4175,7 +4175,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     g_signal_connect(G_OBJECT(nameColumn), "notify::width",
                      G_CALLBACK(cb_resize_column), NULL);
 
-
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
     hbox_temp = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);

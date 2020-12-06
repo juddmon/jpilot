@@ -1578,7 +1578,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                       G_CALLBACK(button_released_for_motion), NULL);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
-
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
     /* Restore previous sorting configuration */
     get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
     column_selected = (int) ivalue;
