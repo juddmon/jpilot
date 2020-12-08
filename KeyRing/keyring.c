@@ -815,8 +815,8 @@ static void connect_changed_signals(int con_or_dis) {
         jp_logf(JP_LOG_DEBUG, "KeyRing: disconnect_changed_signals\n");
         connected = 0;
 
-        if(category_menu2){
-            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
+        if(category_menu2) {
+            g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2), G_CALLBACK(cb_record_changed), NULL);
         }
 
         g_signal_handlers_disconnect_by_func(G_OBJECT(entry_name),
@@ -2640,6 +2640,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     }
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                             gtk_true());
+    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
