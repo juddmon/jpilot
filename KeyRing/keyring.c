@@ -1019,7 +1019,12 @@ static int keyr_clear_details(void) {
     jp_logf(JP_LOG_DEBUG, "KeyRing: cb_clear\n");
 
     connect_changed_signals(DISCONNECT_SIGNALS);
+    GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
+    gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
+
+    gtk_list_store_clear(listStore);
+    gtk_tree_selection_set_select_function(treeSelection, handleKeyringRowSelection, NULL, NULL);
     /* Put the current time in the lastChanged part of the record */
     time(&ltime);
     now = localtime(&ltime);
@@ -1362,7 +1367,8 @@ void keyr_update_liststore(GtkListStore *pListStore, struct MyKeyRing **keyring_
         keyr_clear_details();
     }
 
-    gtk_list_store_clear(pListStore);
+
+
     entries_shown = 0;
 
     for (temp_list = *keyring_list; temp_list; temp_list = temp_list->next) {
@@ -1449,7 +1455,6 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
         } else {
             gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu2),find_menu_cat_pos(sorted_position));
         }
-
 
         if (mkr->kr.name) {
             gtk_entry_set_text(GTK_ENTRY(entry_name), mkr->kr.name);
@@ -2509,10 +2514,6 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     row_selected = 0;
 
     /* Do some initialization */
-    if (category_menu2 && category_menu2 != NULL) {
-        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
-        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
-    }
 
     get_keyr_cat_info(&keyr_app_info);
     get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -2572,6 +2573,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     make_category_menu(&category_menu1,
                        sort_l, cb_category, TRUE, FALSE);
+
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
     /* Scrolled window */
@@ -2835,6 +2837,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
         }
     } else {
         keyr_category = CATEGORY_ALL;
+        gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), 0);
     }
     keyr_update_liststore(listStore, &glob_keyring_list, keyr_category, TRUE);
 
