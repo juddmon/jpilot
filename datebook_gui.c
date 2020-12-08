@@ -5680,6 +5680,8 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
                                                                                     DATE_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                     NULL);
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    gtk_cell_renderer_set_alignment(noteRenderer,0,0);
+    gtk_cell_renderer_set_padding(noteRenderer,4,0);
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", DATE_NOTE_COLUMN_ENUM,
@@ -5751,7 +5753,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixbufwid));
     gtk_tree_view_column_set_widget(noteColumn, pixbufwid);
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_LEFT);
     get_pixbufs(PIXMAP_ALARM, &pixbuf);
 
     pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
@@ -5824,6 +5826,8 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
 
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    gtk_cell_renderer_set_alignment(noteRenderer,0,0);
+    gtk_cell_renderer_set_padding(noteRenderer,4,0);
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
@@ -5836,7 +5840,8 @@ void buildToDoList(const GtkWidget *vbox) {
 
 
     GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
-
+    gtk_cell_renderer_set_alignment(checkRenderer,0,0);
+    gtk_cell_renderer_set_padding(checkRenderer,4,0);
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
                                                                               TODO_CHECK_COLUMN_ENUM,
                                                                               "cell-background-gdk",
@@ -5861,12 +5866,12 @@ void buildToDoList(const GtkWidget *vbox) {
     pixmapwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_LEFT);
     get_pixbufs(PIXMAP_BOX_CHECKED, &pixbuf);
     pixmapwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(checkColumn, pixmapwid);
-    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_LEFT);
     gtk_tree_view_column_set_clickable(checkColumn, gtk_false());
     gtk_tree_view_column_set_clickable(priorityColumn, gtk_false());
     gtk_tree_view_column_set_clickable(noteColumn, gtk_false());

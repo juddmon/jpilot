@@ -152,7 +152,7 @@ static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *copy_record_button;
 static GtkWidget *table;
-static GtkWidget *category_menu2;
+static GtkComboBox *category_menu2;
 static GtkWidget *menu_payment;
 static GtkWidget *menu_expense_type;
 static GtkWidget *menu_currency;
@@ -387,8 +387,8 @@ static void connect_changed_signals(int con_or_dis) {
         jp_logf(JP_LOG_DEBUG, "Expense: disconnect_changed_signals\n");
         connected = 0;
 
-        if(category_menu2){
-            g_signal_connect(G_OBJECT(category_menu2),"changed",G_CALLBACK(cb_record_changed),NULL);
+        if(category_menu2) {
+            g_signal_handlers_disconnect_by_func(G_OBJECT(category_menu2), G_CALLBACK(cb_record_changed), NULL);
         }
 
         if(menu_expense_type){
@@ -558,6 +558,7 @@ gboolean deleteExpenseRecord(GtkTreeModel *model,
         struct MyExpense *mexp = NULL;
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
         deleteExpense(mexp,data);
+        //
         return TRUE;
     }
 
@@ -927,7 +928,7 @@ static void display_records(void) {
 
     /* Clear left-hand side of window */
     exp_clear_details();
-    gtk_list_store_clear(listStore);
+    gtk_list_store_clear(GTK_LIST_STORE(listStore));
 
 
     /* This function takes care of reading the Database for us */
@@ -1356,10 +1357,6 @@ static void make_menus(void) {
     currency[MAX_CURRENCYS] = NULL;
 
     /* Do some category initialization */
-    if (category_menu2 && category_menu2 != NULL) {
-        GtkTreeModel *clearingmodel = gtk_combo_box_get_model(GTK_COMBO_BOX(category_menu2));
-        gtk_list_store_clear(GTK_LIST_STORE(clearingmodel));
-    }
 
     /* This gets the application specific data out of the database for us.
      * We still need to write a function to unpack it from its blob form. */
@@ -1422,7 +1419,9 @@ findExpenseRecord (GtkTreeModel *model,
         if(mexp->unique_id == uniqueId){
             GtkTreeSelection * selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-            gtk_tree_selection_set_select_function(selection, handleExpenseRowSelection, NULL, NULL);
+            if(gtk_tree_selection_get_select_function(selection) == NULL) {
+                gtk_tree_selection_set_select_function(selection, handleExpenseRowSelection, NULL, NULL);
+            }
             gtk_tree_selection_select_path(selection, path);
             gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, gtk_tree_view_get_column(treeView,EXPENSE_DATE_COLUMN_ENUM), FALSE, 1.0, 0.0);
             return TRUE;
@@ -1567,20 +1566,23 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_tree_view_column_set_sizing(typeColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_min_width(typeColumn, 100);
 
+
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
+                                GTK_SELECTION_BROWSE);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleExpenseRowSelection, NULL, NULL);
+    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
                       G_CALLBACK(button_pressed_for_motion), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-release-event",
                       G_CALLBACK(button_released_for_motion), NULL);
-    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
-                                GTK_SELECTION_BROWSE);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
-                                    GTK_POLICY_NEVER,
-                                    GTK_POLICY_AUTOMATIC);
+
     /* Restore previous sorting configuration */
     get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
     column_selected = (int) ivalue;

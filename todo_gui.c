@@ -2438,6 +2438,9 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_sort_column_id(priorityColumn, TODO_PRIORITY_COLUMN_ENUM);
 
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    gtk_cell_renderer_set_alignment(noteRenderer,0,0);
+    gtk_cell_renderer_set_padding(noteRenderer,4,0);
+
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
@@ -2450,14 +2453,15 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
     GtkCellRenderer *checkRenderer = gtk_cell_renderer_toggle_new();
-
+    gtk_cell_renderer_set_alignment(checkRenderer,0,0);
+    gtk_cell_renderer_set_padding(checkRenderer,4,0);
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
                                                                               TODO_CHECK_COLUMN_ENUM,
                                                                               "cell-background-gdk",
                                                                               TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
-    g_signal_connect (checkRenderer, "toggled",
+      g_signal_connect (checkRenderer, "toggled",
                       G_CALLBACK(checkedCallBack),
                       listStore);
     gtk_tree_view_column_set_sort_column_id(checkColumn, TODO_CHECK_COLUMN_ENUM);
@@ -2485,13 +2489,15 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixbufwid));
     gtk_tree_view_column_set_widget(noteColumn, pixbufwid);
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_LEFT);
+
+
     get_pixbufs(PIXMAP_BOX_CHECKED, &pixbuf);
     pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
     gtk_widget_show(GTK_WIDGET(pixbufwid));
     gtk_tree_view_column_set_widget(checkColumn, pixbufwid);
 
-    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(checkColumn, GTK_JUSTIFY_LEFT);
 
     // register function to handle column header clicks..
     g_signal_connect (taskColumn, "clicked", G_CALLBACK(column_clicked_cb), NULL);
