@@ -172,7 +172,7 @@ void pref_init(void)
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_RCFILE:
-         glob_prefs[i].svalue=strdup(EPN"rc.default");
+         glob_prefs[i].svalue=strdup(EPN"css.default");
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_PRINT_COMMAND:

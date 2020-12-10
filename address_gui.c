@@ -4105,6 +4105,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_clickable(nameColumn, TRUE);
 
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
+    gtk_cell_renderer_set_alignment(noteRenderer,0,0);
+    gtk_cell_renderer_set_padding(noteRenderer,4,0);
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
                                                                              ADDRESS_NOTE_COLUMN_ENUM,
                                                                              "cell-background-gdk",
@@ -4161,7 +4163,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_widget_show(GTK_WIDGET(pixmapwid));
     gtk_tree_view_column_set_widget(noteColumn, pixmapwid);
 
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_LEFT);
 
     gtk_tree_view_column_set_min_width(nameColumn, 60);
 
@@ -4169,7 +4171,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_resizable(nameColumn, TRUE);
     gtk_tree_view_column_set_resizable(noteColumn, FALSE);
     gtk_tree_view_column_set_resizable(phoneColumn, FALSE);
-    gtk_tree_view_column_set_alignment(noteColumn, GTK_JUSTIFY_CENTER);
+
 
 
     g_signal_connect(G_OBJECT(nameColumn), "notify::width",
