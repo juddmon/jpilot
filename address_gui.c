@@ -1754,7 +1754,7 @@ int address_export(GtkWidget *window) {
 
 /* End Export Code */
 
-static void cb_resize_column(GtkTreeViewColumn *column) {
+static void cb_resize_name_column(GtkTreeViewColumn *column) {
     if (column == NULL) {
         return;
     }
@@ -4115,8 +4115,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_clickable(noteColumn, FALSE);
-
     GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
+    // Set the phone column to something small and let it expand to the pane
+    gtk_cell_renderer_set_fixed_size(phoneRenderer,100,-1);
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
                                                                               "cell-background-gdk",
@@ -4170,12 +4171,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_tree_view_column_set_resizable(nameColumn, TRUE);
     gtk_tree_view_column_set_resizable(noteColumn, FALSE);
-    gtk_tree_view_column_set_resizable(phoneColumn, FALSE);
+    gtk_tree_view_column_set_resizable(phoneColumn, TRUE);
 
 
 
     g_signal_connect(G_OBJECT(nameColumn), "notify::width",
-                     G_CALLBACK(cb_resize_column), NULL);
+                     G_CALLBACK(cb_resize_name_column), NULL);
 
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
                                     GTK_POLICY_NEVER,
