@@ -4116,8 +4116,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                                                              NULL);
     gtk_tree_view_column_set_clickable(noteColumn, FALSE);
     GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
-    // Set the phone column to something small and let it expand to the pane
-    gtk_cell_renderer_set_fixed_size(phoneRenderer,100,-1);
+    // Set the phone column width to something small and let it expand to the pane
+    // Set the height to 1 so we do not see line wraps making verticle gaps in the view
+    gtk_cell_renderer_set_fixed_size(phoneRenderer, 100, 1);
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
                                                                               "cell-background-gdk",
