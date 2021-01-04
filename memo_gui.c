@@ -823,8 +823,6 @@ static GtkWidget *cb_memo_init_export_treeView() {
     gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), column, 0);
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
     return GTK_WIDGET(treeView);
-
-
 }
 
 static void cb_memo_export_done(GtkWidget *widget, const char *filename) {
@@ -1778,7 +1776,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Left side of GUI */
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* 'Today is:' label */
@@ -1788,7 +1786,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_date_timer_tag = g_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category menu */
@@ -1869,7 +1867,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
     /* Private check box */

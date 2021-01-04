@@ -2172,7 +2172,7 @@ int main(int argc, char *argv[]) {
                                  "and then do a backup"));
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(g_vbox0), separator, FALSE, TRUE, 5);
 
     /* Creates the 2 main boxes that are changeable */

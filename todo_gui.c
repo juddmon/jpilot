@@ -2355,7 +2355,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Left side of GUI */
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     //time(&ltime);
@@ -2368,7 +2368,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_date_timer_tag = g_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category box */
@@ -2595,7 +2595,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
     hbox_temp = gtk_hbox_new(FALSE, 0);

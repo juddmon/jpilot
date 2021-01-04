@@ -919,11 +919,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     /* Edit entry and boxes, etc */
     vbox = gtk_vbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), vbox, FALSE, FALSE, 10);
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
     label = gtk_label_new("");
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
 
     Pdata.label = label;
@@ -952,7 +952,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 1);
 
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
 
     Pdata.entry_box = vbox;

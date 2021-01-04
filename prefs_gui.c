@@ -677,7 +677,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     }
 
     /* Separate database selection from less important options */
-    hseparator = gtk_hseparator_new();
+    hseparator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox_datebook), hseparator, FALSE, FALSE, 3);
 
     /* Show highlight days check box */
@@ -736,7 +736,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     }
 
     /* Separate database selection from less important options */
-    hseparator = gtk_hseparator_new();
+    hseparator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
 
     /* Command to use for e-mailing from address book */
@@ -795,7 +795,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     }
 
     /* Separate database selection from less important options */
-    hseparator = gtk_hseparator_new();
+    hseparator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox_todo), hseparator, FALSE, FALSE, 3);
 #endif
 
@@ -883,7 +883,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
             break;
     }
 
-    hseparator = gtk_hseparator_new();
+    hseparator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox_memo), hseparator, FALSE, FALSE, 3);
 
     /* External Editor Command to execute */

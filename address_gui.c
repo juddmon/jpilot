@@ -4059,7 +4059,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Left side of GUI */
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Make the 'Today is:' label */
@@ -4069,7 +4069,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_date_timer_tag = g_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category box */
@@ -4093,7 +4093,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeView = gtk_tree_view_new_with_model(model);
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
-    gtk_cell_renderer_set_fixed_size(nameRenderer,ivalue,-1);
+    gtk_cell_renderer_set_fixed_size(nameRenderer,ivalue,1);
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
@@ -4258,7 +4258,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
     hbox_temp = gtk_hbox_new(FALSE, 0);
