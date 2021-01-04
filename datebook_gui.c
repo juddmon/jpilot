@@ -1312,7 +1312,7 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     g_signal_connect(G_OBJECT(export_window), "destroy",
                        G_CALLBACK(cb_export_destroy), export_window);
 
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(export_window), vbox);
 
     /* Label for instructions */
@@ -1333,12 +1333,12 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     export_radio_type[i] = NULL;
 
     /* Save As entry */
-    hbox = gtk_hbox_new(FALSE, 5);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     save_as_entry = gtk_entry_new();
-    gtk_entry_set_max_length(save_as_entry,250);
+    gtk_entry_set_max_length(GTK_ENTRY(save_as_entry), 250);
     svalue = NULL;
     get_pref(PREF_DATEBOOK_EXPORT_FILENAME, NULL, &svalue);
 
@@ -1351,10 +1351,10 @@ static int datebook_export_gui(GtkWidget *main_window, int x, int y) {
     g_signal_connect(G_OBJECT(button), "clicked",
                        G_CALLBACK(cb_export_browse), export_window);
 
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX(hbox), GTK_BUTTONBOX_END);
-     gtk_box_set_spacing(GTK_BOX(hbox), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     button = gtk_button_new_with_label("Cancel");
@@ -1463,7 +1463,7 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     int i;
     int bit;
     char title[200];
-    GtkWidget *table;
+    GtkWidget *grid;
     GtkWidget *button;
     GtkWidget *vbox, *hbox;
     long char_set;
@@ -1493,29 +1493,30 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
     g_signal_connect(G_OBJECT(window_datebk_cats), "destroy",
                        G_CALLBACK(cb_destroy_datebk_cats), window_datebk_cats);
 
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window_datebk_cats), vbox);
 
-    /* Table */
-    table = gtk_table_new(8, 2, TRUE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 0);
-    gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
+
+    /* Grid */
+    grid = gtk_grid_new();
+    gtk_box_pack_start(GTK_BOX(vbox), grid, FALSE, FALSE, 0);
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     for (i = 0, bit = 1; i < 16; i++, bit <<= 1) {
         if (cai.category.name[i][0]) {
             char *l;
 
-            l = charset_p2newj(cai.category.name[i], sizeof(cai.category.name[0]), (int) char_set);
+            l = charset_p2newj(cai.category.name[i], sizeof(cai.category.name[i]), (int) char_set);
             toggle_button[i] = gtk_toggle_button_new_with_label(l);
             g_free(l);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_button[i]),
                                          datebk_category & bit);
-            gtk_table_attach_defaults
-                    (GTK_TABLE(table), GTK_WIDGET(toggle_button[i]),
-                     (i > 7) ? 1 : 0, (i > 7) ? 2 : 1, (guint) ((i > 7) ? i - 8 : i),
-                     (guint) ((i > 7) ? i - 7 : i + 1));
+
+            gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(toggle_button[i]),
+			    (guint) (i > 7) ? 1 : 0,
+			    (guint) ((i > 7) ? i - 8 : i),
+			    1,
+			    1);
             g_signal_connect(G_OBJECT(toggle_button[i]), "toggled",
                                G_CALLBACK(cb_toggle), GINT_TO_POINTER(i));
         } else {
@@ -1523,8 +1524,8 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
         }
     }
 
-    hbox = gtk_hbutton_box_new();
-     gtk_box_set_spacing(GTK_BOX(hbox), 6);
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     /* Close button */
@@ -3444,7 +3445,7 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
     struct CalendarEvent *cale;
     MyCalendarEvent *mcale;
     char tempstr[20];
-    int i, b;
+    int i, b, index;
     int sorted_position;
     unsigned int unique_id = 0;
 #ifdef ENABLE_DATEBK
@@ -3459,8 +3460,8 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
 #endif
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
-        int *index = gtk_tree_path_get_indices(path);
-        row_selected = index[0];
+        gint *indeces = gtk_tree_path_get_indices(path);
+        row_selected = indeces[0];
         gtk_tree_model_get(model, &iter, DATE_DATA_COLUMN_ENUM, &mcale, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mcale != NULL) {
@@ -3507,14 +3508,14 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
 
         if (datebook_version) {
             /* Calendar supports categories */
-            index = (int *) (mcale->attrib & 0x0F);
-            sorted_position = find_sort_cat_pos((int) index);
+            index = mcale->attrib & 0x0F;
+            sorted_position = find_sort_cat_pos(index);
             int pos = findSortedPostion(sorted_position, GTK_COMBO_BOX(category_menu2));
             if (pos != sorted_position && index != 0) {
                 /* Illegal category */
                 jp_logf(JP_LOG_DEBUG, "Category is not legal\n");
                 index = 0;
-                sorted_position = find_sort_cat_pos((int) index);
+                sorted_position = find_sort_cat_pos(index);
             }
             if (sorted_position < 0) {
                 jp_logf(JP_LOG_WARN, _("Category is not legal\n"));
@@ -3869,7 +3870,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         dbook_category = selectedItem;
     }
@@ -4801,12 +4802,15 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkWidget *button;
     GtkWidget *separator;
     GtkWidget *label;
-    GtkWidget *table;
+    GtkWidget *no_time_label;
+    GtkWidget *start_label;
+    GtkWidget *end_label;
+    GtkWidget *grid;
     GtkWidget *vbox1, *vbox2;
     GtkWidget *hbox_temp;
     GtkWidget *vbox_temp;
 #ifdef DAY_VIEW
-                                                                                                                            GtkWidget *vbox_no_time_appts;
+   GtkWidget *vbox_no_time_appts;
    GtkWidget *scrolled_window2;
 #endif
     GtkWidget *vbox_repeat_day;
@@ -4903,8 +4907,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
-    todo_pane = gtk_vpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+    todo_pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     get_pref(PREF_DATEBOOK_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
@@ -4913,12 +4917,9 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
-                                    GTK_POLICY_NEVER,
-                                    GTK_POLICY_AUTOMATIC);
-    todo_vbox = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    todo_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_paned_pack1(GTK_PANED(todo_pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(todo_pane), todo_vbox, TRUE, FALSE);
@@ -4929,7 +4930,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Left side of GUI */
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Make the 'Today is:' label */
@@ -4939,13 +4940,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     glob_date_timer_tag = g_timeout_add(CLOCK_TICK, timeout_sync_up, NULL);
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     if (datebook_version) {
         /* Calendar supports categories */
         /* Left-side Category menu */
-        hbox_temp = gtk_hbox_new(FALSE, 0);
+        hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
         make_category_menu(&category_menu1,
@@ -4954,7 +4955,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     }
 
     /* Make the main calendar */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     get_pref(PREF_FDOW, &fdow, NULL);
@@ -5019,13 +5020,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), dow_label, FALSE, FALSE, 0);
 
 #ifdef DAY_VIEW
-                                                                                                                            /* Appointments list scrolled window. */
+   /* Appointments list scrolled window. */
    scrolled_window2 = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window2), 0);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window2),
                                   GTK_POLICY_NEVER, GTK_POLICY_NEVER);
    /* "No Time" appointment box */
-   vbox_no_time_appts = gtk_vbox_new(FALSE, 0);
+   vbox_no_time_appts = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window2),
                                          GTK_WIDGET(vbox_no_time_appts));
@@ -5046,9 +5047,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
+    // DEPRECATED
     listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
                                    G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                    G_TYPE_BOOLEAN);
+    //listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
+    //                               G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type, G_TYPE_BOOLEAN, G_TYPE_STRING,
+    //                               G_TYPE_BOOLEAN);
 
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
@@ -5076,7 +5081,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right side of GUI */
 
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Add record modification buttons */
@@ -5135,13 +5140,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 #endif
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
     if (datebook_version) {
         /* Calendar supports categories */
         /* Right-side Category menu */
-        hbox_temp = gtk_hbox_new(FALSE, 0);
+        hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
 
@@ -5157,7 +5162,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Datebook has alarm checkbox on top */
     if (datebook_version == 0) {
         /* Alarm checkbox */
-        hbox_alarm1 = gtk_hbox_new(FALSE, 0);
+        hbox_alarm1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
         gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
 
         check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
@@ -5165,12 +5170,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         g_signal_connect(G_OBJECT(check_button_alarm), "clicked",
                            G_CALLBACK(cb_check_button_alarm), NULL);
 
-        hbox_alarm2 = gtk_hbox_new(FALSE, 0);
+        hbox_alarm2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
 
         /* Units entry for alarm */
         units_entry = gtk_entry_new();
-        gtk_entry_set_max_length(units_entry,2);
+        gtk_entry_set_max_length(GTK_ENTRY(units_entry), 2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
         gtk_widget_set_size_request(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
@@ -5197,7 +5202,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     }  /* end of Alarm & Private check boxes for Datebook */
 
     /* Start date button */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("Date:"));
@@ -5210,79 +5215,65 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GINT_TO_POINTER(BEGIN_DATE_BUTTON));
 
     /* Appointment time selection */
-    vbox_temp = gtk_vbox_new(FALSE, 0);
+    vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), vbox_temp, FALSE, FALSE, 0);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
+    // Grid for the time entry
+    grid = gtk_grid_new();
+    gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox_temp), grid, FALSE, FALSE, 0);
 
     /* "No Time" radio button */
     radio_button_no_time = gtk_radio_button_new(NULL);
-    gtk_button_set_alignment(GTK_BUTTON(radio_button_no_time), 1.0, 0.0);
-    gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_no_time, FALSE, FALSE, 0);
+    gtk_grid_attach(GTK_GRID(grid), radio_button_no_time, 0, 0, 1, 1);
     g_signal_connect(G_OBJECT(radio_button_no_time), "clicked",
                        G_CALLBACK(cb_radio_button_no_time), NULL);
 
-    label = gtk_label_new(_("No Time"));
-    gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
+    no_time_label = gtk_label_new(_("No Time"));
+    gtk_grid_attach_next_to(GTK_GRID(grid), no_time_label, radio_button_no_time, GTK_POS_RIGHT, 1, 1);
 
     /* Appt Time radio button and entry widgets for selecting time */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, FALSE, FALSE, 0);
-
     radio_button_appt_time = gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(radio_button_no_time));
-    gtk_box_pack_start(GTK_BOX(hbox_temp), radio_button_appt_time, FALSE, FALSE, 0);
+    gtk_grid_attach_next_to(GTK_GRID(grid), radio_button_appt_time, radio_button_no_time, GTK_POS_BOTTOM, 1, 2);
     /* Currently no need to do anything with appt_time radio button
-   g_signal_connect(G_OBJECT(radio_button_appt_time), "clicked",
+    g_signal_connect(G_OBJECT(radio_button_appt_time), "clicked",
                       G_CALLBACK(cb_radio_button_appt_time), NULL); */
 
-    table = gtk_table_new(2, 4, FALSE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 0);
-    gtk_box_pack_start(GTK_BOX(hbox_temp), table, FALSE, FALSE, 0);
 
     /* Start date and time */
-    label = gtk_label_new(_("Start"));
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1,
-                     GTK_SHRINK, GTK_SHRINK, 0, 0);
+    start_label = gtk_label_new(_("Start"));
+    gtk_grid_attach_next_to(GTK_GRID(grid), start_label, no_time_label, GTK_POS_BOTTOM, 1, 1);
 
     begin_time_entry = gtk_entry_new();
     gtk_entry_set_overwrite_mode(GTK_ENTRY(begin_time_entry),FALSE);
     gtk_widget_set_can_focus(begin_time_entry,FALSE);
-    gtk_entry_set_max_length(begin_time_entry,7);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(begin_time_entry),
-                     1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(begin_time_entry), 7);
+    gtk_grid_attach_next_to(GTK_GRID(grid), begin_time_entry, start_label, GTK_POS_RIGHT, 1, 1);
 
     option1 = create_time_menu(START_TIME_FLAG | HOURS_FLAG);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option1),
-                     2, 3, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
+    gtk_grid_attach_next_to(GTK_GRID(grid), option1, begin_time_entry, GTK_POS_RIGHT, 1, 1);
 
     option2 = create_time_menu(START_TIME_FLAG);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option2),
-                     3, 4, 0, 1, GTK_SHRINK, GTK_FILL, 0, 0);
+    gtk_grid_attach_next_to(GTK_GRID(grid), option2, option1, GTK_POS_RIGHT, 1, 1);
 
     /* End date and time */
-    label = gtk_label_new(_("End"));
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
+    end_label = gtk_label_new(_("End"));
+    gtk_grid_attach_next_to(GTK_GRID(grid), end_label, start_label, GTK_POS_BOTTOM, 1, 1);
 
     end_time_entry = gtk_entry_new();
     gtk_entry_set_overwrite_mode(GTK_ENTRY(end_time_entry),FALSE);
     gtk_widget_set_can_focus(end_time_entry,FALSE);
-    gtk_entry_set_max_length(end_time_entry,7);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(end_time_entry),
-                     1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(end_time_entry), 7);
+    gtk_grid_attach_next_to(GTK_GRID(grid), end_time_entry, end_label, GTK_POS_RIGHT, 1, 1);
 
     gtk_widget_set_size_request(GTK_WIDGET(begin_time_entry), 70, 0);
     gtk_widget_set_size_request(GTK_WIDGET(end_time_entry), 70, 0);
 
     option3 = create_time_menu(END_TIME_FLAG | HOURS_FLAG);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option3),
-                     2, 3, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
+    gtk_grid_attach_next_to(GTK_GRID(grid), option3, end_time_entry,  GTK_POS_RIGHT, 1, 1);
 
     option4 = create_time_menu(END_TIME_FLAG);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(option4),
-                     3, 4, 1, 2, GTK_SHRINK, GTK_FILL, 0, 0);
+    gtk_grid_attach_next_to(GTK_GRID(grid), option4, option3, GTK_POS_RIGHT, 1, 1);
 
     /* Need to connect these signals after the menus are created to avoid errors */
     g_signal_connect(G_OBJECT(begin_time_entry), "key_press_event",
@@ -5305,22 +5296,19 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Location entry for Calendar app */
     if (datebook_version) {
-        hbox_temp = gtk_hbox_new(FALSE, 0);
-        gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
-
         label = gtk_label_new(_("Location:"));
-        gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 4);
+        gtk_grid_attach_next_to(GTK_GRID(grid), label, end_label, GTK_POS_BOTTOM, 1, 1);
 
         location_entry = gtk_entry_new();
         entry_set_multiline_truncate(GTK_ENTRY(location_entry), TRUE);
         gtk_entry_set_width_chars(GTK_ENTRY(location_entry), 21);
-        gtk_box_pack_start(GTK_BOX(hbox_temp), location_entry, FALSE, FALSE, 0);
+        gtk_grid_attach_next_to(GTK_GRID(grid), location_entry, label, GTK_POS_RIGHT, 1, 1);
     }
 
     /* Calendar application has alarm checkbox on bottom */
     if (datebook_version) {
         /* Alarm checkbox */
-        hbox_alarm1 = gtk_hbox_new(FALSE, 0);
+        hbox_alarm1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(vbox2), hbox_alarm1, FALSE, FALSE, 0);
 
         check_button_alarm = gtk_check_button_new_with_label(_("Alarm"));
@@ -5328,12 +5316,12 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
         g_signal_connect(G_OBJECT(check_button_alarm), "clicked",
                            G_CALLBACK(cb_check_button_alarm), NULL);
 
-        hbox_alarm2 = gtk_hbox_new(FALSE, 0);
+        hbox_alarm2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm1), hbox_alarm2, FALSE, FALSE, 0);
 
         /* Units entry for alarm */
         units_entry = gtk_entry_new();
-        gtk_entry_set_max_length(units_entry,2);
+        gtk_entry_set_max_length(GTK_ENTRY(units_entry), 2);
         entry_set_multiline_truncate(GTK_ENTRY(units_entry), TRUE);
         gtk_widget_set_size_request(units_entry, 30, 0);
         gtk_box_pack_start(GTK_BOX(hbox_alarm2), units_entry, FALSE, FALSE, 0);
@@ -5355,13 +5343,13 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                            radio_button_alarm_day, FALSE, FALSE, 0);
     }  /* End of Alarm checkbox for Calendar */
 
-    note_pane = gtk_vpaned_new();
+    note_pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     get_pref(PREF_DATEBOOK_NOTE_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(note_pane), (gint) ivalue);
     gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 5);
 
     /* Event Description text box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_paned_pack1(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
     dbook_desc = gtk_text_view_new();
@@ -5377,7 +5365,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
 
     /* Note text box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_paned_pack2(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
     dbook_note = gtk_text_view_new();
@@ -5395,20 +5383,20 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Datebk tags entry */
 #ifdef ENABLE_DATEBK
     if (use_db3_tags) {
-        hbox_temp = gtk_hbox_new(FALSE, 0);
+        hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 2);
 
         label = gtk_label_new(_("DateBk Tags"));
         gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 5);
 
         datebk_entry = gtk_entry_new();
-        gtk_entry_set_max_length(datebk_entry,30);
+        gtk_entry_set_max_length(GTK_ENTRY(datebk_entry), 30);
         gtk_box_pack_start(GTK_BOX(hbox_temp), datebk_entry, TRUE, TRUE, 0);
     }
 #endif
 
     /* Notebook for event repeat types */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 2);
 
     notebook = gtk_notebook_new();
@@ -5426,15 +5414,15 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), label, notebook_tab1);
 
     /* "Day Repeat" page for notebook */
-    vbox_repeat_day = gtk_vbox_new(FALSE, 0);
-    hbox_repeat_day1 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_day2 = gtk_hbox_new(FALSE, 0);
+    vbox_repeat_day = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    hbox_repeat_day1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_day2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_day), hbox_repeat_day1, FALSE, FALSE, 2);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_day), hbox_repeat_day2, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), label, FALSE, FALSE, 2);
     repeat_day_entry = gtk_entry_new();
-    gtk_entry_set_max_length(repeat_day_entry,2);
+    gtk_entry_set_max_length(GTK_ENTRY(repeat_day_entry), 2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_day_entry), TRUE);
     gtk_widget_set_size_request(repeat_day_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_day1), repeat_day_entry, FALSE, FALSE, 0);
@@ -5457,10 +5445,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        GINT_TO_POINTER(PAGE_DAY));
 
     /* "Week Repeat" page */
-    vbox_repeat_week = gtk_vbox_new(FALSE, 0);
-    hbox_repeat_week1 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_week2 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_week3 = gtk_hbox_new(FALSE, 0);
+    vbox_repeat_week = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    hbox_repeat_week1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_week2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_week3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_repeat_week, notebook_tab3);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_week), hbox_repeat_week1, FALSE, FALSE, 2);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_week), hbox_repeat_week2, FALSE, FALSE, 2);
@@ -5468,7 +5456,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), label, FALSE, FALSE, 2);
     repeat_week_entry = gtk_entry_new();
-    gtk_entry_set_max_length(repeat_week_entry,2);
+    gtk_entry_set_max_length(GTK_ENTRY(repeat_week_entry) ,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_week_entry), TRUE);
     gtk_widget_set_size_request(repeat_week_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_week1), repeat_week_entry, FALSE, FALSE, 0);
@@ -5510,10 +5498,10 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     }
 
     /* "Month Repeat" page */
-    vbox_repeat_mon = gtk_vbox_new(FALSE, 0);
-    hbox_repeat_mon1 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_mon2 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_mon3 = gtk_hbox_new(FALSE, 0);
+    vbox_repeat_mon = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    hbox_repeat_mon1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_mon2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_mon3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_repeat_mon, notebook_tab4);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_mon), hbox_repeat_mon1, FALSE, FALSE, 2);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_mon), hbox_repeat_mon2, FALSE, FALSE, 2);
@@ -5521,7 +5509,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), label, FALSE, FALSE, 2);
     repeat_mon_entry = gtk_entry_new();
-    gtk_entry_set_max_length(repeat_mon_entry,2);
+    gtk_entry_set_max_length(GTK_ENTRY(repeat_mon_entry), 2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_mon_entry), TRUE);
     gtk_widget_set_size_request(repeat_mon_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_mon1), repeat_mon_entry, FALSE, FALSE, 0);
@@ -5558,15 +5546,15 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        toggle_button_repeat_mon_bydate, FALSE, FALSE, 0);
 
     /* "Year Repeat" page */
-    vbox_repeat_year = gtk_vbox_new(FALSE, 0);
-    hbox_repeat_year1 = gtk_hbox_new(FALSE, 0);
-    hbox_repeat_year2 = gtk_hbox_new(FALSE, 0);
+    vbox_repeat_year = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    hbox_repeat_year1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox_repeat_year2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_year), hbox_repeat_year1, FALSE, FALSE, 2);
     gtk_box_pack_start(GTK_BOX(vbox_repeat_year), hbox_repeat_year2, FALSE, FALSE, 2);
     label = gtk_label_new(_("Frequency is Every"));
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), label, FALSE, FALSE, 2);
     repeat_year_entry = gtk_entry_new();
-    gtk_entry_set_max_length(repeat_year_entry,2);
+    gtk_entry_set_max_length(GTK_ENTRY(repeat_year_entry) ,2);
     entry_set_multiline_truncate(GTK_ENTRY(repeat_year_entry), TRUE);
     gtk_widget_set_size_request(repeat_year_entry, 30, 0);
     gtk_box_pack_start(GTK_BOX(hbox_repeat_year1), repeat_year_entry, FALSE, FALSE, 0);
@@ -5739,7 +5727,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
 
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
-    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    gtk_widget_set_events(GTK_WIDGET(treeView), GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
@@ -5781,9 +5769,13 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
+    // DEPRECATED
     todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
                                         G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                         G_TYPE_BOOLEAN);
+    //todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
+    //                                    G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
+    //                                    G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
     todo_treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
@@ -5898,7 +5890,6 @@ void selectFirstTodoRow() {
     GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(todo_listStore), &iter);
     gtk_tree_selection_select_path(treeSelection, path);
     gtk_tree_path_free(path);
-
 }
 
 gboolean
