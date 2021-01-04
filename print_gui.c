@@ -186,11 +186,11 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    g_signal_connect(G_OBJECT(window), "destroy",
                       G_CALLBACK(cb_destroy), window);
 
-   vbox = gtk_vbox_new(FALSE, 0);
+   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_container_add(GTK_CONTAINER(window), vbox);
 
    /* Paper Size */
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
    label = gtk_label_new(_("Paper Size"));
@@ -299,7 +299,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
 
    if (app != DATEBOOK) {
       /* Number of blank lines */
-      hbox = gtk_hbox_new(FALSE, 0);
+      hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
       gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
       lines_entry = gtk_entry_new();

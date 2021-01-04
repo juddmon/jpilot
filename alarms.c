@@ -196,10 +196,10 @@ static int dialog_alarm(char *title, char *reason,
    gtk_window_set_transient_for(GTK_WINDOW(alarm_dialog), GTK_WINDOW(window));
    gtk_window_stick(GTK_WINDOW(alarm_dialog));
 
-   vbox1 = gtk_vbox_new(FALSE, 5);
+   vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
    gtk_container_add(GTK_CONTAINER(alarm_dialog), vbox1);
 
-   hbox1 = gtk_hbox_new(FALSE, 5);
+   hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
    image = gtk_image_new_from_icon_name("dialog-information", GTK_ICON_SIZE_DIALOG);
@@ -220,11 +220,11 @@ static int dialog_alarm(char *title, char *reason,
    gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 6);
 
    /* remind delay */
-   hbox1 = gtk_hbox_new(FALSE, 0);
+   hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    remind_entry = gtk_spin_button_new_with_range(0, 59, 1);
    gtk_box_pack_start(GTK_BOX(hbox1), remind_entry, FALSE, FALSE, 2);
 
-   vbox_temp = gtk_vbox_new(FALSE, 0);
+   vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_box_pack_start(GTK_BOX(hbox1), vbox_temp, FALSE, TRUE, 4);
 
    radio1 = gtk_radio_button_new_with_label(NULL, _("Minutes"));

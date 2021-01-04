@@ -443,7 +443,7 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     if (svalue && svalue[0]) {
         gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
     }
-    GtkBox *extraWidget = GTK_BOX(gtk_hbox_new(FALSE, 0));
+    GtkBox *extraWidget = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
     gtk_box_pack_start(extraWidget,treeView,TRUE,TRUE,0);
     gtk_widget_show_all(extraWidget);
     gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));

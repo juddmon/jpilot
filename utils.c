@@ -302,7 +302,7 @@ int cal_dialog(GtkWindow *main_window,
     g_signal_connect(G_OBJECT(window), "destroy",
                        G_CALLBACK(cb_destroy), window);
 
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
     cal = gtk_calendar_new();
@@ -1174,10 +1174,10 @@ int dialog_generic(GtkWindow *main_window,
     g_signal_connect(G_OBJECT(glob_dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), glob_dialog);
 
-    vbox1 = gtk_vbox_new(FALSE, 5);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     gtk_container_add(GTK_CONTAINER(glob_dialog), vbox1);
 
-    hbox1 = gtk_hbox_new(FALSE, 2);
+    hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
     gtk_container_add(GTK_CONTAINER(vbox1), hbox1);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
     switch (type) {
@@ -1199,7 +1199,7 @@ int dialog_generic(GtkWindow *main_window,
     if (image)
         gtk_box_pack_start(GTK_BOX(hbox1), image, FALSE, FALSE, 2);
 
-    vbox2 = gtk_vbox_new(FALSE, 5);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     gtk_container_set_border_width(GTK_CONTAINER(vbox2), 5);
     gtk_box_pack_start(GTK_BOX(hbox1), vbox2, FALSE, FALSE, 2);
 

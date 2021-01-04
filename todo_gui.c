@@ -2346,8 +2346,8 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
@@ -2372,7 +2372,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     /* Left-side Category menu */
@@ -2538,7 +2538,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
     /* Right side of GUI */
 
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Cancel button */
@@ -2598,7 +2598,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Right-side Category menu */
@@ -2616,7 +2616,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), todo_completed_checkbox, FALSE, FALSE, 0);
 
     /* Priority radio buttons */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("Priority:"));
@@ -2635,11 +2635,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     }
 
     /* "Date Due:" label */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Spacer to line up */
-    hbox_temp2 = gtk_hbox_new(FALSE, 0);
+    hbox_temp2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), hbox_temp2, FALSE, FALSE, 1);
 
     label = gtk_label_new(_("Date Due:"));
@@ -2663,7 +2663,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 0);
 
     /* Description text box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_paned_pack1(GTK_PANED(note_pane), hbox_temp, TRUE, FALSE);
 
     todo_desc = gtk_text_view_new();
@@ -2678,7 +2678,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), todo_desc);
     gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window, TRUE, TRUE, 0);
     /* Note text box */
-    vbox_temp = gtk_vbox_new(FALSE, 0);
+    vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_paned_pack2(GTK_PANED(note_pane), vbox_temp, TRUE, FALSE);
 
     label = gtk_label_new(_("Note"));

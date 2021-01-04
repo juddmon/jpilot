@@ -126,20 +126,20 @@ static int dialog_install_user(GtkWindow *main_window,
     g_object_set_data(G_OBJECT(install_user_dialog),
                        "install_dialog_data", &data);
 
-   vbox = gtk_vbox_new(FALSE, 5);
+   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 
    gtk_container_set_border_width(GTK_CONTAINER(vbox), 5);
 
    gtk_container_add(GTK_CONTAINER(install_user_dialog), vbox);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
    label = gtk_label_new(_("A PalmOS(c) device needs a user name and a user ID in order to sync properly."));
    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
    gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
    label = gtk_label_new(_("If you want to sync more than 1 PalmOS(c) device each one should have a different ID and preferably a different user name."));
    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
@@ -159,7 +159,7 @@ static int dialog_install_user(GtkWindow *main_window,
 
    /* User Name entry */
    
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
    /* Instruction label */
@@ -169,7 +169,7 @@ static int dialog_install_user(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
 
    /* User Name */
-   hbox = gtk_hbox_new(FALSE, 5);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User Name"));
    user_entry = gtk_entry_new();
@@ -180,7 +180,7 @@ static int dialog_install_user(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 2);
 
    /* Instruction label */
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
    label = gtk_label_new(_("The ID should be a random number."));
    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
@@ -188,7 +188,7 @@ static int dialog_install_user(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 2);
 
    /* User ID */
-   hbox = gtk_hbox_new(FALSE, 5);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 2);
    label = gtk_label_new(_("User ID"));
    ID_entry = gtk_entry_new();

@@ -1767,8 +1767,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
@@ -1790,7 +1790,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category menu */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     make_category_menu(&category_menu1,
@@ -1810,7 +1810,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right side of GUI */
 
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Cancel button */
@@ -1871,7 +1871,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
     /* Private check box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
     private_checkbox = gtk_check_button_new_with_label(_("Private"));
     gtk_box_pack_end(GTK_BOX(hbox_temp), private_checkbox, FALSE, FALSE, 0);
@@ -1882,10 +1882,10 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
 
     /* Description text box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
     memo_text = gtk_text_view_new();

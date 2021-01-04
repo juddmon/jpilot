@@ -232,7 +232,7 @@ static void create_month_boxes_texts(GtkWidget *month_vbox)
       hbox_row = gtk_hbox_new(TRUE, 0);
       gtk_box_pack_start(GTK_BOX(month_vbox), hbox_row, TRUE, TRUE, 0);
       for (j=0; j<7; j++) {
-         vbox = gtk_vbox_new(FALSE, 0);
+         vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
          gtk_box_pack_start(GTK_BOX(hbox_row), vbox, TRUE, TRUE, 2);
          n=i*7+j;
          if (n<37) {
@@ -447,7 +447,7 @@ void monthview_gui(struct tm *date_in)
    g_signal_connect(G_OBJECT(monthview_window), "destroy",
                       G_CALLBACK(cb_destroy), monthview_window);
 
-   vbox = gtk_vbox_new(FALSE, 0);
+   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_container_add(GTK_CONTAINER(monthview_window), vbox);
 
    /* Make accelerators for some buttons window */

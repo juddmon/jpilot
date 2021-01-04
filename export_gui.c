@@ -266,7 +266,7 @@ int export_gui(GtkWidget *main_window,
     g_signal_connect(G_OBJECT(export_window), "destroy",
                        G_CALLBACK(cb_export_destroy), export_window);
 
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(export_window), vbox);
 
     /* Label for instructions */
@@ -318,7 +318,7 @@ int export_gui(GtkWidget *main_window,
     export_radio_type[i] = NULL;
 
     /* Save As entry */
-    hbox = gtk_hbox_new(FALSE, 5);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);

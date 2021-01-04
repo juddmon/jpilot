@@ -814,17 +814,17 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     g_signal_connect(G_OBJECT(dialog), "destroy",
                        G_CALLBACK(cb_destroy_dialog), dialog);
 
-    vbox3 = gtk_vbox_new(FALSE, 0);
+    vbox3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(dialog), vbox3);
 
-    hbox = gtk_hbox_new(FALSE, 0);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
     gtk_container_add(GTK_CONTAINER(vbox3), hbox);
 
-    vbox1 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox), vbox1, FALSE, FALSE, 1);
 
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox), vbox2, FALSE, FALSE, 1);
     listStore = gtk_list_store_new(CATEGORY_NUM_COLS, G_TYPE_STRING, G_TYPE_INT);
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
@@ -917,7 +917,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     Pdata.button_box = hbox;
 
     /* Edit entry and boxes, etc */
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), vbox, FALSE, FALSE, 10);
     separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);

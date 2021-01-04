@@ -274,7 +274,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
                       G_CALLBACK(cb_import_record_ask_destroy),
                       import_record_ask_window);
 
-   vbox=gtk_vbox_new(FALSE, 0);
+   vbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_container_add(GTK_CONTAINER(import_record_ask_window), vbox);
 
    /* Private */
@@ -305,7 +305,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
    /* Text window with scrollbar to display record */
-   temp_hbox = gtk_hbox_new(FALSE, 0);
+   temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, TRUE, TRUE, 0);
 
    textw = gtk_text_view_new();
@@ -391,11 +391,11 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
     if (svalue && svalue[0]) {
        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
     }
-    GtkBox *extraWidget = GTK_BOX(gtk_hbox_new(FALSE, 0));
+    GtkBox *extraWidget = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
 
     /* File Type radio buttons */
-    vbox = gtk_vbox_new(FALSE, 0);
-    hbox = gtk_hbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(extraWidget,
                        vbox, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);

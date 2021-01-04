@@ -304,7 +304,7 @@ void weekview_gui(struct tm *date_in)
    g_signal_connect(G_OBJECT(weekview_window), "destroy",
                       G_CALLBACK(cb_destroy), weekview_window);
 
-   vbox = gtk_vbox_new(FALSE, 0);
+   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_container_add(GTK_CONTAINER(weekview_window), vbox);
 
    /* Make accelerators for some buttons window */
@@ -365,13 +365,13 @@ void weekview_gui(struct tm *date_in)
 
    get_pref(PREF_FDOW, &fdow, NULL);
 
-   hbox = gtk_hbox_new(FALSE, 0);
+   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
-   vbox_left = gtk_vbox_new(FALSE, 0);
+   vbox_left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox_left, TRUE, TRUE, 0);
 
-   vbox_right = gtk_vbox_new(FALSE, 0);
+   vbox_right = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
    gtk_box_pack_start(GTK_BOX(hbox), vbox_right, TRUE, TRUE, 0);
 
    /* Get the first day of the week */

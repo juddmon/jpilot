@@ -144,8 +144,8 @@ GString *concatMenuItemStr(GString *currentString, gchar *name);
 /****************************** Main Code *************************************/
 
 static int create_main_boxes(void) {
-    g_hbox2 = gtk_hbox_new(FALSE, 0);
-    g_vbox0_1 = gtk_vbox_new(FALSE, 0);
+    g_hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    g_vbox0_1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_box_pack_start(GTK_BOX(g_hbox), g_hbox2, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(g_vbox0), g_vbox0_1, FALSE, FALSE, 0);
@@ -1998,9 +1998,9 @@ int main(int argc, char *argv[]) {
 
     gtk_container_set_border_width(GTK_CONTAINER(window), 0);
 
-    main_vbox = gtk_vbox_new(FALSE, 0);
-    g_hbox = gtk_hbox_new(FALSE, 0);
-    g_vbox0 = gtk_vbox_new(FALSE, 0);
+    main_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    g_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    g_vbox0 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     /* Output Pane */
     output_pane = gtk_vpaned_new();
@@ -2026,11 +2026,11 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(g_hbox), g_vbox0, FALSE, FALSE, 3);
 
     /* Output Text scrolled window */
-    temp_hbox = gtk_hbox_new(FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 5);
     gtk_paned_pack2(GTK_PANED(output_pane), temp_hbox, FALSE, TRUE);
 
-    temp_vbox = gtk_vbox_new(FALSE, 3);
+    temp_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
     gtk_container_set_border_width(GTK_CONTAINER(temp_vbox), 6);
     gtk_box_pack_end(GTK_BOX(temp_hbox), temp_vbox, FALSE, FALSE, 0);
 
@@ -2060,7 +2060,7 @@ int main(int argc, char *argv[]) {
                        GINT_TO_POINTER(OUTPUT_MINIMIZE));
 
     /* "Datebook" button */
-    temp_hbox = gtk_hbox_new(FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     button_datebook = gtk_button_new();
     g_signal_connect(G_OBJECT(button_datebook), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(DATEBOOK));
@@ -2068,7 +2068,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_datebook, TRUE, FALSE, 0);
 
     /* "Address" button */
-    temp_hbox = gtk_hbox_new(FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     button_address = gtk_button_new();
     g_signal_connect(G_OBJECT(button_address), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(ADDRESS));
@@ -2076,7 +2076,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_address, TRUE, FALSE, 0);
 
     /* "Todo" button */
-    temp_hbox = gtk_hbox_new(FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     button_todo = gtk_button_new();
     g_signal_connect(G_OBJECT(button_todo), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(TODO));
@@ -2084,7 +2084,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(temp_hbox), button_todo, TRUE, FALSE, 0);
 
     /* "Memo" button */
-    temp_hbox = gtk_hbox_new(FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     button_memo = gtk_button_new();
     g_signal_connect(G_OBJECT(button_memo), "clicked",
                        G_CALLBACK(cb_app_button), GINT_TO_POINTER(MEMO));

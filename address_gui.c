@@ -4051,8 +4051,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
@@ -4073,7 +4073,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), separator, FALSE, FALSE, 5);
 
     /* Left-side Category box */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     /* Left-side Category menu */
@@ -4183,7 +4183,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                     GTK_POLICY_NEVER,
                                     GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeView));
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("Quick Find: "));
@@ -4200,7 +4200,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* Right side of GUI */
 
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Cancel button */
@@ -4261,7 +4261,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Right-side Category menu */
@@ -4343,7 +4343,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         /* Add a notebook page */
         table_y_i = 0;
         notebook_label[page_i] = gtk_label_new(_(page_names[page_i]));
-        vbox_temp = gtk_vbox_new(FALSE, 0);
+        vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_temp, notebook_label[page_i]);
 
         gtk_widget_show(vbox_temp);
@@ -4526,7 +4526,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
                 case ADDRESS_GUI_BIRTHDAY:
-                    hbox_temp = gtk_hbox_new(FALSE, 0);
+                    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
                     gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
                                      0, x, table_y_i, table_y_i + 1,
                                      GTK_EXPAND | GTK_FILL, GTK_SHRINK, 0, 0);
@@ -4539,7 +4539,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                     changed_list = g_list_prepend(changed_list, birthday_checkbox);
 
-                    birthday_box = gtk_hbox_new(FALSE, 3);
+                    birthday_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
                     gtk_box_pack_start(GTK_BOX(hbox_temp), birthday_box, FALSE, FALSE, 0);
 
                     birthday_button = gtk_button_new_with_label("");
@@ -4556,7 +4556,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                     changed_list = g_list_prepend(changed_list, reminder_checkbox);
 
-                    reminder_box = gtk_hbox_new(FALSE, 0);
+                    reminder_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
                     gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
 
                     reminder_entry = gtk_entry_new();
@@ -4615,13 +4615,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     /* The Quickview (ALL) page */
     notebook_tab = gtk_label_new(_("All"));
-    vbox_temp = gtk_vbox_new(FALSE, 0);
+    vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_temp, notebook_tab);
     /* Notebook tabs have to be shown before call to show_all */
     gtk_widget_show(vbox_temp);
     gtk_widget_show(notebook_tab);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_temp), hbox_temp, TRUE, TRUE, 0);
 
     addr_all = gtk_text_view_new();

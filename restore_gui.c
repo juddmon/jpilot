@@ -276,7 +276,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     g_signal_connect(G_OBJECT(restore_window), "destroy",
                        G_CALLBACK(cb_restore_destroy), restore_window);
 
-    vbox = gtk_vbox_new(FALSE, 0);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(restore_window), vbox);
 
     /* Label for instructions */
@@ -321,7 +321,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(restoreTreeView));
     g_object_unref(listStore);
     /* User entry */
-    hbox = gtk_hbox_new(FALSE, 5);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("User Name"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -341,7 +341,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_box_pack_start(GTK_BOX(hbox), user_entry, TRUE, TRUE, 0);
 
     /* User ID entry */
-    hbox = gtk_hbox_new(FALSE, 5);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("User ID"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);

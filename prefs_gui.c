@@ -442,18 +442,18 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     g_signal_connect(G_OBJECT(window), "destroy",
                      G_CALLBACK(cb_destroy), window);
 
-    vbox = gtk_vbox_new(FALSE, 5);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
     /* Boxes for each preference tax */
-    vbox_locale = gtk_vbox_new(FALSE, 0);
-    vbox_settings = gtk_vbox_new(FALSE, 0);
-    vbox_datebook = gtk_vbox_new(FALSE, 0);
-    vbox_address = gtk_vbox_new(FALSE, 0);
-    vbox_todo = gtk_vbox_new(FALSE, 0);
-    vbox_memo = gtk_vbox_new(FALSE, 0);
-    vbox_alarms = gtk_vbox_new(FALSE, 0);
-    vbox_conduits = gtk_vbox_new(FALSE, 0);
+    vbox_locale = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_settings = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_datebook = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_address = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_todo = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_memo = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_alarms = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox_conduits = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_container_set_border_width(GTK_CONTAINER(vbox_locale), 5);
     gtk_container_set_border_width(GTK_CONTAINER(vbox_settings), 5);
@@ -740,7 +740,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox_address), hseparator, FALSE, FALSE, 3);
 
     /* Command to use for e-mailing from address book */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_address), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("Mail Command"));
@@ -818,7 +818,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
 #endif
 
     /* Default Number of Days Due for ToDos */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_todo), hbox_temp, FALSE, FALSE, 0);
 
     add_checkbutton(_("Use default number of days due"),
@@ -887,7 +887,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox_memo), hseparator, FALSE, FALSE, 3);
 
     /* External Editor Command to execute */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_memo), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("External Editor"));
@@ -925,7 +925,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
     /* Alarm Command to execute */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), hbox_temp, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("Alarm Command"));
