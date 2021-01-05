@@ -3177,8 +3177,9 @@ int rename_file(char *old_filename, char *new_filename) {
 
 GdkRGBA get_color(int r, int g, int b) {
     GdkRGBA color;
-
-     gdk_rgba_parse(&color,"")
+    char rgb[10];
+   // sprintf(rgb, "#%X%X%X", r,g,b);
+   //  gdk_rgba_parse(&color,rgb);
   //  color.pixel = 0;
     return color;
 }

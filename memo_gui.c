@@ -814,7 +814,7 @@ static GtkWidget *cb_memo_init_export_treeView() {
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-                                                                         "cell-background-gdk",
+                                                                         "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
                                                                          "cell-background-set",
                                                                          MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
@@ -1927,7 +1927,7 @@ void initializeTreeView() {
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-                                                                         "cell-background-gdk",
+                                                                         "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
                                                                          "cell-background-set",
                                                                          MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);

@@ -1667,7 +1667,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1677,7 +1677,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
                                                                              ADDRESS_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1687,7 +1687,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -4097,7 +4097,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -4109,7 +4109,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_cell_renderer_set_padding(noteRenderer,4,0);
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
                                                                              ADDRESS_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -4121,7 +4121,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_cell_renderer_set_fixed_size(phoneRenderer, 100, 1);
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
