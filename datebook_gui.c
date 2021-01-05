@@ -1513,10 +1513,10 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
                                          datebk_category & bit);
 
             gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(toggle_button[i]),
-			    (guint) (i > 7) ? 1 : 0,
-			    (guint) ((i > 7) ? i - 8 : i),
-			    1,
-			    1);
+                            (guint) (i > 7) ? 1 : 0,
+                            (guint) ((i > 7) ? i - 8 : i),
+                            1,
+                            1);
             g_signal_connect(G_OBJECT(toggle_button[i]), "toggled",
                                G_CALLBACK(cb_toggle), GINT_TO_POINTER(i));
         } else {
