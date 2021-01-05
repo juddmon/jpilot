@@ -896,7 +896,7 @@ static GtkWidget *cb_todo_init_treeView() {
                                                  G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN,
                                                  G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
-    GtkTreeView *todo_treeView = gtk_tree_view_new_with_model(model);
+    GtkWidget *todo_treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
@@ -1294,7 +1294,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         todo_category = selectedItem;
     }
@@ -2175,7 +2175,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
                            TODO_DATA_COLUMN_ENUM, &(temp_todo->mtodo),
                            TODO_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
                            TODO_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
-                           TODO_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_color_to_string(&fgColor) : NULL,
+                           TODO_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_rgba_to_string(&fgColor) : NULL,
                            TODO_FORGROUND_COLOR_ENABLED_ENUM, showFgColor,
                            -1);
 
@@ -2227,7 +2227,9 @@ findRecord(GtkTreeModel *model,
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_set_select_function(selection, handleRowSelection, NULL, NULL);
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                         gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), TODO_TEXT_COLUMN_ENUM),
+                                         FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -2246,7 +2248,9 @@ selectRecordByRow(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, TODO_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                     gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), TODO_TEXT_COLUMN_ENUM),
+                                     FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -2340,7 +2344,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_TODO_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
@@ -2657,7 +2661,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                      G_CALLBACK(cb_check_button_no_due_date), NULL);
     gtk_box_pack_start(GTK_BOX(hbox_temp), todo_no_due_date_checkbox, FALSE, FALSE, 0);
 
-    note_pane = gtk_vpaned_new();
+    note_pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     get_pref(PREF_TODO_NOTE_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(note_pane), (gint) ivalue);
     gtk_box_pack_start(GTK_BOX(vbox2), note_pane, TRUE, TRUE, 0);
@@ -2682,8 +2686,6 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_paned_pack2(GTK_PANED(note_pane), vbox_temp, TRUE, FALSE);
 
     label = gtk_label_new(_("Note"));
-    /* Center "Note" label visually */
-    gtk_misc_set_alignment(GTK_MISC(label), 0.506, 0.5);
     gtk_box_pack_start(GTK_BOX(vbox_temp), label, FALSE, FALSE, 0);
 
     todo_note = gtk_text_view_new();

@@ -4265,7 +4265,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Right-side Category menu */
-  make_category_menu(&category_menu2,
+    make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
 
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
