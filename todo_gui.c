@@ -893,7 +893,7 @@ static void cb_todo_update_listStore(GtkWidget *exportTreeView, int category) {
 static GtkWidget *cb_todo_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF,
                                                  G_TYPE_STRING,
-                                                 G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN,
+                                                 G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN,
                                                  G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     GtkTreeView *todo_treeView = gtk_tree_view_new_with_model(model);
@@ -2389,7 +2389,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN, G_TYPE_STRING,
                                    G_TYPE_BOOLEAN);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);

@@ -2297,7 +2297,7 @@ int plugin_export(GtkWidget *window) {
 
 static GtkWidget *cb_keyr_export_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                                 G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                                 G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN, G_TYPE_STRING,
                                                  G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     GtkTreeView *keyr_treeView = gtk_tree_view_new_with_model(model);
@@ -2585,7 +2585,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* listStore */
     listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+                                   G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     titles[0] = _("Changed");
     titles[1] = _("Name");
     titles[2] = _("Account");

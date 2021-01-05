@@ -1522,7 +1522,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
     listStore = gtk_list_store_new(EXPENSE_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
+                                   G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN);
     treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
     GtkCellRenderer *typeRenderer = gtk_cell_renderer_text_new();
