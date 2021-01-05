@@ -809,7 +809,7 @@ static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
 static GtkWidget *cb_memo_init_export_treeView() {
     GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                  G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    GtkWidget *treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
+    GtkWidget *treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkTreeSelection *treeSelection = NULL;
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
@@ -972,8 +972,8 @@ void delete_memo(MyMemo *mmemo, gpointer data) {
 }
 
 static void cb_delete_memo(GtkWidget *widget,
-                           gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecordMemo, data);
+                           const void *data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecordMemo, (gpointer) data);
     return;
 
 }
@@ -1127,7 +1127,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         memo_category = selectedItem;
     }
@@ -1439,7 +1439,9 @@ selectRecordByRowMemo(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                     gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),
+                                     MEMO_COLUMN_ENUM), FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -1610,7 +1612,9 @@ findRecordMemo(GtkTreeModel *model,
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_set_select_function(selection, handleRowSelectionForMemo, NULL, NULL);
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_DATA_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                         gtk_tree_view_get_column(GTK_TREE_VIEW(treeView),
+                                         MEMO_DATA_COLUMN_ENUM), FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -1761,7 +1765,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_MEMO_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
