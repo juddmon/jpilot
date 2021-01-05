@@ -2625,7 +2625,7 @@ static int datebook_update_listStore(void) {
 
 
         /* Highlight row background depending on status */
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor;
         switch (temp_cel->mcale.rt) {
             case NEW_PC_REC:

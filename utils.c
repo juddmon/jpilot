@@ -3175,12 +3175,11 @@ int rename_file(char *old_filename, char *new_filename) {
     return rename(old_fullname, new_fullname);
 }
 
-GdkColor get_color(int r, int g, int b) {
-    GdkColor color;
-    color.red = r;
-    color.green = g;
-    color.blue = b;
-    color.pixel = 0;
+GdkRGBA get_color(int r, int g, int b) {
+    GdkRGBA color;
+
+     gdk_rgba_parse(&color,"")
+  //  color.pixel = 0;
     return color;
 }
 

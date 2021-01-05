@@ -843,7 +843,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 static int display_record(struct MyExpense *mexp, int at_row, const char *dateformat, GtkTreeIter *iter) {
     char *Ptype;
     char date[12];
-    GdkColor bgColor;
+    GdkRGBA bgColor;
     gboolean showBgColor;
     char *amount = "";
 

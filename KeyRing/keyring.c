@@ -1276,7 +1276,7 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     jp_logf(JP_LOG_DEBUG, "KeyRing: display_record\n");
 
     /* Highlight row background depending on status */
-    GdkColor bgColor;
+    GdkRGBA bgColor;
     gboolean showBgColor;
     switch (mkr->rt) {
         case NEW_PC_REC:

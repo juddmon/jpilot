@@ -3328,9 +3328,9 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         phone[0] = '\0';
         lstrncpy_remove_cr_lfs(phone, temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4],
                                ADDRESS_MAX_COLUMN_LEN);
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
-        GdkColor fgColor;
+        GdkRGBA fgColor;
         gboolean showFgColor = FALSE;
         /* Highlight row background depending on status */
         switch (temp_cl->mcont.rt) {

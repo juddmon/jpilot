@@ -1521,7 +1521,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         gtk_list_store_append(pListStore, &iter);
 
         /* Highlight row background depending on status */
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
         switch (temp_memo->mmemo.rt) {
             case NEW_PC_REC:

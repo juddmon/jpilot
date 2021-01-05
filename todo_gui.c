@@ -2122,9 +2122,9 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
         lstrncpy_remove_cr_lfs(descriptionDisplay, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
         gtk_list_store_append(pListStore, &iter);
 
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
-        GdkColor fgColor;
+        GdkRGBA fgColor;
         gboolean showFgColor = FALSE;
         switch (temp_todo->mtodo.rt) {
             case NEW_PC_REC:
