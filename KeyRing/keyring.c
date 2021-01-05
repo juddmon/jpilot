@@ -1276,7 +1276,7 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     jp_logf(JP_LOG_DEBUG, "KeyRing: display_record\n");
 
     /* Highlight row background depending on status */
-    GdkColor bgColor;
+    GdkRGBA bgColor;
     gboolean showBgColor;
     switch (mkr->rt) {
         case NEW_PC_REC:
@@ -2297,7 +2297,7 @@ int plugin_export(GtkWidget *window) {
 
 static GtkWidget *cb_keyr_export_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                                 G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                                 G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                                  G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     GtkTreeView *keyr_treeView = gtk_tree_view_new_with_model(model);
@@ -2305,7 +2305,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
                                                                                 "text", KEYRING_CHANGED_COLUMN_ENUM,
-                                                                                "cell-background-gdk",
+                                                                                "cell-background-rgba",
                                                                                 KEYRING_BACKGROUND_COLOR_ENUM,
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2315,7 +2315,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
                                                                              nameRenderer,
                                                                              "text", KEYRING_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              KEYRING_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2325,7 +2325,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
     GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
                                                                                 accountRenderer,
                                                                                 "text", KEYRING_ACCOUNT_COLUMN_ENUM,
-                                                                                "cell-background-gdk",
+                                                                                "cell-background-rgba",
                                                                                 KEYRING_BACKGROUND_COLOR_ENUM,
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2585,7 +2585,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* listStore */
     listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+                                   G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     titles[0] = _("Changed");
     titles[1] = _("Name");
     titles[2] = _("Account");
@@ -2595,7 +2595,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
                                                                                 "text", KEYRING_CHANGED_COLUMN_ENUM,
-                                                                                "cell-background-gdk",
+                                                                                "cell-background-rgba",
                                                                                 KEYRING_BACKGROUND_COLOR_ENUM,
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2605,7 +2605,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
                                                                              nameRenderer,
                                                                              "text", KEYRING_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              KEYRING_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2615,7 +2615,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
                                                                                 accountRenderer,
                                                                                 "text", KEYRING_ACCOUNT_COLUMN_ENUM,
-                                                                                "cell-background-gdk",
+                                                                                "cell-background-rgba",
                                                                                 KEYRING_BACKGROUND_COLOR_ENUM,
                                                                                 "cell-background-set",
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,

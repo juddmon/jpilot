@@ -2625,7 +2625,7 @@ static int datebook_update_listStore(void) {
 
 
         /* Highlight row background depending on status */
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor;
         switch (temp_cel->mcale.rt) {
             case NEW_PC_REC:
@@ -5049,7 +5049,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     // DEPRECATED
     listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
-                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                    G_TYPE_BOOLEAN);
     //listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
     //                               G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type, G_TYPE_BOOLEAN, G_TYPE_STRING,
@@ -5652,7 +5652,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
                                                                              timeRenderer,
                                                                              "text", DATE_TIME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              DATE_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5662,7 +5662,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkTreeViewColumn *appointmentColumn = gtk_tree_view_column_new_with_attributes("Appointment",
                                                                                     appointmentRenderer,
                                                                                     "text", DATE_APPT_COLUMN_ENUM,
-                                                                                    "cell-background-gdk",
+                                                                                    "cell-background-rgba",
                                                                                     DATE_BACKGROUND_COLOR_ENUM,
                                                                                     "cell-background-set",
                                                                                     DATE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5673,7 +5673,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", DATE_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              DATE_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5683,7 +5683,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkTreeViewColumn *alarmColumn = gtk_tree_view_column_new_with_attributes("",
                                                                               alarmRenderer,
                                                                               "pixbuf", DATE_ALARM_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               DATE_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               DATE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5693,7 +5693,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkTreeViewColumn *floatColumn = gtk_tree_view_column_new_with_attributes("",
                                                                               floatRenderer,
                                                                               "pixbuf", DATE_FLOAT_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               DATE_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               DATE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5769,13 +5769,9 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(todo_scrolled_window),
                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
-    // DEPRECATED
     todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                        G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                        G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                         G_TYPE_BOOLEAN);
-    //todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-    //                                    G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
-    //                                    G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
     todo_treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
@@ -5783,7 +5779,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
                                                                              "text", TODO_TEXT_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5796,7 +5792,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
                                                                              "text", TODO_DATE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5810,7 +5806,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
-                                                                                 "cell-background-gdk",
+                                                                                 "cell-background-rgba",
                                                                                  TODO_BACKGROUND_COLOR_ENUM,
                                                                                  "cell-background-set",
                                                                                  TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5823,7 +5819,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -5836,7 +5832,7 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_cell_renderer_set_padding(checkRenderer,4,0);
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
                                                                               TODO_CHECK_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);

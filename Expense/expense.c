@@ -843,7 +843,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
 static int display_record(struct MyExpense *mexp, int at_row, const char *dateformat, GtkTreeIter *iter) {
     char *Ptype;
     char date[12];
-    GdkColor bgColor;
+    GdkRGBA bgColor;
     gboolean showBgColor;
     char *amount = "";
 
@@ -1522,7 +1522,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
 
     listStore = gtk_list_store_new(EXPENSE_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                   G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
+                                   G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN);
     treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
     GtkCellRenderer *typeRenderer = gtk_cell_renderer_text_new();
@@ -1530,7 +1530,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Date",
                                                                              dateRenderer,
                                                                              "text", EXPENSE_DATE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              EXPENSE_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              EXPENSE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1538,7 +1538,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *typeColumn = gtk_tree_view_column_new_with_attributes("Type",
                                                                              typeRenderer,
                                                                              "text", EXPENSE_TYPE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              EXPENSE_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              EXPENSE_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1546,7 +1546,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeViewColumn *amountColumn = gtk_tree_view_column_new_with_attributes("Amount",
                                                                                amountRenderer,
                                                                                "text", EXPENSE_AMOUNT_COLUMN_ENUM,
-                                                                               "cell-background-gdk",
+                                                                               "cell-background-rgba",
                                                                                EXPENSE_BACKGROUND_COLOR_ENUM,
                                                                                "cell-background-set",
                                                                                EXPENSE_BACKGROUND_COLOR_ENABLED_ENUM,

@@ -370,13 +370,13 @@ static gboolean handleInstallRowSelection(GtkTreeSelection *selection,
 
 void intializeInstallTreeView(GtkWidget *pixbufwid, GdkPixbuf **pixbuf) {
     listStore = gtk_list_store_new(INSTALL_NUM_COLS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER,
-                                   GDK_TYPE_COLOR, G_TYPE_BOOLEAN);
+                                   GDK_TYPE_RGBA, G_TYPE_BOOLEAN);
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *sdRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *sdColumn = gtk_tree_view_column_new_with_attributes("",
                                                                            sdRenderer,
                                                                            "pixbuf", INSTALL_SDCARD_COLUMN_ENUM,
-                                                                           "cell-background-gdk",
+                                                                           "cell-background-rgba",
                                                                            INSTALL_BACKGROUND_COLOR_ENUM,
                                                                            "cell-background-set",
                                                                            INSTALL_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -386,7 +386,7 @@ void intializeInstallTreeView(GtkWidget *pixbufwid, GdkPixbuf **pixbuf) {
     GtkTreeViewColumn *fileNameColumn = gtk_tree_view_column_new_with_attributes("Files to install",
                                                                                  fileNameRenderer,
                                                                                  "text", INSTALL_FNAME_COLUMN_ENUM,
-                                                                                 "cell-background-gdk",
+                                                                                 "cell-background-rgba",
                                                                                  INSTALL_BACKGROUND_COLOR_ENUM,
                                                                                  "cell-background-set",
                                                                                  INSTALL_BACKGROUND_COLOR_ENABLED_ENUM,

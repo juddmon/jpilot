@@ -807,14 +807,14 @@ static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
 }
 
 static GtkWidget *cb_memo_init_export_treeView() {
-    GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+    GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                  G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkWidget *treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
     GtkTreeSelection *treeSelection = NULL;
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-                                                                         "cell-background-gdk",
+                                                                         "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
                                                                          "cell-background-set",
                                                                          MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
@@ -1521,7 +1521,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
         gtk_list_store_append(pListStore, &iter);
 
         /* Highlight row background depending on status */
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
         switch (temp_memo->mmemo.rt) {
             case NEW_PC_REC:
@@ -1722,7 +1722,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     record_changed = CLEAR_FLAG;
 
     get_memo_app_info(&memo_app_info);
-    listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+    listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
     /* Initialize categories */
@@ -1927,7 +1927,7 @@ void initializeTreeView() {
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
-                                                                         "cell-background-gdk",
+                                                                         "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
                                                                          "cell-background-set",
                                                                          MEMO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);

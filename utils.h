@@ -353,7 +353,7 @@ int cal_dialog(GtkWindow *main_window,
                int *mon, int *day, int *year);
 
 
-GdkColor get_color(int r, int g, int b);
+GdkRGBA get_color(int r, int g, int b);
 
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);

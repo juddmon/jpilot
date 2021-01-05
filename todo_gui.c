@@ -893,7 +893,7 @@ static void cb_todo_update_listStore(GtkWidget *exportTreeView, int category) {
 static GtkWidget *cb_todo_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF,
                                                  G_TYPE_STRING,
-                                                 G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN,
+                                                 G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN,
                                                  G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     GtkTreeView *todo_treeView = gtk_tree_view_new_with_model(model);
@@ -902,7 +902,7 @@ static GtkWidget *cb_todo_init_treeView() {
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
                                                                              "text", TODO_TEXT_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -915,7 +915,7 @@ static GtkWidget *cb_todo_init_treeView() {
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
                                                                              "text", TODO_DATE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -929,7 +929,7 @@ static GtkWidget *cb_todo_init_treeView() {
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
-                                                                                 "cell-background-gdk",
+                                                                                 "cell-background-rgba",
                                                                                  TODO_BACKGROUND_COLOR_ENUM,
                                                                                  "cell-background-set",
                                                                                  TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -940,7 +940,7 @@ static GtkWidget *cb_todo_init_treeView() {
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -952,7 +952,7 @@ static GtkWidget *cb_todo_init_treeView() {
 
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
                                                                               TODO_CHECK_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
@@ -2122,9 +2122,9 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
         lstrncpy_remove_cr_lfs(descriptionDisplay, temp_todo->mtodo.todo.description, TODO_MAX_COLUMN_LEN);
         gtk_list_store_append(pListStore, &iter);
 
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
-        GdkColor fgColor;
+        GdkRGBA fgColor;
         gboolean showFgColor = FALSE;
         switch (temp_todo->mtodo.rt) {
             case NEW_PC_REC:
@@ -2389,7 +2389,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     //
     listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR, G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                    G_TYPE_BOOLEAN);
     GtkTreeSortable *sortable;
     sortable = GTK_TREE_SORTABLE(listStore);
@@ -2403,7 +2403,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
                                                                              "text", TODO_TEXT_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2416,7 +2416,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
                                                                              "text", TODO_DATE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2430,7 +2430,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
-                                                                                 "cell-background-gdk",
+                                                                                 "cell-background-rgba",
                                                                                  TODO_BACKGROUND_COLOR_ENUM,
                                                                                  "cell-background-set",
                                                                                  TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2444,7 +2444,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("",
                                                                              noteRenderer,
                                                                              "pixbuf", TODO_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              TODO_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              TODO_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -2457,7 +2457,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_cell_renderer_set_padding(checkRenderer,4,0);
     GtkTreeViewColumn *checkColumn = gtk_tree_view_column_new_with_attributes("", checkRenderer, "active",
                                                                               TODO_CHECK_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);

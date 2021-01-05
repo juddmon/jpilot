@@ -1659,7 +1659,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
 
 static GtkWidget *cb_addr_export_init_treeView() {
     GtkListStore *localListStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
-                                                      G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                                      G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                       G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
     GtkTreeView *localTreeView = gtk_tree_view_new_with_model(model);
@@ -1667,7 +1667,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1677,7 +1677,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkCellRenderer *noteRenderer = gtk_cell_renderer_pixbuf_new();
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
                                                                              ADDRESS_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -1687,7 +1687,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
     GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -3328,9 +3328,9 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         phone[0] = '\0';
         lstrncpy_remove_cr_lfs(phone, temp_cl->mcont.cont.entry[temp_cl->mcont.cont.showPhone + 4],
                                ADDRESS_MAX_COLUMN_LEN);
-        GdkColor bgColor;
+        GdkRGBA bgColor;
         gboolean showBgColor = FALSE;
-        GdkColor fgColor;
+        GdkRGBA fgColor;
         gboolean showFgColor = FALSE;
         /* Highlight row background depending on status */
         switch (temp_cl->mcont.rt) {
@@ -4008,7 +4008,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
     }
     listStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
-                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_COLOR,
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     /* Initialize categories */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
@@ -4097,7 +4097,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -4109,7 +4109,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_cell_renderer_set_padding(noteRenderer,4,0);
     GtkTreeViewColumn *noteColumn = gtk_tree_view_column_new_with_attributes("", noteRenderer, "pixbuf",
                                                                              ADDRESS_NOTE_COLUMN_ENUM,
-                                                                             "cell-background-gdk",
+                                                                             "cell-background-rgba",
                                                                              ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                              "cell-background-set",
                                                                              ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
@@ -4121,7 +4121,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_cell_renderer_set_fixed_size(phoneRenderer, 100, 1);
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
-                                                                              "cell-background-gdk",
+                                                                              "cell-background-rgba",
                                                                               ADDRESS_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM,
