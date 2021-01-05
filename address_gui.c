@@ -1659,7 +1659,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
 
 static GtkWidget *cb_addr_export_init_treeView() {
     GtkListStore *localListStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
-                                                      G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(),
+                                                      G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                       G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
     GtkTreeView *localTreeView = gtk_tree_view_new_with_model(model);
@@ -4008,7 +4008,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
     }
     listStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
-                                   G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(),
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     /* Initialize categories */
     get_pref(PREF_CHAR_SET, &char_set, NULL);

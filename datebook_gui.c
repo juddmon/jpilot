@@ -5049,7 +5049,7 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox1), scrolled_window, TRUE, TRUE, 0);
     // DEPRECATED
     listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
-                                   G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                    G_TYPE_BOOLEAN);
     //listStore = gtk_list_store_new(DATE_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF,
     //                               G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type, G_TYPE_BOOLEAN, G_TYPE_STRING,
@@ -5770,11 +5770,8 @@ void buildToDoList(const GtkWidget *vbox) {
                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_box_pack_start(GTK_BOX(todo_vbox), todo_scrolled_window, TRUE, TRUE, 0);
     todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-                                        G_TYPE_STRING, G_TYPE_POINTER, gdk_rgba_get_type(), G_TYPE_BOOLEAN, G_TYPE_STRING,
+                                        G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                         G_TYPE_BOOLEAN);
-    //todo_listStore = gtk_list_store_new(TODO_NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING,
-    //                                    G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
-    //                                    G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
     todo_treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
