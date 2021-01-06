@@ -3951,13 +3951,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkWidget *separator;
     GtkWidget *label;
     GtkWidget *button;
-    GtkWidget *table;
+    GtkWidget *grid;
     GtkWidget *notebook_tab;
     GSList *group;
     long ivalue, notebook_page;
     long show_tooltips;
     GtkAccelGroup *accel_group;
-    int address_type_i, IM_type_i, page_i, table_y_i;
+    int address_type_i, IM_type_i, page_i, grid_y_i;
     int x, y;
 
     int i, j, phone_i, num_pages;
@@ -4341,26 +4341,25 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         }
 
         /* Add a notebook page */
-        table_y_i = 0;
+        grid_y_i = 0;
         notebook_label[page_i] = gtk_label_new(_(page_names[page_i]));
-        vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-        gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_temp, notebook_label[page_i]);
+        grid = gtk_grid_new();
+        gtk_notebook_append_page(GTK_NOTEBOOK(notebook), grid, notebook_label[page_i]);
 
-        gtk_widget_show(vbox_temp);
         gtk_widget_show(label);
 
-        table = gtk_table_new(y, x, FALSE);
+        /* Grid on the right side */
 
-        gtk_box_pack_start(GTK_BOX(vbox_temp), table, TRUE, TRUE, 0);
-
-        if ((page_i == 0) && (table_y_i == 0) && (address_version == 1)) {
+        if ((page_i == 0) && (grid_y_i == 0) && (address_version == 1)) {
             GtkWidget *menu, *menu_item;
 
             picture_button = gtk_button_new();
             gtk_widget_set_size_request(GTK_WIDGET(picture_button), PHOTO_X_SZ + 10, PHOTO_Y_SZ + 10);
             gtk_container_set_border_width(GTK_CONTAINER(picture_button), 0);
-            gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(picture_button),
-                             0, 2, 0, 4, GTK_SHRINK, GTK_SHRINK, 0, 0);
+            gtk_widget_set_vexpand(GTK_WIDGET(picture_button), FALSE);
+            gtk_widget_set_valign(GTK_WIDGET(picture_button), GTK_ALIGN_START);
+            gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(picture_button),
+                            0, 0, 2, 4);
 
             /* Create a photo menu */
             menu = gtk_menu_new();
@@ -4401,8 +4400,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                         }
                         gtk_misc_set_padding(GTK_MISC(label), 3, 1);
                         gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
-                        gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                                         x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, GTK_FILL, 0, 0);
+                        // These are the labels "Last Name", "First Name", "Company", "Title" just to the right of the picture
+                        gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+                        gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label),
+                                        x - 2, grid_y_i, 1, 1);
                     }
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
@@ -4410,6 +4412,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                             gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
 
                     /* special case for Note which has a scrollbar and no label */
@@ -4423,11 +4429,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                     /* special case for Note which has a scrollbar and no label */
                     if (schema[i].record_field == contNote) {
-                        gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
-                                                  x - 1, x, table_y_i, table_y_i + 1);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(scrolled_window),
+                                        x - 1, grid_y_i, 10, 1);
+
                     } else {
-                        gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                                  x - 1, x, table_y_i, table_y_i + 1);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                        x - 1, grid_y_i, 10, 1);
                     }
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
@@ -4440,29 +4447,40 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                         dial_button[phone_i] = gtk_button_new_with_label(_("Dial"));
                          g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
                     }
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(dial_button[phone_i]),
-                                     x - 4, x - 3, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(dial_button[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(dial_button[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(dial_button[phone_i]),
+                                    x - 4, grid_y_i, 1, 1);
 
                     radio_button[phone_i] = gtk_radio_button_new_with_label(group, _("Show In List"));
                     group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(radio_button[phone_i]),
-                                     x - 3, x - 2, table_y_i, table_y_i + 1, GTK_SHRINK, 0, 2, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(radio_button[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(radio_button[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(radio_button[phone_i]),
+                                    x - 3, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, radio_button[phone_i]);
 
                     make_phone_menu(phone_i, phone_i, phone_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(phone_type_list_menu[phone_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(phone_type_list_menu[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(phone_type_list_menu[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(phone_type_list_menu[phone_i]),
+                                    x - 2, grid_y_i, 1, 1);
 
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
                     addr_text_buffer[schema[i].record_field] = G_OBJECT(
-                            gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+                    gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     g_signal_connect(G_OBJECT(dial_button[phone_i]), "clicked",
                                        G_CALLBACK(cb_dial_or_mail),
@@ -4472,8 +4490,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     break;
                 case ADDRESS_GUI_ADDR_MENU_TEXT:
                     make_address_type_menu(address_type_i, address_type_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(address_type_list_menu[address_type_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_SHRINK, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(address_type_list_menu[address_type_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(address_type_list_menu[address_type_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(address_type_list_menu[address_type_i]),
+                                    x - 2, grid_y_i, 1, 1);
                     address_type_i++;
 
                     /* Text */
@@ -4483,15 +4503,21 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
                 case ADDRESS_GUI_IM_MENU_TEXT:
                     make_IM_type_menu(IM_type_i, IM_type_i, IM_type_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(IM_type_list_menu[IM_type_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(IM_type_list_menu[IM_type_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(IM_type_list_menu[IM_type_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(IM_type_list_menu[IM_type_i]),
+                                    x - 2, grid_y_i, 1, 1);
                     IM_type_i++;
 
                     /* Text */
@@ -4501,8 +4527,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
@@ -4511,8 +4541,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     button = gtk_button_new_with_label(contact_app_info.labels[schema[i].record_field]);
                     /* Remove normal button behavior to accept focus */
                     gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(button), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(button), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button),
+                                    x - 2, grid_y_i, 1, 1);
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
                     addr_text_buffer[schema[i].record_field] = G_OBJECT(
@@ -4520,16 +4552,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 10, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
                 case ADDRESS_GUI_BIRTHDAY:
                     hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
-                                     0, x, table_y_i, table_y_i + 1,
-                                     GTK_EXPAND | GTK_FILL, GTK_SHRINK, 0, 0);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(hbox_temp),
+                                    0, grid_y_i, 1, 1);
 
                     birthday_checkbox = gtk_check_button_new_with_label(
                             contact_app_info.labels[schema[i].record_field]);
@@ -4540,7 +4575,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     changed_list = g_list_prepend(changed_list, birthday_checkbox);
 
                     birthday_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
-                    gtk_box_pack_start(GTK_BOX(hbox_temp), birthday_box, FALSE, FALSE, 0);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(birthday_box),
+                                    1, grid_y_i, 1, 1);
 
                     birthday_button = gtk_button_new_with_label("");
                     gtk_box_pack_start(GTK_BOX(birthday_box), birthday_button, FALSE, FALSE, 0);
@@ -4560,7 +4596,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
 
                     reminder_entry = gtk_entry_new();
-                    gtk_entry_set_max_length(reminder_entry,2);
+                    gtk_entry_set_max_length(reminder_entry, 2);
                     entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
                     gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 
@@ -4573,7 +4609,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                 default:
                     break;
             }
-            table_y_i++;
+            grid_y_i++;
         }
     }
 
@@ -4630,6 +4666,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_all), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_all), GTK_WRAP_CHAR);
     gtk_container_set_border_width(GTK_CONTAINER(addr_all), 1);
+    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
 
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
