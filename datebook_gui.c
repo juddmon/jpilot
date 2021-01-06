@@ -2664,7 +2664,8 @@ static int datebook_update_listStore(void) {
         entries_shown++;
     }
 
-
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
 
     /* If there are items in the list, highlight the selected row */
     if (entries_shown > 0) {
@@ -2697,7 +2698,6 @@ static int datebook_update_listStore(void) {
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
     return EXIT_SUCCESS;
 }
 

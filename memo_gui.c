@@ -1559,6 +1559,9 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
     jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
 
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
+
     /* If there are items in the list, highlight the selected row */
     if ((main) && (entries_shown > 0)) {
         /* First, select any record being searched for */
@@ -1593,7 +1596,6 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_liststore()\n");
 }
 

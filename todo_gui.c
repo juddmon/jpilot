@@ -2182,6 +2182,8 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
         entries_shown++;
     }
     if ((main) && (entries_shown > 0)) {
+        // Set callback for a row selected
+        gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
         /* First, select any record being searched for */
         if (glob_find_id) {
             todo_find();
@@ -2206,10 +2208,6 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             set_tooltip((int) show_tooltips, tooltip_widget, str);
         }
     }
-    if (main) {
-        gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
-    }
-
 }
 
 gboolean
@@ -2513,7 +2511,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrolled_window),
                                     GTK_POLICY_NEVER,
-            GTK_POLICY_AUTOMATIC);
+                                    GTK_POLICY_AUTOMATIC);
 
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelection, NULL, NULL);
     gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);

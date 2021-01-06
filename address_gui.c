@@ -1651,7 +1651,6 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
             }
         }
     }
-
     if (out) {
         fclose(out);
     }
@@ -3380,13 +3379,16 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         entries_shown++;
     }
 
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
+
     /* If there are items in the list, highlight the selected row */
     if ((main) && (entries_shown > 0)) {
         /* First, select any record being searched for */
         if (glob_find_id) {
             address_find();
         }
-            /* Second, try the currently selected row */
+        /* Second, try the currently selected row */
         else if (rowSelected < entries_shown) {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         } else
@@ -3406,7 +3408,6 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             set_tooltip(show_tooltips, category_menu1, str);
         }
     }
-    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
