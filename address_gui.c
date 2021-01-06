@@ -4593,7 +4593,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     changed_list = g_list_prepend(changed_list, reminder_checkbox);
 
                     reminder_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-                    gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
+                    gtk_box_pack_start(GTK_BOX(birthday_box), reminder_box, FALSE, FALSE, 0);
 
                     reminder_entry = gtk_entry_new();
                     gtk_entry_set_max_length(reminder_entry, 2);
