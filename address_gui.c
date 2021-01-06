@@ -209,7 +209,7 @@ gboolean
 findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreePath *path,
                                  GtkTreeIter *iter,
-                                 gpointer data);
+                                 const gpointer data);
 
 gboolean
 selectRecordAddressByRow(GtkTreeModel *model,
@@ -532,12 +532,12 @@ static GString *contact_to_gstring(struct Contact *cont) {
             case ADDRESS_GUI_WEBSITE_TEXT:
                 if (cont->entry[schema[i].record_field] == NULL) continue;
                 if (address_version) {
-                    g_string_sprintfa(s, _("%s%s: %s"),
-                                      NL, contact_app_info.labels[schema[i].record_field],
-                                      cont->entry[schema[i].record_field]);
+                    g_string_append_printf(s, _("%s%s: %s"),
+                                           NL, contact_app_info.labels[schema[i].record_field],
+                                           cont->entry[schema[i].record_field]);
                 } else {
                     utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-                    g_string_sprintfa(s, _("%s%s: %s"),
+                    g_string_append_printf(s, _("%s%s: %s"),
                                       NL, utf, cont->entry[schema[i].record_field]);
                     g_free(utf);
                 }
@@ -549,7 +549,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -562,7 +562,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.IMLabels[cont->IMLabel[IM_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -575,7 +575,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.addrLabels[cont->addressLabel[address_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -588,7 +588,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                 strftime(birthday_str, sizeof(birthday_str), pref_date, &cont->birthday);
 
                 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"), NL, utf, birthday_str);
+                g_string_append_printf(s, _("%s%s: %s"), NL, utf, birthday_str);
                 g_free(utf);
                 NL[0] = '\n';
                 break;
@@ -1662,7 +1662,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
                                                       G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                       G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
-    GtkTreeView *localTreeView = gtk_tree_view_new_with_model(model);
+    GtkTreeView *localTreeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
@@ -2492,15 +2492,18 @@ static void cb_dial_or_mail(GtkWidget *widget, gpointer data) {
 
 static void cb_address_quickfind(GtkWidget *widget,
                                  gpointer data) {
-    char *entry_text;
+    const gchar *entry_text;
+    gchar *copied_text;
     jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
     if (!strlen(entry_text)) {
         return;
+    } else {
+        copied_text = g_strdup(entry_text);
     }
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, entry_text);
-
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, copied_text);
+    g_free(copied_text);
 }
 
 static void cb_edit_cats_contacts(GtkWidget *widget, gpointer data) {
@@ -2630,7 +2633,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         address_category = selectedItem;
     }
@@ -2842,7 +2845,7 @@ static int browse_photo(GtkWidget *main_window) {
         jp_logf(JP_LOG_WARN, _("chdir() failed\n"));
     }
     selection = NULL;
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     g_object_set_data(G_OBJECT(GTK_FILE_CHOOSER(fileChooserWidget)), "selection", &selection);
@@ -2896,8 +2899,10 @@ static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event) {
         event_button = (GdkEventButton *) event;
         if (event_button->button == 1) {
             menu = GTK_MENU (widget);
-            gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
-                           event_button->button, event_button->time);
+            // TODO verify that this change is correct
+            //gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
+            //               event_button->button, event_button->time);
+            gtk_menu_popup_at_pointer(menu, event);
             return TRUE;
         }
     }
@@ -3105,7 +3110,7 @@ findAddressRecordAndSelect(GtkTreeModel *model,
             GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, (GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -3144,7 +3149,7 @@ selectRecordAddressByRow(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, (GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -3370,7 +3375,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                            ADDRESS_DATA_COLUMN_ENUM, &(temp_cl->mcont),
                            ADDRESS_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
                            ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
-                           ADDRESS_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_color_to_string(&fgColor) : NULL,
+                           ADDRESS_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_rgba_to_string(&fgColor) : NULL,
                            ADDRESSS_FOREGROUND_COLOR_ENABLED_ENUM, showFgColor, -1);
         entries_shown++;
     }
@@ -4045,7 +4050,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_ADDRESS_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
@@ -4294,7 +4299,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         for (j = 0; j < NUM_PHONE_LABELS; j++) {
             if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) &&
                 gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
+                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(phone_type_list_menu[i]), j);
             }
         }
     }
@@ -4398,8 +4403,9 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                             label = gtk_label_new(utf);
                             g_free(utf);
                         }
-                        gtk_misc_set_padding(GTK_MISC(label), 3, 1);
-                        gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
+                        gtk_widget_set_margin_end(GTK_WIDGET(label), 5);
+                        gtk_label_set_xalign(GTK_LABEL(label), 1);
+                        gtk_label_set_yalign(GTK_LABEL(label), 0);
                         // These are the labels "Last Name", "First Name", "Company", "Title" just to the right of the picture
                         gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
                         gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
@@ -4540,7 +4546,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     /* Button used as label */
                     button = gtk_button_new_with_label(contact_app_info.labels[schema[i].record_field]);
                     /* Remove normal button behavior to accept focus */
-                    gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
+                    gtk_widget_set_focus_on_click(GTK_WIDGET(button), FALSE);
                     gtk_widget_set_vexpand(GTK_WIDGET(button), FALSE);
                     gtk_widget_set_valign(GTK_WIDGET(button), GTK_ALIGN_START);
                     gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button),
@@ -4596,7 +4602,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_box_pack_start(GTK_BOX(birthday_box), reminder_box, FALSE, FALSE, 0);
 
                     reminder_entry = gtk_entry_new();
-                    gtk_entry_set_max_length(reminder_entry, 2);
+                    gtk_entry_set_max_length(GTK_ENTRY(reminder_entry), 2);
                     entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
                     gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 
