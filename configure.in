@@ -354,7 +354,7 @@ AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 dnl *** check for pilot-link 0.12.5 and up
 
 if test $pl_version -eq 0 ; then
-   if test $pl_major -ge 13 ; then
+   if test $pl_major -ge 12 ; then
       if test $pl_minor -ge 0 ; then
          pl_version_check_done=yes;
          AC_MSG_RESULT([pilot-link has USB])
@@ -364,7 +364,7 @@ if test $pl_version -eq 0 ; then
    fi
 fi
 if test $pl_version_check_done != yes; then
-   AC_MSG_ERROR([pilot-link version >= 0.13.0 is required])
+   AC_MSG_ERROR([pilot-link version >= 0.12.5 is required])
 fi
 
 dnl restore variables after pilot-link testing
