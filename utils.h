@@ -309,6 +309,7 @@ int undelete_pc_record(AppType app_type, void *VP, int flag);
 gboolean motion_notify_event(GtkWidget *widget, GdkEventMotion *event);
 gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data);
 gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data);
+void button_set_for_motion(int x);
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 
 void free_mem_rec_header(mem_rec_header **mem_rh);

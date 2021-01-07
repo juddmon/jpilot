@@ -3468,6 +3468,9 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
                 unique_id = mcale->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
+
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
                 return TRUE;
@@ -4754,6 +4757,7 @@ static GtkWidget *create_time_menu(int flags) {
                      G_CALLBACK(cb_menu_time),
                        GINT_TO_POINTER(i * cb_factor | flags));
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+    gtk_cell_renderer_set_fixed_size(renderer,-1,1);
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (option), renderer, TRUE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (option), renderer,
                                     "text", 0,
@@ -5648,6 +5652,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkWidget *pixbufwid;
     GdkPixbuf *pixbuf;
     GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(timeRenderer,-1,1);
 
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
                                                                              timeRenderer,
@@ -5658,6 +5663,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     GtkCellRenderer *appointmentRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(appointmentRenderer,-1,1);
 
     GtkTreeViewColumn *appointmentColumn = gtk_tree_view_column_new_with_attributes("Appointment",
                                                                                     appointmentRenderer,
@@ -5775,6 +5781,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
     todo_treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(taskRenderer,-1,1);
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
@@ -5788,6 +5795,7 @@ void buildToDoList(const GtkWidget *vbox) {
 
 
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(dateRenderer,-1,1);
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
@@ -5803,6 +5811,7 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
     GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(priorityRenderer,-1,1);
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,

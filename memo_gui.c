@@ -1932,6 +1932,7 @@ void initializeTreeView() {
     GtkTreeSelection *treeSelection = NULL;
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(columnRenderer,-1,1);
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
                                                                          "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
@@ -1974,6 +1975,9 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
             if (mmemo != NULL) {
                 unique_id = mmemo->unique_id;
             }
+
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
 
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */

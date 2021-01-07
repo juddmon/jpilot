@@ -293,6 +293,8 @@ int cal_dialog(GtkWindow *main_window,
     GtkWidget *window;
     int return_code;
 
+    glob_mouse_pressed = 0;
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), title);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
@@ -311,7 +313,7 @@ int cal_dialog(GtkWindow *main_window,
     hbox = gtk_hbutton_box_new();
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-     gtk_box_set_spacing(GTK_BOX(hbox), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
     gtk_calendar_set_display_options(GTK_CALENDAR(cal),
@@ -1154,6 +1156,8 @@ int dialog_generic(GtkWindow *main_window,
     GtkWidget *image;
     char *markup;
 
+    glob_mouse_pressed = 0;
+
     /* This gdk function call is required in order to avoid a GTK
     * error which causes X and the mouse pointer to lock up.
     * The lockup is generated whenever a modal dialog is created
@@ -1253,6 +1257,8 @@ int dialog_generic_ok(GtkWidget *widget,
                       char *title, int type, char *text) {
     char *button_text[] = {N_("OK")};
 
+    glob_mouse_pressed = 0;
+
     if (widget) {
         return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
                               title, type, text, 1, button_text);
@@ -1268,6 +1274,8 @@ int dialog_generic_ok(GtkWidget *widget,
 int dialog_save_changed_record(GtkWidget *widget, int changed) {
     int b = 0;
     char *button_text[] = {N_("No"), N_("Yes")};
+
+    glob_mouse_pressed = 0;
 
     if ((changed != MODIFY_FLAG) && (changed != NEW_FLAG)) {
         return EXIT_SUCCESS;
@@ -1292,6 +1300,8 @@ int dialog_save_changed_record(GtkWidget *widget, int changed) {
 int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed) {
     int b = 0;
     char *button_text[] = {N_("Cancel"), N_("No"), N_("Yes")};
+
+    glob_mouse_pressed = 0;
 
     if ((changed != MODIFY_FLAG) && (changed != NEW_FLAG)) {
         return EXIT_SUCCESS;
@@ -3795,6 +3805,7 @@ static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id) {
 
     return EXIT_SUCCESS;
 }
+
 gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
     guint button;
     gdk_event_get_button(event,&button);
@@ -3803,6 +3814,7 @@ gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointe
         glob_mouse_pressed = 1;
     }
 }
+
 gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
     guint button;
     gdk_event_get_button(event,&button);
@@ -3810,4 +3822,8 @@ gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpoint
     if(button == 1) {
         glob_mouse_pressed = 0;
     }
+}
+
+void button_set_for_motion(int x) {
+    glob_mouse_pressed = x;
 }

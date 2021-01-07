@@ -1406,6 +1406,9 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
                 unique_id = mkr->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
+
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
                 return TRUE;

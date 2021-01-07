@@ -898,6 +898,7 @@ static GtkWidget *cb_todo_init_treeView() {
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     GtkWidget *todo_treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(taskRenderer,-1,1);
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
@@ -911,6 +912,7 @@ static GtkWidget *cb_todo_init_treeView() {
 
 
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(dateRenderer,-1,1);
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
@@ -926,6 +928,7 @@ static GtkWidget *cb_todo_init_treeView() {
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
     GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(priorityRenderer,-1,1);
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
@@ -1673,6 +1676,8 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
             if (mtodo != NULL) {
                 unique_id = mtodo->unique_id;
             }
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
                 return TRUE;
@@ -2401,6 +2406,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeView = gtk_tree_view_new_with_model(model);
 
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(taskRenderer,-1,1);
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
@@ -2414,6 +2420,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
 
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(dateRenderer,-1,1);
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
@@ -2429,6 +2436,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
     GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(priorityRenderer,-1,1);
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,

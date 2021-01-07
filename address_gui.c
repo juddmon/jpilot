@@ -3079,8 +3079,6 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
     char *list_text;
     char *entry_text = data;
 
-    //int i, r;
-
     gtk_tree_model_get(model, iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
     int result = strncasecmp(list_text, entry_text, strlen(entry_text));
     if (!result) {
@@ -3733,8 +3731,16 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                 unique_id = mcont->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
+                // https://developer.gnome.org/gtk3/stable/GtkTreeSelection.html#gtk-tree-selection-set-select-function
+                // return false is the node selected should not be changed
+                return FALSE;
+            }
+            if (b == DIALOG_SAID_2) { /* No */
+                set_new_button_to(CLEAR_FLAG);
                 return TRUE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
@@ -3749,7 +3755,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             }
             return TRUE;
         }
-
 
         if (mcont == NULL) {
             return TRUE;

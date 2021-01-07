@@ -1142,6 +1142,9 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
                 unique_id = mexp->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
+
             b = dialog_save_changed_record(scrolled_window, record_changed);
             if (b == DIALOG_SAID_2) {
                 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
