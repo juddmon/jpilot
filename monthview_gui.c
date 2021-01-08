@@ -458,7 +458,7 @@ void monthview_gui(struct tm *date_in)
    align = gtk_alignment_new(0.5, 0.5, 0, 0);
    gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
 
-   hbox_temp = gtk_hbutton_box_new();
+   hbox_temp = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_set_spacing(GTK_BOX(hbox_temp), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox_temp), 6);
 

@@ -1027,7 +1027,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
 #endif
 
     /* Done button */
-    hbox_temp = gtk_hbutton_box_new();
+    hbox_temp = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox_temp), GTK_BUTTONBOX_END);
     gtk_box_pack_start(GTK_BOX(vbox), hbox_temp, FALSE, FALSE, 1);
 

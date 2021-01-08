@@ -1488,7 +1488,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Make the menus */
     make_menus();
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 

@@ -205,7 +205,7 @@ static int dialog_install_user(GtkWindow *main_window,
    gtk_box_pack_start(GTK_BOX(hbox), ID_entry, TRUE, TRUE, 2);
 
    /* Cancel/Install buttons */
-   hbox = gtk_hbutton_box_new();
+   hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);

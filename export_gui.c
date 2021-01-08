@@ -340,7 +340,7 @@ int export_gui(GtkWidget *main_window,
                        G_CALLBACK(cb_export_browse), export_window);
 
     /* Cancel/OK buttons */
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox), 6);

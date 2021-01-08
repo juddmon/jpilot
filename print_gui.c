@@ -328,7 +328,7 @@ int print_gui(GtkWidget *main_window, int app, int date_button, int mon_week_day
    gtk_entry_set_text(GTK_ENTRY(print_command_entry), svalue);
 
    /* Dialog button box */
-   hbox = gtk_hbutton_box_new();
+   hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);

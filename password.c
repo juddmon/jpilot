@@ -319,7 +319,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
-   hbox1 = gtk_hbutton_box_new();
+   hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox1), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);

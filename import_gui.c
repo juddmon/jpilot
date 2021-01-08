@@ -325,7 +325,7 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
       gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textw_buffer), text, -1);
    }
 
-   temp_hbox = gtk_hbutton_box_new();
+   temp_hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_set_spacing(GTK_BOX(temp_hbox), 6);
    gtk_container_set_border_width(GTK_CONTAINER(temp_hbox), 6);
    gtk_box_pack_start(GTK_BOX(vbox), temp_hbox, FALSE, FALSE, 0);

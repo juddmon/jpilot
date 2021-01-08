@@ -351,7 +351,7 @@ int dialog_dial(GtkWindow *main_window, char *string, char *ext) {
     Pdata->entry_command = entry;
 
     /* Button Box */
-    hbox1 = gtk_hbutton_box_new();
+    hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 7);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
