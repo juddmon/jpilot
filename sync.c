@@ -656,7 +656,7 @@ static int sync_rotate_backups(const int num_backups)
    char full_name[FILENAME_MAX];
    char full_newdir[FILENAME_MAX];
    char full_backup[FILENAME_MAX];
-   char full_oldest[FILENAME_MAX];
+   char full_oldest[FILENAME_MAX + 22];
    char full_src[FILENAME_MAX];
    char full_dest[FILENAME_MAX];
    int r;
