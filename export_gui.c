@@ -119,7 +119,7 @@ int export_browse(GtkWidget *main_window, int pref_export) {
             jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
         }
     }
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_SAVE,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
@@ -323,7 +323,7 @@ int export_gui(GtkWidget *main_window,
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     save_as_entry = gtk_entry_new();
-    gtk_entry_set_max_length(save_as_entry,250);
+    gtk_entry_set_max_length(GTK_ENTRY(save_as_entry), 250);
     svalue = NULL;
     if (glob_pref_export) {
         get_pref(glob_pref_export, NULL, &svalue);
