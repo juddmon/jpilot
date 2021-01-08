@@ -133,7 +133,7 @@ static void cb_restore_quit(GtkWidget *widget, gpointer data) {
  */
 static int populate_listStore_subpath(char *path, int check_for_dups, int check_exts) {
     char *row_text[1];
-    GtkListStore *listStore = GTK_LIST_STORE(gtk_tree_view_get_model(restoreTreeView));
+    GtkListStore *listStore = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(restoreTreeView)));
     GtkTreeIter iter;
     DIR *dir;
     struct dirent *dirent;
@@ -281,19 +281,24 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
 
     /* Label for instructions */
     label = gtk_label_new(_("To restore your handheld:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("1. Choose the applications you wish to restore.  The default is all."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("2. Enter the User Name and User ID."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("3. Press the OK button."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("This will overwrite data that is currently on the handheld."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
     /* List of files to restore */
@@ -326,7 +331,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     label = gtk_label_new(_("User Name"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     user_entry = gtk_entry_new();
-    gtk_entry_set_max_length(user_entry,126);
+    gtk_entry_set_max_length(GTK_ENTRY(user_entry), 126);
     entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
     get_pref(PREF_USER, NULL, &svalue);
     if ((svalue) && (svalue[0])) {
@@ -346,7 +351,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     label = gtk_label_new(_("User ID"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     user_id_entry = gtk_entry_new();
-    gtk_entry_set_max_length(user_id_entry,10);
+    gtk_entry_set_max_length(GTK_ENTRY(user_id_entry), 10);
     entry_set_multiline_truncate(GTK_ENTRY(user_id_entry), TRUE);
     get_pref(PREF_USER_ID, &ivalue, NULL);
     sprintf(str_int, "%ld", ivalue);
