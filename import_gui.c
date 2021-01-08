@@ -284,7 +284,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
       g_snprintf(str, sizeof(str), _("Record was not marked as private"));
    }
    label = gtk_label_new(str);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+   gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+   gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
    /* Category */
@@ -293,7 +294,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    g_snprintf(str, sizeof(str), _("Category before import was: [%s]"), l);
    g_free(l);
    label = gtk_label_new(str);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+   gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+   gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 
@@ -301,7 +303,8 @@ int import_record_ask(GtkWidget *main_window, GtkWidget *pane,
    g_snprintf(str, sizeof(str), _("Record will be put in category [%s]"), l);
    g_free(l);
    label = gtk_label_new(str);
-   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+   gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+   gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
    /* Text window with scrollbar to display record */
@@ -384,7 +387,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
 
 
     g_snprintf(title, sizeof(title), "%s %s", PN, _("Import"));
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("Import"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Import"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "Close", GTK_RESPONSE_CANCEL, "Import", GTK_RESPONSE_ACCEPT,
                                                     NULL);
     get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
