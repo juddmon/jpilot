@@ -151,8 +151,8 @@ static int guess_file_type(const char *path)
 /* Main import file selection window */
 static gboolean cb_destroy(GtkWidget *widget)
 {
-   widget = NULL;
-   return FALSE;
+    widget = NULL;
+    return FALSE;
 }
 
 static void cb_quit(GtkWidget *widget, gpointer data)
@@ -179,7 +179,6 @@ static void cb_quit(GtkWidget *widget, gpointer data)
 
    set_pref(PREF_MEMO_IMPORT_PATH, 0, dir, TRUE);
 
-
    gtk_widget_destroy(widget);
 }
 
@@ -194,7 +193,6 @@ static void cb_import(GtkWidget *widget, gpointer filesel)
    struct stat statb;
 
    jp_logf(JP_LOG_DEBUG, "cb_import\n");
-   //sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(filesel));
    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
@@ -422,20 +420,10 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
     /* Set the type to match the first button, which will be set */
     glob_type_selected = type_int[0];
     gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));
-    if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
-        //run other window here..  not sure where it is defined at the moment.
-        cb_import(fileChooserWidget,NULL);
-        gtk_widget_destroy(fileChooserWidget);
-    } else {
-        gtk_widget_destroy(fileChooserWidget);
-    }
-
-
-
     g_signal_connect(G_OBJECT(fileChooserWidget), "destroy",
                        G_CALLBACK(cb_destroy), fileChooserWidget);
+    if (gtk_dialog_run(GTK_DIALOG(fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
+        //run other window here..  not sure where it is defined at the moment.
+        cb_import(fileChooserWidget, NULL);
+    }
 }
-
-
-
-
