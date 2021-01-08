@@ -310,7 +310,7 @@ int cal_dialog(GtkWindow *main_window,
     cal = gtk_calendar_new();
     gtk_box_pack_start(GTK_BOX(vbox), cal, TRUE, TRUE, 0);
 
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);
@@ -1159,10 +1159,18 @@ int dialog_generic(GtkWindow *main_window,
     glob_mouse_pressed = 0;
 
     /* This gdk function call is required in order to avoid a GTK
-    * error which causes X and the mouse pointer to lock up.
-    * The lockup is generated whenever a modal dialog is created
-    * from the callback routine of a treeView. */
+     * error which causes X and the mouse pointer to lock up.
+     * The lockup is generated whenever a modal dialog is created
+     * from the callback routine of a treeView.
+     */
+#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION >= 20
+    GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(main_window));
+    GdkDisplay *display = gdk_window_get_display(GDK_WINDOW(gdk_window));
+    GdkSeat *seat = gdk_display_get_default_seat(display);
+    gdk_seat_ungrab(seat);
+#else
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
+#endif
 
     dialog_result = 0;
     glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -1215,7 +1223,7 @@ int dialog_generic(GtkWindow *main_window,
     gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
 
     /* Create buttons */
-    hbox1 = gtk_hbutton_box_new();
+    hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox1), 6);
