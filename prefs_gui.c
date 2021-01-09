@@ -393,7 +393,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     GtkWidget * pref_rc_file;
     GtkWidget *label;
     GtkWidget *button;
-    GtkWidget *table;
+    GtkWidget *grid;
     GtkWidget *vbox;
     GtkWidget *vbox_locale;
     GtkWidget *vbox_settings;
@@ -487,94 +487,78 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
 
     /************************************************************/
     /* Locale preference tab */
-    table = gtk_table_new(5, 2, FALSE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 5);
-    gtk_box_pack_start(GTK_BOX(vbox_locale), table, FALSE, FALSE, 0);
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 2);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 5);
+    gtk_box_pack_start(GTK_BOX(vbox_locale), grid, FALSE, FALSE, 0);
+
+    /* Locale preference tab */
 
     /* Character Set */
     label = gtk_label_new(_("Character Set"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 1, 0, 1);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 0, 1, 1);
 
     make_pref_menu(&pref_char_set, PREF_CHAR_SET);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_char_set),
-                              1, 2, 0, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(pref_char_set), 1, 0, 1, 1);
 
     get_pref(PREF_CHAR_SET, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(pref_char_set), ivalue);
     /* Shortdate */
     label = gtk_label_new(_("Short date format"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 1, 1, 2);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 1, 1, 1);
 
     make_pref_menu(&pref_short_date, PREF_SHORTDATE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_short_date),
-                              1, 2, 1, 2);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(pref_short_date), 1, 1, 1, 1);
 
     get_pref(PREF_SHORTDATE, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(pref_short_date), ivalue);
 
     /* Longdate */
     label = gtk_label_new(_("Long date format"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 1, 2, 3);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 2, 1, 1);
 
     make_pref_menu(&pref_long_date, PREF_LONGDATE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_long_date),
-                              1, 2, 2, 3);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(pref_long_date), 1, 2, 1, 1);
 
     get_pref(PREF_LONGDATE, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(pref_long_date), ivalue);
 
     /* Time */
     label = gtk_label_new(_("Time format"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 1, 3, 4);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 3, 1, 1);
 
     make_pref_menu(&pref_time, PREF_TIME);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(pref_time),
-                              1, 2, 3, 4);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(pref_time), 1, 3, 1, 1);
 
     get_pref(PREF_TIME, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(pref_time), ivalue);
 
     /**********************************************************************/
     /* Settings preference tab */
-    table = gtk_table_new(4, 3, FALSE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 5);
-    gtk_box_pack_start(GTK_BOX(vbox_settings), table, FALSE, FALSE, 0);
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 2);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 5);
+    gtk_box_pack_start(GTK_BOX(vbox_settings), grid, FALSE, FALSE, 0);
 
     /* GTK colors file */
     label = gtk_label_new(_("GTK color theme file"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 2, 0, 1);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 1, 0, 1, 1);
 
     make_pref_menu(&pref_rc_file, PREF_RCFILE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(
-                                      pref_rc_file),
-                              2, 3, 0, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(pref_rc_file), 2, 0, 1, 1);
+
 
     get_pref(PREF_RCFILE, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(pref_rc_file), ivalue);
 
     /* Port */
     label = gtk_label_new(_("Sync Port"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 1, 1, 2);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 1, 1, 1);
 
     port_entry = gtk_entry_new();
-    gtk_entry_set_max_length(port_entry, MAX_PREF_LEN - 2);
+    gtk_entry_set_max_length(GTK_ENTRY(port_entry), MAX_PREF_LEN - 2);
     entry_set_multiline_truncate(GTK_ENTRY(port_entry), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_entry),
-                              2, 3, 1, 2);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(port_entry), 2, 1, 1, 1);
     get_pref(PREF_PORT, NULL, &cstr);
     if (cstr) {
         gtk_entry_set_text(GTK_ENTRY(port_entry), cstr);
@@ -586,18 +570,14 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     /* Sync Port Menu */
     /* Note that port_entry must exist before we call this function */
     make_serial_port_menu(&port_menu);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(port_menu),
-                              1, 2, 1, 2);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(port_menu), 1, 1, 1, 1);
 
     /* Serial Rate */
     label = gtk_label_new(_("Serial Rate"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 2, 2, 3);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 1, 2, 1, 1);
 
     make_pref_menu(&rate_menu, PREF_RATE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(rate_menu),
-                              2, 3, 2, 3);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(rate_menu), 2, 2, 1, 1);
 
     get_pref(PREF_RATE, &ivalue, NULL);
     gtk_combo_box_set_active(GTK_COMBO_BOX(rate_menu), ivalue);
@@ -611,16 +591,13 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
 
     /* Number of backups */
     label = gtk_label_new(_("Number of backups to be archived"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label),
-                              0, 2, 3, 4);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 3, 2, 1);
 
     backups_entry = gtk_entry_new();
-    gtk_entry_set_max_length(backups_entry, 2);
+    gtk_entry_set_max_length(GTK_ENTRY(backups_entry), 2);
     entry_set_multiline_truncate(GTK_ENTRY(backups_entry), TRUE);
     gtk_widget_set_size_request(backups_entry, 30, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(backups_entry),
-                              2, 3, 3, 4);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(backups_entry), 2, 3, 1, 1);
     get_pref(PREF_NUM_BACKUPS, &ivalue, NULL);
     sprintf(temp_str, "%ld", ivalue);
     gtk_entry_set_text(GTK_ENTRY(backups_entry), temp_str);
@@ -747,7 +724,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
     mail_command_entry = gtk_entry_new();
-    gtk_entry_set_max_length(mail_command_entry, MAX_PREF_LEN - 2);
+    gtk_entry_set_max_length(GTK_ENTRY(mail_command_entry), MAX_PREF_LEN - 2);
 
     get_pref(PREF_MAIL_COMMAND, NULL, &cstr);
     if (cstr) {
@@ -759,8 +736,8 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), mail_command_entry, TRUE, TRUE, 1);
 
     label = gtk_label_new(_("%s is replaced by the e-mail address"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
     gtk_box_pack_start(GTK_BOX(vbox_address), label, FALSE, FALSE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
 
     /**********************************************************************/
     /* ToDo preference tab */
@@ -825,7 +802,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                     PREF_TODO_DAYS_DUE, hbox_temp, cb_checkbox_set_pref);
 
     todo_days_due_entry = gtk_entry_new();
-    gtk_entry_set_max_length(todo_days_due_entry, MAX_PREF_LEN - 2);
+    gtk_entry_set_max_length(GTK_ENTRY(todo_days_due_entry), MAX_PREF_LEN - 2);
     entry_set_multiline_truncate(GTK_ENTRY(todo_days_due_entry), TRUE);
     get_pref(PREF_TODO_DAYS_TILL_DUE, &ivalue, NULL);
     temp[0] = '\0';
@@ -894,7 +871,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 0);
 
     ext_editor_entry = gtk_entry_new();
-    gtk_entry_set_max_length(ext_editor_entry, MAX_PREF_LEN - 2);
+    gtk_entry_set_max_length(GTK_ENTRY(ext_editor_entry), MAX_PREF_LEN - 2);
     get_pref(PREF_EXTERNAL_EDITOR, NULL, &cstr);
     if (cstr) {
         gtk_entry_set_text(GTK_ENTRY(ext_editor_entry), cstr);
@@ -905,7 +882,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), ext_editor_entry, TRUE, TRUE, 1);
 
     label = gtk_label_new(_("Use Ctrl-E inside a memo to launch external editor for memo text"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_memo), label, FALSE, FALSE, 0);
 
     /**********************************************************************/
@@ -921,7 +898,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
 
     /* Shell warning label */
     label = gtk_label_new(_("WARNING: executing arbitrary shell commands can be dangerous!!!"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
     /* Alarm Command to execute */
@@ -932,7 +909,7 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), label, FALSE, FALSE, 10);
 
     alarm_command_entry = gtk_entry_new();
-    gtk_entry_set_max_length(alarm_command_entry, MAX_PREF_LEN - 2);
+    gtk_entry_set_max_length(GTK_ENTRY(alarm_command_entry), MAX_PREF_LEN - 2);
     get_pref(PREF_ALARM_COMMAND, NULL, &cstr);
     if (cstr) {
         gtk_entry_set_text(GTK_ENTRY(alarm_command_entry), cstr);
@@ -943,30 +920,30 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(hbox_temp), alarm_command_entry, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("%t is replaced with the alarm time"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("%d is replaced with the alarm date"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
 #ifdef ENABLE_ALARM_SHELL_DANGER
     label = gtk_label_new(_("%D is replaced with the alarm description"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("%N is replaced with the alarm note"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #else
     label = gtk_label_new(_("%D (description substitution) is disabled in this build"));
     gtk_widget_set_sensitive(label, FALSE);
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 
     label = gtk_label_new(_("%N (note substitution) is disabled in this build"));
     gtk_widget_set_sensitive(label, FALSE);
-    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox_alarms), label, FALSE, FALSE, 0);
 #endif
 
