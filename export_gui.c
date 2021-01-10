@@ -119,7 +119,7 @@ int export_browse(GtkWidget *main_window, int pref_export) {
             jp_logf(JP_LOG_WARN, "chdir failed %s %d\n", __FILE__, __LINE__);
         }
     }
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), main_window, GTK_FILE_CHOOSER_ACTION_SAVE,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     //This blocks main thread until they close the dialog.
@@ -170,10 +170,7 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
-    int r;
-    const char *svalue;
-    r = export_browse(GTK_WIDGET(data), glob_pref_export);
-
+    export_browse(GTK_WIDGET(data), glob_pref_export);
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {
@@ -323,7 +320,7 @@ int export_gui(GtkWidget *main_window,
     label = gtk_label_new(_("Save as"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     save_as_entry = gtk_entry_new();
-    gtk_entry_set_max_length(save_as_entry,250);
+    gtk_entry_set_max_length(GTK_ENTRY(save_as_entry), 250);
     svalue = NULL;
     if (glob_pref_export) {
         get_pref(glob_pref_export, NULL, &svalue);
@@ -340,7 +337,7 @@ int export_gui(GtkWidget *main_window,
                        G_CALLBACK(cb_export_browse), export_window);
 
     /* Cancel/OK buttons */
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox), 6);

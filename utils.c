@@ -293,6 +293,8 @@ int cal_dialog(GtkWindow *main_window,
     GtkWidget *window;
     int return_code;
 
+    glob_mouse_pressed = 0;
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), title);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
@@ -308,10 +310,10 @@ int cal_dialog(GtkWindow *main_window,
     cal = gtk_calendar_new();
     gtk_box_pack_start(GTK_BOX(vbox), cal, TRUE, TRUE, 0);
 
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
-     gtk_box_set_spacing(GTK_BOX(hbox), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox), 6);
     gtk_container_add(GTK_CONTAINER(vbox), hbox);
 
     gtk_calendar_set_display_options(GTK_CALENDAR(cal),
@@ -1154,11 +1156,21 @@ int dialog_generic(GtkWindow *main_window,
     GtkWidget *image;
     char *markup;
 
+    glob_mouse_pressed = 0;
+
     /* This gdk function call is required in order to avoid a GTK
-    * error which causes X and the mouse pointer to lock up.
-    * The lockup is generated whenever a modal dialog is created
-    * from the callback routine of a treeView. */
+     * error which causes X and the mouse pointer to lock up.
+     * The lockup is generated whenever a modal dialog is created
+     * from the callback routine of a treeView.
+     */
+#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION >= 20
+    GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(main_window));
+    GdkDisplay *display = gdk_window_get_display(GDK_WINDOW(gdk_window));
+    GdkSeat *seat = gdk_display_get_default_seat(display);
+    gdk_seat_ungrab(seat);
+#else
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
+#endif
 
     dialog_result = 0;
     glob_dialog = gtk_widget_new(GTK_TYPE_WINDOW,
@@ -1211,7 +1223,7 @@ int dialog_generic(GtkWindow *main_window,
     gtk_box_pack_start(GTK_BOX(vbox2), label1, FALSE, FALSE, 2);
 
     /* Create buttons */
-    hbox1 = gtk_hbutton_box_new();
+    hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox1), 6);
@@ -1253,6 +1265,8 @@ int dialog_generic_ok(GtkWidget *widget,
                       char *title, int type, char *text) {
     char *button_text[] = {N_("OK")};
 
+    glob_mouse_pressed = 0;
+
     if (widget) {
         return dialog_generic(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(widget))),
                               title, type, text, 1, button_text);
@@ -1268,6 +1282,8 @@ int dialog_generic_ok(GtkWidget *widget,
 int dialog_save_changed_record(GtkWidget *widget, int changed) {
     int b = 0;
     char *button_text[] = {N_("No"), N_("Yes")};
+
+    glob_mouse_pressed = 0;
 
     if ((changed != MODIFY_FLAG) && (changed != NEW_FLAG)) {
         return EXIT_SUCCESS;
@@ -1292,6 +1308,8 @@ int dialog_save_changed_record(GtkWidget *widget, int changed) {
 int dialog_save_changed_record_with_cancel(GtkWidget *widget, int changed) {
     int b = 0;
     char *button_text[] = {N_("Cancel"), N_("No"), N_("Yes")};
+
+    glob_mouse_pressed = 0;
 
     if ((changed != MODIFY_FLAG) && (changed != NEW_FLAG)) {
         return EXIT_SUCCESS;
@@ -2413,14 +2431,12 @@ int make_category_menu(GtkWidget **category_menu,
                        int add_edit_cat_item) {
 
     int i;
-    int offset = 0;
     GtkListStore *catListStore = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
     GtkTreeIter iter;
 
     if (add_an_all_item) {
         gtk_list_store_append (catListStore, &iter);
         gtk_list_store_set (catListStore, &iter, 0, _("All"), 1, CATEGORY_ALL, -1);
-        offset = 1;
    }
 
     for (i = 0; i < NUM_CAT_ITEMS; i++) {
@@ -2932,12 +2948,11 @@ int read_gtkrc_file(void) {
     struct stat buf;
     const char *svalue;
 
-    GtkStyleContext *context;
     GtkCssProvider *provider;
-    GtkCssProvider *providerold;
+    //GtkCssProvider *providerold;
 
     provider = gtk_css_provider_new ();
-    providerold = gtk_css_provider_new ();
+    //providerold = gtk_css_provider_new ();
 
     get_pref(PREF_RCFILE, NULL, &svalue);
     if (svalue) {
@@ -3795,19 +3810,27 @@ static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id) {
 
     return EXIT_SUCCESS;
 }
-gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+
+gboolean button_pressed_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer   user_data) {
     guint button;
     gdk_event_get_button(event,&button);
     //left mouse button
     if(button == 1) {
         glob_mouse_pressed = 1;
     }
+    return FALSE;
 }
-gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+
+gboolean button_released_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer   user_data) {
     guint button;
     gdk_event_get_button(event,&button);
     //left mouse button
     if(button == 1) {
         glob_mouse_pressed = 0;
     }
+    return FALSE;
+}
+
+void button_set_for_motion(int x) {
+    glob_mouse_pressed = x;
 }

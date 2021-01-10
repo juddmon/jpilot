@@ -418,7 +418,6 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
    long fdow;
    int mask;
 #ifdef ENABLE_DATEBK
-   int ret;
    int cat_bit;
    int db3_type;
    long use_db3_tags;
@@ -513,7 +512,7 @@ int print_months_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
          if (use_db3_tags) {
-            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
             /* jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category); */
             cat_bit=1<<db4.category;
             if (!(cat_bit & datebk_category)) {
@@ -630,7 +629,6 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
    int n;
    time_t ltime;
 #ifdef ENABLE_DATEBK
-   int ret;
    int cat_bit;
    int db3_type;
    long use_db3_tags;
@@ -696,7 +694,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
          if (use_db3_tags) {
-            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
             cat_bit=1<<db4.category;
             if (!(cat_bit & datebk_category)) continue;
          }
@@ -744,7 +742,7 @@ int print_weeks_appts(struct tm *date_in, PaperSize paper_size)
       for (temp_cel = ce_list; temp_cel; temp_cel=temp_cel->next) {
 #ifdef ENABLE_DATEBK
          if (use_db3_tags) {
-            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
             jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
             cat_bit=1<<db4.category;
             if (!(cat_bit & datebk_category)) {

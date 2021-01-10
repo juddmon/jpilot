@@ -235,7 +235,6 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 }
 
 static void connect_changed_signals(int con_or_dis) {
-    int i;
     static int connected = 0;
 
     /* CONNECT */
@@ -809,8 +808,7 @@ static void cb_memo_update_listStore(GtkWidget *treeView, int category) {
 static GtkWidget *cb_memo_init_export_treeView() {
     GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                  G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    GtkWidget *treeView = GTK_WIDGET(gtk_tree_view_new_with_model(listStore));
-    GtkTreeSelection *treeSelection = NULL;
+    GtkWidget *treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
@@ -972,8 +970,8 @@ void delete_memo(MyMemo *mmemo, gpointer data) {
 }
 
 static void cb_delete_memo(GtkWidget *widget,
-                           gpointer data) {
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecordMemo, data);
+                           const void *data) {
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), deleteRecordMemo, (gpointer) data);
     return;
 
 }
@@ -1127,7 +1125,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         memo_category = selectedItem;
     }
@@ -1171,7 +1169,6 @@ static int memo_clear_details(void) {
 }
 
 static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
-    int i;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
 
@@ -1439,7 +1436,9 @@ selectRecordByRowMemo(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                     gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), MEMO_COLUMN_ENUM),
+                                     FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -1557,6 +1556,9 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
     jp_logf(JP_LOG_DEBUG, "entries_shown=%d\n", entries_shown);
 
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
+
     /* If there are items in the list, highlight the selected row */
     if ((main) && (entries_shown > 0)) {
         /* First, select any record being searched for */
@@ -1591,7 +1593,6 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForMemo, NULL, NULL);
     jp_logf(JP_LOG_DEBUG, "Leaving memo_update_liststore()\n");
 }
 
@@ -1610,7 +1611,9 @@ findRecordMemo(GtkTreeModel *model,
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_set_select_function(selection, handleRowSelectionForMemo, NULL, NULL);
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, MEMO_DATA_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path,
+                                         gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), MEMO_DATA_COLUMN_ENUM),
+                                         FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -1761,7 +1764,7 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_MEMO_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 
@@ -1926,6 +1929,7 @@ void initializeTreeView() {
     GtkTreeSelection *treeSelection = NULL;
     treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(columnRenderer,-1,1);
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
                                                                          "cell-background-rgba",
                                                                          MEMO_BACKGROUND_COLOR_ENUM,
@@ -1958,16 +1962,19 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
     MyMemo *mmemo;
     int b;
     int index, sorted_position;
-    int unique_id;
+    // int unique_id;
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
         row_selected = i[0];
         gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-            if (mmemo != NULL) {
-                unique_id = mmemo->unique_id;
-            }
+            //if (mmemo != NULL) {
+            //    unique_id = mmemo->unique_id;
+            //}
+
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
 
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */

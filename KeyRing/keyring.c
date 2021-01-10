@@ -1406,6 +1406,9 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
                 unique_id = mkr->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
+
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
                 return TRUE;
@@ -2549,7 +2552,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 #endif
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_KEYRING_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), ivalue);
 

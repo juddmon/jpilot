@@ -209,7 +209,7 @@ gboolean
 findAddressRecordByTextAndSelect(GtkTreeModel *model,
                                  GtkTreePath *path,
                                  GtkTreeIter *iter,
-                                 gpointer data);
+                                 const gpointer data);
 
 gboolean
 selectRecordAddressByRow(GtkTreeModel *model,
@@ -532,12 +532,12 @@ static GString *contact_to_gstring(struct Contact *cont) {
             case ADDRESS_GUI_WEBSITE_TEXT:
                 if (cont->entry[schema[i].record_field] == NULL) continue;
                 if (address_version) {
-                    g_string_sprintfa(s, _("%s%s: %s"),
-                                      NL, contact_app_info.labels[schema[i].record_field],
-                                      cont->entry[schema[i].record_field]);
+                    g_string_append_printf(s, _("%s%s: %s"),
+                                           NL, contact_app_info.labels[schema[i].record_field],
+                                           cont->entry[schema[i].record_field]);
                 } else {
                     utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-                    g_string_sprintfa(s, _("%s%s: %s"),
+                    g_string_append_printf(s, _("%s%s: %s"),
                                       NL, utf, cont->entry[schema[i].record_field]);
                     g_free(utf);
                 }
@@ -549,7 +549,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.phoneLabels[cont->phoneLabel[phone_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -562,7 +562,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.IMLabels[cont->IMLabel[IM_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -575,7 +575,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                     continue;
                 }
                 utf = charset_p2newj(contact_app_info.addrLabels[cont->addressLabel[address_i]], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"),
+                g_string_append_printf(s, _("%s%s: %s"),
                                   NL, utf,
                                   cont->entry[schema[i].record_field]);
                 g_free(utf);
@@ -588,7 +588,7 @@ static GString *contact_to_gstring(struct Contact *cont) {
                 strftime(birthday_str, sizeof(birthday_str), pref_date, &cont->birthday);
 
                 utf = charset_p2newj(contact_app_info.labels[schema[i].record_field], 16, char_set);
-                g_string_sprintfa(s, _("%s%s: %s"), NL, utf, birthday_str);
+                g_string_append_printf(s, _("%s%s: %s"), NL, utf, birthday_str);
                 g_free(utf);
                 NL[0] = '\n';
                 break;
@@ -1651,7 +1651,6 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
             }
         }
     }
-
     if (out) {
         fclose(out);
     }
@@ -1662,7 +1661,7 @@ static GtkWidget *cb_addr_export_init_treeView() {
                                                       G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                       G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkTreeModel *model = GTK_TREE_MODEL(localListStore);
-    GtkTreeView *localTreeView = gtk_tree_view_new_with_model(model);
+    GtkTreeView *localTreeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
@@ -2274,7 +2273,6 @@ static void cb_notebook_changed(GtkWidget *widget,
 }
 
 static void get_address_attrib(unsigned char *attrib) {
-    int i;
     /* Get the category that is set from the menu */
     *attrib = 0;
     if (GTK_IS_WIDGET(category_menu2)) {
@@ -2492,15 +2490,18 @@ static void cb_dial_or_mail(GtkWidget *widget, gpointer data) {
 
 static void cb_address_quickfind(GtkWidget *widget,
                                  gpointer data) {
-    char *entry_text;
+    const gchar *entry_text;
+    gchar *copied_text;
     jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
     if (!strlen(entry_text)) {
         return;
+    } else {
+        copied_text = g_strdup(entry_text);
     }
-    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, entry_text);
-
+    gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordByTextAndSelect, copied_text);
+    g_free(copied_text);
 }
 
 static void cb_edit_cats_contacts(GtkWidget *widget, gpointer data) {
@@ -2630,7 +2631,7 @@ static void cb_category(GtkComboBox *item, int selection) {
     }
 
     if (selectedItem == CATEGORY_EDIT) {
-        cb_edit_cats(item, NULL);
+        cb_edit_cats(GTK_WIDGET(item), NULL);
     } else {
         address_category = selectedItem;
     }
@@ -2813,11 +2814,6 @@ static void cb_photo_browse_ok(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(widget);
 }
 
-static gboolean cb_photo_browse_destroy(GtkWidget *widget) {
-    gtk_main_quit();
-    return FALSE;
-}
-
 static int browse_photo(GtkWidget *main_window) {
     GtkWidget *fileChooserWidget;
     const char *svalue;
@@ -2842,7 +2838,7 @@ static int browse_photo(GtkWidget *main_window) {
         jp_logf(JP_LOG_WARN, _("chdir() failed\n"));
     }
     selection = NULL;
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Add Photo"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
     g_object_set_data(G_OBJECT(GTK_FILE_CHOOSER(fileChooserWidget)), "selection", &selection);
@@ -2896,8 +2892,10 @@ static gint cb_photo_menu_popup(GtkWidget *widget, GdkEvent *event) {
         event_button = (GdkEventButton *) event;
         if (event_button->button == 1) {
             menu = GTK_MENU (widget);
-            gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
-                           event_button->button, event_button->time);
+            // TODO verify that this change is correct
+            //gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
+            //               event_button->button, event_button->time);
+            gtk_menu_popup_at_pointer(menu, event);
             return TRUE;
         }
     }
@@ -3075,8 +3073,6 @@ findAddressRecordByTextAndSelect(GtkTreeModel *model,
     char *list_text;
     char *entry_text = data;
 
-    //int i, r;
-
     gtk_tree_model_get(model, iter, ADDRESS_NAME_COLUMN_ENUM, &list_text, -1);
     int result = strncasecmp(list_text, entry_text, strlen(entry_text));
     if (!result) {
@@ -3105,7 +3101,7 @@ findAddressRecordAndSelect(GtkTreeModel *model,
             GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, (GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
             glob_find_id = 0;
             return TRUE;
         }
@@ -3144,7 +3140,7 @@ selectRecordAddressByRow(GtkTreeModel *model,
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, (GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -3370,10 +3366,13 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                            ADDRESS_DATA_COLUMN_ENUM, &(temp_cl->mcont),
                            ADDRESS_BACKGROUND_COLOR_ENUM, showBgColor ? &bgColor : NULL,
                            ADDRESS_BACKGROUND_COLOR_ENABLED_ENUM, showBgColor,
-                           ADDRESS_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_color_to_string(&fgColor) : NULL,
+                           ADDRESS_FOREGROUND_COLOR_ENUM, showFgColor ? gdk_rgba_to_string(&fgColor) : NULL,
                            ADDRESSS_FOREGROUND_COLOR_ENABLED_ENUM, showFgColor, -1);
         entries_shown++;
     }
+
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
 
     /* If there are items in the list, highlight the selected row */
     if ((main) && (entries_shown > 0)) {
@@ -3381,7 +3380,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
         if (glob_find_id) {
             address_find();
         }
-            /* Second, try the currently selected row */
+        /* Second, try the currently selected row */
         else if (rowSelected < entries_shown) {
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         } else
@@ -3401,7 +3400,6 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             set_tooltip(show_tooltips, category_menu1, str);
         }
     }
-    gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
 
@@ -3411,13 +3409,8 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
 /* set is which set in the phone_type_menu_item array to use */
 static int make_IM_type_menu(int default_set, unsigned int callback_id, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
 
     IM_type_list_menu[set] = gtk_combo_box_text_new();
-
-    menu = gtk_menu_new();
-    group = NULL;
 
     for (i = 0; i < NUM_IM_LABELS; i++) {
         if (contact_app_info.IMLabels[i][0]) {
@@ -3430,7 +3423,6 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[set]), default_set);
 
-
     return EXIT_SUCCESS;
 }
 
@@ -3440,8 +3432,6 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 /* set is which set in the menu_item array to use */
 static int make_address_type_menu(int default_set, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
 
     address_type_list_menu[set] = gtk_combo_box_text_new();
     for (i = 0; i < NUM_ADDRESSES; i++) {
@@ -3462,8 +3452,6 @@ static int make_address_type_menu(int default_set, int set) {
 /* set is which set in the phone_type_menu_item array to use */
 static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
     char *utf;
     long char_set;
 
@@ -3727,8 +3715,16 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                 unique_id = mcont->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
+                // https://developer.gnome.org/gtk3/stable/GtkTreeSelection.html#gtk-tree-selection-set-select-function
+                // return false is the node selected should not be changed
+                return FALSE;
+            }
+            if (b == DIALOG_SAID_2) { /* No */
+                set_new_button_to(CLEAR_FLAG);
                 return TRUE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
@@ -3743,7 +3739,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             }
             return TRUE;
         }
-
 
         if (mcont == NULL) {
             return TRUE;
@@ -3951,13 +3946,13 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkWidget *separator;
     GtkWidget *label;
     GtkWidget *button;
-    GtkWidget *table;
+    GtkWidget *grid;
     GtkWidget *notebook_tab;
     GSList *group;
     long ivalue, notebook_page;
     long show_tooltips;
     GtkAccelGroup *accel_group;
-    int address_type_i, IM_type_i, page_i, table_y_i;
+    int address_type_i, IM_type_i, page_i, grid_y_i;
     int x, y;
 
     int i, j, phone_i, num_pages;
@@ -4045,7 +4040,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                accel_group);
     get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_ADDRESS_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), ivalue);
 
@@ -4265,7 +4260,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Right-side Category menu */
-  make_category_menu(&category_menu2,
+    make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
 
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu2, TRUE, TRUE, 0);
@@ -4294,7 +4289,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         for (j = 0; j < NUM_PHONE_LABELS; j++) {
             if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) &&
                 gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX(phone_type_list_menu[i]), j);
+                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(phone_type_list_menu[i]), j);
             }
         }
     }
@@ -4341,26 +4336,25 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         }
 
         /* Add a notebook page */
-        table_y_i = 0;
+        grid_y_i = 0;
         notebook_label[page_i] = gtk_label_new(_(page_names[page_i]));
-        vbox_temp = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-        gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox_temp, notebook_label[page_i]);
+        grid = gtk_grid_new();
+        gtk_notebook_append_page(GTK_NOTEBOOK(notebook), grid, notebook_label[page_i]);
 
-        gtk_widget_show(vbox_temp);
         gtk_widget_show(label);
 
-        table = gtk_table_new(y, x, FALSE);
+        /* Grid on the right side */
 
-        gtk_box_pack_start(GTK_BOX(vbox_temp), table, TRUE, TRUE, 0);
-
-        if ((page_i == 0) && (table_y_i == 0) && (address_version == 1)) {
+        if ((page_i == 0) && (grid_y_i == 0) && (address_version == 1)) {
             GtkWidget *menu, *menu_item;
 
             picture_button = gtk_button_new();
             gtk_widget_set_size_request(GTK_WIDGET(picture_button), PHOTO_X_SZ + 10, PHOTO_Y_SZ + 10);
             gtk_container_set_border_width(GTK_CONTAINER(picture_button), 0);
-            gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(picture_button),
-                             0, 2, 0, 4, GTK_SHRINK, GTK_SHRINK, 0, 0);
+            gtk_widget_set_vexpand(GTK_WIDGET(picture_button), FALSE);
+            gtk_widget_set_valign(GTK_WIDGET(picture_button), GTK_ALIGN_START);
+            gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(picture_button),
+                            0, 0, 2, 4);
 
             /* Create a photo menu */
             menu = gtk_menu_new();
@@ -4399,10 +4393,14 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                             label = gtk_label_new(utf);
                             g_free(utf);
                         }
-                        gtk_misc_set_padding(GTK_MISC(label), 3, 1);
-                        gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.0);
-                        gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                                         x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, GTK_FILL, 0, 0);
+                        gtk_widget_set_margin_end(GTK_WIDGET(label), 5);
+                        gtk_label_set_xalign(GTK_LABEL(label), 1);
+                        gtk_label_set_yalign(GTK_LABEL(label), 0);
+                        // These are the labels "Last Name", "First Name", "Company", "Title" just to the right of the picture
+                        gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+                        gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label),
+                                        x - 2, grid_y_i, 1, 1);
                     }
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
@@ -4410,6 +4408,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                             gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
 
                     /* special case for Note which has a scrollbar and no label */
@@ -4423,11 +4425,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
                     /* special case for Note which has a scrollbar and no label */
                     if (schema[i].record_field == contNote) {
-                        gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(scrolled_window),
-                                                  x - 1, x, table_y_i, table_y_i + 1);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(scrolled_window),
+                                        x - 1, grid_y_i, 10, 1);
+
                     } else {
-                        gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                                  x - 1, x, table_y_i, table_y_i + 1);
+                        gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                        x - 1, grid_y_i, 10, 1);
                     }
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
@@ -4440,29 +4443,40 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                         dial_button[phone_i] = gtk_button_new_with_label(_("Dial"));
                          g_object_set_data(G_OBJECT(dial_button[phone_i]), "mail", 0);
                     }
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(dial_button[phone_i]),
-                                     x - 4, x - 3, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(dial_button[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(dial_button[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(dial_button[phone_i]),
+                                    x - 4, grid_y_i, 1, 1);
 
                     radio_button[phone_i] = gtk_radio_button_new_with_label(group, _("Show In List"));
                     group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button[phone_i]));
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(radio_button[phone_i]),
-                                     x - 3, x - 2, table_y_i, table_y_i + 1, GTK_SHRINK, 0, 2, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(radio_button[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(radio_button[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(radio_button[phone_i]),
+                                    x - 3, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, radio_button[phone_i]);
 
                     make_phone_menu(phone_i, phone_i, phone_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(phone_type_list_menu[phone_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(phone_type_list_menu[phone_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(phone_type_list_menu[phone_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(phone_type_list_menu[phone_i]),
+                                    x - 2, grid_y_i, 1, 1);
 
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
                     addr_text_buffer[schema[i].record_field] = G_OBJECT(
-                            gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
+                    gtk_text_view_get_buffer(GTK_TEXT_VIEW(addr_text[schema[i].record_field])));
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     g_signal_connect(G_OBJECT(dial_button[phone_i]), "clicked",
                                        G_CALLBACK(cb_dial_or_mail),
@@ -4472,8 +4486,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     break;
                 case ADDRESS_GUI_ADDR_MENU_TEXT:
                     make_address_type_menu(address_type_i, address_type_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(address_type_list_menu[address_type_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_SHRINK, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(address_type_list_menu[address_type_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(address_type_list_menu[address_type_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(address_type_list_menu[address_type_i]),
+                                    x - 2, grid_y_i, 1, 1);
                     address_type_i++;
 
                     /* Text */
@@ -4483,15 +4499,21 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
                 case ADDRESS_GUI_IM_MENU_TEXT:
                     make_IM_type_menu(IM_type_i, IM_type_i, IM_type_i);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(IM_type_list_menu[IM_type_i]),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_vexpand(GTK_WIDGET(IM_type_list_menu[IM_type_i]), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(IM_type_list_menu[IM_type_i]), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(IM_type_list_menu[IM_type_i]),
+                                    x - 2, grid_y_i, 1, 1);
                     IM_type_i++;
 
                     /* Text */
@@ -4501,8 +4523,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 1, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
@@ -4510,9 +4536,11 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     /* Button used as label */
                     button = gtk_button_new_with_label(contact_app_info.labels[schema[i].record_field]);
                     /* Remove normal button behavior to accept focus */
-                    gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(button),
-                                     x - 2, x - 1, table_y_i, table_y_i + 1, GTK_FILL, 0, 0, 0);
+                    gtk_widget_set_focus_on_click(GTK_WIDGET(button), FALSE);
+                    gtk_widget_set_vexpand(GTK_WIDGET(button), FALSE);
+                    gtk_widget_set_valign(GTK_WIDGET(button), GTK_ALIGN_START);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button),
+                                    x - 2, grid_y_i, 1, 1);
                     /* Text */
                     addr_text[schema[i].record_field] = gtk_text_view_new();
                     addr_text_buffer[schema[i].record_field] = G_OBJECT(
@@ -4520,16 +4548,19 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), TRUE);
                     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_text[schema[i].record_field]), GTK_WRAP_CHAR);
                     gtk_container_set_border_width(GTK_CONTAINER(addr_text[schema[i].record_field]), 1);
-                    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(addr_text[schema[i].record_field]),
-                                              x - 1, x, table_y_i, table_y_i + 1);
+                    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+                    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
+                                    x - 1, grid_y_i, 10, 1);
 
                     changed_list = g_list_prepend(changed_list, addr_text_buffer[schema[i].record_field]);
                     break;
                 case ADDRESS_GUI_BIRTHDAY:
                     hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-                    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
-                                     0, x, table_y_i, table_y_i + 1,
-                                     GTK_EXPAND | GTK_FILL, GTK_SHRINK, 0, 0);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(hbox_temp),
+                                    0, grid_y_i, 1, 1);
 
                     birthday_checkbox = gtk_check_button_new_with_label(
                             contact_app_info.labels[schema[i].record_field]);
@@ -4540,7 +4571,8 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     changed_list = g_list_prepend(changed_list, birthday_checkbox);
 
                     birthday_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
-                    gtk_box_pack_start(GTK_BOX(hbox_temp), birthday_box, FALSE, FALSE, 0);
+                    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(birthday_box),
+                                    1, grid_y_i, 1, 1);
 
                     birthday_button = gtk_button_new_with_label("");
                     gtk_box_pack_start(GTK_BOX(birthday_box), birthday_button, FALSE, FALSE, 0);
@@ -4557,10 +4589,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     changed_list = g_list_prepend(changed_list, reminder_checkbox);
 
                     reminder_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-                    gtk_box_pack_start(GTK_BOX(hbox_temp), reminder_box, FALSE, FALSE, 0);
+                    gtk_box_pack_start(GTK_BOX(birthday_box), reminder_box, FALSE, FALSE, 0);
 
                     reminder_entry = gtk_entry_new();
-                    gtk_entry_set_max_length(reminder_entry,2);
+                    gtk_entry_set_max_length(GTK_ENTRY(reminder_entry), 2);
                     entry_set_multiline_truncate(GTK_ENTRY(reminder_entry), TRUE);
                     gtk_box_pack_start(GTK_BOX(reminder_box), reminder_entry, FALSE, FALSE, 0);
 
@@ -4573,7 +4605,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                 default:
                     break;
             }
-            table_y_i++;
+            grid_y_i++;
         }
     }
 
@@ -4630,6 +4662,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_all), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_all), GTK_WRAP_CHAR);
     gtk_container_set_border_width(GTK_CONTAINER(addr_all), 1);
+    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
+    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
+    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
 
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),

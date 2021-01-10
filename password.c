@@ -297,7 +297,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
    gtk_container_add(GTK_CONTAINER(hbox1), vbox1);
 
-   hbox1 = gtk_hbox_new(TRUE, 2);
+   hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
    gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
@@ -311,7 +311,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
 
    /* Password entry field */
    entry = gtk_entry_new();
-    gtk_entry_set_max_length(entry,PASSWD_LEN);
+   gtk_entry_set_max_length(GTK_ENTRY(entry), PASSWD_LEN);
    gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
    g_signal_connect(G_OBJECT(entry), "activate",
                       G_CALLBACK(cb_dialog_button),
@@ -319,7 +319,7 @@ int dialog_password(GtkWindow *main_window, char *ascii_password, int retry)
    gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
    /* Button Box */
-   hbox1 = gtk_hbutton_box_new();
+   hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox1), 6);
    gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);

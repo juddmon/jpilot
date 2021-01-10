@@ -471,12 +471,11 @@ selectCategoryRecordByRow(GtkTreeModel *model,
 static void cb_edit_button(GtkWidget *widget, gpointer data) {
     struct dialog_cats_data *Pdata;
     int i, r, count;
-    int j;
     long char_set;
     int id;
     int button;
     int catnum;
-     char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
+    char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
     char *button_text[] = {N_("OK")};
     char *move_text[] = {N_("Move"), N_("Delete"), N_("Cancel")};
     const char *entry_text;
@@ -762,7 +761,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     GtkWidget *vbox1, *vbox2, *vbox3;
     GtkWidget *dialog;
     GtkListStore *listStore;
-    GtkTreeView *treeView;
+    GtkWidget *treeView;
     GtkWidget *entry;
     GtkWidget *label;
     GtkWidget *separator;
@@ -770,8 +769,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     int i, j;
     long char_set;
     char *catname_hchar;    /* Category names in host character set */
-    char *titles[2] = {_("Category")};
-    gchar *empty_line[] = {""};
 
     jp_logf(JP_LOG_DEBUG, "edit_cats\n");
 
@@ -836,7 +833,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     gtk_tree_view_column_set_clickable(titleColumn, gtk_false());
     gtk_tree_view_column_set_min_width(titleColumn, 100);
     gtk_tree_view_column_set_sizing(titleColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_insert_column(treeView, titleColumn, CATEGORY_TITLE_COLUMN_ENUM);
+    gtk_tree_view_insert_column(GTK_TREE_VIEW(treeView), titleColumn, CATEGORY_TITLE_COLUMN_ENUM);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
                                 GTK_SELECTION_BROWSE);
 
@@ -878,11 +875,11 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     }
 
 
-    Pdata.treeView = treeView;
+    Pdata.treeView = GTK_TREE_VIEW(treeView);
     Pdata.listStore = listStore;
 
     /* Buttons */
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);
@@ -928,14 +925,14 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
 
     Pdata.label = label;
 
-    entry =  gtk_entry_new();
-    gtk_entry_set_max_length(entry,HOSTCAT_NAME_SZ - 1);
+    entry = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(entry), HOSTCAT_NAME_SZ - 1);
     g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_edit_button),
                        GINT_TO_POINTER(EDIT_CAT_ENTRY_OK));
     gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 0);
 
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);
@@ -959,7 +956,7 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     Pdata.entry = entry;
 
     /* Button Box */
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
     gtk_box_set_spacing(GTK_BOX(hbox), 6);

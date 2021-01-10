@@ -89,7 +89,6 @@ static int datebook_search_sort_compare(const void *v1, const void *v2) {
 }
 
 static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     CalendarEventList *ce_list;
     CalendarEventList *temp_cel;
     int found, count;
@@ -205,7 +204,6 @@ static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeI
 }
 
 static int search_address_or_contacts(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     AddressList *addr_list;
     ContactList *cont_list;
@@ -278,7 +276,6 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
 }
 
 static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     char *appName = _("todo");
     ToDoList *todo_list;
@@ -349,7 +346,6 @@ static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter 
 }
 
 static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     MemoList *memo_list;
     MemoList *temp_memo;
@@ -414,9 +410,8 @@ static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter 
 
 #ifdef ENABLE_PLUGINS
 
-static int search_plugins(const char *needle, const GtkListStore *listStore, GtkTreeIter *iter) {
+static int search_plugins(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
     GList *plugin_list, *temp_list;
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     int count;
     int case_sense;
@@ -492,7 +487,6 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_entry(GtkWidget *widget, gpointer data) {
-    gchar *empty_line[] = {"", ""};
     GtkListStore *listStore;
     GtkTreeView *treeView;
     GtkTreeIter iter;
@@ -545,10 +539,10 @@ void selectFirstRow(const GtkTreeView *treeView) {
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     GtkTreePath  *path = NULL;
     GtkTreeIter firstIter;
-    gtk_tree_model_get_iter_first(gtk_tree_view_get_model(treeView),&firstIter);
-    path = gtk_tree_model_get_path(gtk_tree_view_get_model(treeView),&firstIter);
+    gtk_tree_model_get_iter_first(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
+    path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
     gtk_tree_selection_select_path(selection, path);
-    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, SEARCH_TEXT_COLUMN_ENUM, FALSE, 1.0, 0.0);
+    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, GTK_TREE_VIEW_COLUMN(SEARCH_TEXT_COLUMN_ENUM), FALSE, 1.0, 0.0);
     gtk_tree_path_free(path);
 }
 
@@ -563,11 +557,10 @@ static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
                                    gpointer userdata) {
     GtkTreeIter iter;
     struct search_record *sr;
-    int row;
+
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
         row_selected = i[0];
-        row = i[0];
         gtk_tree_model_get(model, &iter, SEARCH_DATA_ENUM, &sr, -1);
         if(sr == NULL){
             return TRUE;
@@ -614,7 +607,7 @@ static gboolean cb_key_pressed_in_list(GtkWidget *widget,
 
 void cb_search_gui(GtkWidget *widget, gpointer data) {
     GtkWidget *scrolled_window;
-    GtkTreeView *treeView;
+    GtkWidget *treeView;
     GtkListStore *listStore;
     GtkWidget *label;
     GtkWidget *button;
@@ -695,11 +688,10 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
     gtk_tree_view_column_set_clickable(textColumn, gtk_false());
     gtk_tree_view_column_set_sizing(appNameColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_sizing(textColumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-    gtk_tree_view_set_headers_visible(treeView, gtk_false());
-    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)),
-                                GTK_SELECTION_BROWSE);
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeView), gtk_false());
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), GTK_SELECTION_BROWSE);
     gtk_tree_selection_set_select_function(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView)), handleSearchRowSelection, NULL, NULL);
-    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    gtk_widget_set_events(GTK_WIDGET(treeView), GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
@@ -717,7 +709,7 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
                        G_CALLBACK(cb_entry),
                        treeView);
 
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox), 6);
@@ -742,4 +734,3 @@ void cb_search_gui(GtkWidget *widget, gpointer data) {
 
     gtk_widget_show_all(window);
 }
-

@@ -1142,6 +1142,9 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
                 unique_id = mexp->unique_id;
             }
 
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
+
             b = dialog_save_changed_record(scrolled_window, record_changed);
             if (b == DIALOG_SAID_2) {
                 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -1485,7 +1488,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Make the menus */
     make_menus();
 
-    pane = gtk_hpaned_new();
+    pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     get_pref(PREF_EXPENSE_PANE, &ivalue, NULL);
     gtk_paned_set_position(GTK_PANED(pane), (gint) ivalue);
 

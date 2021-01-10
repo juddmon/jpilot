@@ -1265,10 +1265,7 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
-    int r;
-    const char *svalue;
-    r = export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
-
+    export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {
@@ -1513,10 +1510,10 @@ static void cb_datebk_cats(GtkWidget *widget, gpointer data) {
                                          datebk_category & bit);
 
             gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(toggle_button[i]),
-			    (guint) (i > 7) ? 1 : 0,
-			    (guint) ((i > 7) ? i - 8 : i),
-			    1,
-			    1);
+                            (guint) (i > 7) ? 1 : 0,
+                            (guint) ((i > 7) ? i - 8 : i),
+                            1,
+                            1);
             g_signal_connect(G_OBJECT(toggle_button[i]), "toggled",
                                G_CALLBACK(cb_toggle), GINT_TO_POINTER(i));
         } else {
@@ -2664,7 +2661,8 @@ static int datebook_update_listStore(void) {
         entries_shown++;
     }
 
-
+    // Set callback for a row selected
+    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
 
     /* If there are items in the list, highlight the selected row */
     if (entries_shown > 0) {
@@ -2697,7 +2695,6 @@ static int datebook_update_listStore(void) {
 
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-    gtk_tree_selection_set_select_function(treeSelection, handleDateRowSelection, NULL, NULL);
     return EXIT_SUCCESS;
 }
 
@@ -3467,6 +3464,9 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
             if (mcale != NULL) {
                 unique_id = mcale->unique_id;
             }
+
+            // We need to turn this "scroll with mouse held down" thing off
+            button_set_for_motion(0);
 
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
@@ -4713,7 +4713,6 @@ static void connect_changed_signals(int con_or_dis) {
 
 static GtkWidget *create_time_menu(int flags) {
     GtkWidget *option;
-    GtkWidget *item;
     char str[64];
     char buf[64];
     int i, i_stop;
@@ -4754,6 +4753,7 @@ static GtkWidget *create_time_menu(int flags) {
                      G_CALLBACK(cb_menu_time),
                        GINT_TO_POINTER(i * cb_factor | flags));
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+    gtk_cell_renderer_set_fixed_size(renderer,-1,1);
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (option), renderer, TRUE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (option), renderer,
                                     "text", 0,
@@ -5648,6 +5648,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
     GtkWidget *pixbufwid;
     GdkPixbuf *pixbuf;
     GtkCellRenderer *timeRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(timeRenderer,-1,1);
 
     GtkTreeViewColumn *timeColumn = gtk_tree_view_column_new_with_attributes("Time",
                                                                              timeRenderer,
@@ -5658,6 +5659,7 @@ buildTreeView(const GtkWidget *vbox, char *const *titles, long use_db3_tags) {
                                                                              DATE_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     GtkCellRenderer *appointmentRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(appointmentRenderer,-1,1);
 
     GtkTreeViewColumn *appointmentColumn = gtk_tree_view_column_new_with_attributes("Appointment",
                                                                                     appointmentRenderer,
@@ -5775,6 +5777,7 @@ void buildToDoList(const GtkWidget *vbox) {
     GtkTreeModel *model = GTK_TREE_MODEL(todo_listStore);
     todo_treeView = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
     GtkCellRenderer *taskRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(taskRenderer,-1,1);
 
     GtkTreeViewColumn *taskColumn = gtk_tree_view_column_new_with_attributes("Task",
                                                                              taskRenderer,
@@ -5788,6 +5791,7 @@ void buildToDoList(const GtkWidget *vbox) {
 
 
     GtkCellRenderer *dateRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(dateRenderer,-1,1);
 
     GtkTreeViewColumn *dateColumn = gtk_tree_view_column_new_with_attributes("Due",
                                                                              dateRenderer,
@@ -5803,6 +5807,7 @@ void buildToDoList(const GtkWidget *vbox) {
     gtk_tree_view_column_set_sort_column_id(dateColumn, TODO_DATE_COLUMN_ENUM);
 
     GtkCellRenderer *priorityRenderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_set_fixed_size(priorityRenderer,-1,1);
     GtkTreeViewColumn *priorityColumn = gtk_tree_view_column_new_with_attributes("",
                                                                                  priorityRenderer,
                                                                                  "text", TODO_PRIORITY_COLUMN_ENUM,
@@ -5905,14 +5910,12 @@ clickedTodoButton(GtkTreeSelection *selection,
         glob_find_id = mtodo->unique_id;
         return TRUE;
     }
-
-
+    return TRUE;
 }
 
 gint cb_todo_treeview_selection_event(GtkWidget *widget,
                                       GdkEvent *event,
                                       gpointer callback_data) {
-
     if (!event) return 1;
     cb_app_button(NULL, GINT_TO_POINTER(TODO));
     return 1;

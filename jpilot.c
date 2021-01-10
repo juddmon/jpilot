@@ -522,7 +522,8 @@ static void cb_private(GtkWidget *widget, gpointer data) {
         /* Setting the state of the menu causes a signal to be emitted
          * which calls cb_private again.
          * This second call needs to be ignored */
-        skip_false_call = 1;
+        // FIXME: this does not happen for me. Check with Malia and maybe remove
+        //skip_false_call = 1;
         switch (privates) {
             case MASK_PRIVATES:
                 gtk_check_menu_item_set_active(menu_mask_privates, TRUE);

@@ -70,8 +70,6 @@ static void cb_restore_ok(GtkWidget *widget, gpointer data) {
     int r1, r2;
 
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(restoreTreeView));
-    GtkListStore *listStore = GTK_LIST_STORE(model);
-    GtkTreeIter iter;
     list = gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(restoreTreeView)),&model);
 
     get_home_file_name("", home_dir, sizeof(home_dir));
@@ -133,12 +131,11 @@ static void cb_restore_quit(GtkWidget *widget, gpointer data) {
  */
 static int populate_listStore_subpath(char *path, int check_for_dups, int check_exts) {
     char *row_text[1];
-    GtkListStore *listStore = GTK_LIST_STORE(gtk_tree_view_get_model(restoreTreeView));
+    GtkListStore *listStore = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(restoreTreeView)));
     GtkTreeIter iter;
     DIR *dir;
     struct dirent *dirent;
     char last4[8];
-    char *text;
     int i, num, len, found;
 
     jp_logf(JP_LOG_DEBUG, "opening dir %s\n", path);
@@ -281,19 +278,24 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
 
     /* Label for instructions */
     label = gtk_label_new(_("To restore your handheld:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("1. Choose the applications you wish to restore.  The default is all."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("2. Enter the User Name and User ID."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("3. Press the OK button."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     label = gtk_label_new(_("This will overwrite data that is currently on the handheld."));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
     /* List of files to restore */
@@ -326,7 +328,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     label = gtk_label_new(_("User Name"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     user_entry = gtk_entry_new();
-    gtk_entry_set_max_length(user_entry,126);
+    gtk_entry_set_max_length(GTK_ENTRY(user_entry), 126);
     entry_set_multiline_truncate(GTK_ENTRY(user_entry), TRUE);
     get_pref(PREF_USER, NULL, &svalue);
     if ((svalue) && (svalue[0])) {
@@ -346,7 +348,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     label = gtk_label_new(_("User ID"));
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     user_id_entry = gtk_entry_new();
-    gtk_entry_set_max_length(user_id_entry,10);
+    gtk_entry_set_max_length(GTK_ENTRY(user_id_entry), 10);
     entry_set_multiline_truncate(GTK_ENTRY(user_id_entry), TRUE);
     get_pref(PREF_USER_ID, &ivalue, NULL);
     sprintf(str_int, "%ld", ivalue);
@@ -354,7 +356,7 @@ int restore_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     gtk_box_pack_start(GTK_BOX(hbox), user_id_entry, TRUE, TRUE, 0);
 
     /* Cancel/OK buttons */
-    hbox = gtk_hbutton_box_new();
+    hbox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox), GTK_BUTTONBOX_END);
      gtk_box_set_spacing(GTK_BOX(hbox), 6);

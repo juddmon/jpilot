@@ -160,20 +160,22 @@ static int install_modify_line(int modified_line_num, const char *modified_line)
 }
 
 static gboolean cb_destroy(GtkWidget *widget) {
-   gtk_widget_destroy(widget);
+    gtk_widget_destroy(GTK_WIDGET(widget));
     return TRUE;
 }
 
 /* Save working directory for future installs */
+/* FIXME: find out why this is no longer used */
+#if 0
 static void cb_quit(GtkWidget *widget, gpointer data) {
-    const char *sel;
+    const gchar *sel;
     char dir[MAX_PREF_LEN + 2];
     struct stat statb;
     int i;
 
     jp_logf(JP_LOG_DEBUG, "Quit\n");
 
-    sel = gtk_file_selection_get_filename(GTK_FILE_SELECTION(data));
+    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
 
     g_strlcpy(dir, sel, MAX_PREF_LEN);
 
@@ -197,8 +199,9 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 
     set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
 
-    gtk_widget_destroy(widget);
+    gtk_widget_destroy(GTK_WIDGET(widget));
 }
+#endif
 
 static void cb_add(GtkWidget *widget, gpointer data) {
 
@@ -427,15 +430,15 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     GdkPixbuf *pixbuf;
     char temp_str[256];
     const char *svalue;
-    gchar *titles[] = {"", _("Files to install")};
     GtkWidget *fileChooserWidget;
 
 
     row_selected = 0;
+    pixbufwid = NULL;
     intializeInstallTreeView(pixbufwid, &pixbuf);
     install_update_listStore();
     g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));
-    fileChooserWidget = gtk_file_chooser_dialog_new(_("Install"), main_window, GTK_FILE_CHOOSER_ACTION_OPEN,
+    fileChooserWidget = gtk_file_chooser_dialog_new(_("Install"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "_Add", GTK_RESPONSE_ACCEPT,"_Delete", GTK_RESPONSE_DELETE_EVENT,
                                                     "Close",GTK_RESPONSE_CLOSE,
                                                     NULL);
@@ -445,11 +448,11 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     }
     GtkBox *extraWidget = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
     gtk_box_pack_start(extraWidget,treeView,TRUE,TRUE,0);
-    gtk_widget_show_all(extraWidget);
+    gtk_widget_show_all(GTK_WIDGET(extraWidget));
     gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));
     g_signal_connect(G_OBJECT(fileChooserWidget), "destroy",
                        G_CALLBACK(cb_destroy), fileChooserWidget);
-    int dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
+    int dialogResponse = gtk_dialog_run(GTK_DIALOG(fileChooserWidget));
     do {
      if(dialogResponse == GTK_RESPONSE_DELETE_EVENT){
          //remove from list
@@ -460,16 +463,15 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
      } else {
          // handle close and destroy widget.
          cb_destroy(fileChooserWidget);
-
      }
      if(dialogResponse != GTK_RESPONSE_CLOSE){
         dialogResponse = gtk_dialog_run(GTK_DIALOG (fileChooserWidget));
      }
-    }while (dialogResponse != GTK_RESPONSE_CLOSE);
-    gtk_widget_destroy(fileChooserWidget);
+    } while (dialogResponse != GTK_RESPONSE_CLOSE);
 
-   // gtk_main();
+    gtk_widget_destroy(GTK_WIDGET(fileChooserWidget));
+
+    // gtk_main();
 
     return EXIT_SUCCESS;
 }
-
