@@ -248,7 +248,14 @@ static void create_month_boxes_texts(GtkWidget *grid)
             event_box = gtk_event_box_new();
             gtk_widget_set_halign(event_box, GTK_ALIGN_FILL);
             gtk_widget_set_valign(event_box, GTK_ALIGN_FILL);
-            gtk_container_add(GTK_CONTAINER(event_box), tv);
+
+            /* Use a scrolled window to keep the main window from expanding */
+            GtkWidget *scrolled = gtk_scrolled_window_new(NULL, NULL);
+            gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+
+            gtk_container_add(GTK_CONTAINER(scrolled), tv);
+
+            gtk_container_add(GTK_CONTAINER(event_box), scrolled);
 
             g_signal_connect(G_OBJECT(event_box), "enter_notify_event",
                              G_CALLBACK(cb_enter_notify), GINT_TO_POINTER(count));
