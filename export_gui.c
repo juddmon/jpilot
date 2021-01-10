@@ -170,10 +170,7 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
-    int r;
-    const char *svalue;
-    r = export_browse(GTK_WIDGET(data), glob_pref_export);
-
+    export_browse(GTK_WIDGET(data), glob_pref_export);
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {

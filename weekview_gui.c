@@ -154,7 +154,7 @@ static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    char default_date[]="%x";
    int now_today;
 #ifdef ENABLE_DATEBK
-   int ret;
+   //int ret;
    int cat_bit;
    int db3_type;
    long use_db3_tags;
@@ -208,7 +208,8 @@ static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_DATEBK
          get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
          if (use_db3_tags) {
-            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            //ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
             jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
             cat_bit=1<<db4.category;
             if (!(cat_bit & datebk_category)) {
@@ -269,7 +270,6 @@ static void cb_enter_selected_day(GtkWidget *widget,
 void weekview_gui(struct tm *date_in)
 {
    GtkWidget *button;
-   GtkWidget *align;
    GtkWidget *grid;
    GtkAccelGroup *accel_group;
    long fdow;

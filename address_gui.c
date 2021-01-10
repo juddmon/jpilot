@@ -2273,7 +2273,6 @@ static void cb_notebook_changed(GtkWidget *widget,
 }
 
 static void get_address_attrib(unsigned char *attrib) {
-    int i;
     /* Get the category that is set from the menu */
     *attrib = 0;
     if (GTK_IS_WIDGET(category_menu2)) {
@@ -2813,11 +2812,6 @@ static void cb_photo_browse_ok(GtkWidget *widget, gpointer data) {
     }
 
     gtk_widget_destroy(widget);
-}
-
-static gboolean cb_photo_browse_destroy(GtkWidget *widget) {
-    gtk_main_quit();
-    return FALSE;
 }
 
 static int browse_photo(GtkWidget *main_window) {
@@ -3415,13 +3409,8 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
 /* set is which set in the phone_type_menu_item array to use */
 static int make_IM_type_menu(int default_set, unsigned int callback_id, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
 
     IM_type_list_menu[set] = gtk_combo_box_text_new();
-
-    menu = gtk_menu_new();
-    group = NULL;
 
     for (i = 0; i < NUM_IM_LABELS; i++) {
         if (contact_app_info.IMLabels[i][0]) {
@@ -3434,7 +3423,6 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(IM_type_list_menu[set]), default_set);
 
-
     return EXIT_SUCCESS;
 }
 
@@ -3444,8 +3432,6 @@ static int make_IM_type_menu(int default_set, unsigned int callback_id, int set)
 /* set is which set in the menu_item array to use */
 static int make_address_type_menu(int default_set, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
 
     address_type_list_menu[set] = gtk_combo_box_text_new();
     for (i = 0; i < NUM_ADDRESSES; i++) {
@@ -3466,8 +3452,6 @@ static int make_address_type_menu(int default_set, int set) {
 /* set is which set in the phone_type_menu_item array to use */
 static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
     int i;
-    GSList *group;
-    GtkWidget *menu;
     char *utf;
     long char_set;
 

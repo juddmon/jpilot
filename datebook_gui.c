@@ -1265,10 +1265,7 @@ static void cb_ok(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_export_browse(GtkWidget *widget, gpointer data) {
-    int r;
-    const char *svalue;
-    r = export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
-
+    export_browse(GTK_WIDGET(data), PREF_DATEBOOK_EXPORT_FILENAME);
 }
 
 static void cb_export_quit(GtkWidget *widget, gpointer data) {
@@ -4716,7 +4713,6 @@ static void connect_changed_signals(int con_or_dis) {
 
 static GtkWidget *create_time_menu(int flags) {
     GtkWidget *option;
-    GtkWidget *item;
     char str[64];
     char buf[64];
     int i, i_stop;
@@ -5914,14 +5910,12 @@ clickedTodoButton(GtkTreeSelection *selection,
         glob_find_id = mtodo->unique_id;
         return TRUE;
     }
-
-
+    return TRUE;
 }
 
 gint cb_todo_treeview_selection_event(GtkWidget *widget,
                                       GdkEvent *event,
                                       gpointer callback_data) {
-
     if (!event) return 1;
     cb_app_button(NULL, GINT_TO_POINTER(TODO));
     return 1;

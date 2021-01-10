@@ -124,6 +124,7 @@ int read_csv_field(FILE *in, char *text, int size)
    return n;
 }
 
+/*
 static int guess_file_type(const char *path)
 {
    FILE *in;
@@ -146,7 +147,7 @@ static int guess_file_type(const char *path)
    }
    fclose(in);
    return IMPORT_TYPE_TEXT;
-}
+}*/
 
 /* Main import file selection window */
 static gboolean cb_destroy(GtkWidget *widget)
@@ -370,14 +371,12 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
                 char *type_desc[], int type_int[],
                 int (*import_callback)(GtkWidget *parent_window,
                 const char *file_path, int type)) {
-    GtkWidget *button;
     GtkWidget *vbox, *hbox;
     GtkWidget *label;
     char title[256];
     const char *svalue;
     GSList *group;
     int i;
-    int pw, ph, px, py;
     GtkWidget *fileChooserWidget;
 
 

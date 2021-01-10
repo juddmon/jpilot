@@ -165,6 +165,8 @@ static gboolean cb_destroy(GtkWidget *widget) {
 }
 
 /* Save working directory for future installs */
+/* FIXME: find out why this is no longer used */
+#if 0
 static void cb_quit(GtkWidget *widget, gpointer data) {
     const gchar *sel;
     char dir[MAX_PREF_LEN + 2];
@@ -199,6 +201,7 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 
     gtk_widget_destroy(GTK_WIDGET(widget));
 }
+#endif
 
 static void cb_add(GtkWidget *widget, gpointer data) {
 
@@ -427,11 +430,11 @@ int install_gui(GtkWidget *main_window, int w, int h, int x, int y) {
     GdkPixbuf *pixbuf;
     char temp_str[256];
     const char *svalue;
-    gchar *titles[] = {"", _("Files to install")};
     GtkWidget *fileChooserWidget;
 
 
     row_selected = 0;
+    pixbufwid = NULL;
     intializeInstallTreeView(pixbufwid, &pixbuf);
     install_update_listStore();
     g_snprintf(temp_str, sizeof(temp_str), "%s %s", PN, _("Install"));

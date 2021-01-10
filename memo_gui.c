@@ -235,7 +235,6 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 }
 
 static void connect_changed_signals(int con_or_dis) {
-    int i;
     static int connected = 0;
 
     /* CONNECT */
@@ -810,7 +809,6 @@ static GtkWidget *cb_memo_init_export_treeView() {
     GtkListStore *listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                                  G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
     GtkWidget *treeView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore));
-    GtkTreeSelection *treeSelection = NULL;
     treeView = GTK_WIDGET(gtk_tree_view_new_with_model(GTK_TREE_MODEL(listStore)));
     GtkCellRenderer *columnRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes("", columnRenderer, "text", MEMO_COLUMN_ENUM,
@@ -1171,7 +1169,6 @@ static int memo_clear_details(void) {
 }
 
 static int memo_get_details(struct Memo *new_memo, unsigned char *attrib) {
-    int i;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
 
@@ -1965,16 +1962,16 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
     MyMemo *mmemo;
     int b;
     int index, sorted_position;
-    int unique_id;
+    // int unique_id;
 
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
         row_selected = i[0];
         gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-            if (mmemo != NULL) {
-                unique_id = mmemo->unique_id;
-            }
+            //if (mmemo != NULL) {
+            //    unique_id = mmemo->unique_id;
+            //}
 
             // We need to turn this "scroll with mouse held down" thing off
             button_set_for_motion(0);

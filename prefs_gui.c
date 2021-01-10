@@ -116,8 +116,6 @@ static void cb_serial_port_menu(GtkComboBox *widget,
 }
 
 static int make_serial_port_menu(GtkWidget **port_menu) {
-    GtkWidget *menu;
-    GSList *group;
     int i, selected;
     const char *entry_text;
 
@@ -151,21 +149,18 @@ static int make_serial_port_menu(GtkWidget **port_menu) {
 
 static void cb_pref_menu(GtkComboBox *widget, gpointer data) {
     int pref;
-    int value;
-
 
     if (!widget) {
-
         return;
     }
     if (gtk_combo_box_get_active(GTK_COMBO_BOX(widget)) < 0) {
-
         return;
     }
 
     pref = get_selected_category_from_combo_box(widget);
     set_pref_possibility(pref, gtk_combo_box_get_active(GTK_COMBO_BOX(widget)), TRUE);
-    jp_logf(JP_LOG_DEBUG, "pref %d, value %d\n", pref, value);
+    
+    jp_logf(JP_LOG_DEBUG, "pref %d, value %d\n", pref, GPOINTER_TO_INT(data) & 0xFF);
 #ifdef COLORS
     if (pref==PREF_RCFILE) {
        set_colors();
@@ -175,9 +170,6 @@ static void cb_pref_menu(GtkComboBox *widget, gpointer data) {
 }
 
 int make_pref_menu(GtkWidget **pref_menu, int pref_num) {
-    GtkWidget *menu_item;
-    GtkWidget *menu;
-    GSList *group;
     int i, r;
     long ivalue;
     const char *svalue;
@@ -268,7 +260,6 @@ static void cb_checkbox_show_tooltips(GtkWidget *widget, gpointer data) {
 
 static void cb_text_entry(GtkWidget *widget, gpointer data) {
     const char *entry_text;
-    const char *combo_text;
     int i, found;
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));

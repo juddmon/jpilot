@@ -1663,7 +1663,7 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
     MyToDo *mtodo;
     int b;
     int index, sorted_position;
-    unsigned int unique_id = 0;
+    //unsigned int unique_id = 0;
     time_t ltime;
     struct tm *now;
 
@@ -1673,9 +1673,9 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
         row_selected = i[0];
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-            if (mtodo != NULL) {
-                unique_id = mtodo->unique_id;
-            }
+            //if (mtodo != NULL) {
+            //    unique_id = mtodo->unique_id;
+            //}
             // We need to turn this "scroll with mouse held down" thing off
             button_set_for_motion(0);
             b = dialog_save_changed_record_with_cancel(pane, record_changed);

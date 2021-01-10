@@ -70,8 +70,6 @@ static void cb_restore_ok(GtkWidget *widget, gpointer data) {
     int r1, r2;
 
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(restoreTreeView));
-    GtkListStore *listStore = GTK_LIST_STORE(model);
-    GtkTreeIter iter;
     list = gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(restoreTreeView)),&model);
 
     get_home_file_name("", home_dir, sizeof(home_dir));
@@ -138,7 +136,6 @@ static int populate_listStore_subpath(char *path, int check_for_dups, int check_
     DIR *dir;
     struct dirent *dirent;
     char last4[8];
-    char *text;
     int i, num, len, found;
 
     jp_logf(JP_LOG_DEBUG, "opening dir %s\n", path);

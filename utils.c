@@ -2431,14 +2431,12 @@ int make_category_menu(GtkWidget **category_menu,
                        int add_edit_cat_item) {
 
     int i;
-    int offset = 0;
     GtkListStore *catListStore = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
     GtkTreeIter iter;
 
     if (add_an_all_item) {
         gtk_list_store_append (catListStore, &iter);
         gtk_list_store_set (catListStore, &iter, 0, _("All"), 1, CATEGORY_ALL, -1);
-        offset = 1;
    }
 
     for (i = 0; i < NUM_CAT_ITEMS; i++) {
@@ -2950,12 +2948,11 @@ int read_gtkrc_file(void) {
     struct stat buf;
     const char *svalue;
 
-    GtkStyleContext *context;
     GtkCssProvider *provider;
-    GtkCssProvider *providerold;
+    //GtkCssProvider *providerold;
 
     provider = gtk_css_provider_new ();
-    providerold = gtk_css_provider_new ();
+    //providerold = gtk_css_provider_new ();
 
     get_pref(PREF_RCFILE, NULL, &svalue);
     if (svalue) {
@@ -3814,22 +3811,24 @@ static int write_to_next_id_open(FILE *pc_out, unsigned int unique_id) {
     return EXIT_SUCCESS;
 }
 
-gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+gboolean button_pressed_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer   user_data) {
     guint button;
     gdk_event_get_button(event,&button);
     //left mouse button
     if(button == 1) {
         glob_mouse_pressed = 1;
     }
+    return TRUE;
 }
 
-gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
+gboolean button_released_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer   user_data) {
     guint button;
     gdk_event_get_button(event,&button);
     //left mouse button
     if(button == 1) {
         glob_mouse_pressed = 0;
     }
+    return TRUE;
 }
 
 void button_set_for_motion(int x) {

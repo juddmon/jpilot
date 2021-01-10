@@ -471,12 +471,11 @@ selectCategoryRecordByRow(GtkTreeModel *model,
 static void cb_edit_button(GtkWidget *widget, gpointer data) {
     struct dialog_cats_data *Pdata;
     int i, r, count;
-    int j;
     long char_set;
     int id;
     int button;
     int catnum;
-     char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
+    char pilotentry[HOSTCAT_NAME_SZ];   /* entry text, in Pilot character set */
     char *button_text[] = {N_("OK")};
     char *move_text[] = {N_("Move"), N_("Delete"), N_("Cancel")};
     const char *entry_text;
@@ -770,8 +769,6 @@ int edit_cats(GtkWidget *widget, char *db_name, struct CategoryAppInfo *cai) {
     int i, j;
     long char_set;
     char *catname_hchar;    /* Category names in host character set */
-    char *titles[2] = {_("Category")};
-    gchar *empty_line[] = {""};
 
     jp_logf(JP_LOG_DEBUG, "edit_cats\n");
 

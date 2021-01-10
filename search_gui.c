@@ -89,7 +89,6 @@ static int datebook_search_sort_compare(const void *v1, const void *v2) {
 }
 
 static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     CalendarEventList *ce_list;
     CalendarEventList *temp_cel;
     int found, count;
@@ -205,7 +204,6 @@ static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeI
 }
 
 static int search_address_or_contacts(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     AddressList *addr_list;
     ContactList *cont_list;
@@ -278,7 +276,6 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
 }
 
 static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     char *appName = _("todo");
     ToDoList *todo_list;
@@ -349,7 +346,6 @@ static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter 
 }
 
 static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     MemoList *memo_list;
     MemoList *temp_memo;
@@ -416,7 +412,6 @@ static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter 
 
 static int search_plugins(const char *needle, GtkListStore *listStore, GtkTreeIter *iter) {
     GList *plugin_list, *temp_list;
-    gchar *empty_line[] = {"", ""};
     char str2[SEARCH_MAX_COLUMN_LEN + 2];
     int count;
     int case_sense;
@@ -492,7 +487,6 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_entry(GtkWidget *widget, gpointer data) {
-    gchar *empty_line[] = {"", ""};
     GtkListStore *listStore;
     GtkTreeView *treeView;
     GtkTreeIter iter;
@@ -563,11 +557,10 @@ static gboolean handleSearchRowSelection(GtkTreeSelection *selection,
                                    gpointer userdata) {
     GtkTreeIter iter;
     struct search_record *sr;
-    int row;
+
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int * i = gtk_tree_path_get_indices ( path ) ;
         row_selected = i[0];
-        row = i[0];
         gtk_tree_model_get(model, &iter, SEARCH_DATA_ENUM, &sr, -1);
         if(sr == NULL){
             return TRUE;
