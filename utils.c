@@ -3193,7 +3193,7 @@ GdkRGBA get_color(int r, int g, int b) {
     GdkRGBA color;
     char rgb[50];
     sprintf(rgb, "#%02X%02X%02X", r,g,b);
-    gdk_rgba_parse(&color,"#D90000");
+    gdk_rgba_parse(&color,rgb);
     return color;
 }
 
