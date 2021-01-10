@@ -3189,14 +3189,15 @@ int rename_file(char *old_filename, char *new_filename) {
 
     return rename(old_fullname, new_fullname);
 }
-
 GdkRGBA get_color(int r, int g, int b) {
     GdkRGBA color;
     char rgb[50];
-    sprintf(rgb, "#%X%X%X", r,g,b);
+    sprintf(rgb, "#%02X%02X%02X", r,g,b);
     gdk_rgba_parse(&color,rgb);
     return color;
 }
+
+
 
 
 int setup_sync(unsigned int flags) {
