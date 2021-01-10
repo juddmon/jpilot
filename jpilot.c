@@ -994,7 +994,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
             }
         }
     }
-    return FALSE;
+    return TRUE;
 }
 
 static void cb_about(GtkWidget *widget, gpointer data) {
