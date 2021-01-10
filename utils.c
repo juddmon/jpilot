@@ -3818,7 +3818,7 @@ gboolean button_pressed_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer
     if(button == 1) {
         glob_mouse_pressed = 1;
     }
-    return TRUE;
+    return FALSE;
 }
 
 gboolean button_released_for_motion(GtkWidget *widget, GdkEvent  *event, gpointer   user_data) {
@@ -3828,7 +3828,7 @@ gboolean button_released_for_motion(GtkWidget *widget, GdkEvent  *event, gpointe
     if(button == 1) {
         glob_mouse_pressed = 0;
     }
-    return TRUE;
+    return FALSE;
 }
 
 void button_set_for_motion(int x) {
