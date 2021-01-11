@@ -4474,7 +4474,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                     gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
                     gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
                     gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
-
                     gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(addr_text[schema[i].record_field]),
                                     x - 1, grid_y_i, 1, 1);
 
@@ -4662,10 +4661,10 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_text_view_set_editable(GTK_TEXT_VIEW(addr_all), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(addr_all), GTK_WRAP_CHAR);
     gtk_container_set_border_width(GTK_CONTAINER(addr_all), 1);
-    gtk_widget_set_hexpand(addr_text[schema[i].record_field], TRUE);
-    gtk_widget_set_halign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
-    gtk_widget_set_vexpand(addr_text[schema[i].record_field], TRUE);
-    gtk_widget_set_valign(addr_text[schema[i].record_field], GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand(addr_all, TRUE);
+    gtk_widget_set_halign(addr_all, GTK_ALIGN_FILL);
+    gtk_widget_set_vexpand(addr_all, TRUE);
+    gtk_widget_set_valign(addr_all, GTK_ALIGN_FILL);
 
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
