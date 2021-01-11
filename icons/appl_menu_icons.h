@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  ******************************************************************************/
 
+/*
 static const char *todo_menu_icon[]={
    "14 14 38 1",
    "# c None",
@@ -72,7 +73,9 @@ static const char *todo_menu_icon[]={
    ".aaaGHaaaaah.#",
    ".aIhhhhhhhhJ.#",
    ".............#"};
+*/
 
+/*gtk3 port left this unused
 static const char *addr_menu_icon[] = {
    "16 16 43 1",
    "  c None",
@@ -134,7 +137,9 @@ static const char *addr_menu_icon[] = {
    "                ",
    "                ",
    "                "};
+*/
 
+/*gtk3 port left this unused
 static const char *date_menu_icon[] = {
    "16 16 68 1",
    "  c None",
@@ -221,7 +226,9 @@ static const char *date_menu_icon[] = {
    " ..x9s:s,y.)t^3.",
    "  ..2,zAB.<C292.",
    "   ............l"};
+*/
 
+/*gtk3 port left this unused
 static const char *user_icon[] = {
    "16 16 34 1",
    "  c None",
@@ -274,4 +281,4 @@ static const char *user_icon[] = {
    "++@@@^]!'.'']]@=",
    "++@@/(_:'<[]}}|]",
    "++@@/^1:2<[345|]"};
-
+*/

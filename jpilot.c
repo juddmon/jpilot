@@ -105,6 +105,7 @@ int plugin_number = DATEBOOK + 100;
 /* jpilot.c file globals */
 static GtkWidget *g_hbox, *g_vbox0;
 static GtkWidget *g_hbox2, *g_vbox0_1;
+static GtkWidget *g_output_text_scrolled_window;
 static GtkTextView *g_output_text;
 static GtkTextBuffer *g_output_text_buffer;
 static GtkWidget *output_pane;
@@ -132,7 +133,6 @@ char *getViewMenuXmlString();
 static const char *getHelpMenuXmlString(GList *plugin_list);
 #ifdef ENABLE_PLUGINS
 static const char *getPluginMenuXmlString(GList *plugin_list);
-static void cb_plugin_setup();
 
 
 static void call_plugin_help(int number);
@@ -238,9 +238,9 @@ void call_plugin_gui(int number, int unique_id) {
     }
 }
 
-static void cb_plugin_setup() {
-    call_plugin_gui(plugin_number++, 0);
-}
+//static void cb_plugin_setup() {
+//    call_plugin_gui(plugin_number++, 0);
+//}
 
 static void cb_plugin_gui(GtkAction *action, int number) {
     call_plugin_gui(number, 0);
@@ -751,7 +751,7 @@ static int bad_sync_exit_status(int exit_status) {
 }
 
 void output_to_pane(const char *str) {
-    int w, h, new_y;
+    int h, new_y;
     long ivalue;
     GtkWidget *pane_hbox;
     GtkRequisition size_requisition;
@@ -762,11 +762,12 @@ void output_to_pane(const char *str) {
     if (ivalue < 50) {
         /* Ask GTK for size which is just large enough to show both buttons */
         pane_hbox = gtk_paned_get_child2(GTK_PANED(output_pane));
-        gtk_widget_size_request(pane_hbox, &size_requisition);
+        //gtk2 gtk_widget_size_request(pane_hbox, &size_requisition);
+        gtk_widget_get_preferred_size(pane_hbox, NULL, &size_requisition);
         ivalue = size_requisition.height + 1;
         set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
     }
-    w = gdk_window_get_width(gtk_widget_get_window(window));
+    //w = gdk_window_get_width(gtk_widget_get_window(window));
     h = gdk_window_get_height(gtk_widget_get_window(window));
     new_y = h - ivalue;
     gtk_paned_set_position(GTK_PANED(output_pane), new_y);
@@ -783,10 +784,11 @@ void output_to_pane(const char *str) {
      * to the user. */
 
     /* Get position of scrollbar */
-    GtkAdjustment * vadjustment =  gtk_text_view_get_vadjustment (g_output_text);
+    //gtk2 GtkAdjustment * vadjustment =  gtk_text_view_get_vadjustment (g_output_text);
+    GtkAdjustment * vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(g_output_text));
     sbar_value = gtk_adjustment_get_value(vadjustment);
     sbar_page_size = gtk_adjustment_get_page_size(vadjustment);
-    sbar_upper =gtk_adjustment_get_upper(vadjustment);
+    sbar_upper = gtk_adjustment_get_upper(vadjustment);
     /* Keep scrolling to the end only if we are already near(1 window) of the end
      * OR the window has just been created and is blank */
     if ((abs((sbar_value + sbar_page_size) - sbar_upper) < sbar_page_size)
@@ -1002,13 +1004,13 @@ static void cb_about(GtkWidget *widget, gpointer data) {
     char *button_text[] = {N_("OK")};
     char about[256];
     char options[1024];
-    int w, h;
+    int w;
 
     w = gdk_window_get_width(gtk_widget_get_window(window));
-    h = gdk_window_get_height(gtk_widget_get_window(window));
+    //h = gdk_window_get_height(gtk_widget_get_window(window));
 
     w = w / 2;
-    h = 1;
+    //h = 1;
 
     g_snprintf(about, sizeof(about), _("About %s"), PN);
 
@@ -1174,6 +1176,7 @@ static void cb_install_gui(GtkWidget *widget, gpointer data) {
 
 #include <gdk-pixbuf/gdk-pixdata.h>
 
+/* gtk2 port
 static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data,
                                       gint icon_size) {
     GdkPixbuf *pixbuf;
@@ -1203,6 +1206,7 @@ static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data,
 
     return data;
 }
+*/
 
 static void get_main_menu(GtkWidget *my_window,
                           GtkWidget **menubar,
@@ -1326,7 +1330,7 @@ static void get_main_menu(GtkWidget *my_window,
 #ifdef ENABLE_PLUGINS
     if(plugin_list != NULL) {
         GtkAccelGroup *accelGroup = gtk_accel_group_new();
-        gtk_window_add_accel_group(window, accelGroup);
+        gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
         int current = 5;
         for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
             plugin = (struct plugin_s *) temp_list->data;
@@ -1496,9 +1500,7 @@ static const char *getPluginMenuXmlString(GList *plugin_list) {
     GString *finalString = g_string_new("<ui>\n"
                                         "    <menubar name=\"MainMenu\">\n"
                                         "        <menu name=\"_Plugins\" action=\"PluginMenuAction\">\n ");
-    char *currentString = NULL;
-    GString *beginMenu;
-    GString *endMenu;
+    gchar *endMenu;
     GList *temp_list;
     struct plugin_s *plugin;
 
@@ -1622,13 +1624,12 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
 
 static void cb_output(GtkWidget *widget, gpointer data) {
     int flags;
-    int w, h, output_height;
+    int h, output_height;
 
     flags = GPOINTER_TO_INT(data);
 
     if ((flags == OUTPUT_MINIMIZE) || (flags == OUTPUT_RESIZE)) {
         jp_logf(JP_LOG_DEBUG, "paned pos = %d\n", gtk_paned_get_position(GTK_PANED(output_pane)));
-        w = gdk_window_get_width(gtk_widget_get_window(window));
         h = gdk_window_get_height(gtk_widget_get_window(window));
         output_height = (h - gtk_paned_get_position(GTK_PANED(output_pane)));
         set_pref(PREF_OUTPUT_HEIGHT, output_height, NULL, TRUE);
@@ -1687,11 +1688,10 @@ int main(int argc, char *argv[]) {
     GtkWidget *button_datebook, *button_address, *button_todo, *button_memo;
     GtkWidget *button;
     GtkWidget *separator;
-    GtkStyle *style;
+    //gtk2 GtkStyle *style;
     GtkWidget *pixbufwid;
     GdkPixbuf *pixbuf;
     GtkWidget *menubar = NULL;
-    GtkWidget *scrolled_window;
     GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
     int pref_fdow = 0;
@@ -1710,7 +1710,7 @@ int main(int argc, char *argv[]) {
     int filedesc[2];
     long ivalue;
     const char *svalue;
-    int i, ret, height, width;
+    int i, ret, height;
     char title[MAX_PREF_LEN + 256];
     long pref_width, pref_height, show_tooltips;
     long char_set;
@@ -1923,6 +1923,8 @@ int main(int argc, char *argv[]) {
     pipe_to_child = filedesc[1];
 
     get_pref(PREF_CHAR_SET, &char_set, NULL);
+    /* Deprecated in GTK3 */
+#if 0
     switch (char_set) {
         case CHAR_SET_JAPANESE:
             gtk_rc_parse("gtkrc.ja");
@@ -1952,6 +1954,7 @@ int main(int argc, char *argv[]) {
             break;
             /* do nothing */
     }
+#endif
 
     jpilot_master_pid = getpid();
 
@@ -2004,7 +2007,7 @@ int main(int argc, char *argv[]) {
     g_vbox0 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     /* Output Pane */
-    output_pane = gtk_vpaned_new();
+    output_pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
 
     g_signal_connect(G_OBJECT(output_pane), "button_release_event",
                        G_CALLBACK(cb_output2),
@@ -2041,12 +2044,12 @@ int main(int argc, char *argv[]) {
     gtk_text_view_set_editable(g_output_text, FALSE);
     gtk_text_view_set_wrap_mode(g_output_text, GTK_WRAP_WORD);
 
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+    g_output_text_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(g_output_text_scrolled_window),
                                    GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
-    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(g_output_text));
-    gtk_box_pack_start(GTK_BOX(temp_hbox), scrolled_window,TRUE,TRUE,0);
+    gtk_container_add(GTK_CONTAINER(g_output_text_scrolled_window), GTK_WIDGET(g_output_text));
+    gtk_box_pack_start(GTK_BOX(temp_hbox), GTK_WIDGET(g_output_text_scrolled_window), TRUE, TRUE,0);
 
     button = gtk_button_new_with_label("Clear");
     gtk_box_pack_start(GTK_BOX(temp_vbox), button, TRUE, TRUE, 3);
@@ -2182,7 +2185,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_show_all(window);
     gtk_widget_show(window);
 
-    style = gtk_widget_get_style(window);
+    //gtk2 style = gtk_widget_get_style(window);
 
     /* Jpilot Icon pixbuf */
     //pixbuf = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
@@ -2276,12 +2279,12 @@ int main(int argc, char *argv[]) {
 
     /* Set a callback for our pipe from the sync child process */
     GIOChannel *channel = g_io_channel_unix_new(pipe_from_child);
-    guint id = g_io_add_watch(channel,
-                              G_IO_IN | G_IO_HUP | G_IO_ERR,
-                              cb_read_pipe_from_child,
-                              window);
+    g_io_add_watch(channel,
+                   G_IO_IN | G_IO_HUP | G_IO_ERR,
+                   cb_read_pipe_from_child,
+                   window);
 
-    //gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
+    //gtk2 gdk_input_add(pipe_from_child, GDK_INPUT_READ, cb_read_pipe_from_child, window);
 
     get_pref(PREF_LAST_APP, &ivalue, NULL);
     /* We don't want to start up to a plugin because the plugin might
@@ -2295,8 +2298,8 @@ int main(int argc, char *argv[]) {
     }
 
     /* Set the pane size */
-    width = height = 0;
-    width = gdk_window_get_width(gtk_widget_get_window(window));
+    height = 0;
+    // width = gdk_window_get_width(gtk_widget_get_window(window));
     height = gdk_window_get_height(gtk_widget_get_window(window));
     gtk_paned_set_position(GTK_PANED(output_pane), height);
 
