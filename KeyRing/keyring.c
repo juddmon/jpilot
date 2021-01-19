@@ -2408,7 +2408,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkWidget *hbox_temp;
     GtkWidget *button;
     GtkWidget *label;
-    GtkWidget *table;
+    //gtk3 GtkWidget *table;
     GtkWidget *grid;
     GtkWindow *w;
     GtkWidget *separator;
@@ -2722,17 +2722,20 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Grid */
     grid = gtk_grid_new();
-    gtk_box_pack_start(GTK_BOX(vbox2), grid, FALSE, FALSE, 0);
+    gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
+    gtk_box_pack_start(GTK_BOX(vbox2), grid, TRUE, TRUE, 5);
 
     /* Table */
-    table = gtk_table_new(5, 10, FALSE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 0);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 0);
-    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
+    //gtk3 table = gtk_table_new(5, 10, FALSE);
+    //gtk3 gtk_table_set_row_spacings(GTK_TABLE(table), 0);
+    //gtk3 gtk_table_set_col_spacings(GTK_TABLE(table), 0);
+    //gtk3 gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
 
     /* Category menu */
-    label = gtk_label_new(_("FIX Category: "));
+    label = gtk_label_new(_("Category: "));
     // gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
     gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 0, 1, 1);
     make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
@@ -2744,57 +2747,89 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Name entry */
     label = gtk_label_new(_("name: "));
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
     entry_name = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(entry_name), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_name), 1, 1, 2, 1);
     //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
     gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
     gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+                    gtk_widget_set_hexpand(GTK_WIDGET(entry_name), TRUE);
+                    gtk_widget_set_halign(GTK_WIDGET(entry_name), GTK_ALIGN_FILL);
+                    gtk_widget_set_valign(GTK_WIDGET(entry_name), GTK_ALIGN_FILL);
 
     /* Account entry */
     label = gtk_label_new(_("account: "));
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+                    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+                    //gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_SHRINK);
+                    //gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_SHRINK);
     entry_account = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(entry_account), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_account), 1, 2, 2, 1);
     //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
     gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
     gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+                    gtk_widget_set_hexpand(GTK_WIDGET(entry_account), TRUE);
+                    gtk_widget_set_halign(GTK_WIDGET(entry_account), GTK_ALIGN_FILL);
+                    gtk_widget_set_valign(GTK_WIDGET(entry_account), GTK_ALIGN_FILL);
 
     /* Password entry */
     label = gtk_label_new(_("password: "));
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
     entry_password = gtk_entry_new();
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
     //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
     gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
     gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
+    /* Generate Password button (creates random password) */
+    button = gtk_button_new_with_label(_("Generate Password"));
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
+    g_signal_connect(G_OBJECT(button), "clicked",
+                       G_CALLBACK(cb_gen_password), entry_password);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_password), 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button), 2, 3, 1, 1);
+
+
     /* Last Changed entry */
     label = gtk_label_new(_("last changed: "));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
     //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
     gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
     gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     date_button = gtk_button_new_with_label("");
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
     g_signal_connect(G_OBJECT(date_button), "clicked",
                        G_CALLBACK(cb_date_button), date_button);
 
-    /* Generate Password button (creates random password) */
-    button = gtk_button_new_with_label(_("Generate Password"));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(button), 9, 10, 3, 4);
-    g_signal_connect(G_OBJECT(button), "clicked",
-                       G_CALLBACK(cb_gen_password), entry_password);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(date_button), 1, 4, 2, 1);
 
     /* Note textbox */
     label = gtk_label_new(_("Note"));
-    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+    //gtk3 gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 5, 3, 1);
 
-    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
+    //gtk3 hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    //gtk3 gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
     keyr_note = gtk_text_view_new();
     keyr_note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(keyr_note)));
@@ -2806,12 +2841,17 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 1);
     gtk_container_add(GTK_CONTAINER(scrolled_window), keyr_note);
-    gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
+    //gtk3 gtk_box_pack_start(GTK_BOX(hbox_temp), scrolled_window,TRUE,TRUE,0);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(scrolled_window), 0, 6, 3, 1);
+
+    // Make the scrolled_window take up extra space
+    gtk_widget_set_hexpand(GTK_WIDGET(scrolled_window), TRUE);
+    gtk_widget_set_vexpand(GTK_WIDGET(scrolled_window), TRUE);
+
     /**********************************************************************/
 
     gtk_widget_show_all(hbox);
     gtk_widget_show_all(vbox);
-    gtk_widget_show_all(grid);
 
     gtk_widget_hide(add_record_button);
     gtk_widget_hide(apply_record_button);
