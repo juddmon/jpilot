@@ -120,7 +120,7 @@ struct MyKeyRing {
 static struct CategoryAppInfo keyr_app_info;
 static int keyr_category = CATEGORY_ALL;
 
-static GtkTreeView *treeView;
+static GtkWidget *treeView;
 static GtkListStore *listStore;
 static GtkWidget *entry_name;
 static GtkWidget *entry_account;
@@ -785,7 +785,6 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 }
 
 static void connect_changed_signals(int con_or_dis) {
-    int i;
     static int connected = 0;
 
     /* CONNECT */
@@ -1079,7 +1078,6 @@ void addKeyRing(struct MyKeyRing *mkr, gpointer data) {
 
     GtkTextIter start_iter;
     GtkTextIter end_iter;
-    int i;
     unsigned int unique_id;
 
 
@@ -1624,18 +1622,18 @@ static int dialog_password(GtkWindow *main_window,
         }
     }
 
-    hbox1 = gtk_hbox_new(FALSE, 2);
+    hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
     gtk_container_add(GTK_CONTAINER(dialog), hbox1);
     gtk_box_pack_start(GTK_BOX(hbox1), gtk_image_new_from_icon_name("dialog-password", GTK_ICON_SIZE_DIALOG),
                        FALSE, FALSE, 2);
 
-    vbox1 = gtk_vbox_new(FALSE, 2);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
 
     gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
 
     gtk_container_add(GTK_CONTAINER(hbox1), vbox1);
 
-    hbox1 = gtk_hbox_new(TRUE, 2);
+    hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
@@ -1650,7 +1648,7 @@ static int dialog_password(GtkWindow *main_window,
     gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 2);
 
     entry = gtk_entry_new();
-    gtk_entry_set_max_length(entry,32);
+    gtk_entry_set_max_length(GTK_ENTRY(entry), 32);
     gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
     g_signal_connect(G_OBJECT(entry), "activate",
                        G_CALLBACK(cb_dialog_button),
@@ -1658,9 +1656,9 @@ static int dialog_password(GtkWindow *main_window,
     gtk_box_pack_start(GTK_BOX(hbox1), entry, TRUE, TRUE, 1);
 
     /* Button Box */
-    hbox1 = gtk_hbutton_box_new();
+    hbox1 = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_button_box_set_layout(GTK_BUTTON_BOX (hbox1), GTK_BUTTONBOX_END);
-     gtk_box_set_spacing(GTK_BOX(hbox1), 6);
+    gtk_box_set_spacing(GTK_BOX(hbox1), 6);
     gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 2);
 
@@ -2302,9 +2300,9 @@ static GtkWidget *cb_keyr_export_init_treeView() {
     GtkListStore *listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                                  G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING,
                                                  G_TYPE_BOOLEAN);
-    GtkTreeModel *model = GTK_TREE_MODEL(listStore);
-    GtkTreeView *keyr_treeView = gtk_tree_view_new_with_model(model);
-    GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
+    GtkTreeModel      *model = GTK_TREE_MODEL(listStore);
+    GtkWidget         *keyr_treeView = gtk_tree_view_new_with_model(model);
+    GtkCellRenderer   *changedRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
                                                                                 changedRenderer,
                                                                                 "text", KEYRING_CHANGED_COLUMN_ENUM,
@@ -2411,13 +2409,13 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkWidget *button;
     GtkWidget *label;
     GtkWidget *table;
+    GtkWidget *grid;
     GtkWindow *w;
     GtkWidget *separator;
     long ivalue;
     char ascii_password[PASSWD_LEN];
     int r;
     int password_not_correct;
-    char *titles[3]; /* { "Changed", "Name", "Account" }; */
     int retry;
     int cycle_category = FALSE;
     long char_set;
@@ -2559,8 +2557,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
     /* left and right main boxes */
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
@@ -2571,7 +2569,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Left half of screen */
     /**********************************************************************/
     /* Left-side Category menu */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
 
     make_category_menu(&category_menu1,
@@ -2589,13 +2587,10 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* listStore */
     listStore = gtk_list_store_new(KEYRING_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                    G_TYPE_POINTER, GDK_TYPE_RGBA, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
-    titles[0] = _("Changed");
-    titles[1] = _("Name");
-    titles[2] = _("Account");
     GtkTreeModel *model = GTK_TREE_MODEL(listStore);
     treeView = gtk_tree_view_new_with_model(model);
     GtkCellRenderer *changedRenderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes("Changed",
+    GtkTreeViewColumn *changedColumn = gtk_tree_view_column_new_with_attributes(_("Changed"),
                                                                                 changedRenderer,
                                                                                 "text", KEYRING_CHANGED_COLUMN_ENUM,
                                                                                 "cell-background-rgba",
@@ -2605,7 +2600,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                                                                 NULL);
     gtk_tree_view_column_set_sort_column_id(changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
+    GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(_("Name"),
                                                                              nameRenderer,
                                                                              "text", KEYRING_NAME_COLUMN_ENUM,
                                                                              "cell-background-rgba",
@@ -2615,7 +2610,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(nameColumn, KEYRING_NAME_COLUMN_ENUM);
     GtkCellRenderer *accountRenderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
+    GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes(_("Account"),
                                                                                 accountRenderer,
                                                                                 "text", KEYRING_ACCOUNT_COLUMN_ENUM,
                                                                                 "cell-background-rgba",
@@ -2645,7 +2640,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     }
     gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected),
                                             gtk_true());
-    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    gtk_widget_set_events(GTK_WIDGET(treeView), GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
@@ -2667,7 +2662,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /**********************************************************************/
     /* Right half of screen */
     /**********************************************************************/
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Cancel button */
@@ -2722,8 +2717,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 #endif
 
     /* Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
+
+    /* Grid */
+    grid = gtk_grid_new();
+    gtk_box_pack_start(GTK_BOX(vbox2), grid, FALSE, FALSE, 0);
 
     /* Table */
     table = gtk_table_new(5, 10, FALSE);
@@ -2732,12 +2731,16 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
 
     /* Category menu */
-    label = gtk_label_new(_("Category: "));
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
+    label = gtk_label_new(_("FIX Category: "));
+    // gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 0, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 0, 1, 1);
     make_category_menu(&category_menu2,
                        sort_l, NULL, FALSE, FALSE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2), 1, 10, 0, 1);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    //gtk3 gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2), 1, 10, 0, 1);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(category_menu2), 1, 0, 2, 1);
+    //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     /* Name entry */
     label = gtk_label_new(_("name: "));
@@ -2745,7 +2748,9 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     entry_set_multiline_truncate(GTK_ENTRY(entry_name), TRUE);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 1, 2);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_name), 1, 10, 1, 2);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     /* Account entry */
     label = gtk_label_new(_("account: "));
@@ -2753,19 +2758,25 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     entry_set_multiline_truncate(GTK_ENTRY(entry_account), TRUE);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 2, 3);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_account), 1, 10, 2, 3);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     /* Password entry */
     label = gtk_label_new(_("password: "));
     entry_password = gtk_entry_new();
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 3, 4);
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_password), 1, 9, 3, 4);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     /* Last Changed entry */
     label = gtk_label_new(_("last changed: "));
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(label), 0, 1, 4, 5);
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    //gtk3 gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
     date_button = gtk_button_new_with_label("");
     gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(date_button), 1, 10, 4, 5);
@@ -2782,7 +2793,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     label = gtk_label_new(_("Note"));
     gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, TRUE, TRUE, 0);
 
     keyr_note = gtk_text_view_new();
@@ -2800,6 +2811,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     gtk_widget_show_all(hbox);
     gtk_widget_show_all(vbox);
+    gtk_widget_show_all(grid);
 
     gtk_widget_hide(add_record_button);
     gtk_widget_hide(apply_record_button);
