@@ -151,8 +151,8 @@ static GtkWidget *apply_record_button;
 static GtkWidget *add_record_button;
 static GtkWidget *delete_record_button;
 static GtkWidget *copy_record_button;
-static GtkWidget *table;
-static GtkComboBox *category_menu2;
+static GtkWidget *grid;
+static GtkWidget *category_menu2;
 static GtkWidget *menu_payment;
 static GtkWidget *menu_expense_type;
 static GtkWidget *menu_currency;
@@ -345,8 +345,6 @@ static void cb_record_changed(GtkWidget *widget, gpointer data) {
 }
 
 static void connect_changed_signals(int con_or_dis) {
-    int i;
-
     /* CONNECT */
     if ((con_or_dis == CONNECT_SIGNALS) && (!connected)) {
         jp_logf(JP_LOG_DEBUG, "Expense: connect_changed_signals\n");
@@ -558,7 +556,7 @@ gboolean deleteExpenseRecord(GtkTreeModel *model,
         struct MyExpense *mexp = NULL;
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
         deleteExpense(mexp,data);
-        //
+
         return TRUE;
     }
 
@@ -703,7 +701,6 @@ void addNewExpenseRecordToDataStructure(struct MyExpense *mexp, gpointer data) {
     unsigned char buf[0xFFFF];
     int size;
     int flag;
-    int i;
     unsigned int unique_id = 0;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
@@ -830,7 +827,7 @@ static void cb_add_new_record(GtkWidget *widget, gpointer data) {
     if(gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL) != 0) {
         gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), addNewExpenseRecord, data);
     }else {
-        //no records exist in category yet.
+        /* no records exist in category yet. */
         addNewExpenseRecordToDataStructure(NULL,data);
     }
 
@@ -1107,7 +1104,7 @@ static void cb_category(GtkComboBox *item, int selection) {
         }
 
         if (selectedItem == CATEGORY_EDIT) {
-            cb_edit_cats(item, NULL);
+            cb_edit_cats(GTK_WIDGET(item), NULL);
         } else {
             exp_category = selectedItem;
         }
@@ -1142,7 +1139,7 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
                 unique_id = mexp->unique_id;
             }
 
-            // We need to turn this "scroll with mouse held down" thing off
+            /* We need to turn this "scroll with mouse held down" thing off */
             button_set_for_motion(0);
 
             b = dialog_save_changed_record(scrolled_window, record_changed);
@@ -1232,8 +1229,7 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
 }
 
 /*
- * All menus use this same callback function.  I use the value parameter
- * to determine which menu was changed and which item was selected from it.
+ * All menus use this same callback function.
  */
 static void cb_pulldown_menu(GtkComboBox *item, unsigned int value) {
     int menu, sel;
@@ -1242,13 +1238,13 @@ static void cb_pulldown_menu(GtkComboBox *item, unsigned int value) {
 
     if (!item)
         return;
-    if(gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0){
+    if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0){
         return;
     }
 
 
     sel = gtk_combo_box_get_active(GTK_COMBO_BOX(item));
-    menu = findSortedPostion(sel,GTK_COMBO_BOX(item));
+    menu = findSortedPostion(sel, GTK_COMBO_BOX(item));
     switch (menu) {
         case EXPENSE_TYPE:
             glob_detail_type = sel;
@@ -1269,11 +1265,7 @@ static void cb_pulldown_menu(GtkComboBox *item, unsigned int value) {
  * them all stuffed into a menu.
  */
 static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_menu) {
-    int i, item_num;
-    GSList *group;
-    GtkWidget *option_menu;
-    GtkWidget *menu_item;
-    GtkWidget *menu;
+    int i;
 
     jp_logf(JP_LOG_DEBUG, "Expense: make_menu\n");
     GtkListStore *catListStore = gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
@@ -1283,14 +1275,13 @@ static int make_menu(const char *items[], int menu_index, GtkWidget **Poption_me
         gtk_list_store_append (catListStore, &iter);
         gtk_list_store_set (catListStore, &iter, 0, _(items[i]), 1, menu_index, -1);
     }
-    *Poption_menu =  gtk_combo_box_new_with_model (GTK_TREE_MODEL (catListStore));
+    *Poption_menu = gtk_combo_box_new_with_model(GTK_TREE_MODEL (catListStore));
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
-    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (*Poption_menu), renderer, TRUE);
-    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (*Poption_menu), renderer,
-                                    "text", 0,
-                                    NULL);
-    g_signal_connect(G_OBJECT( *Poption_menu),"changed",G_CALLBACK(cb_pulldown_menu),
-                     GINT_TO_POINTER(menu_index << 8 | item_num));
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT (*Poption_menu), renderer, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT (*Poption_menu), renderer,
+                                   "text", 0,
+                                   NULL);
+    g_signal_connect(G_OBJECT(*Poption_menu),"changed",G_CALLBACK(cb_pulldown_menu), NULL);
 
     return EXIT_SUCCESS;
 }
@@ -1395,14 +1386,13 @@ static void make_menus(void) {
         exp_category = CATEGORY_ALL;
     }
 
-    make_category_menu(&category_menu1,
-                       sort_l, cb_category, TRUE, TRUE);
+    make_category_menu(&category_menu1, sort_l, cb_category, TRUE, TRUE);
     if(exp_category == CATEGORY_ALL){
         gtk_combo_box_set_active(GTK_COMBO_BOX(category_menu1), 0);
     }
     /* Skip the ALL category for this menu */
-    make_category_menu(&category_menu2,
-                       sort_l, NULL, FALSE, FALSE);
+    make_category_menu(&category_menu2, sort_l, NULL, FALSE, FALSE);
+
     make_menu(payment, EXPENSE_PAYMENT, &menu_payment);
     make_menu(expense_type, EXPENSE_TYPE, &menu_expense_type);
     make_menu(currency, EXPENSE_CURRENCY, &menu_currency);
@@ -1495,8 +1485,8 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(hbox), pane, TRUE, TRUE, 5);
 
     /* left and right main boxes */
-    vbox1 = gtk_vbox_new(FALSE, 0);
-    vbox2 = gtk_vbox_new(FALSE, 0);
+    vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_paned_pack1(GTK_PANED(pane), vbox1, TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(pane), vbox2, TRUE, FALSE);
 
@@ -1513,7 +1503,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Left half of screen */
 
     /* Make menu box for category menu */
-    hbox_temp = gtk_hbox_new(FALSE, 0);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(vbox1), hbox_temp, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), category_menu1, TRUE, TRUE, 0);
 
@@ -1578,7 +1568,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
 
     gtk_tree_selection_set_select_function(treeSelection, handleExpenseRowSelection, NULL, NULL);
-    gtk_widget_set_events(treeView, GDK_BUTTON1_MOTION_MASK);
+    gtk_widget_set_events(GTK_WIDGET(treeView), GDK_BUTTON1_MOTION_MASK);
     g_signal_connect (G_OBJECT(treeView), "motion_notify_event",
                       G_CALLBACK(motion_notify_event), NULL);
     g_signal_connect (G_OBJECT(treeView), "button-press-event",
@@ -1608,7 +1598,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /************************************************************/
     /* Right half of screen */
-    hbox_temp = gtk_hbox_new(FALSE, 3);
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     gtk_box_pack_start(GTK_BOX(vbox2), hbox_temp, FALSE, FALSE, 0);
 
     /* Delete, Copy, New, etc. buttons */
@@ -1650,59 +1640,94 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 #endif
 
     /*Separator */
-    separator = gtk_hseparator_new();
+    separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox2), separator, FALSE, FALSE, 5);
 
-    table = gtk_table_new(8, 2, FALSE);
-    gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
+    /* Grid */
+    grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
+    gtk_box_pack_start(GTK_BOX(vbox2), grid, TRUE, TRUE, 5);
 
     /* Category Menu */
     label = gtk_label_new(_("Category:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 0, 1, GTK_FILL, GTK_FILL, 2, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(category_menu2),
-                              1, 2, 0, 1);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 0, 1, 1);
+
+    gtk_widget_set_halign(GTK_WIDGET(category_menu2), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(category_menu2), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(category_menu2), TRUE);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(category_menu2), 1, 0, 2, 1);
 
     /* Type Menu */
     label = gtk_label_new(_("Type:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 1, 2, GTK_FILL, GTK_FILL, 2, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_expense_type),
-                              1, 2, 1, 2);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 1, 1, 1);
+
+    gtk_widget_set_halign(GTK_WIDGET(menu_expense_type), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(menu_expense_type), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(menu_expense_type), TRUE);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(menu_expense_type), 1, 1, 2, 1);
 
     /* Payment Menu */
     label = gtk_label_new(_("Payment:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 2, 3, GTK_FILL, GTK_FILL, 2, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_payment),
-                              1, 2, 2, 3);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 2, 1, 1);
+
+    gtk_widget_set_halign(GTK_WIDGET(menu_payment), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(menu_payment), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(menu_payment), TRUE);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(menu_payment), 1, 2, 2, 1);
 
     /* Currency Menu */
     label = gtk_label_new(_("Currency:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 3, 4, GTK_FILL, GTK_FILL, 2, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(menu_currency),
-                              1, 2, 3, 4);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 3, 1, 1);
+
+    gtk_widget_set_halign(GTK_WIDGET(menu_currency), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(menu_currency), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(menu_currency), TRUE);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(menu_currency), 1, 3, 2, 1);
+
 
     /* Date Spinners */
     label = gtk_label_new(_("Date:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.8);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 4, 5, GTK_FILL, GTK_FILL, 2, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
 
-    hbox_temp = gtk_hbox_new(FALSE, 0);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(hbox_temp),
-                              1, 2, 4, 5);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 4, 1, 1);
+
+    hbox_temp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(hbox_temp), 1, 4, 2, 1);
+
 
     /* Month spinner */
-    temp_vbox = gtk_vbox_new(FALSE, 0);
+    temp_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Month:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
     adj_mon = GTK_ADJUSTMENT(gtk_adjustment_new(now->tm_mon + 1, 1.0, 12.0, 1.0,
@@ -1713,10 +1738,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(temp_vbox), spinner_mon, FALSE, TRUE, 0);
 
     /* Day spinner */
-    temp_vbox = gtk_vbox_new(FALSE, 0);
+    temp_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Day:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
     adj_day = GTK_ADJUSTMENT(gtk_adjustment_new(now->tm_mday, 1.0, 31.0, 1.0,
@@ -1727,10 +1753,11 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_box_pack_start(GTK_BOX(temp_vbox), spinner_day, FALSE, TRUE, 0);
 
     /* Year spinner */
-    temp_vbox = gtk_vbox_new(FALSE, 0);
+    temp_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox_temp), temp_vbox, FALSE, FALSE, 0);
     label = gtk_label_new(_("Year:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_START);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(temp_vbox), label, FALSE, TRUE, 0);
 
     adj_year = GTK_ADJUSTMENT(gtk_adjustment_new(now->tm_year + 1900, 0.0, 2037.0,
@@ -1743,45 +1770,72 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     /* Amount Entry */
     label = gtk_label_new(_("Amount:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 5, 6, GTK_FILL, GTK_FILL, 2, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 5, 1, 1);
+
     entry_amount = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(entry_amount), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_amount),
-                              1, 2, 5, 6);
+    gtk_widget_set_halign(GTK_WIDGET(entry_amount), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(entry_amount), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(entry_amount), TRUE);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_amount), 1, 5, 2, 1);
 
     /* Vendor Entry */
     label = gtk_label_new(_("Vendor:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 6, 7, GTK_FILL, GTK_FILL, 2, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 6, 1, 1);
+
     entry_vendor = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(entry_vendor), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_vendor),
-                              1, 2, 6, 7);
+    gtk_widget_set_halign(GTK_WIDGET(entry_vendor), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(entry_vendor), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(entry_vendor), TRUE);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_vendor), 1, 6, 2, 1);
 
     /* City */
     label = gtk_label_new(_("City:"));
-    gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(label),
-                     0, 1, 7, 8, GTK_FILL, GTK_FILL, 2, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 7, 1, 1);
+
     entry_city = gtk_entry_new();
     entry_set_multiline_truncate(GTK_ENTRY(entry_city), TRUE);
-    gtk_table_attach_defaults(GTK_TABLE(table), GTK_WIDGET(entry_city),
-                              1, 2, 7, 8);
+    gtk_widget_set_halign(GTK_WIDGET(entry_city), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(entry_city), GTK_ALIGN_CENTER);
+    gtk_widget_set_hexpand(GTK_WIDGET(entry_city), TRUE);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(entry_city), 1, 7, 2, 1);
 
     /* Attendees */
     label = gtk_label_new(_("Attendees"));
-    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 8, 1, 1);
 
     /* Attendees textbox */
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    /*gtk_widget_set_size_request(GTK_WIDGET(scrolled_window), 150, 0); */
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), GTK_SHADOW_OUT);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(scrolled_window), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(scrolled_window), GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand(GTK_WIDGET(scrolled_window), TRUE);
+    gtk_widget_set_vexpand(GTK_WIDGET(scrolled_window), TRUE);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(scrolled_window), 1, 8, 2, 1);
 
     attendees = gtk_text_view_new();
     attendees_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(attendees)));
@@ -1790,16 +1844,24 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(attendees));
 
     label = gtk_label_new(_("Note"));
-    gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
+    gtk_widget_set_hexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_vexpand(GTK_WIDGET(label), FALSE);
+    gtk_widget_set_halign(GTK_WIDGET(label), GTK_ALIGN_END);
+    gtk_widget_set_valign(GTK_WIDGET(label), GTK_ALIGN_CENTER);
+
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(label), 0, 9, 1, 1);
 
     /* Note textbox */
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    /*gtk_widget_set_size_request(GTK_WIDGET(scrolled_window), 150, 0); */
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), GTK_SHADOW_OUT);
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_box_pack_start(GTK_BOX(vbox2), scrolled_window, TRUE, TRUE, 0);
-
+    gtk_widget_set_halign(GTK_WIDGET(scrolled_window), GTK_ALIGN_FILL);
+    gtk_widget_set_valign(GTK_WIDGET(scrolled_window), GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand(GTK_WIDGET(scrolled_window), TRUE);
+    gtk_widget_set_vexpand(GTK_WIDGET(scrolled_window), TRUE);
+    gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(scrolled_window), 1, 9, 2, 1);
     note = gtk_text_view_new();
     note_buffer = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(note)));
     gtk_text_view_set_editable(GTK_TEXT_VIEW(note), TRUE);
@@ -2074,4 +2136,3 @@ int plugin_exit_cleanup(void) {
     jp_logf(JP_LOG_DEBUG, "Expense: plugin_exit_cleanup\n");
     return EXIT_SUCCESS;
 }
-
