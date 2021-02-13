@@ -1443,8 +1443,8 @@ int find_prev_next(struct CalendarEvent *cale,
     t.tm_isdst = -1;
     mktime(&t);
 #ifdef ALARMS_DEBUG
-                                                                                                                            strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
-   printf("fpn: appt_start=%s\n", str);
+    strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
+    printf("fpn: appt_start=%s\n", str);
 #endif
 
     /* Handle non-repeating appointments */
