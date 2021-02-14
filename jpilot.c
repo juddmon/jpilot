@@ -1802,6 +1802,8 @@ int main(int argc, char *argv[]) {
     if ((!geometry_str) || (ret != 1)) {
         gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
     }
+#else
+    gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
 #endif
     if (iconify) {
         gtk_window_iconify(GTK_WINDOW(window));
