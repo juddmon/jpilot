@@ -1514,11 +1514,13 @@ int main(int argc, char *argv[]) {
     int filedesc[2];
     long ivalue;
     const char *svalue;
-    int i, ret, height;
+    int i, height;
     char title[MAX_PREF_LEN + 256];
     long pref_width, pref_height, show_tooltips;
     long char_set;
+#ifdef PARSE_GEOMETRY
     char *geometry_str = NULL;
+#endif
     int iconify = 0;
 #ifdef ENABLE_PLUGINS
     GList *plugin_list;
@@ -1637,6 +1639,7 @@ int main(int argc, char *argv[]) {
             iconify = 1;
         }
         if (!strncasecmp(argv[i], "-geometry", 9)) {
+#ifdef PARSE_GEOMETRY
             /* The '=' isn't specified in `man X`, but we will be nice */
             if (argv[i][9] == '=') {
                 geometry_str = argv[i] + 9;
@@ -1645,6 +1648,9 @@ int main(int argc, char *argv[]) {
                     geometry_str = argv[i + 1];
                 }
             }
+#endif
+            fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n");
+            fprintf(stdout, "J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
         }
     }
 
@@ -1788,14 +1794,15 @@ int main(int argc, char *argv[]) {
                             NULL);
 
     /* Set default size and position of main window */
-    ret = 0;
+#ifdef PARSE_GEOMETRY
+    int ret = 0;
     if (geometry_str) {
         ret = gtk_window_parse_geometry(GTK_WINDOW(window), geometry_str);
     }
     if ((!geometry_str) || (ret != 1)) {
         gtk_window_set_default_size(GTK_WINDOW(window), pref_width, pref_height);
     }
-
+#endif
     if (iconify) {
         gtk_window_iconify(GTK_WINDOW(window));
     }
