@@ -115,9 +115,9 @@ static GtkWidget *button_unlocked;
 static GtkWidget *button_sync;
 static GtkWidget *button_cancel_sync;
 static GtkWidget *button_backup;
-static GtkCheckMenuItem *menu_hide_privates;
-static GtkCheckMenuItem *menu_show_privates;
-static GtkCheckMenuItem *menu_mask_privates;
+static GtkWidget *menu_hide_privates;
+static GtkWidget *menu_show_privates;
+static GtkWidget *menu_mask_privates;
 
 extern GtkWidget *weekview_window;
 extern GtkWidget *monthview_window;
@@ -130,14 +130,10 @@ static void install_gui_and_size(GtkWidget *main_window);
 static void cb_private(GtkWidget *widget, gpointer data);
 
 char *getViewMenuXmlString();
-static const char *getHelpMenuXmlString(GList *plugin_list);
 #ifdef ENABLE_PLUGINS
-static const char *getPluginMenuXmlString(GList *plugin_list);
 
 
 static void call_plugin_help(int number);
-
-GString *concatMenuItemStr(GString *currentString, gchar *name);
 
 #endif
 
@@ -452,9 +448,10 @@ static void cb_export(GtkWidget *widget, gpointer data) {
                    1, button_text);
 }
 
-static void cb_private_from_radio(GtkRadioAction *action) {
-    cb_private(NULL, GINT_TO_POINTER(gtk_radio_action_get_current_value(action)));
-}
+//FIX remove
+//static void cb_private_from_radio(GtkRadioAction *action) {
+//    cb_private(NULL, GINT_TO_POINTER(gtk_radio_action_get_current_value(action)));
+//}
 
 static void cb_private(GtkWidget *widget, gpointer data) {
     int privates, was_privates;
@@ -483,11 +480,15 @@ static void cb_private(GtkWidget *widget, gpointer data) {
             gtk_widget_hide(button_locked);
             gtk_widget_show(button_masklocked);
             gtk_widget_hide(button_unlocked);
+            skip_false_call = 1;
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_mask_privates), TRUE);
             break;
         case HIDE_PRIVATES:
             gtk_widget_show(button_locked);
             gtk_widget_hide(button_masklocked);
             gtk_widget_hide(button_unlocked);
+            skip_false_call = 1;
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
             break;
         case SHOW_PRIVATES:
             /* Ask for the password, or don't depending on configure option */
@@ -509,32 +510,17 @@ static void cb_private(GtkWidget *widget, gpointer data) {
                 gtk_widget_hide(button_locked);
                 gtk_widget_hide(button_masklocked);
                 gtk_widget_show(button_unlocked);
+                skip_false_call = 1;
+                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_show_privates), TRUE);
             } else {
                 /* wrong or canceled password, hide the entries */
-                gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
-                cb_private(NULL, GINT_TO_POINTER(HIDE_PRIVATES));
+                privates = show_privates(HIDE_PRIVATES);
+                skip_false_call = 1;
+                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
+                cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
                 return;
             }
             break;
-    }
-
-    if (widget) {
-        /* Setting the state of the menu causes a signal to be emitted
-         * which calls cb_private again.
-         * This second call needs to be ignored */
-        // FIXME: this does not happen for me. Check with Malia and maybe remove
-        //skip_false_call = 1;
-        switch (privates) {
-            case MASK_PRIVATES:
-                gtk_check_menu_item_set_active(menu_mask_privates, TRUE);
-                break;
-            case HIDE_PRIVATES:
-                gtk_check_menu_item_set_active(menu_hide_privates, TRUE);
-                break;
-            case SHOW_PRIVATES:
-                gtk_check_menu_item_set_active(menu_show_privates, TRUE);
-                break;
-        }
     }
 
     if (was_privates != privates)
@@ -1174,399 +1160,207 @@ static void cb_install_gui(GtkWidget *widget, gpointer data) {
     install_gui_and_size(window);
 }
 
-#include <gdk-pixbuf/gdk-pixdata.h>
+static GtkWidget* create_menu_item(GtkWidget *menu,
+                                   GtkAccelGroup *accel_group,
+                                   gchar *icon_name,
+                                   const char **pixbuf_data,
+                                   gchar *text,
+                                   guint accel_key,
+                                   GdkModifierType accel_mods,
+                                   void *callback,
+                                   gpointer *data)
+{
+    GtkWidget *box;
+    GtkWidget *icon;
+    GtkWidget *label;
+    GtkWidget *menu_item;
+    if (accel_key >= 0) {
+        label = gtk_accel_label_new(text);
+    } else {
+        label = gtk_label_new(text);
+    }
+    menu_item = gtk_menu_item_new();
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 
-/* gtk2 port
-static guint8 *get_inline_pixbuf_data(const char **xpm_icon_data,
-                                      gint icon_size) {
-    GdkPixbuf *pixbuf;
-    GdkPixdata *pixdata;
-    GdkPixbuf *scaled_pb;
-    guint8 *data;
-    guint len;
+    if (pixbuf_data) {
+        GtkWidget *image;
+        GdkPixbuf *pixbuf;
 
-    pixbuf = gdk_pixbuf_new_from_xpm_data(xpm_icon_data);
-    if (!pixbuf)
-        return NULL;
-
-    if (gdk_pixbuf_get_width(pixbuf) != icon_size ||
-        gdk_pixbuf_get_height(pixbuf) != icon_size) {
-        scaled_pb = gdk_pixbuf_scale_simple(pixbuf, icon_size, icon_size,
-                                            GDK_INTERP_BILINEAR);
-        g_object_unref(pixbuf);
-        pixbuf = scaled_pb;
+        pixbuf = gdk_pixbuf_new_from_xpm_data(pixbuf_data);
+        image = gtk_image_new_from_pixbuf(pixbuf);
+        gtk_container_add(GTK_CONTAINER(box), image);
+        // FIX - Do I need to unref?
+        // g_object_unref(pixbuf);
+    } else {
+        icon = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+        gtk_container_add(GTK_CONTAINER(box), icon);
     }
 
-    pixdata = (GdkPixdata *) g_malloc(sizeof(GdkPixdata));
-    gdk_pixdata_from_pixbuf(pixdata, pixbuf, FALSE);
-    data = gdk_pixdata_serialize(pixdata, &len);
+    //gtk_label_set_use_underline(GTK_LABEL(label), TRUE);
+    gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 
-    g_object_unref(pixbuf);
-    g_free(pixdata);
+    if ((accel_key >= 0) && (accel_group)) {
+        gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+                                   accel_key, accel_mods, GTK_ACCEL_VISIBLE);
+        gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), menu_item);
+    }
 
-    return data;
+    gtk_box_pack_end(GTK_BOX(box), label, TRUE, TRUE, 0);
+
+    gtk_container_add(GTK_CONTAINER(menu_item), box);
+
+    g_signal_connect(G_OBJECT(menu_item), "activate", callback, data);
+    gtk_widget_show(menu_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+
+    return menu_item;
 }
-*/
 
 static void get_main_menu(GtkWidget *my_window,
                           GtkWidget **menubar,
                           GList *plugin_list) {
-#define ICON(icon) "<StockItem>", icon
-#define ICON_XPM(icon, size) "<ImageItem>", get_inline_pixbuf_data(icon, size)
-    GtkUIManager *uiManager = gtk_ui_manager_new();
-    const char *viewMenuXml = getViewMenuXmlString();
-    const char *fileMenuXml = getFileMenuXmlString();
+    #ifdef ENABLE_PLUGINS
+       int count, help_count;
+       struct plugin_s *p;
+       GList *temp_list;
+       int F_KEYS[]={GDK_KEY_F5,GDK_KEY_F6,GDK_KEY_F7,GDK_KEY_F8,GDK_KEY_F9,GDK_KEY_F10,GDK_KEY_F11,GDK_KEY_F12};
+    #endif
+    /*
+     * New Menu Code
+     */
+    *menubar = gtk_menu_bar_new();
+    gtk_widget_set_hexpand(*menubar, TRUE);
+
+    GtkWidget *menu1 = gtk_menu_new();
+    GtkWidget *menu2 = gtk_menu_new();
 #ifdef ENABLE_PLUGINS
-    const char *pluginMenuXml = getPluginMenuXmlString(plugin_list);
-    GList *temp_list;
-    struct plugin_s *plugin;
+    GtkWidget *menu3 = gtk_menu_new();
 #endif
-#ifdef WEBMENU
-    const char *webMenuXml = getWebMenuXmlString();
-#endif
-    const char *helpMenuXml = getHelpMenuXmlString(plugin_list);
+    GtkWidget *menu4 = gtk_menu_new();
 
-    static GtkRadioActionEntry radioEntries[] = {
-            {"HidePrivateRecordsAction", "jpilot-hide-private", "Hide Private Records", NULL, "Exit application", HIDE_PRIVATES},
-            {"ShowPrivateRecordsAction", "jpilot-show-private", "Show Private Records", NULL, "Exit application", SHOW_PRIVATES},
-            {"MasKPrivateRecordsAction", "jpilot-mask-private", "Mask Private Records", NULL, "Exit application", MASK_PRIVATES},
-    };
-    static GtkActionEntry helpEntries[] = {
-            {"HelpMenuAction",    NULL,            "_Help", "<alt>H"},
-            {"AboutJPilotAction", "_About", "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
-    };
-    static GtkActionEntry viewEntries[] = {
-            {"ViewMenuAction",   NULL,             "_View",     "<alt>V"},
-            {"DatebookAction",  "jpilot-datebook", "Datebook",  "F1", "Open Datebook",  G_CALLBACK (
-                                                                                                cb_datebook_app_button)},
-            {"AddressesAction", "jpilot-address",  "Addresses", "F2", "Open Addresses", G_CALLBACK (
-                                                                                                cb_address_app_button)},
-            {"TodosAction",     "jpilot-todo",     "Todos",     "F3", "Open Todos",     G_CALLBACK (
-                                                                                                cb_todo_app_button)},
-            {"MemosAction",     "jpilot-memo",     "Memos",     "F4", "Open Memos",     G_CALLBACK (
-                                                                                                cb_memo_app_button)},
+    GtkWidget *m = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu1);
+    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+    gtk_widget_show(m);
 
+    m = gtk_menu_item_new_with_mnemonic("_View");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu2);
+    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+    gtk_widget_show(m);
 
-
-    };
-#ifdef WEBMENU
-    static GtkActionEntry webEntries[] = {
-            {"WebMenuAction",       NULL, "Web",      "<alt>W"},
-            {"NetscapeMenuAction",  NULL, "Netscape", ""},
-            {"NetscapeExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openNetscapeExisting)},
-            {"NetscapeNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openNetscapeNewWindow)},
-            {"NetscapeNewNetscape",  NULL, "open jpilot.org in new Netscape", "","",G_CALLBACK(openNetscapeNew)},
-            {"MozillaMenuAction",   NULL, "Mozilla",  ""},
-            {"MozillaExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openMozillaExisting)},
-            {"MozillaNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openMozillaNewWindow)},
-            {"MozillaNewTab",  NULL, "open jpilot.org in new tab", "","",G_CALLBACK(openMozillaNewTab)},
-            {"MozillaNewMozilla",  NULL, "open jpilot.org in new Mozilla", "","",G_CALLBACK(openMozillaNew)},
-            {"GaleonMenuAction",    NULL, "Galeon",  ""},
-            {"GaleonExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openGaleonExisting)},
-            {"GaleonNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openGaleonNewWindow)},
-            {"GaleonNewTab",  NULL, "open jpilot.org in new tab", "","",G_CALLBACK(openGaleonNewTab)},
-            {"GaleonNewGaleon",  NULL, "open jpilot.org in new Galeon", "","",G_CALLBACK(openGaleonNew)},
-            {"OperaMenuAction",     NULL, "Opera",  ""},
-            {"OperaExisting",  NULL, "open jpilot.org in existing", "","",G_CALLBACK(openOperaExisting)},
-            {"OperaNewWindow",  NULL, "open jpilot.org in new window", "","",G_CALLBACK(openOperaNewWindow)},
-            {"OperaNewOpera",  NULL, "open jpilot.org in new Opera", "","",G_CALLBACK(openOperaNew)},
-            {"GnomeUrlMenuAction",  NULL, "GnomeUrl",  ""},
-            {"Gnome",  NULL, "Gnome URL Handler for jpilot.org",  "","",G_CALLBACK(openGnomeNew)},
-            {"LynxMenuAction",      NULL, "Lynx",  ""},
-            {"Lynx",  NULL, "Lynx jpilot.org",  "","",G_CALLBACK(openLynxNew)},
-            {"LinksMenuAction",     NULL, "Links",  ""},
-            {"Links",  NULL, "Links jpilot.org",  "","",G_CALLBACK(openLinksNew)},
-            {"W3MMenuAction",       NULL, "W3M",  ""},
-            {"W3M",  NULL, "w3m jpilot.org",  "","",G_CALLBACK(openW3MNew)},
-            {"KonquerorMenuAction", NULL, "Konqueror",  ""},
-            {"Konqueror",  NULL, "Konqueror jpilot.org",  "","",G_CALLBACK(openKonquerorNew)},
-
-    };
-#endif
-    static GtkActionEntry fileEntries[] =
-            {
-                    {"FileMenuAction", NULL,                            "_File",       "<alt>F"},
-                    /* name, stock id, label */
-                    {"FindAction",     "_Find",                  "_Find",       "<control>F", "Find an entry by text",       G_CALLBACK (
-                                                                                                                                            cb_search_gui)},
-                    {"InstallAction",  "_Open",                  "_Install",    "<control>I", "Install an application",      G_CALLBACK (
-                                                                                                                                            cb_install_gui)},
-                    {"ImportAction",   "go-next",            "Import",           NULL,    "Import data",                 G_CALLBACK (
-                                                                                                                                            cb_import)},
-                    {"ExportAction",   "go-previous",              "Export",           NULL,    "Export data",                 G_CALLBACK (
-                                                                                                                                            cb_export)},
-                    {"PreferencesAction",     "jpilot-preferences",     "Preferences", "<control>S", "Manage settings for J-Pilot", G_CALLBACK (
-                                                                                                                                            cb_prefs_gui)},
-                    {"PrintAction",    "Print",                 "_Print",      "<control>P", "Print",                       G_CALLBACK (
-                                                                                                                                            cb_print)},
-                    {"InstallUserAction",     "jpilot-installUser",     "Install User",     NULL,    "Install a user",              G_CALLBACK (
-                                                                                                                                            cb_install_user)},
-                    {"RestoreHandheldAction", "jpilot-restoreHandheld", "Restore Handheld", NULL,    "Restore Handheld device",     G_CALLBACK (
-                                                                                                                                            cb_restore)},
-                    {"QuitAction",     "_Quit",                  "_Quit",       "<control>Q", "Exit application",            G_CALLBACK (
-                                                                                                                                            cb_delete_event)},
-
-            };
-    static guint n_entries = G_N_ELEMENTS (fileEntries);
-    GtkActionGroup *action_group = gtk_action_group_new("MainMenu");
-    GtkActionGroup *actionHelp_group = gtk_action_group_new("HelpMenu");
 #ifdef ENABLE_PLUGINS
-    GtkActionGroup *actionPlugin_group = gtk_action_group_new("PluginMenu");
+    m = gtk_menu_item_new_with_mnemonic("_Plugins");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu3);
+    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+    gtk_widget_show(m);
 #endif
-    gtk_action_group_add_actions(action_group, fileEntries, n_entries, NULL);
-    gtk_action_group_add_actions(action_group, viewEntries, G_N_ELEMENTS (viewEntries), NULL);
-#ifdef WEBMENU
-    gtk_action_group_add_actions(action_group, webEntries, G_N_ELEMENTS (webEntries), NULL);
-#endif
-#ifdef ENABLE_PLUGINS
-    static GtkActionEntry pluginEntries[] = {
-            {"PluginMenuAction", NULL,             "_Plugins",   "<alt>P"}
-    };
-    if(plugin_list != NULL) {
-        gtk_action_group_add_actions(actionPlugin_group, pluginEntries, G_N_ELEMENTS (pluginEntries), NULL);
+
+    m = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu4);
+    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+    gtk_widget_show(m);
+
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+    /*
+    GClosure* closure = g_cclosure_new(accelerator_pressed, 0, 0);
+    gtk_accel_group_connect (accel_group,
+                             GDK_KEY_E,
+                             GDK_CONTROL_MASK,
+                             GTK_ACCEL_VISIBLE,
+                             closure);
+    closure = g_cclosure_new(accelerator_pressed, 0, 0);
+    gtk_accel_group_connect (accel_group,
+                             GDK_KEY_D,
+                             //GDK_SHIFT_MASK,
+                             0,
+                             GTK_ACCEL_VISIBLE,
+                             closure);
+    gtk_menu_set_accel_group(menu1, accel_group);
+    */
+
+    // First menu ("File")
+    create_menu_item(menu1, accel_group, "gtk-find", NULL, "Find", GDK_KEY_f, GDK_CONTROL_MASK, cb_search_gui, NULL);
+    GtkWidget *sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu1), sep);
+    create_menu_item(menu1, accel_group, "gtk-open", NULL, "Install", GDK_KEY_i, GDK_CONTROL_MASK, cb_install_gui, NULL);
+    create_menu_item(menu1, NULL, "gtk-go-forward", NULL, "Import", -1, GDK_CONTROL_MASK, cb_import, NULL);
+    create_menu_item(menu1, NULL, "gtk-go-back", NULL, "Export", -1, GDK_CONTROL_MASK, cb_export, NULL);
+    create_menu_item(menu1, accel_group, "gtk-references", NULL, "Preferences", GDK_KEY_s, GDK_CONTROL_MASK, cb_prefs_gui, NULL);
+    create_menu_item(menu1, accel_group, "gtk-print", NULL, "Print", GDK_KEY_p, GDK_CONTROL_MASK, cb_print, NULL);
+    sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu1), sep);
+    create_menu_item(menu1, NULL, "", user_icon, "Install User", -1, GDK_CONTROL_MASK, cb_install_user, NULL);
+    create_menu_item(menu1, NULL, "gtk-redo", NULL, "Restore Handheld", -1, GDK_CONTROL_MASK, cb_restore, NULL);
+    sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu1), sep);
+    create_menu_item(menu1, accel_group, "gtk-quit", NULL, "Quit", GDK_KEY_q, GDK_CONTROL_MASK, cb_delete_event, NULL);
+
+    // First menu ("View")
+    // RADIO
+    GSList *group = NULL;
+    char *private_menu_text[] = {N_("Hide Private Records"), N_("Show Private Records"), N_("Mask Private Records")};
+    int params[] = {HIDE_PRIVATES, SHOW_PRIVATES, MASK_PRIVATES};
+    GtkWidget *last_item = NULL;
+    GtkWidget *radio_item[3];
+    int i;
+    for (i = 0; i < 3; i++) {
+        radio_item[i] = gtk_radio_menu_item_new_with_label(group, private_menu_text[i]);
+        g_signal_connect(G_OBJECT(radio_item[i]), "activate", G_CALLBACK(cb_private), GINT_TO_POINTER(params[i]));
+        gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(radio_item[i]), GTK_RADIO_MENU_ITEM(last_item));
+        last_item = radio_item[i];
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu2), radio_item[i]);
     }
-#endif
-   gtk_action_group_add_actions(actionHelp_group, helpEntries, G_N_ELEMENTS (helpEntries), NULL);
+    menu_hide_privates = radio_item[0];
+    menu_show_privates = radio_item[1];
+    menu_mask_privates = radio_item[2];
+
+    sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu2), sep);
+    create_menu_item(menu2, accel_group, "", date_menu_icon, "Datebook", GDK_KEY_F1, 0, cb_app_button, GINT_TO_POINTER(DATEBOOK));
+    create_menu_item(menu2, accel_group, "", addr_menu_icon, "Address", GDK_KEY_F2, 0, cb_app_button, GINT_TO_POINTER(ADDRESS));
+    create_menu_item(menu2, accel_group, "", todo_menu_icon, "Todos", GDK_KEY_F3, 0, cb_app_button, GINT_TO_POINTER(TODO));
+    create_menu_item(menu2, accel_group, "gtk-justify-left", NULL, "Memos", GDK_KEY_F4, 0, cb_app_button, GINT_TO_POINTER(MEMO));
+
 #ifdef ENABLE_PLUGINS
-    if(plugin_list != NULL) {
-        GtkAccelGroup *accelGroup = gtk_accel_group_new();
-        gtk_window_add_accel_group(GTK_WINDOW(window), accelGroup);
-        int current = 5;
-        for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-            plugin = (struct plugin_s *) temp_list->data;
-            if (plugin != NULL && plugin->help_name != NULL) {
-                // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
-                GString *actionName = g_string_new(plugin->help_name);
-                g_string_append(actionName, "Action");
-                GtkAction *helpPluginAction = gtk_action_new(actionName->str, plugin->help_name, "", "_About");
-                gtk_action_set_sensitive(helpPluginAction, TRUE);
-                g_signal_connect (helpPluginAction, "activate",
-                                  G_CALLBACK(cb_plugin_help),
-                                  GINT_TO_POINTER(plugin->number));
-                gtk_action_group_add_action(actionHelp_group, helpPluginAction);
-            }
-            if (plugin != NULL && plugin->menu_name != NULL) {
-                // {"AboutJPilotAction", GTK_STOCK_ABOUT, "About J-Pilot", NULL, "About J-Pilot", G_CALLBACK (cb_about)},
-                GString *actionName = g_string_new(plugin->menu_name);
-                g_string_append(actionName, "Action");
-                GtkAction *pluginAction = gtk_action_new(actionName->str, plugin->menu_name, "", "_About");
-                gtk_action_set_sensitive(pluginAction, TRUE);
-                g_signal_connect (pluginAction, "activate",
-                                  G_CALLBACK(cb_plugin_gui),
-                                  GINT_TO_POINTER(plugin->number));
-                char acceleratorPath[10] = "";
-                if (current <= 8) {
-                    sprintf(acceleratorPath, "F%d", current++);
-                }
-                if (strcmp(acceleratorPath, "") == 0) {
-                    gtk_action_group_add_action(actionPlugin_group, pluginAction);
-                } else {
-                    gtk_action_group_add_action_with_accel(actionPlugin_group, pluginAction, acceleratorPath);
-                    gtk_action_set_accel_group(pluginAction, accelGroup);
-                    gtk_action_connect_accelerator(pluginAction);
-                }
-            }
+    /* Count the plugin/ entries */
+    for (count=0, temp_list = plugin_list;
+         temp_list;
+         temp_list = temp_list->next) {
+        p = (struct plugin_s *)temp_list->data;
+        if (p->menu_name) {
+            count++;
         }
     }
-#endif
 
-
-
-    //gtk_action_group_remove_action(action_group,gtk_action_group_get_action(action_group,"PluginMenuAction"));
-    gtk_action_group_add_radio_actions(action_group, radioEntries, G_N_ELEMENTS (radioEntries),
-                                       show_privates(GET_PRIVATES), G_CALLBACK(cb_private_from_radio), NULL);
-
-    gtk_ui_manager_insert_action_group(uiManager, action_group, 0);
-#ifdef ENABLE_PLUGINS
-    if(plugin_list != NULL) {
-        gtk_ui_manager_insert_action_group(uiManager, actionPlugin_group, 9);
-    }
-#endif
-    gtk_ui_manager_insert_action_group(uiManager, actionHelp_group, 10);
-
-    gtk_window_add_accel_group(GTK_WINDOW (my_window),
-                               gtk_ui_manager_get_accel_group(uiManager));
-    addUiFromString(uiManager, fileMenuXml);
-    addUiFromString(uiManager, viewMenuXml);
-#ifdef WEBMENU
-    addUiFromString(uiManager, webMenuXml);
-#endif
-#ifdef ENABLE_PLUGINS
-   if(plugin_list != NULL) {
-       addUiFromString(uiManager, pluginMenuXml);
-   }
-#endif
-    addUiFromString(uiManager, helpMenuXml);
-    if (menubar) {
-        /* Finally, return the actual menu bar created by the item factory. */
-        *menubar = gtk_ui_manager_get_widget(uiManager, "/MainMenu");
-    }
-}
-
-static const char *getHelpMenuXmlString(GList *plugin_list) {
-    GString *finalString = g_string_new("<ui>\n"
-                                        "    <menubar name=\"MainMenu\">\n"
-                                        "        <menu name=\"Help\" action=\"HelpMenuAction\">\n"
-                                        "            <separator/>\n"
-                                        "            <menuitem name=\"About J-Pilot\" action=\"AboutJPilotAction\"/>\n");
-    gchar *endMenu = "</menu>\n"
-                     "    </menubar>\n"
-                     "</ui>";
-#ifdef ENABLE_PLUGINS
-    GList *temp_list;
-    struct plugin_s *plugin;
-    if (plugin_list != NULL) {
-        for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-
-            plugin = (struct plugin_s *) temp_list->data;
-            if (plugin != NULL && plugin->help_name != NULL) {
-                finalString = concatMenuItemStr(finalString, plugin->help_name);
-            }
+    /* Count the help/ entries */
+    for (help_count=0, temp_list = plugin_list;
+         temp_list;
+         temp_list = temp_list->next) {
+        p = (struct plugin_s *)temp_list->data;
+        if (p->help_name) {
+            help_count++;
         }
     }
-#endif
-    g_string_append(finalString, endMenu);
-    return finalString->str;
-}
 
-#ifdef WEBMENU
-static const char *getWebMenuXmlString() {
-    return "<ui>\n"
-           "    <menubar name=\"MainMenu\">\n"
-           "        <menu name=\"_Web\" action=\"WebMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menu name=\"_Netscape\" action=\"NetscapeMenuAction\">\n"
-           "\n"
-           "                <menuitem name=\"open jpilot.org in existing\" action=\"NetscapeExisting\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new window\" action=\"NetscapeNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new Netscape\" action=\"NetscapeNewNetscape\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_Mozilla\" action=\"MozillaMenuAction\">\n"
-           "                <menuitem name=\"open jpilot.org in existing\" action=\"MozillaExisting\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new window\" action=\"MozillaNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new tab\" action=\"MozillaNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new Mozilla\" action=\"MozillaNewMozilla\"/>\n"
-           "\n"
-           "            </menu>\n"
-           "            <menu name=\"_Galeon\" action=\"GaleonMenuAction\">\n"
-           "                <menuitem name=\"open jpilot.org in existing\" action=\"GaleonExisting\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new window\" action=\"GaleonNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new tab\" action=\"GaleonNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new Galeon\" action=\"GaleonNewGaleon\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_Opera\" action=\"OperaMenuAction\">\n"
-           "                <menuitem name=\"open jpilot.org in existing\" action=\"OperaExisting\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new window\" action=\"OperaNewWindow\"/>\n"
-           "                <menuitem name=\"open jpilot.org in new Opera\" action=\"OperaNewOpera\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_GnomeUrl\" action=\"GnomeUrlMenuAction\">\n"
-           "                <menuitem name=\"Gnome URL Handler for jpilot.org\" action=\"Gnome\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_Lynx\" action=\"LynxMenuAction\">\n"
-           "                <menuitem name=\"Lynx jpilot.org\" action=\"Lynx\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_Links\" action=\"LinksMenuAction\">\n"
-           "                <menuitem name=\"Links jpilot.org\" action=\"Links\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_W3M\" action=\"W3MMenuAction\">\n"
-           "                <menuitem name=\"w3m jpilot.org\" action=\"W3M\"/>\n"
-           "            </menu>\n"
-           "            <menu name=\"_Konqueror\" action=\"KonquerorMenuAction\">\n"
-           "                <menuitem name=\"Konqueror jpilot.org\" action=\"Konqueror\"/>\n"
-           "            </menu>\n"
-           "        </menu>\n"
-           "    </menubar>\n"
-           "</ui>";
-}
-#endif
-#ifdef ENABLE_PLUGINS
+    /* Create plugin menu */
+    for (i=0, temp_list = plugin_list; temp_list; temp_list = temp_list->next, i++) {
+        p = (struct plugin_s *)temp_list->data;
+        if (p->menu_name) {
+            create_menu_item(menu3, accel_group, "package_system", NULL, p->menu_name, F_KEYS[i], 0, cb_plugin_gui, GINT_TO_POINTER(p->number));
+        }
+    }
+    // About menu
+    create_menu_item(menu4, accel_group, "gtk-about", NULL, "About J-Pilot", -1, 0, cb_about, NULL);
 
-GString *concatMenuItemStr(GString *currentString, gchar *name) {
-    const gchar *beginMenuItem = "  <menuitem name=\"";
-    const gchar *beginMenuItemAction = "\" action=\"";
-    const gchar *endMenuItem = "Action\"/>\n";
-    gchar temp_str[255];
-
-    g_snprintf(temp_str, sizeof(temp_str), _("%s"), name);
-    g_string_append(currentString, beginMenuItem);
-    g_string_append(currentString, temp_str);
-    g_string_append(currentString, beginMenuItemAction);
-    g_string_append(currentString, temp_str);
-    g_string_append(currentString, endMenuItem);
-    return currentString;
-}
-
-static const char *getPluginMenuXmlString(GList *plugin_list) {
-    GString *finalString = g_string_new("<ui>\n"
-                                        "    <menubar name=\"MainMenu\">\n"
-                                        "        <menu name=\"_Plugins\" action=\"PluginMenuAction\">\n ");
-    gchar *endMenu;
-    GList *temp_list;
-    struct plugin_s *plugin;
-
-    endMenu = "</menu>\n"
-              "    </menubar>\n"
-              "</ui>";
+    /* Append plugin help menu strings */
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
-        plugin = (struct plugin_s *) temp_list->data;
-        if (plugin != NULL && plugin->menu_name != NULL) {
-            finalString = concatMenuItemStr(finalString, plugin->menu_name);
+        p = (struct plugin_s *)temp_list->data;
+        if (p->help_name) {
+            create_menu_item(menu4, accel_group, "gtk-about", NULL, p->help_name, -1, 0, cb_plugin_help, GINT_TO_POINTER(p->number));
         }
     }
-    g_string_append(finalString, endMenu);
-    return finalString->str;
-}
-
 #endif
-
-void addUiFromString(const GtkUIManager *uiManager, const char *menuXml) {
-    GError *error = NULL;
-    gtk_ui_manager_add_ui_from_string(uiManager, menuXml, strlen(menuXml), &error);
-    if (error) {
-        g_message ("building menus failed: %s", error->message);
-        g_error_free(error);
-    }
-}
-
-char *getViewMenuXmlString() {
-    return "<ui>\n"
-           "    <menubar name=\"MainMenu\">\n"
-           "        <menu name=\"_View\" action=\"ViewMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Hide Private Records\" action=\"HidePrivateRecordsAction\"/>\n"
-           "            <menuitem name=\"Show Private Records\" action=\"ShowPrivateRecordsAction\"/>\n"
-           "            <menuitem name=\"Mask Private Records\" action=\"MasKPrivateRecordsAction\"/>\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Datebook\" action=\"DatebookAction\"/>\n"
-           "            <menuitem name=\"Addresses\" action=\"AddressesAction\"/>\n"
-           "            <menuitem name=\"Todos\" action=\"TodosAction\"/>\n"
-           "            <menuitem name=\"Memos\" action=\"MemosAction\"/>\n"
-           "        </menu>\n"
-           "    </menubar>\n"
-           "</ui>";
-}
-
-char *getFileMenuXmlString() {
-    return "<ui>\n"
-           "    <menubar name=\"MainMenu\">\n"
-           "        <menu name=\"_File\" action=\"FileMenuAction\">\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"_Find\" action=\"FindAction\"/>\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"_Install\" action=\"InstallAction\"/>\n"
-           "            <menuitem name=\"Import\" action=\"ImportAction\"/>\n"
-           "            <menuitem name=\"Export\" action=\"ExportAction\"/>\n"
-           "            <menuitem name=\"Preferences\" action=\"PreferencesAction\"/>\n"
-           "            <menuitem name=\"_Print\" action=\"PrintAction\"/>\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"Install User\" action=\"InstallUserAction\"/>\n"
-           "            <menuitem name=\"Restore Handheld\" action=\"RestoreHandheldAction\"/>\n"
-           "            <separator/>\n"
-           "            <menuitem name=\"_Quit\" action=\"QuitAction\"/>\n"
-           "        </menu>\n"
-           "    </menubar>\n"
-           "</ui>";
-
 }
 
 static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
@@ -2023,6 +1817,7 @@ int main(int argc, char *argv[]) {
 #else
     get_main_menu(window, &menubar, NULL);
 #endif
+
     gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
 
     gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
@@ -2354,4 +2149,3 @@ int main(int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
-
