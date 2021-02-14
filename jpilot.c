@@ -481,15 +481,19 @@ static void cb_private(GtkWidget *widget, gpointer data) {
             gtk_widget_hide(button_locked);
             gtk_widget_show(button_masklocked);
             gtk_widget_hide(button_unlocked);
-            skip_false_call = 1;
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_mask_privates), TRUE);
+            if (! gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_mask_privates))) {
+                skip_false_call = 1;
+                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_mask_privates), TRUE);
+            }
             break;
         case HIDE_PRIVATES:
             gtk_widget_show(button_locked);
             gtk_widget_hide(button_masklocked);
             gtk_widget_hide(button_unlocked);
-            skip_false_call = 1;
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
+            if (! gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_hide_privates))) {
+                skip_false_call = 1;
+                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
+            }
             break;
         case SHOW_PRIVATES:
             /* Ask for the password, or don't depending on configure option */
@@ -511,13 +515,17 @@ static void cb_private(GtkWidget *widget, gpointer data) {
                 gtk_widget_hide(button_locked);
                 gtk_widget_hide(button_masklocked);
                 gtk_widget_show(button_unlocked);
-                skip_false_call = 1;
-                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_show_privates), TRUE);
+                if (! gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_show_privates))) {
+                    skip_false_call = 1;
+                    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_show_privates), TRUE);
+                }
             } else {
                 /* wrong or canceled password, hide the entries */
                 privates = show_privates(HIDE_PRIVATES);
-                skip_false_call = 1;
-                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
+                if (! gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_hide_privates))) {
+                    skip_false_call = 1;
+                    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_hide_privates), TRUE);
+                }
                 cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
                 return;
             }
