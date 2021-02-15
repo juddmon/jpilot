@@ -44,6 +44,7 @@ jpilot_SOURCES = \
 	dialer.c \
 	export_gui.c \
 	export.h \
+	font.c \
 	i18n.h \
 	import_gui.c \
 	install_gui.c \
