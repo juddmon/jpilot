@@ -1228,6 +1228,7 @@ static GtkWidget* create_menu_item(GtkWidget *menu,
 
 static void get_main_menu(GtkWidget *my_window,
                           GtkWidget **menubar,
+                          GtkWidget **menubar_help,
                           GList *plugin_list) {
     #ifdef ENABLE_PLUGINS
        int count, help_count;
@@ -1239,7 +1240,9 @@ static void get_main_menu(GtkWidget *my_window,
      * New Menu Code
      */
     *menubar = gtk_menu_bar_new();
-    gtk_widget_set_hexpand(*menubar, TRUE);
+    *menubar_help = gtk_menu_bar_new();
+    gtk_widget_set_hexpand(*menubar, FALSE);
+    gtk_widget_set_hexpand(*menubar_help, FALSE);
 
     GtkWidget *menu1 = gtk_menu_new();
     GtkWidget *menu2 = gtk_menu_new();
@@ -1270,27 +1273,11 @@ static void get_main_menu(GtkWidget *my_window,
 
     m = gtk_menu_item_new_with_mnemonic("_Help");
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu4);
-    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar_help), m);
     gtk_widget_show(m);
 
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
-    /*
-    GClosure* closure = g_cclosure_new(accelerator_pressed, 0, 0);
-    gtk_accel_group_connect (accel_group,
-                             GDK_KEY_E,
-                             GDK_CONTROL_MASK,
-                             GTK_ACCEL_VISIBLE,
-                             closure);
-    closure = g_cclosure_new(accelerator_pressed, 0, 0);
-    gtk_accel_group_connect (accel_group,
-                             GDK_KEY_D,
-                             //GDK_SHIFT_MASK,
-                             0,
-                             GTK_ACCEL_VISIBLE,
-                             closure);
-    gtk_menu_set_accel_group(menu1, accel_group);
-    */
 
     // First menu ("File")
     create_menu_item(menu1, accel_group, "gtk-find", NULL, "Find", GDK_KEY_f, GDK_CONTROL_MASK, cb_search_gui, NULL);
@@ -1499,6 +1486,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *pixbufwid;
     GdkPixbuf *pixbuf;
     GtkWidget *menubar = NULL;
+    GtkWidget *menubar_help = NULL;
     GtkAccelGroup *accel_group;
 /* Extract first day of week preference from locale in GTK2 */
     int pref_fdow = 0;
@@ -1835,12 +1823,15 @@ int main(int argc, char *argv[]) {
 
     /* Create the Menu Bar at the top */
 #ifdef ENABLE_PLUGINS
-    get_main_menu(window, &menubar, plugin_list);
+    get_main_menu(window, &menubar, &menubar_help, plugin_list);
 #else
-    get_main_menu(window, &menubar, NULL);
+    get_main_menu(window, &menubar, &menubar_help, NULL);
 #endif
 
-    gtk_box_pack_start(GTK_BOX(main_vbox), menubar, FALSE, FALSE, 0);
+    temp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(main_vbox), temp_hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(temp_hbox), menubar, FALSE, FALSE, 0);
+    gtk_box_pack_end(GTK_BOX(temp_hbox), menubar_help, FALSE, FALSE, 0);
 
     gtk_box_pack_start(GTK_BOX(main_vbox), g_hbox, TRUE, TRUE, 3);
     gtk_container_set_border_width(GTK_CONTAINER(g_hbox), 10);
