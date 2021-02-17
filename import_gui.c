@@ -190,7 +190,7 @@ static void cb_type(GtkWidget *widget, gpointer data)
 
 static void cb_import(GtkWidget *widget, gpointer filesel)
 {
-   const char *sel;
+   char *sel;
    struct stat statb;
 
    jp_logf(JP_LOG_DEBUG, "cb_import\n");
@@ -200,13 +200,17 @@ static void cb_import(GtkWidget *widget, gpointer filesel)
    /* Check to see if its a regular file */
    if (stat(sel, &statb)) {
       jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
+      g_free(sel);
       return;
    }
    if (!S_ISREG(statb.st_mode)) {
       jp_logf(JP_LOG_DEBUG, "File selected was not a regular file\n");
+      g_free(sel);
       return;
    }
    glob_import_callback(widget, sel, glob_type_selected);
+   g_free(sel);
+
    cb_quit(widget, widget);
 }
 
@@ -376,7 +380,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
     char title[256];
     const char *svalue;
     GSList *group;
-    int i;
+    int res, i;
     GtkWidget *fileChooserWidget;
 
 
@@ -421,8 +425,11 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
     gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(fileChooserWidget), GTK_WIDGET(extraWidget));
     g_signal_connect(G_OBJECT(fileChooserWidget), "destroy",
                        G_CALLBACK(cb_destroy), fileChooserWidget);
-    if (gtk_dialog_run(GTK_DIALOG(fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
-        //run other window here..  not sure where it is defined at the moment.
+
+    res = gtk_dialog_run(GTK_DIALOG(fileChooserWidget));
+    if (res == GTK_RESPONSE_ACCEPT) {
         cb_import(fileChooserWidget, NULL);
+    } else {
+        cb_quit(fileChooserWidget, fileChooserWidget);
     }
 }
