@@ -1259,10 +1259,13 @@ static void get_main_menu(GtkWidget *my_window,
     gtk_widget_show(m);
 
 #ifdef ENABLE_PLUGINS
-    m = gtk_menu_item_new_with_mnemonic("_Plugins");
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu3);
-    gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
-    gtk_widget_show(m);
+    /* plugin_list will be NULL if there are none */
+    if (plugin_list) {
+        m = gtk_menu_item_new_with_mnemonic("_Plugins");
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(m), menu3);
+        gtk_menu_shell_append(GTK_MENU_SHELL(*menubar), m);
+        gtk_widget_show(m);
+    }
 #endif
 
     m = gtk_menu_item_new_with_mnemonic("_Help");
@@ -1296,7 +1299,7 @@ static void get_main_menu(GtkWidget *my_window,
     create_menu_item(menu1, accel_group, "gtk-open", NULL, "Install", GDK_KEY_i, GDK_CONTROL_MASK, cb_install_gui, NULL);
     create_menu_item(menu1, NULL, "gtk-go-forward", NULL, "Import", -1, GDK_CONTROL_MASK, cb_import, NULL);
     create_menu_item(menu1, NULL, "gtk-go-back", NULL, "Export", -1, GDK_CONTROL_MASK, cb_export, NULL);
-    create_menu_item(menu1, accel_group, "gtk-references", NULL, "Preferences", GDK_KEY_s, GDK_CONTROL_MASK, cb_prefs_gui, NULL);
+    create_menu_item(menu1, accel_group, "gtk-preferences", NULL, "Preferences", GDK_KEY_s, GDK_CONTROL_MASK, cb_prefs_gui, NULL);
     create_menu_item(menu1, accel_group, "gtk-print", NULL, "Print", GDK_KEY_p, GDK_CONTROL_MASK, cb_print, NULL);
     sep = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu1), sep);
@@ -1333,7 +1336,7 @@ static void get_main_menu(GtkWidget *my_window,
     create_menu_item(menu2, accel_group, "gtk-justify-left", NULL, "Memos", GDK_KEY_F4, 0, cb_app_button, GINT_TO_POINTER(MEMO));
 
 #ifdef ENABLE_PLUGINS
-    /* Count the plugin/ entries */
+    /* Count the plugin entries */
     for (count=0, temp_list = plugin_list;
          temp_list;
          temp_list = temp_list->next) {
@@ -1343,7 +1346,7 @@ static void get_main_menu(GtkWidget *my_window,
         }
     }
 
-    /* Count the help/ entries */
+    /* Count the plugin help entries */
     for (help_count=0, temp_list = plugin_list;
          temp_list;
          temp_list = temp_list->next) {
@@ -1361,13 +1364,13 @@ static void get_main_menu(GtkWidget *my_window,
         }
     }
     // About menu
-    create_menu_item(menu4, accel_group, "gtk-about", NULL, "About J-Pilot", -1, 0, cb_about, NULL);
+    create_menu_item(menu4, accel_group, "gtk-info", NULL, "About J-Pilot", -1, 0, cb_about, NULL);
 
     /* Append plugin help menu strings */
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
         p = (struct plugin_s *)temp_list->data;
         if (p->help_name) {
-            create_menu_item(menu4, accel_group, "gtk-about", NULL, p->help_name, -1, 0, cb_plugin_help, GINT_TO_POINTER(p->number));
+            create_menu_item(menu4, accel_group, "gtk-info", NULL, p->help_name, -1, 0, cb_plugin_help, GINT_TO_POINTER(p->number));
         }
     }
 #endif
