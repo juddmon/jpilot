@@ -2471,6 +2471,7 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
                                                                               TODO_BACKGROUND_COLOR_ENUM,
                                                                               "cell-background-set",
                                                                               TODO_BACKGROUND_COLOR_ENABLED_ENUM, NULL);
+    // FIXME, this doesn't mark the record changed and toggle the right side toggle button
       g_signal_connect (checkRenderer, "toggled",
                       G_CALLBACK(checkedCallBack),
                       listStore);
