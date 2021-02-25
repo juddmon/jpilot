@@ -1184,7 +1184,7 @@ static GtkWidget* create_menu_item(GtkWidget *menu,
     GtkWidget *icon;
     GtkWidget *label;
     GtkWidget *menu_item;
-    if (accel_key >= 0) {
+    if (accel_key > 0) {
         label = gtk_accel_label_new(text);
     } else {
         label = gtk_label_new(text);
@@ -1209,7 +1209,7 @@ static GtkWidget* create_menu_item(GtkWidget *menu,
     //gtk_label_set_use_underline(GTK_LABEL(label), TRUE);
     gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 
-    if ((accel_key >= 0) && (accel_group)) {
+    if ((accel_key > 0) && (accel_group)) {
         gtk_widget_add_accelerator(menu_item, "activate", accel_group,
                                    accel_key, accel_mods, GTK_ACCEL_VISIBLE);
         gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), menu_item);
@@ -1351,13 +1351,13 @@ static void get_main_menu(GtkWidget *my_window,
         }
     }
     // About menu
-    create_menu_item(menu4, accel_group, "gtk-info", NULL, "About J-Pilot", -1, 0, cb_about, NULL);
+    create_menu_item(menu4, accel_group, "gtk-info", NULL, "About J-Pilot", 0, 0, cb_about, NULL);
 
     /* Append plugin help menu strings */
     for (temp_list = plugin_list; temp_list; temp_list = temp_list->next) {
         p = (struct plugin_s *)temp_list->data;
         if (p->help_name) {
-            create_menu_item(menu4, accel_group, "gtk-info", NULL, p->help_name, -1, 0, cb_plugin_help, GINT_TO_POINTER(p->number));
+            create_menu_item(menu4, accel_group, "gtk-info", NULL, p->help_name, 0, 0, cb_plugin_help, GINT_TO_POINTER(p->number));
         }
     }
 #endif
