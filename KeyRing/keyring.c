@@ -2313,7 +2313,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                 NULL);
     gtk_tree_view_column_set_sort_column_id(changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
-    gtk_cell_renderer_set_fixed_size(changedRenderer, -1, 1);
+    // gtk_cell_renderer_set_fixed_size(changedRenderer, -1, 1);
 
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes("Name",
@@ -2325,7 +2325,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
                                                                              KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                              NULL);
     gtk_tree_view_column_set_sort_column_id(nameColumn, KEYRING_NAME_COLUMN_ENUM);
-    gtk_cell_renderer_set_fixed_size(nameRenderer, -1, 1);
+    // gtk_cell_renderer_set_fixed_size(nameRenderer, -1, 1);
 
     GtkCellRenderer *accountRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *accountColumn = gtk_tree_view_column_new_with_attributes("Account",
@@ -2337,7 +2337,7 @@ static GtkWidget *cb_keyr_export_init_treeView() {
                                                                                 KEYRING_BACKGROUND_COLOR_ENABLED_ENUM,
                                                                                 NULL);
     gtk_tree_view_column_set_sort_column_id(accountColumn, KEYRING_ACCOUNT_COLUMN_ENUM);
-    gtk_cell_renderer_set_fixed_size(accountRenderer, -1, 1);
+    // gtk_cell_renderer_set_fixed_size(accountRenderer, -1, 1);
 
     gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), changedColumn, KEYRING_CHANGED_COLUMN_ENUM);
     gtk_tree_view_insert_column(GTK_TREE_VIEW(keyr_treeView), nameColumn, KEYRING_NAME_COLUMN_ENUM);

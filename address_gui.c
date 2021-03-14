@@ -3050,8 +3050,7 @@ static gboolean cb_key_pressed_right_side(GtkWidget *widget,
             text_in[--bytes_read] = '\0';  /* Strip final newline */
             /* Only update text if it has changed */
             if (strcmp(text_out, text_in)) {
-                gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer),
-                                         text_in, -1);
+                gtk_text_buffer_set_text(GTK_TEXT_BUFFER(note_buffer), text_in, -1);
             }
         }
 
@@ -4088,7 +4087,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeView = gtk_tree_view_new_with_model(model);
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
-    gtk_cell_renderer_set_fixed_size(nameRenderer,ivalue,1);
+    gtk_cell_renderer_set_fixed_size(nameRenderer, ivalue, 1);
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
@@ -4339,6 +4338,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
         grid_y_i = 0;
         notebook_label[page_i] = gtk_label_new(_(page_names[page_i]));
         grid = gtk_grid_new();
+        gtk_grid_set_row_spacing(GTK_GRID(grid), 2);
         gtk_notebook_append_page(GTK_NOTEBOOK(notebook), grid, notebook_label[page_i]);
 
         gtk_widget_show(label);
