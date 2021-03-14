@@ -391,6 +391,7 @@ void import_gui(GtkWidget *main_window, GtkWidget *main_pane,
     fileChooserWidget = gtk_file_chooser_dialog_new(_("Import"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
                                                     "Close", GTK_RESPONSE_CANCEL, "Import", GTK_RESPONSE_ACCEPT,
                                                     NULL);
+    gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(fileChooserWidget), TRUE);
     get_pref(PREF_MEMO_IMPORT_PATH, NULL, &svalue);
     if (svalue && svalue[0]) {
        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fileChooserWidget), svalue);
