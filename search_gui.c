@@ -542,7 +542,7 @@ void selectFirstRow(const GtkTreeView *treeView) {
     gtk_tree_model_get_iter_first(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
     path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
     gtk_tree_selection_select_path(selection, path);
-    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, GTK_TREE_VIEW_COLUMN(SEARCH_TEXT_COLUMN_ENUM), FALSE, 1.0, 0.0);
+    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, NULL, FALSE, 1.0, 0.0);
     gtk_tree_path_free(path);
 }
 
