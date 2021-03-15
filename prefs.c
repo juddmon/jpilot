@@ -50,7 +50,7 @@ static int t_fmt_ampm = TRUE;
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-   {"jpilotcss", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"jpilotcss", CHARTYPE, CHARTYPE, 0, "jpilotcss.default", 16},
    {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
