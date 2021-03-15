@@ -154,6 +154,9 @@ static prefType glob_prefs[NUM_PREFS] = {
 };
 
 
+char *get_new_css_name(char *field2);
+
+gboolean using_old_rc_name_in_pref_file(const char *field1);
 
 /****************************** Main Code *************************************/
 void pref_init(void)
@@ -813,6 +816,12 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
          Pc[0]='\0';
       }
       for(i=0; i<num_prefs; i++) {
+          //attempt to convert to new css file if
+          // pref file has old rc name in it.
+         if(using_old_rc_name_in_pref_file(field1)){
+             field1 = "jpilotcss";
+             field2 = get_new_css_name(field2);
+         }
          if (!strcmp(prefs[i].name, field1)) {
             if (prefs[i].filetype == INTTYPE) {
                prefs[i].ivalue = atoi(field2);
@@ -831,6 +840,27 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
    fclose(in);
 
    return EXIT_SUCCESS;
+}
+
+gboolean using_old_rc_name_in_pref_file(const char *field1) {
+    return (gboolean) (field1 != NULL && strcmp("jpilotrc", field1) == 0);
+}
+
+char *get_new_css_name(char *field2) {
+    if(strcmp(field2, "jpilotrc.green") == 0){
+        field2 = "jpilotcss.green";
+    }else if(strcmp(field2,"jpilotrc.blue") == 0){
+       field2 = "jpilotcss.blue";
+    }else if(strcmp(field2,"jpilotrc.purple") == 0){
+        field2 = "jpilotcss.purple";
+    }else if(strcmp(field2,"jpilotrc.steel") == 0){
+        field2 = "jpilotcss.steel";
+    }else {
+        // not using one of the old default rc files,
+        // so revert to default.
+        field2 = "jpilotcss.default";
+    }
+    return field2;
 }
 
 int pref_read_rc_file(void)
