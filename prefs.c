@@ -847,18 +847,20 @@ gboolean using_old_rc_name_in_pref_file(const char *field1) {
 }
 
 char *get_new_css_name(char *field2) {
-    if(strcmp(field2, "jpilotrc.green") == 0){
-        field2 = "jpilotcss.green";
-    }else if(strcmp(field2,"jpilotrc.blue") == 0){
-       field2 = "jpilotcss.blue";
-    }else if(strcmp(field2,"jpilotrc.purple") == 0){
-        field2 = "jpilotcss.purple";
-    }else if(strcmp(field2,"jpilotrc.steel") == 0){
-        field2 = "jpilotcss.steel";
-    }else {
-        // not using one of the old default rc files,
-        // so revert to default.
-        field2 = "jpilotcss.default";
+    if(field2 != NULL){
+        if(strcmp(field2, "jpilotrc.green") == 0){
+            field2 = "jpilotcss.green";
+        }else if(strcmp(field2,"jpilotrc.blue") == 0){
+           field2 = "jpilotcss.blue";
+        }else if(strcmp(field2,"jpilotrc.purple") == 0){
+            field2 = "jpilotcss.purple";
+        }else if(strcmp(field2,"jpilotrc.steel") == 0){
+            field2 = "jpilotcss.steel";
+        }else {
+            // not using one of the old default rc files,
+            // so revert to default.
+            field2 = "jpilotcss.default";
+        }
     }
     return field2;
 }
