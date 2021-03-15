@@ -122,6 +122,7 @@ int export_browse(GtkWidget *main_window, int pref_export) {
     fileChooserWidget = gtk_file_chooser_dialog_new(_("File Browser"), GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE,
                                                     "Cancel", GTK_RESPONSE_CANCEL, "Open",
                                                     GTK_RESPONSE_ACCEPT, NULL);
+    gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(fileChooserWidget), TRUE);
     //This blocks main thread until they close the dialog.
     if (gtk_dialog_run(GTK_DIALOG (fileChooserWidget)) == GTK_RESPONSE_ACCEPT) {
         cb_export_browse_ok(fileChooserWidget, GINT_TO_POINTER(pref_export));
