@@ -4087,7 +4087,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     treeView = gtk_tree_view_new_with_model(model);
     get_pref(PREF_ADDR_NAME_COL_SZ, &ivalue, NULL);
     GtkCellRenderer *nameRenderer = gtk_cell_renderer_text_new();
-    gtk_cell_renderer_set_fixed_size(nameRenderer, ivalue, 1);
+    gtk_cell_renderer_set_fixed_size(nameRenderer, ivalue, 18);
     GtkTreeViewColumn *nameColumn = gtk_tree_view_column_new_with_attributes(ADDRESS_LAST_NAME_COMPANY, nameRenderer,
                                                                              "text",
                                                                              ADDRESS_NAME_COLUMN_ENUM,
@@ -4112,7 +4112,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     GtkCellRenderer *phoneRenderer = gtk_cell_renderer_text_new();
     // Set the phone column width to something small and let it expand to the pane
     // Set the height to 1 so we do not see line wraps making verticle gaps in the view
-    gtk_cell_renderer_set_fixed_size(phoneRenderer, 100, 1);
+    gtk_cell_renderer_set_fixed_size(phoneRenderer, 100, 18);
     GtkTreeViewColumn *phoneColumn = gtk_tree_view_column_new_with_attributes("Phone", phoneRenderer, "text",
                                                                               ADDRESS_PHONE_COLUMN_ENUM,
                                                                               "cell-background-rgba",
