@@ -1,3 +1,12 @@
+2.0.1 - 2021-04-02
+ Fixed the crash when searching
+ Increased vertical spacing in lists (address entries)
+ Made hidden directories show by default in the import and export windows
+
+2.0.0 - 2021-02-24
+ Extensive refactor and partial rewrites to port from GTK2 to GTK3
+ Credit to David Malia for much of the GTK3 work.
+
 1.8.2 - 05/18/14
  Many bug fixes
  Fixed VCard output
