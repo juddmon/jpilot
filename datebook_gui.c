@@ -5895,10 +5895,13 @@ gint cb_todo_treeview_selection_event(GtkWidget *widget,
     if (!event) return 1;
 
     selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
-    gtk_tree_selection_get_selected(selection, &model, &iter);
-    gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
-    jp_logf(JP_LOG_WARN,"cb_todo_treeview_selection_event id %d\n",mtodo->unique_id);
-    glob_find_id = mtodo->unique_id;
-    cb_app_button(NULL, GINT_TO_POINTER(TODO));
+    if(selection != NULL) {
+        gtk_tree_selection_get_selected(selection, &model, &iter);
+        gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+        glob_find_id = mtodo->unique_id;
+        //gtk_selection_data_free(selection);
+        cb_app_button(NULL, GINT_TO_POINTER(TODO));
+    }
+
     return 1;
 }
