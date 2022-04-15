@@ -273,12 +273,6 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent *mcale, gpointer data);
 
 void undeleteDate(MyCalendarEvent *mcale, gpointer data);
 
-gboolean
-clickedTodoButton(GtkTreeSelection *selection,
-                  GtkTreeModel *model,
-                  GtkTreePath *path,
-                  gboolean path_currently_selected,
-                  gpointer userdata);
 
 gint cb_todo_treeview_selection_event(GtkWidget *widget,
                                       GdkEvent *event,
@@ -5877,8 +5871,6 @@ void buildToDoList(const GtkWidget *vbox) {
     selectFirstTodoRow();
     todo_treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView));
 
-    gtk_tree_selection_set_select_function(todo_treeSelection, clickedTodoButton, NULL, NULL);
-
     g_signal_connect (todo_treeView, "button_release_event", G_CALLBACK(cb_todo_treeview_selection_event), NULL);
     gtk_container_add(GTK_CONTAINER(todo_scrolled_window), GTK_WIDGET(todo_treeView));
 }
@@ -5893,30 +5885,20 @@ void selectFirstTodoRow() {
     gtk_tree_path_free(path);
 }
 
-gboolean
-clickedTodoButton(GtkTreeSelection *selection,
-                  GtkTreeModel *model,
-                  GtkTreePath *path,
-                  gboolean path_currently_selected,
-                  gpointer userdata) {
-    GtkTreeIter iter;
-    MyToDo *mtodo;
-    if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
-
-        gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
-        if (mtodo == NULL) {
-            return TRUE;
-        }
-        glob_find_id = mtodo->unique_id;
-        return TRUE;
-    }
-    return TRUE;
-}
-
 gint cb_todo_treeview_selection_event(GtkWidget *widget,
                                       GdkEvent *event,
                                       gpointer callback_data) {
+    GtkTreeSelection *selection;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    MyToDo *mtodo;
     if (!event) return 1;
+
+    selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
+    gtk_tree_selection_get_selected(selection, &model, &iter);
+    gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+    jp_logf(JP_LOG_WARN,"cb_todo_treeview_selection_event id %d\n",mtodo->unique_id);
+    glob_find_id = mtodo->unique_id;
     cb_app_button(NULL, GINT_TO_POINTER(TODO));
     return 1;
 }
