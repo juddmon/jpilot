@@ -45,6 +45,7 @@
 #include <pi-version.h>
 #include <pi-error.h>
 #include <pi-macros.h>
+#include <grp.h>
 
 #include "i18n.h"
 #include "utils.h"
@@ -401,9 +402,28 @@ static int jp_pilot_connect(int *Psd, const char *device)
    int sd;
    int ret;
    struct  SysInfo sys_info;
-
+   const char * dialout_grp = "dialout";
    *Psd=0;
+   gid_t gids[500];
+   int gid_count = 0;
+   struct group *grp;
+   int is_in_dialout = 0;
 
+    //this should work on MAC, but I don't have one to test on.
+   if ((gid_count = getgroups(sizeof(gids) / sizeof(gids[0]), gids)) !=-1) {
+       // unable to look at current users groups.
+       for (int curr = 0; curr < gid_count; curr++) {
+           if ((grp = getgrgid(gids[curr])) != NULL) {
+               if (grp->gr_name != NULL && strcmp(dialout_grp, grp->gr_name) == 0) {
+                   is_in_dialout = 1;
+               }
+           }
+       }
+   }
+   if(!is_in_dialout){
+       jp_logf(JP_LOG_WARN, "User isn't in the required dialout group.  On linux in a terminal, run \"sudo usermod -a -G dialout %s\" to add current user to the group.\n",getlogin());
+       return EXIT_FAILURE;
+   }
    sd = pi_socket(PI_AF_PILOT, PI_SOCK_STREAM, PI_PF_DLP);
    if (sd < 0) {
       int err = errno;
