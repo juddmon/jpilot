@@ -411,7 +411,6 @@ static int jp_pilot_connect(int *Psd, const char *device)
 
     //this should work on MAC, but I don't have one to test on.
    if ((gid_count = getgroups(sizeof(gids) / sizeof(gids[0]), gids)) !=-1) {
-       // unable to look at current users groups.
        for (int curr = 0; curr < gid_count; curr++) {
            if ((grp = getgrgid(gids[curr])) != NULL) {
                if (grp->gr_name != NULL && strcmp(dialout_grp, grp->gr_name) == 0) {
