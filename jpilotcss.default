@@ -8,7 +8,7 @@
 
 
 @define-color notebook_stack @theme_bg_color ;
-@define-color notebook_unselected_tab #dcdad8;
+@define-color notebook_unselected_tab @theme_bg_color;
 @define-color notebook_unselected_tab_text #8997a7;
 @define-color calendar_header #30309c;
 @define-color calendar_header_text white;
@@ -379,8 +379,8 @@ notebook > stack:not(:only-child):backdrop {
 
 * {
 
-    font-family: Arial Black, sans-serif;
-    font-size: 10pt;
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
 
 }
 
