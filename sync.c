@@ -421,7 +421,9 @@ static int jp_pilot_connect(int *Psd, const char *device)
        }
    }
    if(!is_in_dialout){
-       jp_logf(JP_LOG_WARN, "User isn't in the required dialout group.  On linux in a terminal, run \"sudo usermod -a -G dialout %s\" to add current user to the group.\n",getlogin());
+       jp_logf(JP_LOG_WARN, "User isn't in the required dialout group.  On linux in a terminal, run \"sudo usermod -a -G dialout %s;\" to add current user to the group.\n",getlogin());
+       jp_logf(JP_LOG_WARN, "After running the script, you will need to logout and log in again to see the change.\n");
+
        return EXIT_FAILURE;
    }
    sd = pi_socket(PI_AF_PILOT, PI_SOCK_STREAM, PI_PF_DLP);
