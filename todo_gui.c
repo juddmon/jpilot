@@ -1659,6 +1659,8 @@ static void checkedCallBack(GtkCellRendererToggle *renderer, gchar *path, GtkLis
         unique_id = 0;
         pc_todo_write(&(mtodo -> todo), NEW_PC_REC, attrib, &unique_id);
     }
+    //update the datastore.
+    cb_todo_update_listStore(treeView,todo_category);
 }
 
 
