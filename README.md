@@ -9,6 +9,7 @@ J-Pilot has a few plugins written for it.  They allow jpilot to have an interfac
 This will install the package and create an apt source so that it will be updated when new code is released.
 ```shell
 curl -s https://packagecloud.io/install/repositories/judd/jpilot/script.deb.sh | sudo bash
+sudo apt install jpilot jpilot-plugins
 ```
 
 ### Ubuntu dialout user
