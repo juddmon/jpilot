@@ -442,7 +442,7 @@ int copy_address_to_contact(const struct Address *a, struct Contact *c)
    c->advance = 0;
    c->advanceUnits = 0;    
    memset(&(c->birthday), 0, sizeof(struct tm));
-   for (i=0; i<MAX_CONTACT_BLOBS; i++) {
+   for (i=0; i<MAX_BLOBS; i++) {
       c->blob[i] = NULL;
    }
    c->picture = NULL;

@@ -47,7 +47,7 @@ extern int jp_pack_ContactAppInfo
     PI_ARGS((struct ContactAppInfo *, pi_buffer_t *buf));
 
 extern int jp_Contact_add_blob
-    PI_ARGS((struct Contact *, struct ContactBlob *));
+    PI_ARGS((struct Contact *, Blob_t *));
 extern int jp_Contact_add_picture
     PI_ARGS((struct Contact *, struct ContactPicture *));
 #ifdef __cplusplus
