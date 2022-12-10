@@ -47,7 +47,7 @@ unsigned char skip_plugins;
  * this code but must be instantiated for the code to compile.  
  * The same is true of the functions which are only used in GUI mode. */
 pid_t jpilot_master_pid = -1;
-int *glob_date_label;
+GtkWidget *glob_date_label;
 GtkWidget *glob_dialog;
 GtkTooltips *glob_tooltips;
 gint glob_date_timer_tag;
