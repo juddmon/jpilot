@@ -331,7 +331,10 @@ CFLAGS="$CFLAGS $PILOT_FLAGS"
 save_LIBS="$LIBS"
 LIBS="$LIBS $PILOT_LIBS"
 
-AC_TRY_COMPILE([#include <pi-version.h>], [
+AC_TRY_COMPILE([
+#include <stdlib.h>
+#include <pi-version.h>
+], [
    exit(0);
 ], ,
  AC_MSG_ERROR([pilot-link header pi-version.h not found])
