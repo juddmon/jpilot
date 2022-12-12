@@ -11,7 +11,6 @@ static void SetFontRecursively2(GtkWidget *widget, gpointer data)
 
    font_desc = (char *)data;
 
-   g_print("font desc=[%s]\n", font_desc);
    style = gtk_widget_get_style(widget);
    pango_font_description_free(style->font_desc);
    style->font_desc = pango_font_description_from_string(font_desc);
@@ -40,18 +39,18 @@ static void font_sel_dialog()
       fontsel = gtk_font_selection_dialog_new(_("Font Selection Dialog"));
       gtk_window_set_position(GTK_WINDOW(fontsel), GTK_WIN_POS_MOUSE);
 
-      gtk_signal_connect(GTK_OBJECT(fontsel), "destroy",
-                         GTK_SIGNAL_FUNC(gtk_widget_destroyed),
+      g_signal_connect(G_OBJECT(fontsel), "destroy",
+                         G_CALLBACK(gtk_widget_destroyed),
                          &fontsel);
 
       gtk_window_set_modal(GTK_WINDOW(fontsel), TRUE);
 
-      gtk_signal_connect(GTK_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->ok_button),
-                         "clicked", GTK_SIGNAL_FUNC(font_selection_ok),
+      g_signal_connect(G_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->ok_button),
+                         "clicked", G_CALLBACK(font_selection_ok),
                          GTK_FONT_SELECTION_DIALOG(fontsel));
-      gtk_signal_connect_object(GTK_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->cancel_button),
-                                "clicked", GTK_SIGNAL_FUNC(gtk_widget_destroy),
-                                GTK_OBJECT(fontsel));
+      gtk_signal_connect_object(G_OBJECT(GTK_FONT_SELECTION_DIALOG(fontsel)->cancel_button),
+                                "clicked", G_CALLBACK(gtk_widget_destroy),
+                                G_OBJECT(fontsel));
      }
 
    if (!GTK_WIDGET_VISIBLE(fontsel)) {
@@ -80,8 +79,8 @@ static void cb_font(GtkWidget *widget, gpointer data)
 #ifdef FONT_TEST
    /* Create "Font" button */
    button = gtk_button_new_with_label(_("Font"));
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_font), NULL);
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_font), NULL);
 
    gtk_box_pack_start(GTK_BOX(g_vbox0), button, FALSE, FALSE, 0);
 #endif

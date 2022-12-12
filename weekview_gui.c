@@ -39,7 +39,6 @@
 /******************************* Global vars **********************************/
 extern int datebk_category;
 extern int glob_app;
-extern GtkTooltips *glob_tooltips;
 
 GtkWidget *weekview_window=NULL;
 static GtkWidget *week_day_label[8];
@@ -62,7 +61,8 @@ void cb_weekview_quit(GtkWidget *widget, gpointer data)
 {
    int w, h;
 
-   gdk_window_get_size(weekview_window->window, &w, &h);
+   w = gdk_window_get_width(gtk_widget_get_window(weekview_window));
+   h = gdk_window_get_height(gtk_widget_get_window(weekview_window));
    set_pref(PREF_WEEKVIEW_WIDTH, w, NULL, FALSE);
    set_pref(PREF_WEEKVIEW_HEIGHT, h, NULL, FALSE);
 
@@ -154,7 +154,7 @@ static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
    char default_date[]="%x";
    int now_today;
 #ifdef ENABLE_DATEBK
-   int ret;
+   //int ret;
    int cat_bit;
    int db3_type;
    long use_db3_tags;
@@ -208,7 +208,8 @@ static int display_weeks_appts(struct tm *date_in, GtkWidget **day_texts)
 #ifdef ENABLE_DATEBK
          get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
          if (use_db3_tags) {
-            ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            //ret = db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
+            db3_parse_tag(temp_cel->mcale.cale.note, &db3_type, &db4);
             jp_logf(JP_LOG_DEBUG, "category = 0x%x\n", db4.category);
             cat_bit=1<<db4.category;
             if (!(cat_bit & datebk_category)) {
@@ -269,15 +270,13 @@ static void cb_enter_selected_day(GtkWidget *widget,
 void weekview_gui(struct tm *date_in)
 {
    GtkWidget *button;
-   GtkWidget *align;
-   GtkWidget *vbox, *hbox;
-   GtkWidget *hbox_temp;
-   GtkWidget *vbox_left, *vbox_right;
+   GtkWidget *grid;
    GtkAccelGroup *accel_group;
    long fdow;
    int i;
    char title[200];
    long w, h, show_tooltips;
+   gint left, top;
 
    if (weekview_window) {
       /* Delete any existing window to ensure that new window is biased
@@ -301,86 +300,73 @@ void weekview_gui(struct tm *date_in)
    gtk_window_set_default_size(GTK_WINDOW(weekview_window), w, h);
    gtk_container_set_border_width(GTK_CONTAINER(weekview_window), 10);
 
-   gtk_signal_connect(GTK_OBJECT(weekview_window), "destroy",
-                      GTK_SIGNAL_FUNC(cb_destroy), weekview_window);
+   g_signal_connect(G_OBJECT(weekview_window), "destroy",
+                      G_CALLBACK(cb_destroy), weekview_window);
 
-   vbox = gtk_vbox_new(FALSE, 0);
-   gtk_container_add(GTK_CONTAINER(weekview_window), vbox);
+   // Use a grid instead of boxes
+   grid = gtk_grid_new();
+   gtk_grid_set_row_spacing(GTK_GRID(grid), 5);
+   gtk_grid_set_column_spacing(GTK_GRID(grid), 5);
+   gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
+   gtk_widget_set_halign(grid, GTK_ALIGN_FILL);
+   gtk_widget_set_valign(grid, GTK_ALIGN_FILL);
+   gtk_widget_set_hexpand(grid, TRUE);
+   gtk_widget_set_vexpand(grid, TRUE);
+   gtk_container_add(GTK_CONTAINER(weekview_window), grid);
 
    /* Make accelerators for some buttons window */
    accel_group = gtk_accel_group_new();
-   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(vbox)), accel_group);
-
-   /* This box has the close button and arrows in it */
-   align = gtk_alignment_new(0.5, 0.5, 0, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
-
-   hbox_temp = gtk_hbutton_box_new();
-   gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbox_temp), 6);
-   gtk_container_set_border_width(GTK_CONTAINER(hbox_temp), 6);
-
-   gtk_container_add(GTK_CONTAINER(align), hbox_temp);
+   gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_toplevel(grid)), accel_group);
 
    /* Make a left arrow for going back a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_BACK);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_week_move),
-                      GINT_TO_POINTER(-1));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   button = gtk_button_new_with_label("Back");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                    G_CALLBACK(cb_week_move),
+                    GINT_TO_POINTER(-1));
+   gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button), 0, 0, 1, 1);
 
    /* Accelerator key for left arrow */
    gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button, _("Last week   Alt+LeftArrow"), NULL);
+                              GDK_KEY_Left, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   set_tooltip(show_tooltips,
+               button, _("Last week   Alt+LeftArrow"));
 
    /* Close button */
-   button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
+   button = gtk_button_new_with_label("Close");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_weekview_quit), NULL);
    /* Closing the window via a delete event uses the same cleanup routine */
-   gtk_signal_connect(GTK_OBJECT(weekview_window), "delete_event",
-                      GTK_SIGNAL_FUNC(cb_weekview_quit), NULL);
-
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   g_signal_connect(G_OBJECT(weekview_window), "delete_event",
+                      G_CALLBACK(cb_weekview_quit), NULL);
+   gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button), 1, 0, 1, 1);
 
    /* Print button */
-   button = gtk_button_new_from_stock(GTK_STOCK_PRINT);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_week_print), weekview_window);
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   button = gtk_button_new_with_label("Print");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_week_print), weekview_window);
+   gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button), 2, 0, 1, 1);
 
    /* Make a right arrow for going forward a week */
-   button = gtk_button_new_from_stock(GTK_STOCK_GO_FORWARD);
-   gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                      GTK_SIGNAL_FUNC(cb_week_move),
+   button = gtk_button_new_with_label("Forward");
+   g_signal_connect(G_OBJECT(button), "clicked",
+                      G_CALLBACK(cb_week_move),
                       GINT_TO_POINTER(1));
-   gtk_box_pack_start(GTK_BOX(hbox_temp), button, FALSE, FALSE, 0);
+   gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(button), 3, 0, 1, 1);
 
    /* Accelerator key for right arrow */
-   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group, 
-                              GDK_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-   set_tooltip(show_tooltips, glob_tooltips, 
-               button, _("Next week   Alt+RightArrow"), NULL);
+   gtk_widget_add_accelerator(GTK_WIDGET(button), "clicked", accel_group,
+                              GDK_KEY_Right, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
+   set_tooltip(show_tooltips,
+               button, _("Next week   Alt+RightArrow"));
 
    get_pref(PREF_FDOW, &fdow, NULL);
-
-   hbox = gtk_hbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-
-   vbox_left = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox_left, TRUE, TRUE, 0);
-
-   vbox_right = gtk_vbox_new(FALSE, 0);
-   gtk_box_pack_start(GTK_BOX(hbox), vbox_right, TRUE, TRUE, 0);
 
    /* Get the first day of the week */
    sub_days_from_date(&glob_week_date, (7 - fdow + glob_week_date.tm_wday)%7);
 
-   /* Make 8 boxes, 1 for each day, to hold appt. descriptions */
+   /* Make 8 labels and entries, 1 for each day, to hold appt. descriptions */
    for (i=0; i<8; i++) {
       week_day_label[i] = gtk_label_new("");
-      gtk_misc_set_alignment(GTK_MISC(week_day_label[i]), 0.0, 0.5);
       week_day_text[i] = gtk_text_view_new();
       week_day_text_buffer[i] = G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(week_day_text[i])));
       gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(week_day_text[i]), FALSE);
@@ -390,17 +376,22 @@ void weekview_gui(struct tm *date_in)
       gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(week_day_text_buffer[i]),
                                  "gray_background", "background", "gray",
                                  NULL);
-      gtk_widget_set_usize(GTK_WIDGET(week_day_text[i]), 10, 10);
-      gtk_signal_connect(GTK_OBJECT(week_day_text[i]), "button_release_event",
-                         GTK_SIGNAL_FUNC(cb_enter_selected_day),
+      g_signal_connect(G_OBJECT(week_day_text[i]), "button_release_event",
+                         G_CALLBACK(cb_enter_selected_day),
                          GINT_TO_POINTER(i));
-      if (i>3) {
-         gtk_box_pack_start(GTK_BOX(vbox_right), week_day_label[i], FALSE, FALSE, 0);
-         gtk_box_pack_start(GTK_BOX(vbox_right), week_day_text[i], TRUE, TRUE, 0);
+      if (i<4) {
+         left = 0;
+         top = i*2+1;
       } else {
-         gtk_box_pack_start(GTK_BOX(vbox_left), week_day_label[i], FALSE, FALSE, 0);
-         gtk_box_pack_start(GTK_BOX(vbox_left), week_day_text[i], TRUE, TRUE, 0);
+         left = 2;
+         top = (i-4)*2+1;
       }
+      gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(week_day_label[i]), left, top, 2, 1);
+      gtk_grid_attach(GTK_GRID(grid), GTK_WIDGET(week_day_text[i]), left, top+1, 2, 1);
+      gtk_widget_set_halign(week_day_label[i], GTK_ALIGN_FILL);
+      gtk_widget_set_halign(week_day_text[i], GTK_ALIGN_FILL);
+      gtk_widget_set_hexpand(week_day_label[i], TRUE);
+      gtk_widget_set_vexpand(week_day_text[i], TRUE);
    }
 
    display_weeks_appts(&glob_week_date, week_day_text);

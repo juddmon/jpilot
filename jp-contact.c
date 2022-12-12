@@ -54,7 +54,7 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
    return pack_Contact(c, buf, contacts_v10);
 }
 
-int jp_Contact_add_blob(struct Contact *c, struct ContactBlob *blob)
+int jp_Contact_add_blob(struct Contact *c, Blob_t *blob)
 {
    return Contact_add_blob(c, blob);
 }

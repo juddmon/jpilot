@@ -18,8 +18,8 @@ desktop_DATA = jpilot.desktop
 # The skin files for changing jpilot appearance
 colordir = $(pkgdatadir)
 color_DATA = \
-	jpilotrc.blue jpilotrc.default jpilotrc.green jpilotrc.purple \
-	jpilotrc.steel
+	jpilotcss.blue jpilotcss.default jpilotcss.green jpilotcss.purple \
+	jpilotcss.steel
 
 # Instructions for the code to build begins here
 
@@ -44,6 +44,7 @@ jpilot_SOURCES = \
 	dialer.c \
 	export_gui.c \
 	export.h \
+	font.c \
 	i18n.h \
 	import_gui.c \
 	install_gui.c \
@@ -103,7 +104,7 @@ jpilot_SOURCES = \
 	icons/sync.xpm \
 	icons/cancel_sync.xpm \
 	icons/backup.xpm \
-	icons/clist_mini_icons.h \
+	icons/list_mini_icons.h \
 	icons/appl_menu_icons.h \
 	icons/lock_icons.h \
 	icons/icons.c

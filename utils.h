@@ -56,7 +56,7 @@
 /* This is how often the clock updates in milliseconds */
 #define CLOCK_TICK 1000
 
-/* How clist widget should appear for main apps */
+/* How treeView widget should appear for main apps */
 #define SHADOW GTK_SHADOW_ETCHED_OUT
 
 /*  Define the maximum length of a category name
@@ -73,11 +73,12 @@
 
 /* Constant used by J-Pilot to indicate "All" category */
 #define CATEGORY_ALL 300
+#define CATEGORY_EDIT 301
 
-/* Used to mark the entry in the clist to add a record */
-#define CLIST_NEW_ENTRY_DATA 100
-#define CLIST_ADDING_ENTRY_DATA 101
-#define CLIST_MIN_DATA 199
+/* Used to mark the entry in the treeView to add a record */
+#define LIST_NEW_ENTRY_DATA 100
+#define LIST_ADDING_ENTRY_DATA 101
+#define LIST_MIN_DATA 199
 
 #define DIALOG_SAID_1           454
 #define DIALOG_SAID_PRINT       454
@@ -260,6 +261,16 @@ struct sorted_cats
    char Pcat[32];
    int cat_num;
 };
+typedef struct {
+    int found;
+    char* textToSearch;
+} RestoreDataSearchElement;
+
+struct name_list {
+    char *name;
+    struct name_list *next;
+};
+
 
 /* utils.c: The subroutines below are all from utils.c */
 
@@ -277,11 +288,9 @@ int get_timeout_interval(void);
 gint timeout_sync_up(gpointer data);
 gint timeout_date(gpointer data);
 
-int get_pixmaps(GtkWidget *widget,
-                int which_one,
-                GdkPixmap **out_pixmap,
-                GdkBitmap **out_mask);
-
+int get_pixbufs(int which_one,
+                GdkPixbuf **out_pixbuf);
+int get_rcfile_name(int n, char *rc_copy);
 int check_hidden_dir(void);
 
 int read_gtkrc_file(void);
@@ -297,7 +306,10 @@ int find_next_offset(mem_rec_header *mem_rh, long fpos,
 /*The VP is a pointer to MyAddress, MyAppointment, etc. */
 int delete_pc_record(AppType app_type, void *VP, int flag);
 int undelete_pc_record(AppType app_type, void *VP, int flag);
-
+gboolean motion_notify_event(GtkWidget *widget, GdkEventMotion *event);
+gboolean button_pressed_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data);
+gboolean button_released_for_motion (GtkWidget *widget, GdkEvent  *event, gpointer   user_data);
+void button_set_for_motion(int x);
 void get_month_info(int month, int day, int year, int *dow, int *ndim);
 
 void free_mem_rec_header(mem_rec_header **mem_rh);
@@ -341,27 +353,16 @@ int cal_dialog(GtkWindow *main_window,
                const char *title, int monday_is_fdow,
                int *mon, int *day, int *year);
 
-void set_bg_rgb_clist_row(GtkWidget *clist, int row, int r, int g, int b);
 
-void set_fg_rgb_clist_cell(GtkWidget *clist, int row, int col, int r, int g, int b);
+GdkRGBA get_color(int r, int g, int b);
+
 
 void entry_set_multiline_truncate(GtkEntry *entry, gboolean value);
 
-void clist_clear(GtkCList *clist);
-
-void set_tooltip(int show_tooltip, 
-                        GtkTooltips *tooltips,
+void set_tooltip(int show_tooltip,
                         GtkWidget *widget,
-                        const gchar *tip_text,
-                        const gchar *tip_private);
+                        const gchar *tip_text);
 
-void clist_select_row(GtkCList *clist, 
-                      int       row,
-                      int       column);
-
-int clist_find_id(GtkWidget *clist,
-                  unsigned int unique_id,
-                  int *found_at);
 
 int check_copy_DBs_to_home(void);
 
@@ -472,12 +473,13 @@ void append_anni_years(char *desc, int max, struct tm *date,
 int get_highlighted_today(struct tm *date);
 
 int make_category_menu(GtkWidget **category_menu,
-                       GtkWidget **cat_menu_item,
                        struct sorted_cats *sort_l,
                        void (*selection_callback)
-                       (GtkWidget *item, int selection),
+                               (GtkComboBox *item, int selection),
                        int add_an_all_item,
                        int add_edit_cat_item);
+int get_selected_category_from_combo_box(GtkComboBox * box);
+int findSortedPostion(int sorted_position,GtkComboBox * box);
 
 int jp_copy_file(char *src, char *dest);
 FILE *jp_open_home_file(const char *filename, const char *mode);

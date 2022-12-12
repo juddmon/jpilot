@@ -865,19 +865,16 @@ static int dumpaddress(void)
    return EXIT_SUCCESS;
 }
 
-int dumpcontact()
+static void dumpcontact()
 {
    MyContact *mcont;
-   struct stat statb;
    const char *short_date;
    time_t ltime;
    struct tm *now;
    char str1[256], str2[256];
    char pref_time[40];
-   int i, r, n;
+   int i, n;
    int record_num;
-   char *button_text[]={N_("OK")};
-   char *button_overwrite_text[]={N_("No"), N_("Yes")};
    char text[1024];
    char date_string[1024];
    char csv_text[65550];
@@ -1268,88 +1265,88 @@ int dumpcontact()
                }
                /* maybe add dc=%s for each part of the email address? */
                /* Mozilla just does mail=%s */
-               printf("dn", "cn=%s%s%s", cn, email ? ",mail=" : "", email ? email : "");
+               printf("dn: cn=%s%s%s", cn, email ? ",mail=" : "", email ? email : "");
                printf("dnQualifier: %s\n", PN);
                printf("objectClass: top\nobjectClass: person\n");
                printf("objectClass: organizationalPerson\n");
                printf("objectClass: inetOrgPerson\n");
-               printf("cn", "%s", cn);
-               printf("sn", "%s", last);
+               printf("cn: %s", cn);
+               printf("sn: %s", last);
                if (first)
-                  printf("givenName", "%s", first);
+                  printf("givenName: %s", first);
                if (mcont->cont.entry[contCompany])
-                  printf("o", "%s", mcont->cont.entry[contCompany]);
+                  printf("o: %s", mcont->cont.entry[contCompany]);
                for (n = contPhone1; n <= contPhone7; n++) {
                   if (mcont->cont.entry[n]) {
-                     printf(ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), "%s", mcont->cont.entry[n]);
+                     printf("%s: %s", ldifMapType(mcont->cont.phoneLabel[n - contPhone1]), mcont->cont.entry[n]);
                   }
                }
                if (mcont->cont.entry[contAddress1])
-                  printf("postalAddress", "%s", mcont->cont.entry[contAddress1]);
+                  printf("postalAddress: %s", mcont->cont.entry[contAddress1]);
                if (mcont->cont.entry[contCity1])
-                  printf("l", "%s", mcont->cont.entry[contCity1]);
+                  printf("l: %s", mcont->cont.entry[contCity1]);
                if (mcont->cont.entry[contState1])
-                  printf("st", "%s", mcont->cont.entry[contState1]);
+                  printf("st: %s", mcont->cont.entry[contState1]);
                if (mcont->cont.entry[contZip1])
-                  printf("postalCode", "%s", mcont->cont.entry[contZip1]);
+                  printf("postalCode: %s", mcont->cont.entry[contZip1]);
                if (mcont->cont.entry[contCountry1])
-                  printf("c", "%s", mcont->cont.entry[contCountry1]);
+                  printf("c: %s", mcont->cont.entry[contCountry1]);
 
                if (mcont->cont.entry[contAddress2])
-                  printf("postalAddress", "%s", mcont->cont.entry[contAddress2]);
+                  printf("postalAddress: %s", mcont->cont.entry[contAddress2]);
                if (mcont->cont.entry[contCity2])
-                  printf("l", "%s", mcont->cont.entry[contCity2]);
+                  printf("l: %s", mcont->cont.entry[contCity2]);
                if (mcont->cont.entry[contState2])
-                  printf("st", "%s", mcont->cont.entry[contState2]);
+                  printf("st: %s", mcont->cont.entry[contState2]);
                if (mcont->cont.entry[contZip2])
-                  printf("postalCode", "%s", mcont->cont.entry[contZip2]);
+                  printf("postalCode: %s", mcont->cont.entry[contZip2]);
                if (mcont->cont.entry[contCountry2])
-                  printf("c", "%s", mcont->cont.entry[contCountry2]);
+                  printf("c: %s", mcont->cont.entry[contCountry2]);
 
                if (mcont->cont.entry[contAddress3])
-                  printf("postalAddress", "%s", mcont->cont.entry[contAddress3]);
+                  printf("postalAddress: %s", mcont->cont.entry[contAddress3]);
                if (mcont->cont.entry[contCity3])
-                  printf("l", "%s", mcont->cont.entry[contCity3]);
+                  printf("l: %s", mcont->cont.entry[contCity3]);
                if (mcont->cont.entry[contState3])
-                  printf("st", "%s", mcont->cont.entry[contState3]);
+                  printf("st: %s", mcont->cont.entry[contState3]);
                if (mcont->cont.entry[contZip3])
-                  printf("postalCode", "%s", mcont->cont.entry[contZip3]);
+                  printf("postalCode: %s", mcont->cont.entry[contZip3]);
                if (mcont->cont.entry[contCountry3])
-                  printf("c", "%s", mcont->cont.entry[contCountry3]);
+                  printf("c: %s", mcont->cont.entry[contCountry3]);
 
                if (mcont->cont.entry[contIM1]) {
                   strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[0]], 100);
-                  printf(text, "%s", mcont->cont.entry[contIM1]);
+                  printf("%s: %s", text, mcont->cont.entry[contIM1]);
                }
                if (mcont->cont.entry[contIM2]) {
                   strncpy(text, contact_app_info.IMLabels[mcont->cont.IMLabel[1]], 100);
-                  printf(text, "%s", mcont->cont.entry[contIM2]);
+                  printf("%s: %s", text, mcont->cont.entry[contIM2]);
                }
 
                if (mcont->cont.entry[contWebsite])
-                  printf("website", "%s", mcont->cont.entry[contWebsite]);
+                  printf("website: %s", mcont->cont.entry[contWebsite]);
                if (mcont->cont.entry[contTitle])
-                  printf("title", "%s", mcont->cont.entry[contTitle]);
+                  printf("title: %s", mcont->cont.entry[contTitle]);
                if (mcont->cont.entry[contCustom1])
-                  printf("custom1", "%s", mcont->cont.entry[contCustom1]);
+                  printf("custom1: %s", mcont->cont.entry[contCustom1]);
                if (mcont->cont.entry[contCustom2])
-                  printf("custom2", "%s", mcont->cont.entry[contCustom2]);
+                  printf("custom2: %s", mcont->cont.entry[contCustom2]);
                if (mcont->cont.entry[contCustom3])
-                  printf("custom3", "%s", mcont->cont.entry[contCustom3]);
+                  printf("custom3: %s", mcont->cont.entry[contCustom3]);
                if (mcont->cont.entry[contCustom4])
-                  printf("custom4", "%s", mcont->cont.entry[contCustom4]);
+                  printf("custom4: %s", mcont->cont.entry[contCustom4]);
                if (mcont->cont.entry[contCustom5])
-                  printf("custom5", "%s", mcont->cont.entry[contCustom5]);
+                  printf("custom5: %s", mcont->cont.entry[contCustom5]);
                if (mcont->cont.entry[contCustom6])
-                  printf("custom6", "%s", mcont->cont.entry[contCustom6]);
+                  printf("custom6: %s", mcont->cont.entry[contCustom6]);
                if (mcont->cont.entry[contCustom7])
-                  printf("custom7", "%s", mcont->cont.entry[contCustom7]);
+                  printf("custom7: %s", mcont->cont.entry[contCustom7]);
                if (mcont->cont.entry[contCustom8])
-                  printf("custom8", "%s", mcont->cont.entry[contCustom8]);
+                  printf("custom8: %s", mcont->cont.entry[contCustom8]);
                if (mcont->cont.entry[contCustom9])
-                  printf("custom9", "%s", mcont->cont.entry[contCustom9]);
+                  printf("custom9: %s", mcont->cont.entry[contCustom9]);
                if (mcont->cont.entry[contNote])
-                  printf("description", "%s", mcont->cont.entry[contNote]);
+                  printf("description: %s", mcont->cont.entry[contNote]);
                printf("\n");
                break;
             }

@@ -4,7 +4,7 @@ dnl ############################################################################
 
 dnl boilerplate to initialize autoconf(AC) and automake(AM)
 AC_PREREQ([2.58])
-AC_INIT(jpilot, 1.8.2)
+AC_INIT(jpilot, 2.0.1)
 AM_INIT_AUTOMAKE([1.8])
 
 dnl use a config.h file rather than string of -DXXX args to compiler
@@ -20,7 +20,7 @@ AC_CANONICAL_HOST # determine build host
 AC_PROG_CC
 dnl AC_ISC_POSIX only needed for Interacive Systems UNIX which Sun
 dnl is discontinuing support on as of 7/23/2006.
-dnl This obsolete macro should probably be removed. 
+dnl This obsolete macro should probably be removed.
 AC_ISC_POSIX
 dnl Need intltool for i18n support
 AC_PROG_INTLTOOL()
@@ -48,7 +48,7 @@ dnl Name of language files
 GETTEXT_PACKAGE=jpilot
 AC_SUBST(GETTEXT_PACKAGE)
 dnl 9/29/2006: Work around a bug in current versions of gettext/intltool
-dnl            which leave this macro undefined.  
+dnl            which leave this macro undefined.
 DATADIRNAME=share
 AC_SUBST(DATADIRNAME)
 
@@ -101,7 +101,7 @@ else
    AC_MSG_RESULT(Plugin support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(private,
    AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
@@ -114,7 +114,7 @@ else
    AC_MSG_RESULT(Private record support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(datebk,
    AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
@@ -127,7 +127,7 @@ else
    AC_MSG_RESULT(Datebk support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(manana,
    AC_HELP_STRING([--disable-manana],[Disable Manana support]),
@@ -140,7 +140,7 @@ else
    AC_MSG_RESULT(Manana support disabled by configure options)
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(prometheon,
    AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
@@ -157,7 +157,7 @@ fi
 
 AC_SUBST(PROGNAME)
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(alarm-shell-danger,
    AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
@@ -169,7 +169,7 @@ if test "$enable_alarm_shell_danger" = "yes"; then
    AC_DEFINE(ENABLE_ALARM_SHELL_DANGER, 1, [ Datebook description and note allowed  in shell commands ])
 fi
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(stock_buttons,
    AC_HELP_STRING([--disable-stock-buttons],[Disable stock buttons (icons on GUI buttons)]),
@@ -184,13 +184,13 @@ else
 fi
 
 dnl ############################################################################
-dnl Check for libraries needed 
+dnl Check for libraries needed
 dnl ############################################################################
 dnl ******************************
-dnl * GTK2 libraries
+dnl * GTK3 libraries
 dnl ******************************
-AM_PATH_GTK_2_0(2.0.3, ,
-  AC_MSG_ERROR([*** GTK >= 2.0.3 not found ***]))
+AM_PATH_GTK_3_0(3.24.12, ,
+  AC_MSG_ERROR([*** GTK >= 3.24.12 not found ***]))
 
 dnl ******************************
 dnl * pilot-link libs
@@ -267,7 +267,7 @@ dnl Substitute macros now that LIB & FLAG detection is done
 AC_SUBST(PILOT_LIBS)
 AC_SUBST(PILOT_FLAGS)
 
-dnl ************************************************************ 
+dnl ************************************************************
 
 AC_ARG_ENABLE(pl-test,
    AC_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
@@ -358,7 +358,7 @@ dnl *** check for pilot-link 0.12.5 and up
 
 if test $pl_version -eq 0 ; then
    if test $pl_major -ge 12 ; then
-      if test $pl_minor -ge 5 ; then
+      if test $pl_minor -ge 0 ; then
          pl_version_check_done=yes;
          AC_MSG_RESULT([pilot-link has USB])
          AC_MSG_RESULT([pilot-link has card support (>12.0)])
@@ -394,7 +394,7 @@ else
 fi
 
 dnl ############################################################################
-dnl Check for headers needed 
+dnl Check for headers needed
 dnl ############################################################################
 dnl 10/2/06: only headers used for true code portability right now are locale.h, langinfo.h
 AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/socket.h sys/time.h sys/wait.h unistd.h utime.h])
@@ -413,7 +413,7 @@ AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
 AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
 
 dnl ############################################################################
-dnl Check for typedefs and structures needed 
+dnl Check for typedefs and structures needed
 dnl ############################################################################
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
@@ -433,7 +433,7 @@ AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
 AC_TRY_LINK([#include <langinfo.h>], [
 char c;
 c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
-], 
+],
 nl_ok=yes, nl_ok=no)
 AC_MSG_RESULT($nl_ok)
 
@@ -443,7 +443,7 @@ if test "$nl_ok" = "yes"; then
 fi
 
 dnl ############################################################################
-dnl Check for individual functions needed 
+dnl Check for individual functions needed
 dnl ############################################################################
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
@@ -465,7 +465,7 @@ if test "x$with_flock" = "xyes"; then
 fi
 
 dnl ############################################################################
-dnl Figure which programs can be built on this particular host with the 
+dnl Figure which programs can be built on this particular host with the
 dnl libraries available.
 dnl ############################################################################
 
@@ -505,7 +505,7 @@ if test "$have_termio" = "1"; then
       linux-gnu)     dialer=yes  ;;
 
       *) AC_MSG_WARN(
-		   [Operating system ${build_os} not supported by jpilot-dialer]) ; 
+		   [Operating system ${build_os} not supported by jpilot-dialer]) ;
 			dialer=no ;;
 
    esac
@@ -546,13 +546,13 @@ AC_CONFIG_FILES([Makefile
                  icons/Makefile
                  docs/Makefile
                  empty/Makefile
-                 jpilot.spec 
+                 jpilot.spec
                  SlackBuild ])
 
 AC_OUTPUT
 
 dnl Make SlackBuild executable
-chmod +x SlackBuild 
+chmod +x SlackBuild
 
 dnl ******************************
 dnl Configuration messages
@@ -570,7 +570,7 @@ AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
 AC_MSG_RESULT(Cryptographic library..................   $crypto_lib)
-AC_MSG_RESULT(GTK-2 support..........................   yes)
+AC_MSG_RESULT(GTK-3 support..........................   yes)
 AC_MSG_RESULT(Stock buttons (icons on buttons in GUI)   $enable_stock_buttons)
 AC_MSG_RESULT(NLS support (foreign languages)........   $USE_NLS)
 AC_MSG_RESULT(Compiler Options.......................   $CFLAGS)

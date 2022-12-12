@@ -20,6 +20,7 @@
 
 /********************************* Includes ***********************************/
 #include "config.h"
+#include "utils.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdio.h>
@@ -49,7 +50,7 @@ static int t_fmt_ampm = TRUE;
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 static prefType glob_prefs[NUM_PREFS] = {
-   {"jpilotrc", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"jpilotcss", CHARTYPE, CHARTYPE, 0, "jpilotcss.default", 16},
    {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
@@ -152,12 +153,10 @@ static prefType glob_prefs[NUM_PREFS] = {
    {"external_editor", CHARTYPE, CHARTYPE, 0, NULL, 0},
 };
 
-struct name_list {
-   char *name;
-   struct name_list *next;
-};
 
-static struct name_list *dir_list=NULL;
+char *get_new_css_name(char *field2);
+
+gboolean using_old_rc_name_in_pref_file(const char *field1);
 
 /****************************** Main Code *************************************/
 void pref_init(void)
@@ -176,7 +175,7 @@ void pref_init(void)
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_RCFILE:
-         glob_prefs[i].svalue=strdup(EPN"rc.default");
+         glob_prefs[i].svalue=strdup(EPN"css.default");
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_PRINT_COMMAND:
@@ -320,86 +319,7 @@ void free_name_list(struct name_list **Plist)
 }
 */
 
-static int get_rcfile_name(int n, char *rc_copy)
-{
-   DIR *dir;
-   struct dirent *dirent;
-   char full_name[FILENAME_MAX];
-   int i;
-   char filename[FILENAME_MAX];
-   int found, count;
-   struct name_list *temp_list, *new_entry;
 
-
-   if (dir_list == NULL) {
-      i = found = count = 0;
-      sprintf(filename, "%s/%s/%s/", BASE_DIR, "share", EPN);
-      jp_logf(JP_LOG_DEBUG, "opening dir %s\n", filename);
-      dir = opendir(filename);
-      if (dir) {
-         for(i=0; (dirent = readdir(dir)); i++) {
-            sprintf(filename, "%s%s", EPN, "rc");
-            if (strncmp(filename, dirent->d_name, strlen(filename))) {
-               continue;
-            } else {
-               jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-               new_entry = malloc(sizeof(struct name_list));
-               if (!new_entry) {
-                  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
-                  return EXIT_FAILURE;
-               }
-               new_entry->name = strdup(dirent->d_name);
-               new_entry->next = dir_list;
-               dir_list = new_entry;
-            }
-         }
-      }
-      if (dir) {
-         closedir(dir);
-      }
-
-      get_home_file_name("", full_name, sizeof(full_name));
-      jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
-      dir = opendir(full_name);
-      if (dir) {
-         for(; (dirent = readdir(dir)); i++) {
-            sprintf(filename, "%s%s", EPN, "rc");
-            if (strncmp(filename, dirent->d_name, strlen(filename))) {
-               continue;
-            } else {
-               jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-               new_entry = malloc(sizeof(struct name_list));
-               if (!new_entry) {
-                  jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
-                  return EXIT_FAILURE;
-               }
-               new_entry->name = strdup(dirent->d_name);
-               new_entry->next = dir_list;
-               dir_list = new_entry;
-            }
-         }
-      }
-      if (dir) {
-         closedir(dir);
-      }
-   }
-
-   found = 0;
-   for (i=0, temp_list=dir_list; temp_list; temp_list=temp_list->next, i++) {
-      if (i == n) {
-         g_strlcpy(rc_copy, temp_list->name, MAX_PREF_LEN);
-         found=1;
-         break;
-      }
-   }
-
-   if (found) {
-      return EXIT_SUCCESS;
-   } else {
-      rc_copy[0]='\0';
-      return EXIT_FAILURE;
-   }
-}
 
 /* if n is out of range then this function will fail */
 int get_pref_possibility(int which, int n, char *pref_str)
@@ -714,6 +634,7 @@ int set_pref_possibility(int which, long n, int save)
    r = jp_set_pref(glob_prefs, which, n, str);
    if (save) {
       pref_write_rc_file();
+
    }
 
    if (PREF_CHAR_SET == which)
@@ -895,6 +816,12 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
          Pc[0]='\0';
       }
       for(i=0; i<num_prefs; i++) {
+          //attempt to convert to new css file if
+          // pref file has old rc name in it.
+         if(using_old_rc_name_in_pref_file(field1)){
+             field1 = "jpilotcss";
+             field2 = get_new_css_name(field2);
+         }
          if (!strcmp(prefs[i].name, field1)) {
             if (prefs[i].filetype == INTTYPE) {
                prefs[i].ivalue = atoi(field2);
@@ -913,6 +840,29 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
    fclose(in);
 
    return EXIT_SUCCESS;
+}
+
+gboolean using_old_rc_name_in_pref_file(const char *field1) {
+    return (gboolean) (field1 != NULL && strcmp("jpilotrc", field1) == 0);
+}
+
+char *get_new_css_name(char *field2) {
+    if(field2 != NULL){
+        if(strcmp(field2, "jpilotrc.green") == 0){
+            field2 = "jpilotcss.green";
+        }else if(strcmp(field2,"jpilotrc.blue") == 0){
+           field2 = "jpilotcss.blue";
+        }else if(strcmp(field2,"jpilotrc.purple") == 0){
+            field2 = "jpilotcss.purple";
+        }else if(strcmp(field2,"jpilotrc.steel") == 0){
+            field2 = "jpilotcss.steel";
+        }else {
+            // not using one of the old default rc files,
+            // so revert to default.
+            field2 = "jpilotcss.default";
+        }
+    }
+    return field2;
 }
 
 int pref_read_rc_file(void)
