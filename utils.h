@@ -153,6 +153,12 @@ typedef recordid_t pi_uid_t;
 /* Unique ID used to locate a record, say after a search or GUI update */
 extern unsigned int glob_find_id;
 
+// Global variable for SQLite-based data storage instead of Palm binary format
+extern int glob_sqlite;
+
+// Global variable to inhibit rc-file writing
+extern int glob_rc_file_write;
+
 typedef enum {
    DATEBOOK = 100L,
    ADDRESS,

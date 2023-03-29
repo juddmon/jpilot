@@ -38,6 +38,7 @@
 #include "print.h"
 #include "alarms.h"
 #include "stock_buttons.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 //#define EASTER
@@ -635,6 +636,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
             /* Repeat Days */
             read_csv_field(in, text, sizeof(text));
             for (i = 0; i < 7; i++) {
+                if (text[i] == '\0') break;	// luckily, new_cale had been cleared above
                 new_cale.repeatDays[i] = (text[i] == '1');
             }
 
@@ -684,12 +686,15 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
                                       (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                if (strlen(new_cale.description) + 1 > MAX_DESC_LEN) {
-                    new_cale.description[MAX_DESC_LEN + 1] = '\0';
-                    jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN,
-                            MAX_DESC_LEN);
+                if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, NULL); // SQLite does not have this severe restriction on description length
+                else {
+                    if (strlen(new_cale.description) + 1 > MAX_DESC_LEN) {
+                        new_cale.description[MAX_DESC_LEN + 1] = '\0';
+                        jp_logf(JP_LOG_WARN, _("cb_dbook_import(): Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN,
+                                MAX_DESC_LEN);
+                    }
+                    pc_calendar_write(&new_cale, NEW_PC_REC, attrib, NULL);
                 }
-                pc_calendar_write(&new_cale, NEW_PC_REC, attrib, NULL);
             }
         }
     }
@@ -751,7 +756,8 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
                                       ((temp_celist->mcale.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                pc_calendar_write(&(temp_celist->mcale.cale), NEW_PC_REC, attrib, NULL);
+                if (glob_sqlite) jpsqlite_DatebookINS(&(temp_celist->mcale.cale), NEW_PC_REC, attrib, NULL);
+                else pc_calendar_write(&(temp_celist->mcale.cale), NEW_PC_REC, attrib, NULL);
             }
         }
         free_CalendarEventList(&celist);
@@ -903,7 +909,8 @@ static void appt_export_ok(int type, const char *filename) {
     get_pref(PREF_CHAR_SET, &char_set, NULL);
 
     cel = NULL;
-    get_days_calendar_events2(&cel, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
+    if (glob_sqlite) jpsqlite_DatebookSEL(&cel,NULL,2);
+    else get_days_calendar_events2(&cel, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
     for (i = 0, temp_list = cel; temp_list; temp_list = temp_list->next, i++) {
         mcale = &(temp_list->mcale);
@@ -1564,6 +1571,7 @@ static int find_sort_cat_pos(int cat) {
 static int find_menu_cat_pos(int cat) {
     int i;
 
+    jp_logf(JP_LOG_DEBUG, "find_menu_cat_pos(): cat=%d\n",cat);
     if (cat != NUM_DATEBOOK_CAT_ITEMS - 1) {
         return cat;
     } else { /* Unfiled category */
@@ -1730,6 +1738,7 @@ static void init(void) {
     long use_db3_tags;
 #endif
 
+    jp_logf(JP_LOG_DEBUG, "init()\n");
 #ifdef ENABLE_DATEBK
     get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
     if (use_db3_tags) {
@@ -1755,7 +1764,8 @@ static void init(void) {
         /* Search appointments for this id to get its date */
         ce_list = NULL;
 
-        get_days_calendar_events2(&ce_list, NULL, 1, 1, 1, CATEGORY_ALL, NULL);
+        if (glob_sqlite) jpsqlite_DatebookSEL(&ce_list,NULL,1);
+        else get_days_calendar_events2(&ce_list, NULL, 1, 1, 1, CATEGORY_ALL, NULL);
 
         for (temp_cel = ce_list; temp_cel; temp_cel = temp_cel->next) {
             if (temp_cel->mcale.unique_id == glob_find_id) {
@@ -1831,7 +1841,7 @@ static int dialog_current_future_all_cancel(void) {
 }
 
 #ifdef EASTER
-                                                                                                                        static int dialog_easter(int mday)
+static int dialog_easter(int mday)
 {
    char text[255];
    char who[50];
@@ -1930,9 +1940,9 @@ static void set_begin_end_labels(struct tm *begin, struct tm *end, int flags) {
     }
     if (flags & UPDATE_DATE_MENUS) {
         gtk_combo_box_set_active(GTK_COMBO_BOX(option1),begin_date.tm_hour);
-        gtk_combo_box_set_active(GTK_COMBO_BOX(option2),(begin_date.tm_min / 5));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option2),begin_date.tm_min);	// previously divide by 5
         gtk_combo_box_set_active(GTK_COMBO_BOX(option3),end_date.tm_hour);
-        gtk_combo_box_set_active(GTK_COMBO_BOX(option4),(end_date.tm_min / 5));
+        gtk_combo_box_set_active(GTK_COMBO_BOX(option4),end_date.tm_min);	// previously divide by 5
 
     }
 }
@@ -2133,9 +2143,11 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
       the beginning time is greater than the ending time */
     if (datebook_version == 0) {
         if (ltime > ltime2) {
+			jp_logf(JP_LOG_DEBUG, "appt_get_details(): ltime=%d, ltime2=%d\n",ltime,ltime2);
             memcpy(&(cale->end), &(cale->begin), sizeof(struct tm));
         }
     }
+	jp_logf(JP_LOG_DEBUG, "appt_get_details(): after datebook_version == 0 test\n");
 
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_alarm))) {
         cale->alarm = 1;
@@ -2264,7 +2276,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
             cale->repeatType = calendarRepeatYearly;
             text1 = gtk_entry_get_text(GTK_ENTRY(repeat_year_entry));
             cale->repeatFrequency = atoi(text1);
-            jp_logf(JP_LOG_DEBUG, "every %s year(s)\n", cale->repeatFrequency);
+            jp_logf(JP_LOG_DEBUG, "every %d year(s)\n", cale->repeatFrequency);
             if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button_year_endon))) {
                 cale->repeatForever = 0;
                 jp_logf(JP_LOG_DEBUG, "end on year\n");
@@ -2295,19 +2307,21 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
     gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(dbook_desc_buffer), &start_iter, &end_iter);
     cale->description = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(dbook_desc_buffer), &start_iter, &end_iter, TRUE);
 
-    /* Empty appointment descriptions crash PalmOS 2.0, but are fine in
-    * later versions */
-    if (cale->description[0] == '\0') {
-        free(cale->description);
-        cale->description = strdup(" ");
-    }
-    if (strlen(cale->description) + 1 > MAX_DESC_LEN) {
-        cale->description[MAX_DESC_LEN + 1] = '\0';
-        jp_logf(JP_LOG_WARN, _("Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
-    }
-    if (cale->description) {
-        jp_logf(JP_LOG_DEBUG, "description=[%s]\n", cale->description);
-    }
+	if (!glob_sqlite) {	// restriction on description not required for SQLite storage
+		/* Empty appointment descriptions crash PalmOS 2.0, but are fine in
+		* later versions */
+		if (cale->description && cale->description[0] == '\0') {
+			free(cale->description);
+			cale->description = strdup(" ");
+		}
+		if (strlen(cale->description) + 1 > MAX_DESC_LEN) {
+			cale->description[MAX_DESC_LEN + 1] = '\0';
+			jp_logf(JP_LOG_WARN, _("appt_get_details(): Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
+		}
+		if (cale->description) {
+			jp_logf(JP_LOG_DEBUG, "appt_get_details(): description=[%s]\n", cale->description);
+		}
+	}
 
 #ifdef ENABLE_DATEBK
     if (use_db3_tags) {
@@ -2438,7 +2452,7 @@ selectDateRecordByRow(GtkTreeModel *model,
 
 static int datebook_update_listStore(void) {
     GtkTreeIter iter;
-    int num_entries, entries_shown, num;
+    int num_entries=-1, entries_shown, num;
     CalendarEventList *temp_cel;
     char begin_time[32];
     char end_time[32];
@@ -2476,11 +2490,11 @@ static int datebook_update_listStore(void) {
     new_time.tm_isdst = -1;
     mktime(&new_time);
 
-    num = get_days_calendar_events2(&glob_cel, &new_time, 2, 2, 1, CATEGORY_ALL, &num_entries);
+    num = glob_sqlite ? num_entries=jpsqlite_DatebookSEL(&glob_cel,&new_time,1) :  get_days_calendar_events2(&glob_cel, &new_time, 2, 2, 1, CATEGORY_ALL, &num_entries);
 
-    jp_logf(JP_LOG_DEBUG, "get_days_appointments==>%d\n", num);
+    jp_logf(JP_LOG_DEBUG, "datebook_update_listStore(): num=%d, num_entries=%d\n", num, num_entries);
 #ifdef ENABLE_DATEBK
-    jp_logf(JP_LOG_DEBUG, "datebk_category = 0x%x\n", datebk_category);
+    jp_logf(JP_LOG_DEBUG, "datebook_update_listStore(): datebk_category = 0x%x\n", datebk_category);
 #endif
     GtkTreeSelection* treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
@@ -2931,6 +2945,7 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent *mcale, gpointer data) {
         return;
     }
 
+    jp_logf(JP_LOG_DEBUG, "deleteDateRecordFromDataStructure()\n");
     /* Convert to Palm character set */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     if (char_set != CHAR_SET_LATIN1) {
@@ -2991,7 +3006,7 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent *mcale, gpointer data) {
             }
         }
     }
-    /* Its important to write a delete record first and then a new/modified
+    /* It is important to write a delete record first and then a new/modified
     * record in that order. This is so that the sync code can check to see
     * if the remote record is the same as the removed, or changed local
     * or not before it goes and modifies it. */
@@ -3001,7 +3016,8 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent *mcale, gpointer data) {
         mappt.unique_id = mcale->unique_id;
         mappt.attrib = mcale->attrib;
         copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
-        delete_pc_record(DATEBOOK, &mappt, flag);
+        if (glob_sqlite) { if (flag == DELETE_FLAG) jpsqlite_Delete(DATEBOOK, &mappt); }
+        else delete_pc_record(DATEBOOK, &mappt, flag);
         free_Appointment(&(mappt.appt));
     } else {
         delete_pc_record(CALENDAR, mcale, flag);
@@ -3009,7 +3025,8 @@ void deleteDateRecordFromDataStructure(MyCalendarEvent *mcale, gpointer data) {
 
     if (dialog == DIALOG_SAID_RPT_CURRENT ||
         dialog == DIALOG_SAID_RPT_FUTURE) {
-        pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
+        if (glob_sqlite) jpsqlite_DatebookUPD(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
+        else pc_calendar_write(cale, REPLACEMENT_PALM_REC, mcale->attrib, write_unique_id);
         free_CalendarEvent(cale);
         free(cale);
     }
@@ -3042,10 +3059,8 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
     time_t ltime;
     struct tm *now;
 
-    jp_logf(JP_LOG_DEBUG, "cb_add_new_record\n");
-
     flag = GPOINTER_TO_INT(data);
-
+    jp_logf(JP_LOG_DEBUG, "addNewDateRecordToDataStructure(): flag=%d\n",flag);
 
     unique_id = 0;
 
@@ -3176,7 +3191,8 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
     /* New record */
     if (flag != MODIFY_FLAG) {
         unique_id = 0; /* Palm will supply unique_id for new record */
-        pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
+        if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, &unique_id);
+        else pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
     }
 
     if (flag == MODIFY_FLAG) {
@@ -3195,13 +3211,15 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
         }
 
         if (datebook_version == 0) {
-            MyAppointment mappt;
-            mappt.rt = mcale->rt;
-            mappt.unique_id = mcale->unique_id;
-            mappt.attrib = mcale->attrib;
-            copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
-            delete_pc_record(DATEBOOK, &mappt, flag);
-            free_Appointment(&(mappt.appt));
+            if (glob_sqlite == 0) {
+                MyAppointment mappt;
+                mappt.rt = mcale->rt;
+                mappt.unique_id = mcale->unique_id;
+                mappt.attrib = mcale->attrib;
+                copy_calendarEvent_to_appointment(&(mcale->cale), &(mappt.appt));
+                delete_pc_record(DATEBOOK, &mappt, flag);
+                free_Appointment(&(mappt.appt));
+            }
         } else {
             delete_pc_record(CALENDAR, mcale, flag);
         }
@@ -3214,31 +3232,39 @@ void addNewDateRecordToDataStructure(MyCalendarEvent *mcale, gpointer data) {
             datebook_add_exception(cale, current_year, current_month, current_day);
             if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
                 /* The original record gets the same ID, this exception gets a new one. */
-                pc_calendar_write(cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
+                if (glob_sqlite) jpsqlite_DatebookUPD(cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
+                else pc_calendar_write(cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
             } else {
-                pc_calendar_write(cale, NEW_PC_REC, attrib, NULL);
+                if (glob_sqlite) jpsqlite_DatebookINS(cale, NEW_PC_REC, attrib, NULL);
+                else pc_calendar_write(cale, NEW_PC_REC, attrib, NULL);
             }
             unique_id = 0;
-            pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, &unique_id);
+            else pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
             free_CalendarEvent(cale);
             free(cale);
         } else if (dialog == DIALOG_SAID_RPT_FUTURE) {
             /* Write old record with rpt. end date */
             if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
-                pc_calendar_write(&(mcale->cale), REPLACEMENT_PALM_REC, attrib, &unique_id);
+                if (glob_sqlite) jpsqlite_DatebookUPD(&(mcale->cale), REPLACEMENT_PALM_REC, attrib, &unique_id);
+                else pc_calendar_write(&(mcale->cale), REPLACEMENT_PALM_REC, attrib, &unique_id);
             } else {
                 unique_id = 0;
-                pc_calendar_write(&(mcale->cale), NEW_PC_REC, attrib, &unique_id);
+                if (glob_sqlite) jpsqlite_DatebookINS(&(mcale->cale), NEW_PC_REC, attrib, &unique_id);
+                else pc_calendar_write(&(mcale->cale), NEW_PC_REC, attrib, &unique_id);
             }
             /* Write new record with future rpt. events */
             unique_id = 0; /* Palm will supply unique_id for new record */
-            pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, &unique_id);
+            else pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
         } else {
             if ((mcale->rt == PALM_REC) || (mcale->rt == REPLACEMENT_PALM_REC)) {
-                pc_calendar_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
+                if (glob_sqlite) jpsqlite_DatebookUPD(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
+                else pc_calendar_write(&new_cale, REPLACEMENT_PALM_REC, attrib, &unique_id);
             } else {
                 unique_id = 0;
-                pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
+                if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, &unique_id);
+                else pc_calendar_write(&new_cale, NEW_PC_REC, attrib, &unique_id);
             }
         }
     }
@@ -4227,6 +4253,7 @@ static void entry_key_pressed(int next_digit, int end_entry) {
     struct tm *Ptm;
     int span_hour, span_min;
 
+    jp_logf(JP_LOG_DEBUG,"entry_key_pressed() 1: begin_date=%02d:%02d, end_date=%02d:%02d\n",begin_date.tm_hour,begin_date.tm_min,end_date.tm_hour,end_date.tm_min);
     if (end_entry) {
         Ptm = &end_date;
     } else {
@@ -4237,8 +4264,8 @@ static void entry_key_pressed(int next_digit, int end_entry) {
     span_min = end_date.tm_min - begin_date.tm_min;
 
     if ((next_digit >= 0) && (next_digit <= 9)) {
-        Ptm->tm_hour = ((Ptm->tm_hour) * 10 + (Ptm->tm_min) / 10) % 100;
-        Ptm->tm_min = ((Ptm->tm_min) * 10) % 100 + next_digit;
+        Ptm->tm_hour = ((Ptm->tm_hour)*10 + (Ptm->tm_min)/10)%100;
+        Ptm->tm_min = ((Ptm->tm_min)*10)%100 + next_digit;
     }
     if ((next_digit == PRESSED_P) && ((Ptm->tm_hour) < 12)) {
         (Ptm->tm_hour) += 12;
@@ -4276,6 +4303,7 @@ static void entry_key_pressed(int next_digit, int end_entry) {
         end_date.tm_hour = span_hour;
     }
 
+    jp_logf(JP_LOG_DEBUG,"entry_key_pressed() 2: begin_date=%02d:%02d, end_date=%02d:%02d\n",begin_date.tm_hour,begin_date.tm_min,end_date.tm_hour,end_date.tm_min);
     set_begin_end_labels(&begin_date, &end_date, UPDATE_DATE_ENTRIES |
                                                  UPDATE_DATE_MENUS);
 }
@@ -4296,9 +4324,9 @@ static gboolean cb_entry_key_pressed(GtkWidget *widget,
                                      gpointer data) {
     int digit = -1;
 
-    jp_logf(JP_LOG_DEBUG, "cb_entry_key_pressed key = %d\n", event->keyval);
+    jp_logf(JP_LOG_DEBUG, "cb_entry_key_pressed(): key = %d = 0x%0x\n", event->keyval, event->keyval);
 
-     g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
+    g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
     if ((event->keyval >= GDK_KEY_0) && (event->keyval <= GDK_KEY_9)) {
         digit = (event->keyval) - GDK_KEY_0;
@@ -4724,8 +4752,8 @@ static GtkWidget *create_time_menu(int flags) {
         cb_factor = 1;
         get_pref_hour_ampm(str);
     } else {
-        i_stop = 12;
-        cb_factor = 5;
+        i_stop = 60;	// previously: 12
+        cb_factor = 1;	// previously 5. i.e., every 5 minutes
     }
     for (i = 0; i < i_stop; i++) {
         if (HOURS_FLAG & flags) {
@@ -4861,7 +4889,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     get_pref(PREF_USE_DB3, &use_db3_tags, NULL);
 #endif
 
-    get_calendar_or_datebook_app_info(&dbook_app_info, datebook_version);
+    if (glob_sqlite) jpsqlite_DatebookCatSEL(&dbook_app_info);
+    else get_calendar_or_datebook_app_info(&dbook_app_info, datebook_version);
 
     if (datebook_version) {
         /* Initialize categories */
@@ -5239,8 +5268,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_grid_attach_next_to(GTK_GRID(grid), start_label, no_time_label, GTK_POS_BOTTOM, 1, 1);
 
     begin_time_entry = gtk_entry_new();
-    gtk_entry_set_overwrite_mode(GTK_ENTRY(begin_time_entry),FALSE);
-    gtk_widget_set_can_focus(begin_time_entry,FALSE);
+    gtk_entry_set_overwrite_mode(GTK_ENTRY(begin_time_entry),TRUE);	// previously FALSE
+    gtk_widget_set_can_focus(begin_time_entry,TRUE);	// previously FALSE
     gtk_entry_set_max_length(GTK_ENTRY(begin_time_entry), 7);
     gtk_grid_attach_next_to(GTK_GRID(grid), begin_time_entry, start_label, GTK_POS_RIGHT, 1, 1);
 
@@ -5255,8 +5284,8 @@ int datebook_gui(GtkWidget *vbox, GtkWidget *hbox) {
     gtk_grid_attach_next_to(GTK_GRID(grid), end_label, start_label, GTK_POS_BOTTOM, 1, 1);
 
     end_time_entry = gtk_entry_new();
-    gtk_entry_set_overwrite_mode(GTK_ENTRY(end_time_entry),FALSE);
-    gtk_widget_set_can_focus(end_time_entry,FALSE);
+    gtk_entry_set_overwrite_mode(GTK_ENTRY(end_time_entry),TRUE);	// previously FALSE
+    gtk_widget_set_can_focus(end_time_entry,TRUE);	// previously FALSE
     gtk_entry_set_max_length(GTK_ENTRY(end_time_entry), 7);
     gtk_grid_attach_next_to(GTK_GRID(grid), end_time_entry, end_label, GTK_POS_RIGHT, 1, 1);
 

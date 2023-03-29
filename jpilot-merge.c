@@ -58,6 +58,8 @@
  * this code but must be instantiated for the code to compile.  
  * The same is true of the functions which are only used in GUI mode. */
 int pipe_to_parent = 0;
+int glob_sqlite = 0;	// just to keep the linker happy
+int glob_rc_file_write = 1;	// just to keep the linker happy
 pid_t jpilot_master_pid = -1;
 GtkWidget *glob_dialog;
 GtkWidget *glob_date_label;

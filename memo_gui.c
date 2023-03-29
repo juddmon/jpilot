@@ -38,6 +38,7 @@
 #include "print.h"
 #include "export.h"
 #include "stock_buttons.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 #define NUM_MEMO_CAT_ITEMS 16
@@ -281,10 +282,12 @@ int print_memo(MyMemo *mmemo) {
         memo_list = &memo_list1;
     }
     if (this_many == 2) {
-        get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 2, memo_category);
+        if (glob_sqlite) jpsqlite_MemoSEL(&memo_list,2,memo_category);
+        else get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 2, memo_category);
     }
     if (this_many == 3) {
-        get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
+        if (glob_sqlite) jpsqlite_MemoSEL(&memo_list,2,CATEGORY_ALL);
+        else get_memos2(&memo_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
     }
 
     print_memos(memo_list);
@@ -393,7 +396,8 @@ static int cb_memo_import(GtkWidget *parent_window,
                                 attrib & 0x0F,
                                 &new_cat_num);
         if ((ret == DIALOG_SAID_IMPORT_ALL) || (ret == DIALOG_SAID_IMPORT_YES)) {
-            pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
+            if (glob_sqlite) jpsqlite_MemoINS(&new_memo, NEW_PC_REC, attrib, NULL);
+            else pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             jp_logf(JP_LOG_WARN, _("Imported Memo %s\n"), file_path);
         }
     }
@@ -457,7 +461,8 @@ static int cb_memo_import(GtkWidget *parent_window,
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
                                       (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
+				if (glob_sqlite) jpsqlite_MemoINS(&new_memo, NEW_PC_REC, attrib, NULL);
+                else pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
         }
     }
@@ -521,7 +526,8 @@ static int cb_memo_import(GtkWidget *parent_window,
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
                                       ((temp_memolist->mmemo.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
+                if (glob_sqlite) jpsqlite_MemoINS(&new_memo, NEW_PC_REC, attrib, NULL);
+                else pc_memo_write(&new_memo, NEW_PC_REC, attrib, NULL);
             }
         }
         free_MemoList(&memolist);
@@ -955,7 +961,8 @@ void delete_memo(MyMemo *mmemo, gpointer data) {
     jp_logf(JP_LOG_DEBUG, "mmemo->rt = %d\n", mmemo->rt);
     flag = GPOINTER_TO_INT(data);
     if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(MEMO, mmemo, flag);
+        if (glob_sqlite) { if (flag == DELETE_FLAG) jpsqlite_Delete(MEMO, mmemo); }
+        else delete_pc_record(MEMO, mmemo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
             if (row_selected > 0) {
@@ -1060,28 +1067,34 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
             break;
     }
 
-    get_home_file_name(pdb_name, full_name, sizeof(full_name));
+	if (glob_sqlite) {
+		memset(&ai, 0, sizeof(ai));
+		jpsqlite_MemoCatSEL(&ai);	// read from database
+		edit_cats(widget, db_name, &(ai.category));	// GUI changes categories
+		jpsqlite_CatDELINS(db_name, &(ai.category));	// write categories to database
+	} else {
+		get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
-    buf = NULL;
-    memset(&ai, 0, sizeof(ai));
+		buf = NULL;
+		memset(&ai, 0, sizeof(ai));
 
-    pf = pi_file_open(full_name);
-    pi_file_get_app_info(pf, &buf, &size);
+		pf = pi_file_open(full_name);
+		pi_file_get_app_info(pf, &buf, &size);
 
-    num = unpack_MemoAppInfo(&ai, buf, size);
-    if (num <= 0) {
-        jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
-        return;
-    }
+		num = unpack_MemoAppInfo(&ai, buf, size);
+		if (num <= 0) {
+			jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
+			return;
+		}
 
-    pi_file_close(pf);
+		pi_file_close(pf);
 
-    edit_cats(widget, db_name, &(ai.category));
+		edit_cats(widget, db_name, &(ai.category));
 
-    size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
+		size = pack_MemoAppInfo(&ai, buffer, sizeof(buffer));
 
-    pdb_file_write_app_block(db_name, buffer, size);
-
+		pdb_file_write_app_block(db_name, buffer, size);
+	}
 
     cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
@@ -1267,14 +1280,17 @@ gboolean addNewMemo(MyMemo *mmemo, const void *data) {
     if (flag == MODIFY_FLAG) {
         cb_delete_memo(NULL, data);
         if ((mmemo->rt == PALM_REC) || (mmemo->rt == REPLACEMENT_PALM_REC)) {
-            pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+			if (glob_sqlite) jpsqlite_MemoUPD(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+            else pc_memo_write(&new_memo, REPLACEMENT_PALM_REC, attrib, &unique_id);
         } else {
             unique_id = 0;
-            pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_MemoINS(&new_memo, NEW_PC_REC, attrib, &unique_id);
+            else pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
         }
     } else {
         unique_id = 0;
-        pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
+        if (glob_sqlite) jpsqlite_MemoINS(&new_memo, NEW_PC_REC, attrib, &unique_id);
+        else pc_memo_write(&new_memo, NEW_PC_REC, attrib, &unique_id);
     }
 
     free_Memo(&new_memo);
@@ -1463,7 +1479,7 @@ static void memo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_w
     free_MemoList(memo_list);
 
     /* Need to get all records including private ones for the tooltips calculation */
-    num_entries = get_memos2(memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+    num_entries = glob_sqlite ? jpsqlite_MemoSEL(memo_list,1,CATEGORY_ALL) : get_memos2(memo_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
 
     /* Start by clearing existing entry if in main window */
     if (main) {
@@ -1724,7 +1740,8 @@ int memo_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     record_changed = CLEAR_FLAG;
 
-    get_memo_app_info(&memo_app_info);
+    if (glob_sqlite) jpsqlite_MemoCatSEL(&memo_app_info);
+    else get_memo_app_info(&memo_app_info);
     listStore = gtk_list_store_new(MEMO_NUM_COLS, G_TYPE_STRING, G_TYPE_POINTER, GDK_TYPE_RGBA,
                                    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN);
 

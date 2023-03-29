@@ -34,6 +34,7 @@
 #include "password.h"
 #include "export.h"
 #include "stock_buttons.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 #define NUM_ADDRESS_CAT_ITEMS 16
@@ -455,8 +456,6 @@ gboolean printAddressRecord(GtkTreeModel *model,
     }
 
     return FALSE;
-
-
 }
 
 int printAddress(MyContact *mcont, gpointer data) {
@@ -486,7 +485,8 @@ int printAddress(MyContact *mcont, gpointer data) {
         }
         if (address_version == 0) {
             addr_list = NULL;
-            get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, get_category);
+            if (glob_sqlite) jpsqlite_AddrSEL(&addr_list,addr_sort_order,1,get_category);
+            else get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, get_category);
             copy_addresses_to_contacts(addr_list, &cont_list);
             free_AddressList(&addr_list);
         } else {
@@ -788,7 +788,8 @@ static int cb_addr_import(GtkWidget *parent_window,
                     } else {
                         copy_contact_to_address(&new_cont, &new_addr);
                         jp_free_Contact(&new_cont);
-                        pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
+                        if (glob_sqlite) jpsqlite_AddrINS(&new_addr, NEW_PC_REC, attrib, NULL);
+                        else pc_address_write(&new_addr, NEW_PC_REC, attrib, NULL);
                         free_Address(&new_addr);
                     }
                 }
@@ -848,7 +849,8 @@ static int cb_addr_import(GtkWidget *parent_window,
                 attrib = (new_cat_num & 0x0F) |
                          ((temp_addrlist->maddr.attrib & 0x10) ? dlpRecAttrSecret : 0);
                 if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                    pc_address_write(&(temp_addrlist->maddr.addr), NEW_PC_REC, attrib, NULL);
+                    if (glob_sqlite) jpsqlite_AddrINS(&(temp_addrlist->maddr.addr), NEW_PC_REC, attrib, NULL);
+                    else pc_address_write(&(temp_addrlist->maddr.addr), NEW_PC_REC, attrib, NULL);
                 }
             }
             free_AddressList(&addrlist);
@@ -1766,12 +1768,14 @@ static void cb_resize_name_column(GtkTreeViewColumn *column) {
 static int find_sort_cat_pos(int cat) {
     int i;
 
+    jp_logf(JP_LOG_DEBUG, "find_sort_cat_pos(), cat=%d\n",cat);
     for (i = 0; i < NUM_ADDRESS_CAT_ITEMS; i++) {
         if (sort_l[i].cat_num == cat) {
             return i;
         }
     }
 
+    jp_logf(JP_LOG_DEBUG, "find_sort_cat_pos(), not found, returning (-1)\n");
     return -1;
 }
 
@@ -1782,6 +1786,7 @@ static int find_sort_cat_pos(int cat) {
 static int find_menu_cat_pos(int cat) {
     int i;
 
+    jp_logf(JP_LOG_DEBUG, "find_menu_cat_pos(), cat=%d\n",cat);
     if (cat != NUM_ADDRESS_CAT_ITEMS - 1) {
         return cat;
     } else { /* Unfiled category */
@@ -1956,7 +1961,8 @@ void addNewAddressRecordToDataStructure(MyContact *mcont, gpointer data) {
         if (address_version == 0) {
             copy_contact_to_address(&cont, &addr);
             jp_free_Contact(&cont);
-            pc_address_write(&addr, type, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_AddrINS(&addr, type, attrib, &unique_id);
+            else pc_address_write(&addr, type, attrib, &unique_id);
             free_Address(&addr);
         } else {
             pc_contact_write(&cont, type, attrib, &unique_id);
@@ -2034,7 +2040,8 @@ void deleteAddressContact(MyContact *mcont, gpointer data) {
     /* End Masking */
     flag = GPOINTER_TO_INT(data);
     if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(CONTACTS, mcont, flag);
+        if (glob_sqlite) jpsqlite_Delete(CONTACTS, mcont);
+        else delete_pc_record(CONTACTS, mcont, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
             if (rowSelected > 0) {
@@ -2055,6 +2062,7 @@ void deleteAddress(MyContact *mcont, gpointer data) {
     long char_set;
     int i;
 
+    jp_logf(JP_LOG_DEBUG, "deleteAddress()\n");
     if (mcont < (MyContact *) LIST_MIN_DATA) {
         return;
     }
@@ -2085,7 +2093,8 @@ void deleteAddress(MyContact *mcont, gpointer data) {
     /* End Masking */
     flag = GPOINTER_TO_INT(data);
     if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
-        delete_pc_record(ADDRESS, &maddr, flag);
+        if (glob_sqlite) { if (flag == DELETE_FLAG) jpsqlite_Delete(ADDRESS, &maddr); }
+        else delete_pc_record(ADDRESS, &maddr, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
             if (rowSelected > 0) {
@@ -2495,6 +2504,7 @@ static void cb_address_quickfind(GtkWidget *widget,
     jp_logf(JP_LOG_DEBUG, "cb_address_quickfind\n");
 
     entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
+    jp_logf(JP_LOG_DEBUG, "cb_address_quickfind(): entry_text=%s\n",entry_text);
     if (!strlen(entry_text)) {
         return;
     } else {
@@ -2557,28 +2567,35 @@ static void cb_edit_cats_address(GtkWidget *widget, gpointer data) {
 
     jp_logf(JP_LOG_DEBUG, "cb_edit_cats_address\n");
 
-    get_home_file_name("AddressDB.pdb", full_name, sizeof(full_name));
+	if (glob_sqlite) {
+		memset(&aai, 0, sizeof(aai));
+		jpsqlite_AddrCatSEL(&aai);	// read from database
+		edit_cats(widget, "AddressDB", &(aai.category));	// GUI changes categories
+		jpsqlite_CatDELINS("AddressDB", &(aai.category));	// write categories to database
+	} else {
+		get_home_file_name("AddressDB.pdb", full_name, sizeof(full_name));
 
-    buf = NULL;
-    memset(&aai, 0, sizeof(aai));
+		buf = NULL;
+		memset(&aai, 0, sizeof(aai));
 
-    pf = pi_file_open(full_name);
-    pi_file_get_app_info(pf, &buf, &size);
+		pf = pi_file_open(full_name);
+		pi_file_get_app_info(pf, &buf, &size);
 
-    num = unpack_AddressAppInfo(&aai, buf, size);
+		num = unpack_AddressAppInfo(&aai, buf, size);
 
-    if (num <= 0) {
-        jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
-        return;
-    }
+		if (num <= 0) {
+			jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), "AddressDB.pdb");
+			return;
+		}
 
-    pi_file_close(pf);
+		pi_file_close(pf);
 
-    edit_cats(widget, "AddressDB", &(aai.category));
+		edit_cats(widget, "AddressDB", &(aai.category));
 
-    size = pack_AddressAppInfo(&aai, (unsigned char *) buffer, sizeof(buffer));
+		size = pack_AddressAppInfo(&aai, (unsigned char *) buffer, sizeof(buffer));
 
-    pdb_file_write_app_block("AddressDB", buffer, size);
+		pdb_file_write_app_block("AddressDB", buffer, size);
+	}
 }
 
 static void cb_edit_cats(GtkWidget *widget, gpointer data) {
@@ -2594,6 +2611,7 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
 static void cb_category(GtkComboBox *item, int selection) {
     int b;
 
+    jp_logf(JP_LOG_DEBUG, "cb_edit_cats_address(): selection=%d\n",selection);
     if (!item) return;
     if (gtk_combo_box_get_active(GTK_COMBO_BOX(item)) < 0) {
         return;
@@ -3135,11 +3153,12 @@ selectRecordAddressByRow(GtkTreeModel *model,
                          GtkTreeIter *iter,
                          gpointer data) {
     int *i = gtk_tree_path_get_indices(path);
+    jp_logf(JP_LOG_DEBUG, "selectRecordAddressByRow(): i[0]=%d, rowSelected=%d\n",i[0],rowSelected);
     if (i[0] == rowSelected) {
         GtkTreeSelection *selection = NULL;
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         gtk_tree_selection_select_path(selection, path);
-        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, (GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM, FALSE, 1.0, 0.0);
+        gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, NULL /*(GtkTreeViewColumn *)ADDRESS_PHONE_COLUMN_ENUM*/, FALSE, 1.0, 0.0);
         return TRUE;
     }
 
@@ -3169,11 +3188,12 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     char *tmp_delim1, *tmp_delim2;
     AddressList *addr_list;
 
+	jp_logf(JP_LOG_DEBUG, "address_update_listStore(): category=%d, main=%d\n",category,main);
     free_ContactList(cont_list);
 
     if (address_version == 0) {
         addr_list = NULL;
-        num_entries = get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
+        num_entries = glob_sqlite ? jpsqlite_AddrSEL(&addr_list,addr_sort_order,1,CATEGORY_ALL) : get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 1, CATEGORY_ALL);
         copy_addresses_to_contacts(addr_list, cont_list);
         free_AddressList(&addr_list);
     } else {
@@ -3369,9 +3389,11 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
                            ADDRESSS_FOREGROUND_COLOR_ENABLED_ENUM, showFgColor, -1);
         entries_shown++;
     }
+	jp_logf(JP_LOG_DEBUG, "address_update_listStore(): #1 num_entries=%d, entries_shown=%d, glob_find_id=%d, rowSelected=%d, name=%s, phone=%s\n",num_entries,entries_shown,glob_find_id,rowSelected,name,phone);
 
     // Set callback for a row selected
     gtk_tree_selection_set_select_function(treeSelection, handleRowSelectionForAddress, NULL, NULL);
+	jp_logf(JP_LOG_DEBUG, "address_update_listStore(): #2 after gtk_tree_selection_set_select_function()\n");
 
     /* If there are items in the list, highlight the selected row */
     if ((main) && (entries_shown > 0)) {
@@ -3389,6 +3411,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
             gtk_tree_model_foreach(GTK_TREE_MODEL(pListStore), selectRecordAddressByRow, NULL);
         }
     }
+	jp_logf(JP_LOG_DEBUG, "address_update_listStore(): #3 num_entries=%d, entries_shown=%d, glob_find_id=%d, rowSelected=%d\n",num_entries,entries_shown,glob_find_id,rowSelected);
 
     if (tooltip_widget) {
         get_pref(PREF_SHOW_TOOLTIPS, &show_tooltips, NULL);
@@ -3401,7 +3424,7 @@ static void address_update_listStore(GtkListStore *pListStore, GtkWidget *toolti
     }
     /* return focus to treeView after any big operation which requires a redraw */
     gtk_widget_grab_focus(GTK_WIDGET(treeView));
-
+	jp_logf(JP_LOG_DEBUG, "address_update_listStore(): num_entries=%d, entries_shown=%d\n",num_entries,entries_shown);
 }
 
 /* default set is which menu item is to be set on by default */
@@ -3454,6 +3477,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
     char *utf;
     long char_set;
 
+    jp_logf(JP_LOG_DEBUG, "make_phone_menu(): default_set=%d, callback_id=%d, set=%d\n",default_set,callback_id,set);
     get_pref(PREF_CHAR_SET, &char_set, NULL);
 
     phone_type_list_menu[set] = gtk_combo_box_text_new();
@@ -3478,6 +3502,7 @@ static int make_phone_menu(int default_set, unsigned int callback_id, int set) {
 
 /* returns 1 if found, 0 if not */
 static int address_find(void) {
+    jp_logf(JP_LOG_DEBUG, "address_find()\n");
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), findAddressRecordAndSelect, NULL);
     return EXIT_SUCCESS;
 }
@@ -3492,6 +3517,7 @@ int address_cycle_cat(void) {
     int b;
     int i, new_cat;
 
+    jp_logf(JP_LOG_DEBUG, "address_cycle_cat()\n");
     b = dialog_save_changed_record(pane, record_changed);
     if (b == DIALOG_SAID_2) {
         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -3523,6 +3549,7 @@ int address_cycle_cat(void) {
 int address_refresh(void) {
     int index, index2;
 
+    jp_logf(JP_LOG_DEBUG, "address_refresh()\n");
     if (glob_find_id) {
         address_category = CATEGORY_ALL;
     }
@@ -3556,27 +3583,33 @@ static gboolean
 cb_key_pressed_quickfind(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     int row_count;
     int select_row;
-    int add;
 
-    add = 0;
-    if ((event->keyval == GDK_KEY_KP_Down) || (event->keyval == GDK_KEY_Down)) {
-        add = 1;
-    }
-    if ((event->keyval == GDK_KEY_KP_Up) || (event->keyval == GDK_KEY_Up)) {
-        add = -1;
-    }
-    if (!add) return FALSE;
+	if (event->keyval == GDK_KEY_KP_Down || event->keyval == GDK_KEY_Down) {
+		select_row = rowSelected + 1;
+	} else if (event->keyval == GDK_KEY_KP_Up || event->keyval == GDK_KEY_Up) {
+		select_row = rowSelected - 1;
+    } else if (event->keyval == GDK_KEY_KP_Page_Up || event->keyval == GDK_KEY_Page_Up) {
+		select_row = rowSelected - 20;
+	} else if (event->keyval == GDK_KEY_KP_Page_Down || event->keyval == GDK_KEY_Page_Down) {
+		select_row = rowSelected + 20;
+	} else if ((event->keyval == GDK_KEY_KP_Begin || event->keyval == GDK_KEY_Begin) && event->state == GDK_MOD2_MASK) {	// this key already bound in edit-field
+		select_row = 0;
+	} else if (event->keyval == GDK_KEY_KP_End || event->keyval == GDK_KEY_End) {
+		select_row = -1;	// trigger to later set to max-1
+	} else {
+		return FALSE;	// nothing to do
+	}
+
     row_count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(listStore), NULL);
-    if (!row_count) return FALSE;
+    if (row_count <= 0) return FALSE;
 
     g_signal_stop_emission_by_name(G_OBJECT(widget), "key_press_event");
 
-    select_row = rowSelected + add;
     if (select_row > row_count - 1) {
-        select_row = 0;
+        select_row = 0;	// wrap around from top to bottom
     }
     if (select_row < 0) {
-        select_row = row_count - 1;
+        select_row = row_count - 1;	// wrap around from bottom to top
     }
     rowSelected = select_row;
     gtk_tree_model_foreach(GTK_TREE_MODEL(listStore), selectRecordAddressByRow, NULL);
@@ -3648,6 +3681,7 @@ static gboolean cb_key_pressed(GtkWidget *widget, GdkEventKey *event) {
 int address_gui_cleanup(void) {
     int b;
 
+    jp_logf(JP_LOG_DEBUG, "address_gui_cleanup()\n");
     b = dialog_save_changed_record(pane, record_changed);
     if (b == DIALOG_SAID_2) {
         cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
@@ -3700,6 +3734,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     GString *s;
     long char_set;
 
+    jp_logf(JP_LOG_DEBUG, "handleRowSelectionForAddress(): path_currently_selected=%d\n",path_currently_selected);
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *path_index = gtk_tree_path_get_indices(path);
@@ -3976,6 +4011,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     };
     char **page_names;
 
+    jp_logf(JP_LOG_DEBUG, "address_gui()\n");
     get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
     if (address_version) {
         unsigned char *buf;
@@ -3998,7 +4034,12 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     } else {
         page_names = address_page_names;
         num_pages = NUM_ADDRESS_NOTEBOOK_PAGES;
-        get_address_app_info(&address_app_info);
+        if (glob_sqlite) {
+            jpsqlite_AddrLabelSEL(&address_app_info);
+            jpsqlite_PhoneLabelSEL(&address_app_info);
+            jpsqlite_AddrCatSEL(&address_app_info);
+        } else get_address_app_info(&address_app_info);
+        jpsqlite_prtAddrAppInfo(&address_app_info);
         copy_address_ai_to_contact_ai(&address_app_info, &contact_app_info);
     }
     listStore = gtk_list_store_new(ADDRESS_NUM_COLS, G_TYPE_STRING, GDK_TYPE_PIXBUF,
@@ -4020,7 +4061,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
 
     qsort(sort_l, NUM_ADDRESS_CAT_ITEMS - 1, sizeof(struct sorted_cats), cat_compare);
 #ifdef JPILOT_DEBUG
-                                                                                                                            for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
+   for (i=0; i<NUM_ADDRESS_CAT_ITEMS; i++) {
       printf("cat %d [%s]\n", sort_l[i].cat_num, sort_l[i].Pcat);
    }
 #endif

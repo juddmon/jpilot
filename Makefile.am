@@ -1,4 +1,4 @@
-SUBDIRS = m4 po Expense SyncTime KeyRing dialer icons docs empty
+SUBDIRS = m4 po Expense jpsqlite SyncTime KeyRing dialer icons docs empty
 
 EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	intltool-extract.in intltool-merge.in intltool-update.in gettext.h \
@@ -58,6 +58,8 @@ jpilot_SOURCES = \
 	jp-pi-contact.h \
 	libplugin.c \
 	libplugin.h \
+	libsqlite.c \
+	libsqlite.h \
 	log.c \
 	log.h \
 	memo.c \
@@ -119,6 +121,8 @@ jpilot_dump_SOURCES = \
 	japanese.c \
 	jpilot-dump.c \
 	libplugin.c \
+	libsqlite.c \
+	libsqlite.h \
 	log.c \
 	memo.c \
 	otherconv.c \
@@ -136,6 +140,10 @@ jpilot_sync_SOURCES = \
 	jpilot-sync.c \
 	japanese.c \
 	libplugin.c \
+	libsqlite.c \
+	libsqlite.h \
+	datebook.c \
+	calendar.c \
 	log.c \
 	otherconv.c \
 	password.c \
@@ -150,6 +158,11 @@ jpilot_merge_SOURCES = \
 	cp1250.c \
 	japanese.c \
 	libplugin.c \
+	libsqlite.c \
+	libsqlite.h \
+	datebook.c \
+	calendar.c \
+	password.c \
 	log.c \
 	jpilot-merge.c \
 	otherconv.c \
@@ -171,11 +184,11 @@ AM_CFLAGS= @PILOT_FLAGS@ @GTK_CFLAGS@ ${I18NDEFS}
 
 # Add linkflags
 jpilot_LDFLAGS = -export-dynamic
-jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
-jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@ -lsqlite3
+jpilot_dump_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@ -lsqlite3
 jpilot_sync_LDFLAGS = -export-dynamic
-jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
-jpilot_merge_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@
+jpilot_sync_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@ -lsqlite3
+jpilot_merge_LDADD=@LIBS@ @PILOT_LIBS@ @GTK_LIBS@ -lsqlite3
 
 ################################################################################
 ## The rest of the file is copied over to the Makefile with only variable

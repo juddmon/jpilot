@@ -43,6 +43,7 @@
 #include "calendar.h"
 #include "log.h"
 #include "prefs.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 /* This is how often to check for alarms in seconds */
@@ -417,6 +418,11 @@ static void alarms_write_file(void)
       now->tm_min++;
       mktime(now);
    }
+
+	if (glob_sqlite) {
+		jpsqlite_AlarmsINS(now);
+		return;
+	}
    
    out=jp_open_home_file(EPN".alarms.tmp", "w");
    if (!out) {
@@ -643,7 +649,8 @@ static gint cb_timer_alarms(gpointer data)
          }
       }
       if (alm_list==NULL) {
-         get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
+         if (glob_sqlite) jpsqlite_DatebookSEL(&alm_list,NULL,1);
+         else get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
       }
 #ifdef ALARMS_DEBUG
       printf("unique_id=%d\n", temp_alarm->unique_id);
@@ -673,7 +680,8 @@ static gint cb_timer_alarms(gpointer data)
       diff = next_alarm->event_time - t - next_alarm->alarm_advance;
       if (diff <= ALARM_INTERVAL/2) {
          if (alm_list==NULL) {
-            get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
+            if (glob_sqlite) jpsqlite_DatebookSEL(&alm_list,NULL,1);
+            else get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
          }
          for (temp_alarm=next_alarm; temp_alarm; temp_alarm=ta_next) {
             for (temp_al = alm_list; temp_al; temp_al=temp_al->next) {
@@ -795,7 +803,8 @@ int alarms_find_next(struct tm *date1_in, struct tm *date2_in, int soonest_only)
    }
 
    alm_list=NULL;
-   get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
+   if (glob_sqlite) jpsqlite_DatebookSEL(&alm_list,NULL,1);
+   else get_days_calendar_events2(&alm_list, NULL, 0, 0, 1, CATEGORY_ALL, NULL);
 
    for (temp_al=alm_list; temp_al; temp_al=temp_al->next) {
       /* No alarm, skip */
@@ -985,32 +994,37 @@ int alarms_init(unsigned char skip_past_alarms,
       return EXIT_SUCCESS;
    }
 
-   found_uptodate=0;
-   in=jp_open_home_file(EPN".alarms", "r");
-   if (!in) {
-      jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, ".alarms");
-      return EXIT_FAILURE;
-   }
+	found_uptodate = 0;
+	if (glob_sqlite) {
+		jpsqlite_AlarmsSEL(&year, &mon, &day, &hour, &min);
+		found_uptodate = (year || mon || day || hour || min);
+	} else {
+		in=jp_open_home_file(EPN".alarms", "r");
+		if (!in) {
+			jp_logf(JP_LOG_WARN, _("Unable to open file: %s%s\n"), EPN, ".alarms");
+			return EXIT_FAILURE;
+		}
 
-   while (!feof(in)) {
-      line[0]='\0';
-      if (fgets(line, sizeof(line)-1, in) == NULL) {
-         // jp_logf(JP_LOG_WARN, "fgets failed %s %d\n", __FILE__, __LINE__);
-         break;
-      }
-      line[sizeof(line)-1] = '\0';
-      if (line[0]=='#') continue;
-      if (!strncmp(line, "UPTODATE ", 9)) {
-         n = sscanf(line+9, "%d %d %d %d %d\n", &year, &mon, &day, &hour, &min);
-         if (n==5) {
-            found_uptodate=1;
-         }
-         /* Avoid corner case of retriggering alarms that are set for 
-          * exactly the same time as the UPTODATE timestamp */
-         min = min + 1;
-         jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
-      }
-   }
+		while (!feof(in)) {
+			line[0]='\0';
+			if (fgets(line, sizeof(line)-1, in) == NULL) {
+				// jp_logf(JP_LOG_WARN, "fgets failed %s %d\n", __FILE__, __LINE__);
+				break;
+			}
+			line[sizeof(line)-1] = '\0';
+			if (line[0]=='#') continue;
+			if (!strncmp(line, "UPTODATE ", 9)) {
+				n = sscanf(line+9, "%d %d %d %d %d\n", &year, &mon, &day, &hour, &min);
+				if (n==5) {
+					found_uptodate=1;
+				}
+				/* Avoid corner case of retriggering alarms that are set for 
+				  * exactly the same time as the UPTODATE timestamp */
+				min = min + 1;
+				jp_logf(JP_LOG_DEBUG, "UPTODATE %d %d %d %d %d\n", year, mon, day, hour, min);
+			}
+		}
+	}
 
    time(&ltime);
    Pnow = localtime(&ltime);

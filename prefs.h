@@ -160,6 +160,8 @@
 #define CHAR_SET_949_UTF  17 /* Korean (CP949) */
 #define NUM_CHAR_SETS     18
 
+extern prefType glob_prefs[];
+
 void pref_init(void);
 int pref_read_rc_file(void);
 int pref_write_rc_file(void);

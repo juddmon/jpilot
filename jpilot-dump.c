@@ -56,6 +56,8 @@
 /* #define JDUMP_DEBUG 1 */
 
 /******************************* Global vars **********************************/
+int glob_sqlite = 0;	// just to keep the linker happy
+int glob_rc_file_write = 1;	// just to keep the linker happy
 /* dump switches */
 int  dumpD;
 int  dumpI;

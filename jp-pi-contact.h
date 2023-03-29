@@ -28,6 +28,7 @@
 #define __JP_PI_CONTACT_H_
 
 #include "config.h"
+#include "pi-blob.h"
 #include <pi-contact.h>
 
 #define NUM_CONTACT_FIELDS  40

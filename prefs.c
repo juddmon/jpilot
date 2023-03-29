@@ -35,6 +35,7 @@
 #include "prefs.h"
 #include "log.h"
 #include "otherconv.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 #define NUM_SHORTDATES 7
@@ -49,12 +50,12 @@ static int t_fmt_ampm = TRUE;
 
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
-static prefType glob_prefs[NUM_PREFS] = {
+/*static*/ prefType glob_prefs[NUM_PREFS] = {
    {"jpilotcss", CHARTYPE, CHARTYPE, 0, "jpilotcss.default", 16},
    {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
-   {"xxx_internal1_xxx", CHARTYPE, INTTYPE, 0, NULL, 0},
+   {"xxx_internal1_xxx", CHARTYPE, INTTYPE, 0, NULL, 0},	// First Day Of the Week
    {"show_deleted", INTTYPE, INTTYPE, 0, NULL, 0},
    {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
    {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
@@ -213,7 +214,8 @@ void pref_init(void)
    }
 }
 
-void jp_pref_init(prefType prefs[], int count)
+#if 0
+void jp_pref_init(prefType prefs[], int count)	// unused function
 {
    int i;
 
@@ -227,7 +229,7 @@ void jp_pref_init(prefType prefs[], int count)
    }
 }
 
-void jp_free_prefs(prefType prefs[], int count)
+void jp_free_prefs(prefType prefs[], int count)	// unused function
 {
    int i;
 
@@ -238,6 +240,7 @@ void jp_free_prefs(prefType prefs[], int count)
       }
    }
 }
+#endif
 
 /* Get just the formatting for just the hour and am/pm if its set */
 /* datef needs to be preallocated */
@@ -869,7 +872,7 @@ int pref_read_rc_file(void)
 {
    int r;
 
-   r = jp_pref_read_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
+   r = glob_sqlite ? jpsqlite_PrefSEL(glob_prefs,NUM_PREFS) : jp_pref_read_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
 
    validate_glob_prefs();
 
@@ -905,6 +908,9 @@ int jp_pref_write_rc_file(char *filename, prefType prefs[], int num_prefs)
 
 int pref_write_rc_file(void)
 {
-   return jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
+	//return glob_rc_file_write ? jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS) : EXIT_SUCCESS;
+	if (glob_rc_file_write)
+		return glob_sqlite ? jpsqlite_PrefDELINS(glob_prefs,NUM_PREFS) : jp_pref_write_rc_file(EPN".rc", glob_prefs, NUM_PREFS);
+	return EXIT_SUCCESS;
 }
 
