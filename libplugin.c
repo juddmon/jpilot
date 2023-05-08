@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 /********************************* Includes ***********************************/
+#define _GNU_SOURCE
 #include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -597,6 +598,10 @@ int jp_read_DB_files(const char *DB_name, GList **records)
 
 const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
 {
+	if (haystack == NULL) return NULL;
+	if (needle == NULL) return haystack;
+	return case_sense ? strstr(haystack, needle) : strcasestr(haystack, needle);
+#ifdef DDT
    char *needle2;
    char *haystack2;
    register char *Ps2;
@@ -641,6 +646,7 @@ const char *jp_strstr(const char *haystack, const char *needle, int case_sense)
       free(haystack2);
       return r;
    }
+#endif
 }
 
 /*

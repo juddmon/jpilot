@@ -64,6 +64,7 @@
 #include "password.h"
 #include "pidfile.h"
 #include "jpilot.h"
+#include "libsqlite.h"
 
 #include "icons/jpilot-icon4.xpm"
 #include "icons/datebook.xpm"
@@ -97,6 +98,8 @@ GtkWidget *window;
 GtkWidget *glob_date_label;
 GtkWidget *glob_dialog = NULL;
 int glob_app = 0;
+int glob_sqlite = 0;	// global variable whether to use SQLite3 for storage, default=no
+int glob_rc_file_write = 1;	// global variable whether to write to rc-file, default=yes
 unsigned char skip_plugins;
 gint glob_date_timer_tag;
 pid_t glob_child_pid;
@@ -1409,7 +1412,8 @@ static void cb_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
     /* Save preferences in jpilot.rc */
     pref_write_rc_file();
 
-    cleanup_pc_files();
+    if (glob_sqlite) jpsqlite_close();
+    else cleanup_pc_files();
 
     cleanup_pidfile();
 
@@ -1505,10 +1509,11 @@ int main(int argc, char *argv[]) {
     int filedesc[2];
     long ivalue;
     const char *svalue;
-    int i, height;
+    int c, i, height;
     char title[MAX_PREF_LEN + 256];
     long pref_width, pref_height, show_tooltips;
     long char_set;
+    char options[1024];
 #ifdef PARSE_GEOMETRY
     char *geometry_str = NULL;
 #endif
@@ -1531,6 +1536,118 @@ int main(int argc, char *argv[]) {
     glob_log_gui_mask = JP_LOG_FATAL | JP_LOG_WARN | JP_LOG_GUI;
     glob_find_id = 0;
 
+	/* parse command line options before anything else */
+	while ((c = getopt(argc,argv,"AadgiprSsv?")) != -1) {
+		switch (c) {
+			case 'h':	// help
+			case '?':
+				fprint_usage_string(stderr);
+				exit(0);
+			case 'A':	// ignore all alarms
+				skip_all_alarms = TRUE;
+				jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
+				break;
+			case 'a':	// ignore missed alarms
+				skip_past_alarms = TRUE;
+				jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
+				break;
+			case 'd':	// display debug info to stdout
+				glob_log_stdout_mask = 0xFFFF;
+				glob_log_file_mask = 0xFFFF;
+				jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
+				break;
+			case 'g':	// geometry
+#ifdef PARSE_GEOMETRY
+				geometry_str = optarg;
+#endif
+				fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n"
+					"J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
+				break;
+			case 'i':	// iconify after launch
+				iconify = 1;
+				break;
+			case 'p':	// no plugins loaded
+				skip_plugins = TRUE;
+				jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
+				break;
+			case 'r':	// no writing to rc-file or PREF table
+				glob_rc_file_write = 0;
+				break;
+			case 'S':	// store data in SQLite
+				//jp_logf(JP_LOG_INFO, _("Using SQLite3.\n"));	// Can also seen when there is no HotSync button
+				glob_sqlite = TRUE;
+				break;
+			case 's':	// initiate a HotSync on running instance
+				remote_sync = TRUE;
+				break;
+			case 'v':	// show version
+				get_compile_options(options, sizeof(options));
+				printf("\n%s\n", options);
+				exit(0);
+			default:
+				 fprintf(stderr,"%s: unknown option %c\n", argv[0], c);
+				 break;
+		}
+	}
+#if 0
+    for (i = 1; i < argc; i++) {
+        if (!strncasecmp(argv[i], "-v", 3)) {
+            char options[1024];
+            get_compile_options(options, sizeof(options));
+            printf("\n%s\n", options);
+            exit(0);
+        }
+        if ((!strncasecmp(argv[i], "-h", 3)) ||
+            (!strncasecmp(argv[i], "-?", 3))) {
+            fprint_usage_string(stderr);
+            exit(0);
+        }
+        if (!strncasecmp(argv[i], "-d", 3)) {
+            glob_log_stdout_mask = 0xFFFF;
+            glob_log_file_mask = 0xFFFF;
+            jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
+        }
+        if (!strncasecmp(argv[i], "-p", 3)) {
+            skip_plugins = TRUE;
+            jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
+        }
+        if (!strncmp(argv[i], "-A", 3)) {
+            skip_all_alarms = TRUE;
+            jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
+        }
+        if (!strncmp(argv[i], "-a", 3)) {
+            skip_past_alarms = TRUE;
+            jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
+        }
+        if ((!strncmp(argv[i], "-s", 3)) ||
+            (!strncmp(argv[i], "--remote-sync", 14))) {
+            remote_sync = TRUE;
+        }
+        if (!strcmp(argv[i],"-S") || !strcmp(argv[i],"--sqlite")) {
+            jp_logf(JP_LOG_INFO, _("Using SQLite3 storage method.\n"));
+            glob_sqlite = TRUE;
+        }
+        if ((!strncasecmp(argv[i], "-i", 3)) ||
+            (!strncasecmp(argv[i], "--iconic", 9))) {
+            iconify = 1;
+        }
+        if (!strncasecmp(argv[i], "-geometry", 9)) {
+#ifdef PARSE_GEOMETRY
+            /* The '=' isn't specified in `man X`, but we will be nice */
+            if (argv[i][9] == '=') {
+                geometry_str = argv[i] + 9;
+            } else {
+                if (i < argc) {
+                    geometry_str = argv[i + 1];
+                }
+            }
+#endif
+            fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n");
+            fprintf(stdout, "J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
+        }
+    }
+#endif
+
     /* Directory ~/.jpilot is created with permissions of 700 to prevent anyone
      * but the user from looking at potentially sensitive files.
      * Files within the directory have permission 600 */
@@ -1546,6 +1663,17 @@ int main(int argc, char *argv[]) {
 #endif
 
     pref_init();
+
+	if (glob_sqlite) {
+		if (jpsqlite_open()) {
+			jp_logf(JP_LOG_FATAL, _("Unable to open SQLite database\n"));
+			exit(-1);
+		}
+		if (jpsqlite_prepareAllStmt()) {
+			jp_logf(JP_LOG_FATAL, _("Cannot prepare SQLite statements\n"));
+			exit(-1);
+		}
+	}
 
     /* read jpilot.rc file for preferences */
     pref_read_rc_file();
@@ -1591,59 +1719,7 @@ int main(int argc, char *argv[]) {
     get_pref(PREF_WINDOW_WIDTH, &pref_width, NULL);
     get_pref(PREF_WINDOW_HEIGHT, &pref_height, NULL);
 
-    /* parse command line options */
-    for (i = 1; i < argc; i++) {
-        if (!strncasecmp(argv[i], "-v", 3)) {
-            char options[1024];
-            get_compile_options(options, sizeof(options));
-            printf("\n%s\n", options);
-            exit(0);
-        }
-        if ((!strncasecmp(argv[i], "-h", 3)) ||
-            (!strncasecmp(argv[i], "-?", 3))) {
-            fprint_usage_string(stderr);
-            exit(0);
-        }
-        if (!strncasecmp(argv[i], "-d", 3)) {
-            glob_log_stdout_mask = 0xFFFF;
-            glob_log_file_mask = 0xFFFF;
-            jp_logf(JP_LOG_DEBUG, "Debug messages on.\n");
-        }
-        if (!strncasecmp(argv[i], "-p", 3)) {
-            skip_plugins = TRUE;
-            jp_logf(JP_LOG_INFO, _("Not loading plugins.\n"));
-        }
-        if (!strncmp(argv[i], "-A", 3)) {
-            skip_all_alarms = TRUE;
-            jp_logf(JP_LOG_INFO, _("Ignoring all alarms.\n"));
-        }
-        if (!strncmp(argv[i], "-a", 3)) {
-            skip_past_alarms = TRUE;
-            jp_logf(JP_LOG_INFO, _("Ignoring past alarms.\n"));
-        }
-        if ((!strncmp(argv[i], "-s", 3)) ||
-            (!strncmp(argv[i], "--remote-sync", 14))) {
-            remote_sync = TRUE;
-        }
-        if ((!strncasecmp(argv[i], "-i", 3)) ||
-            (!strncasecmp(argv[i], "--iconic", 9))) {
-            iconify = 1;
-        }
-        if (!strncasecmp(argv[i], "-geometry", 9)) {
-#ifdef PARSE_GEOMETRY
-            /* The '=' isn't specified in `man X`, but we will be nice */
-            if (argv[i][9] == '=') {
-                geometry_str = argv[i] + 9;
-            } else {
-                if (i < argc) {
-                    geometry_str = argv[i + 1];
-                }
-            }
-#endif
-            fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n");
-            fprintf(stdout, "J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
-        }
-    }
+    // previously argv-handling
 
     /* Enable UTF8 *AFTER* potential printf to stdout for -h or -v */
     /* Not all terminals(xterm, rxvt, etc.) are UTF8 compliant */
@@ -1679,7 +1755,7 @@ int main(int argc, char *argv[]) {
 
     /* Check to see if DB files are there */
     /* If not copy some empty ones over */
-    check_copy_DBs_to_home();
+    if (!glob_sqlite) check_copy_DBs_to_home();
 
 #ifdef ENABLE_PLUGINS
     plugin_list = NULL;
@@ -1948,40 +2024,42 @@ int main(int argc, char *argv[]) {
     gtk_widget_add_accelerator(button_unlocked, "clicked", accel_group,
                                GDK_KEY_z, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-    /* "Sync" button */
-    button_sync = gtk_button_new();
-    g_signal_connect(G_OBJECT(button_sync), "clicked",
-                       G_CALLBACK(cb_sync),
-                       GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
-    gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
+	if (!glob_sqlite) {
+		/* "Sync" button */
+		button_sync = gtk_button_new();
+		g_signal_connect(G_OBJECT(button_sync), "clicked",
+						   G_CALLBACK(cb_sync),
+						   GINT_TO_POINTER(skip_plugins ? SYNC_NO_PLUGINS : 0));
+		gtk_box_pack_start(GTK_BOX(g_vbox0), button_sync, FALSE, FALSE, 3);
 
-    set_tooltip(show_tooltips,
-                button_sync, _("Sync your palm to the desktop   Ctrl+Y"));
-    gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_KEY_y,
-                               GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+		set_tooltip(show_tooltips,
+					button_sync, _("Sync your palm to the desktop   Ctrl+Y"));
+		gtk_widget_add_accelerator(button_sync, "clicked", accel_group, GDK_KEY_y,
+								   GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-    /* "Cancel Sync" button */
-    button_cancel_sync = gtk_button_new();
-    g_signal_connect(G_OBJECT(button_cancel_sync), "clicked",
-                       G_CALLBACK(cb_cancel_sync),
-                       NULL);
-    gtk_box_pack_start(GTK_BOX(g_vbox0), button_cancel_sync, FALSE, FALSE, 3);
+		/* "Cancel Sync" button */
+		button_cancel_sync = gtk_button_new();
+		g_signal_connect(G_OBJECT(button_cancel_sync), "clicked",
+						   G_CALLBACK(cb_cancel_sync),
+						   NULL);
+		gtk_box_pack_start(GTK_BOX(g_vbox0), button_cancel_sync, FALSE, FALSE, 3);
 
-    set_tooltip(show_tooltips,
-                button_cancel_sync, _("Stop Sync process"));
+		set_tooltip(show_tooltips,
+					button_cancel_sync, _("Stop Sync process"));
 
-    /* "Backup" button in left column */
-    button_backup = gtk_button_new();
-    g_signal_connect(G_OBJECT(button_backup), "clicked",
-                       G_CALLBACK(cb_sync),
-                       GINT_TO_POINTER
-                               (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
-                                             : SYNC_FULL_BACKUP));
-    gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
+		/* "Backup" button in left column */
+		button_backup = gtk_button_new();
+		g_signal_connect(G_OBJECT(button_backup), "clicked",
+						   G_CALLBACK(cb_sync),
+						   GINT_TO_POINTER
+								   (skip_plugins ? SYNC_NO_PLUGINS | SYNC_FULL_BACKUP
+												 : SYNC_FULL_BACKUP));
+		gtk_box_pack_start(GTK_BOX(g_vbox0), button_backup, FALSE, FALSE, 3);
 
-    set_tooltip(show_tooltips,
-                button_backup, _("Sync your palm to the desktop\n"
-                                 "and then do a backup"));
+		set_tooltip(show_tooltips,
+					button_backup, _("Sync your palm to the desktop\n"
+									 "and then do a backup"));
+	}
 
     /* Separator */
     separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);

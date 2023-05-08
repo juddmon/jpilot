@@ -162,7 +162,7 @@ static void cb_quit(GtkWidget *widget, gpointer data)
    char dir[MAX_PREF_LEN+2];
    int i;
 
-   jp_logf(JP_LOG_DEBUG, "Quit\n");
+   jp_logf(JP_LOG_DEBUG, "import_gui.c:cb_quit(): Quit\n");
 
    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
    strncpy(dir, sel, MAX_PREF_LEN);
@@ -193,7 +193,7 @@ static void cb_import(GtkWidget *widget, gpointer filesel)
    char *sel;
    struct stat statb;
 
-   jp_logf(JP_LOG_DEBUG, "cb_import\n");
+   jp_logf(JP_LOG_DEBUG, "import_gui.c:cb_import()\n");
    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 

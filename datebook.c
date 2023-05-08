@@ -41,6 +41,7 @@
 #include "prefs.h"
 #include "libplugin.h"
 #include "password.h"
+#include "libsqlite.h"
 
 /****************************** Main Code *************************************/
 int appointment_on_day_list(int mon, int year, int *mask, 
@@ -67,7 +68,8 @@ int appointment_on_day_list(int mon, int year, int *mask,
       /* Calendar supports category option */
       get_days_calendar_events2(&cel, NULL, 2, 2, 1, category, NULL);
    } else {
-      get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
+      if (glob_sqlite) jpsqlite_DatebookSEL(&cel,NULL,1);
+      else get_days_calendar_events2(&cel, NULL, 2, 2, 1, CATEGORY_ALL, NULL);
    }
 
    show_priv = show_privates(GET_PRIVATES);
@@ -538,15 +540,16 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
                            int modified, int deleted, int privates,
                            int *total_records)
 {
-   int r;
-   CalendarEventList *cel;
+	int r;
+	CalendarEventList *cel;
 
-   r = get_days_calendar_events2(&cel, now, modified, deleted, privates, CATEGORY_ALL, total_records);
-   copy_calendarEvents_to_appointments(cel, appointment_list);
+	if (glob_sqlite) *total_records = r = jpsqlite_DatebookSEL(&cel,now,1);
+	else r = get_days_calendar_events2(&cel, now, modified, deleted, privates, CATEGORY_ALL, total_records);
+	copy_calendarEvents_to_appointments(cel, appointment_list);
 
-   free_CalendarEventList(&cel); 
+	free_CalendarEventList(&cel); 
 
-   return r;
+	return r;
 }
 
 unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
@@ -561,6 +564,18 @@ unsigned int isApptOnDate(struct Appointment *appt, struct tm *date)
    return r;
 }
 
+/*
+ * Is cale on date? Using:
+ * 1. cale->begin
+ * 2. cale->repeatForever
+ * 3. cale->repeatEnd
+ * 4. cale->repeatType
+ * 5. cale->repeatFrequency
+ * 6. cale->repeatDays[]
+ * 7. cale->repeatDay
+ * 8. cale->exceptions
+ * 9. cale->exceptions[]
+ */
 unsigned int calendar_isApptOnDate(struct CalendarEvent *cale, struct tm *date)
 {
    unsigned int ret;
@@ -573,7 +588,7 @@ unsigned int calendar_isApptOnDate(struct CalendarEvent *cale, struct tm *date)
    int exception_days;
    static int days, begin_days;
 
-   jp_logf(JP_LOG_DEBUG, "calendar_isApptOnDate\n");
+   //jp_logf(JP_LOG_DEBUG, "calendar_isApptOnDate(): cale=%04d-%02d-%02d %02d:%02d:%02d/%d#%d, date=%04d-%02d-%02d %02d:%02d:%02d/%d\n", 1900+cale->begin.tm_year,cale->begin.tm_mon+1,cale->begin.tm_mday,cale->begin.tm_hour,cale->begin.tm_min,cale->begin.tm_sec,cale->begin.tm_yday,cale->repeatType,1900+date->tm_year,date->tm_mon+1,date->tm_mday,date->tm_hour,date->tm_min,date->tm_sec,date->tm_yday);
 
    ret = FALSE;
 

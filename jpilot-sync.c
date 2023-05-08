@@ -48,6 +48,8 @@ unsigned char skip_plugins;
  * The same is true of the functions which are only used in GUI mode. */
 pid_t jpilot_master_pid = -1;
 GtkWidget *glob_date_label;
+int glob_sqlite = 0;	// just to keep the linker happy
+int glob_rc_file_write = 1;	// just to keep the linker happy
 GtkWidget *glob_dialog;
 gint glob_date_timer_tag;
 

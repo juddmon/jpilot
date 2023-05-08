@@ -1,8 +1,8 @@
-.TH J-PILOT 1 "November 22, 2005"
+.TH J-PILOT 1 "March 28, 2023"
 .SH NAME
 jpilot \- A palm pilot desktop for Linux/Unix
 .SH SYNOPSIS
-.B jpilot [-v] [-h] [-d] [-a] [-A] [-i] [-s]
+.B jpilot [-v] [-h] [-d] [-A] [-a] [-i] [-p] [-r] [-S] [-s]
 .SH "DESCRIPTION"
 J-Pilot is a desktop organizer application for the palm pilot and other
 Palm OS devices.  It is similar in functionality to the one that
@@ -18,21 +18,30 @@ displays help and exits.
 .B \-d
 displays debug info to stdout.
 .TP
+.B \-A
+ignore all alarms, past and future.
+.TP
 .B \-a
 ignores missed alarms since the last time program was run.
-.TP
-.B \-A
-ignores all alarms, past and future.
 .TP
 .B \-i 
 makes 
 .B jpilot
 iconify itself upon launch.
 .TP
+.B \-p
+does not load plugins.
+.TP
+.TP
+.B \-r
+no writing to rc-file or PREF-table
 .B \-s 
 initiates a sync on the running
 .B jpilot
 instance.
+.TP
+.B \-S
+store data in SQLite database.
 
 If you have more than one 
 .B jpilot 

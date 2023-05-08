@@ -1596,7 +1596,7 @@ printf("fpn: initial weekly=%s\n", str);
                 freq = cale->repeatFrequency;
                 offset = ((date1->tm_year - cale->begin.tm_year) / freq) * freq;
 #ifdef ALARMS_DEBUG
-                                                                                                                                        printf("fpn: (%d - %d)%%%d\n", date1->tm_year, cale->begin.tm_year, freq);
+         printf("fpn: (%d - %d)%%%d\n", date1->tm_year, cale->begin.tm_year, freq);
          printf("fpn: years offset = %d\n", offset);
 #endif
                 add_years_to_date(&t, offset);
@@ -1620,7 +1620,7 @@ printf("fpn: initial weekly=%s\n", str);
         kill_update_next = 0;
         t_temp = mktime_dst_adj(&t);
 #ifdef ALARMS_DEBUG
-                                                                                                                                strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
+      strftime(str, sizeof(str), "%B %d, %Y %H:%M", &t);
       printf("fpn: trying with=%s\n", str);
 #endif
 
@@ -1827,17 +1827,19 @@ int forward_backward_in_ce_time(const struct CalendarEvent *cale,
 }
 
 /* Displays usage string on supplied file handle */
-void fprint_usage_string(FILE *out) {
-    fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-s] [-i] [-geometry] ]\n", EPN);
+void fprint_usage_string(FILE *out) {	// only called from jpilot.c
+    fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-r] [-S] [-s] [-i] [-g] ]\n", EPN);
     fprintf(out, _(" -v display version and compile options\n"));
     fprintf(out, _(" -h display help text\n"));
     fprintf(out, _(" -d display debug info to stdout\n"));
     fprintf(out, _(" -p skip loading plugins\n"));
     fprintf(out, _(" -a ignore missed alarms since the last time program was run\n"));
     fprintf(out, _(" -A ignore all alarms past and future\n"));
+    fprintf(out, _(" -r no writing to rc-file or PREF table\n"));
+    fprintf(out, _(" -S store data in SQLite database\n"));
     fprintf(out, _(" -s start sync using existing instance of GUI\n"));
     fprintf(out, _(" -i iconify program immediately after launch\n"));
-    fprintf(out, _(" -geometry {X geometry} use specified geometry for main window\n\n"));
+    fprintf(out, _(" -g {X geometry} use specified geometry for main window\n\n"));
     fprintf(out, _(" The PILOTPORT and PILOTRATE environment variables specify\n"));
     fprintf(out, _(" which port to sync on, and at what speed.\n"));
     fprintf(out, _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
@@ -3759,15 +3761,16 @@ int unpack_db_header(DBHeader *dbh, unsigned char *buffer) {
  * to compare the jpilot version that produced the file with the jpilot
  * version that is importing the file. */
 int verify_csv_header(const char *header, int num_fields, const char *file_name) {
-    int i, comma_cnt;
+    int i, comma_cnt=0;
+    int n = strlen(header);
 
-    for (i = 0, comma_cnt = 0; i < strlen(header); i++) {
+    for (i=0; i<n; i++) {
         if (header[i] == ',') comma_cnt++;
     }
     if (comma_cnt != num_fields - 1) {
-        jp_logf(JP_LOG_WARN, _("Incorrect header format for CSV import\n"
+        jp_logf(JP_LOG_WARN, _("Incorrect header format for CSV import: comma#=%d, expected-1=%d\n"
                                "Check line 1 of file %s\n"
-                               "Aborting import\n"), file_name);
+                               "Aborting import\n"), comma_cnt,num_fields,file_name);
         return EXIT_FAILURE;
     }
 

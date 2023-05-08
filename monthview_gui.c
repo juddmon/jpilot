@@ -35,6 +35,7 @@
 #include "calendar.h"
 #include "print.h"
 #include "jpilot.h"
+#include "libsqlite.h"
 
 /******************************* Global vars **********************************/
 extern int datebk_category;
@@ -323,7 +324,8 @@ static int display_months_appts(struct tm *date_in)
    memcpy(&date, date_in, sizeof(struct tm));
 
    /* Get all of the appointments */
-   get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
+   if (glob_sqlite) jpsqlite_DatebookSEL(&ce_list,NULL,2);
+   else get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
    get_month_info(date.tm_mon, 1, date.tm_year, &dow, &ndim);
 

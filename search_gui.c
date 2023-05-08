@@ -40,6 +40,7 @@
 #include "address.h"
 #include "todo.h"
 #include "memo.h"
+#include "libsqlite.h"
 
 #ifdef ENABLE_PLUGINS
 
@@ -108,7 +109,8 @@ static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeI
     /* Search Appointments */
     ce_list = NULL;
 
-    get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
+    if (glob_sqlite) jpsqlite_DatebookSEL(&ce_list,NULL,2);
+    else get_days_calendar_events2(&ce_list, NULL, 2, 2, 2, CATEGORY_ALL, NULL);
 
     if (ce_list == NULL) {
         return 0;
@@ -220,7 +222,8 @@ static int search_address_or_contacts(const char *needle, GtkListStore *listStor
     /* Get addresses and move to a contacts structure, or get contacts directly */
     if (address_version == 0) {
         addr_list = NULL;
-        get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
+        if (glob_sqlite) jpsqlite_AddrSEL(&addr_list,addr_sort_order,2,CATEGORY_ALL);
+        else get_addresses2(&addr_list, SORT_ASCENDING, 2, 2, 2, CATEGORY_ALL);
         copy_addresses_to_contacts(addr_list, &cont_list);
         free_AddressList(&addr_list);
     } else {
@@ -287,7 +290,8 @@ static int search_todo(const char *needle, GtkListStore *listStore, GtkTreeIter 
     /* Search Appointments */
     todo_list = NULL;
 
-    get_todos2(&todo_list, SORT_DESCENDING, 2, 2, 2, 1, CATEGORY_ALL);
+    if (glob_sqlite) jpsqlite_ToDoSEL(&todo_list,1,CATEGORY_ALL);
+    else get_todos2(&todo_list, SORT_DESCENDING, 2, 2, 2, 1, CATEGORY_ALL);
 
     if (todo_list == NULL) {
         return 0;
@@ -361,7 +365,8 @@ static int search_memo(const char *needle, GtkListStore *listStore, GtkTreeIter 
     /* Search Memos */
     memo_list = NULL;
 
-    get_memos2(&memo_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
+    if (glob_sqlite) jpsqlite_MemoSEL(&memo_list,2,CATEGORY_ALL);
+    else get_memos2(&memo_list, SORT_DESCENDING, 2, 2, 2, CATEGORY_ALL);
 
     if (memo_list == NULL) {
         return 0;

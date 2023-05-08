@@ -39,6 +39,7 @@
 #include "print.h"
 #include "export.h"
 #include "stock_buttons.h"
+#include "libsqlite.h"
 
 /********************************* Constants **********************************/
 #define TODO_MAX_COLUMN_LEN 80
@@ -229,10 +230,12 @@ int printTodo(MyToDo *mtodo, gpointer data) {
         todo_list = &todo_list1;
     }
     if (this_many == 2) {
-        get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 2, 2, todo_category);
+        if (glob_sqlite) jpsqlite_ToDoSEL(&todo_list,2,todo_category);
+        else get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 2, 2, todo_category);
     }
     if (this_many == 3) {
-        get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 2, 2, CATEGORY_ALL);
+        if (glob_sqlite) jpsqlite_ToDoSEL(&todo_list,2,CATEGORY_ALL);
+        else get_todos2(&todo_list, SORT_ASCENDING, 2, 2, 2, 2, CATEGORY_ALL);
     }
 
     print_todos(todo_list, PN);
@@ -544,7 +547,8 @@ static int cb_todo_import(GtkWidget *parent_window,
 
             attrib = (unsigned char) ((new_cat_num & 0x0F) | (priv ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                pc_todo_write(&new_todo, NEW_PC_REC, attrib, NULL);
+                if (glob_sqlite) jpsqlite_ToDoINS(&new_todo, NEW_PC_REC, attrib, NULL);
+                else pc_todo_write(&new_todo, NEW_PC_REC, attrib, NULL);
             }
         }
     }
@@ -601,8 +605,8 @@ static int cb_todo_import(GtkWidget *parent_window,
             attrib = (unsigned char) ((new_cat_num & 0x0F) |
                                       ((temp_todolist->mtodo.attrib & 0x10) ? dlpRecAttrSecret : 0));
             if ((ret == DIALOG_SAID_IMPORT_YES) || (import_all)) {
-                pc_todo_write(&(temp_todolist->mtodo.todo), NEW_PC_REC,
-                              attrib, NULL);
+                if (glob_sqlite) jpsqlite_ToDoINS(&(temp_todolist->mtodo.todo), NEW_PC_REC, attrib, NULL);
+                else pc_todo_write(&(temp_todolist->mtodo.todo), NEW_PC_REC, attrib, NULL);
             }
         }
         free_ToDoList(&todolist);
@@ -1100,7 +1104,8 @@ void deleteTodo(MyToDo *mtodo, gpointer data) {
     flag = GPOINTER_TO_INT(data);
     if ((flag == MODIFY_FLAG) || (flag == DELETE_FLAG)) {
         jp_logf(JP_LOG_DEBUG, "calling delete_pc_record\n");
-        delete_pc_record(TODO, mtodo, flag);
+        if (glob_sqlite) { if (flag == DELETE_FLAG) jpsqlite_Delete(TODO, mtodo); }
+        else delete_pc_record(TODO, mtodo, flag);
         if (flag == DELETE_FLAG) {
             /* when we redraw we want to go to the line above the deleted one */
             if (row_selected > 0) {
@@ -1233,28 +1238,34 @@ static void cb_edit_cats(GtkWidget *widget, gpointer data) {
     strcpy(db_name, "ToDoDB");
 #endif
 
-    get_home_file_name(pdb_name, full_name, sizeof(full_name));
+	if (glob_sqlite) {
+		memset(&ai, 0, sizeof(ai));
+		jpsqlite_ToDoCatSEL(&ai);	// read from database
+		edit_cats(widget, db_name, &(ai.category));	// GUI changes categories
+		jpsqlite_CatDELINS(db_name, &(ai.category));	// write categories to database
+	} else {
+		get_home_file_name(pdb_name, full_name, sizeof(full_name));
 
-    buf = NULL;
-    memset(&ai, 0, sizeof(ai));
+		buf = NULL;
+		memset(&ai, 0, sizeof(ai));
 
-    pf = pi_file_open(full_name);
-    pi_file_get_app_info(pf, &buf, &size);
+		pf = pi_file_open(full_name);
+		pi_file_get_app_info(pf, &buf, &size);
 
-    num = unpack_ToDoAppInfo(&ai, buf, size);
-    if (num <= 0) {
-        jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
-        return;
-    }
+		num = unpack_ToDoAppInfo(&ai, buf, size);
+		if (num <= 0) {
+			jp_logf(JP_LOG_WARN, _("Error reading file: %s\n"), pdb_name);
+			return;
+		}
 
-    pi_file_close(pf);
+		pi_file_close(pf);
 
-    edit_cats(widget, db_name, &(ai.category));
+		edit_cats(widget, db_name, &(ai.category));
 
-    size = (size_t) pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
+		size = (size_t) pack_ToDoAppInfo(&ai, buffer, sizeof(buffer));
 
-    pdb_file_write_app_block(db_name, buffer, (int) size);
-
+		pdb_file_write_app_block(db_name, buffer, (int) size);
+	}
     cb_app_button(NULL, GINT_TO_POINTER(REDRAW));
 }
 
@@ -1419,7 +1430,7 @@ static int todo_get_details(struct ToDo *new_todo, unsigned char *attrib) {
                                &start_iter, &end_iter);
     new_todo->note = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(todo_note_buffer),
                                               &start_iter, &end_iter, TRUE);
-    if (new_todo->note[0] == '\0') {
+    if (new_todo->note && new_todo->note[0] == '\0') {
         free(new_todo->note);
         new_todo->note = NULL;
     }
@@ -1462,12 +1473,9 @@ addNewRecord(GtkTreeModel *model,
         return TRUE;
     }
     return FALSE;
-
-
 }
 
 void addNewRecordToDataStructure(MyToDo *mtodo, gpointer data) {
-
     struct ToDo new_todo;
     unsigned char attrib = 0;
     int flag;
@@ -1521,14 +1529,17 @@ void addNewRecordToDataStructure(MyToDo *mtodo, gpointer data) {
     if (flag == MODIFY_FLAG) {
         cb_delete_todo(NULL, data);
         if ((mtodo->rt == PALM_REC) || (mtodo->rt == REPLACEMENT_PALM_REC)) {
-            pc_todo_write(&new_todo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_ToDoUPD(&new_todo, REPLACEMENT_PALM_REC, attrib, &unique_id);
+            else pc_todo_write(&new_todo, REPLACEMENT_PALM_REC, attrib, &unique_id);
         } else {
             unique_id = 0;
-            pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
+            if (glob_sqlite) jpsqlite_ToDoINS(&new_todo, NEW_PC_REC, attrib, &unique_id);
+            else pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
         }
     } else {
         unique_id = 0;
-        pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
+        if (glob_sqlite) jpsqlite_ToDoINS(&new_todo, NEW_PC_REC, attrib, &unique_id);
+        else pc_todo_write(&new_todo, NEW_PC_REC, attrib, &unique_id);
     }
     free_ToDo(&new_todo);
 
@@ -1537,7 +1548,6 @@ void addNewRecordToDataStructure(MyToDo *mtodo, gpointer data) {
         glob_find_id = unique_id;
     }
     todo_redraw();
-
 
     return;
 }
@@ -1634,11 +1644,11 @@ static void column_clicked_cb(GtkTreeViewColumn *column) {
 
 static void checkedCallBack(GtkCellRendererToggle *renderer, gchar *path, GtkListStore *model) {
     GtkTreeIter iter;
-    gboolean active;
     MyToDo *mtodo;
-    active = gtk_cell_renderer_toggle_get_active(renderer);
+    gboolean active = gtk_cell_renderer_toggle_get_active(renderer);
     unsigned char attrib = 0;
     unsigned int unique_id = 0;
+
     gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL (model), &iter, path);
     gtk_tree_model_get(GTK_TREE_MODEL(model), &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
     if (active) {
@@ -1652,12 +1662,15 @@ static void checkedCallBack(GtkCellRendererToggle *renderer, gchar *path, GtkLis
     }
     attrib = mtodo ->attrib;
     unique_id = mtodo ->unique_id;
-    delete_pc_record(TODO, mtodo, MODIFY_FLAG);
+    //if (glob_sqlite) jpsqlite_Delete(TODO, mtodo);
+    if (!glob_sqlite) delete_pc_record(TODO, mtodo, MODIFY_FLAG);
     if ((mtodo->rt == PALM_REC) || (mtodo->rt == REPLACEMENT_PALM_REC)) {
-        pc_todo_write(&(mtodo ->todo), REPLACEMENT_PALM_REC, attrib, &unique_id);
+        if (glob_sqlite) jpsqlite_ToDoUPD(&(mtodo ->todo), REPLACEMENT_PALM_REC, attrib, &unique_id);
+        else pc_todo_write(&(mtodo ->todo), REPLACEMENT_PALM_REC, attrib, &unique_id);
     } else {
         unique_id = 0;
-        pc_todo_write(&(mtodo -> todo), NEW_PC_REC, attrib, &unique_id);
+        if (glob_sqlite) jpsqlite_ToDoINS(&(mtodo -> todo), NEW_PC_REC, attrib, &unique_id);
+        else pc_todo_write(&(mtodo -> todo), NEW_PC_REC, attrib, &unique_id);
     }
     //update the datastore.
     cb_todo_update_listStore(treeView,todo_category);
@@ -1788,7 +1801,6 @@ static gboolean handleRowSelection(GtkTreeSelection *selection,
         return TRUE;
     }
     // gtk_tree_model_get(model, &iter, TODO_TEXT_COLUMN_ENUM, &name, -1);
-
 
     return TRUE; /* allow selection state to change */
 }
@@ -2030,7 +2042,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
     free_ToDoList(todo_list);
 
     /* Need to get all records including private ones for the tooltips calculation */
-    num_entries = get_todos2(todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
+    num_entries = glob_sqlite ? jpsqlite_ToDoSEL(todo_list,1,CATEGORY_ALL) : get_todos2(todo_list, SORT_ASCENDING, 2, 2, 1, 1, CATEGORY_ALL);
 
     /* Start by clearing existing entry if in main window */
     if (main) {
@@ -2121,7 +2133,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
         sprintf(priorityDisplay, "%d", temp_todo->mtodo.todo.priority);
 
         /* Put a note pixmap up */
-        if (temp_todo->mtodo.todo.note[0]) {
+        if (temp_todo->mtodo.todo.note && temp_todo->mtodo.todo.note[0]) {
             noteColumnDisplay = pixbuf_note;
         } else {
             noteColumnDisplay = NULL;
@@ -2320,9 +2332,11 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     long char_set;
     long show_tooltips;
     char *cat_name;
+
     get_pref(PREF_TODO_VERSION, &todo_version, NULL);
     init();
-    get_todo_app_info(&todo_app_info);
+    if (glob_sqlite) jpsqlite_ToDoCatSEL(&todo_app_info);
+    else get_todo_app_info(&todo_app_info);
     /* Initialize categories */
     get_pref(PREF_CHAR_SET, &char_set, NULL);
     for (i = 1; i < NUM_TODO_CAT_ITEMS; i++) {

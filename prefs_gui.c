@@ -30,6 +30,7 @@
 #include "utils.h"
 #include "log.h"
 #include "plugins.h"
+#include "libsqlite.h"
 
 /******************************* Global vars **********************************/
 static GtkWidget *window;
@@ -596,13 +597,15 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
                      "changed", G_CALLBACK(cb_backups_entry),
                      NULL);
 
-    /* Show deleted files check box */
-    add_checkbutton(_("Show deleted records (default NO)"),
-                    PREF_SHOW_DELETED, vbox_settings, cb_checkbox_set_pref);
+	if (!glob_sqlite) {
+		/* Show deleted files check box */
+		add_checkbutton(_("Show deleted records (default NO)"),
+						PREF_SHOW_DELETED, vbox_settings, cb_checkbox_set_pref);
 
-    /* Show modified files check box */
-    add_checkbutton(_("Show modified deleted records (default NO)"),
-                    PREF_SHOW_MODIFIED, vbox_settings, cb_checkbox_set_pref);
+		/* Show modified files check box */
+		add_checkbutton(_("Show modified deleted records (default NO)"),
+						PREF_SHOW_MODIFIED, vbox_settings, cb_checkbox_set_pref);
+	}
 
     /* Confirm file installation */
     add_checkbutton(
