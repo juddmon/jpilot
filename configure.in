@@ -494,6 +494,7 @@ fi
 
 AM_CONDITIONAL(MAKE_KEYRING, test "x$keyring_plugin" = "xyes")
 AM_CONDITIONAL(MAKE_EXPENSE, test "x$plugin_support" = "xyes")
+AM_CONDITIONAL(MAKE_JPSQLITE, test "x$plugin_support" = "xyes")
 AM_CONDITIONAL(MAKE_SYNCTIME, test "x$plugin_support" = "xyes")
 
 dnl * Work out whether dialer can be built
@@ -538,6 +539,7 @@ dnl Setup complete.  Create the specified files
 dnl ############################################################################
 AC_CONFIG_FILES([Makefile
                  Expense/Makefile
+                 jpsqlite/Makefile
                  SyncTime/Makefile
                  KeyRing/Makefile
                  dialer/Makefile
@@ -566,6 +568,7 @@ AC_MSG_RESULT(Compiling with Datebk support..........   $enable_datebk)
 AC_MSG_RESULT(Compiling with Manana support..........   $enable_manana)
 AC_MSG_RESULT(Compiling with Prometheon support......   $enable_prometheon)
 AC_MSG_RESULT(Compiling Expense plugin...............   $plugin_support)
+AC_MSG_RESULT(Compiling jpsqlite plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
