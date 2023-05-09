@@ -1,4 +1,7 @@
 libdir = @libdir@/@PACKAGE@/plugins
+datadir = @libdir@/@PACKAGE@/plugins
+
+data_DATA = jptables.sql
 
 if MAKE_JPSQLITE
 
