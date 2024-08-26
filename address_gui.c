@@ -3989,7 +3989,7 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
     int address_type_i, IM_type_i, page_i, grid_y_i;
     int x, y;
 
-    int i, j, phone_i, num_pages;
+    int i, phone_i, num_pages;
     long char_set;
     char *cat_name;
 
@@ -4323,16 +4323,6 @@ int address_gui(GtkWidget *vbox, GtkWidget *hbox) {
                        G_CALLBACK(cb_notebook_changed), NULL);
 
     gtk_box_pack_start(GTK_BOX(vbox2), notebook, TRUE, TRUE, 0);
-
-    /* Clear GTK option menus before use */
-    for (i = 0; i < NUM_ADDRESSES; i++) {
-        for (j = 0; j < NUM_PHONE_LABELS; j++) {
-            if (GTK_IS_COMBO_BOX(phone_type_list_menu[i]) &&
-                gtk_combo_box_get_has_entry(GTK_COMBO_BOX(phone_type_list_menu[i]))) {
-                gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(phone_type_list_menu[i]), j);
-            }
-        }
-    }
 
     /* Add notebook pages and their widgets */
     phone_i = address_type_i = IM_type_i = 0;
