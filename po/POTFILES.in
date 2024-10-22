@@ -42,3 +42,4 @@ weekview_gui.c
 Expense/expense.c
 KeyRing/keyring.c
 SyncTime/synctime.c
+jpsqlite/jpsqlite.c
