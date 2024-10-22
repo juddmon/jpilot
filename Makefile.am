@@ -8,12 +8,16 @@ EXTRA_DIST = config.rpath mkinstalldirs reconf autogen.sh \
 	SlackBuild description-pak \
 	jpilot.desktop \
 	$(color_DATA) \
-	jpilot.xpm
+	jpilot.xpm \
+	$(jpsqlite_DATA)
 
 DISTCLEANFILES = intltool-extract intltool-merge intltool-update ChangeLog.git
 
 desktopdir = $(datadir)/applications
 desktop_DATA = jpilot.desktop
+
+jpsqlitedir = $(pkgdatadir)
+jpsqlite_DATA = jpsqlite/jptables.sql
 
 # The skin files for changing jpilot appearance
 colordir = $(pkgdatadir)
@@ -109,7 +113,8 @@ jpilot_SOURCES = \
 	icons/list_mini_icons.h \
 	icons/appl_menu_icons.h \
 	icons/lock_icons.h \
-	icons/icons.c
+	icons/icons.c \
+	jpsqlite/jpsqlite.c
 
 jpilot_dump_SOURCES = \
 	address.c \

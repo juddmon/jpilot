@@ -547,7 +547,7 @@ int get_days_appointments2(AppointmentList **appointment_list, struct tm *now,
 	else r = get_days_calendar_events2(&cel, now, modified, deleted, privates, CATEGORY_ALL, total_records);
 	copy_calendarEvents_to_appointments(cel, appointment_list);
 
-	free_CalendarEventList(&cel); 
+	free_CalendarEventList(&cel);
 
 	return r;
 }

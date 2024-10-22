@@ -1,3 +1,7 @@
+2.0.2 - 2024-04-21
+ Added sqlite support (Elmar.Klausmeier@gmail.com) https://github.com/eklausme
+ Misc bug fixes and improvements
+
 2.0.1 - 2021-04-02
  Fixed the crash when searching
  Increased vertical spacing in lists (address entries)

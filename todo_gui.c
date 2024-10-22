@@ -28,7 +28,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <pi-dlp.h>
-#include <slcurses.h>
 
 #include "todo.h"
 #include "i18n.h"

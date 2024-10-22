@@ -288,7 +288,7 @@ static int copy_sqlite(void) {
 	struct AddressAppInfo ai;
 	AddressList *a;
 	CalendarEventList *c;
-	char begin[32], end[32], repeatEnd[32], *pRepeatEnd, due[32], date[32], prefLong[32], exceptionString[2048];
+	char begin[32], end[32], repeatEnd[32], *pRepeatEnd, due[32], date[32], exceptionString[2048];
 	struct MemoAppInfo mi;
 	MemoList *m;
 	struct ToDoAppInfo tdi;
