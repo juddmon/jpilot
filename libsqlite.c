@@ -3,10 +3,10 @@
    Elmar Klausmeier, 20-Sep-2022: Initial revision
 */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-extern char *strptime (const char *__restrict __s, const char *__restrict __fmt, struct tm *__tp) __THROW;
 #include <sys/stat.h>
 #include <sqlite3.h>
 
