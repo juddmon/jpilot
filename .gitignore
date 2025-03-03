@@ -45,3 +45,12 @@ SlackBuild
 stamp-h1
 po/*.po
 m4/*
+
+compile
+po/Rules-quot
+po/boldquot.sed
+po/en@boldquot.header
+po/en@quot.header
+po/insert-header.sin
+po/remove-potcdate.sin
+

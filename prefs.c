@@ -214,8 +214,8 @@ void pref_init(void)
    }
 }
 
-#if 0
-void jp_pref_init(prefType prefs[], int count)	// unused function
+
+void jp_pref_init(prefType prefs[], int count)
 {
    int i;
 
@@ -229,7 +229,7 @@ void jp_pref_init(prefType prefs[], int count)	// unused function
    }
 }
 
-void jp_free_prefs(prefType prefs[], int count)	// unused function
+void jp_free_prefs(prefType prefs[], int count)
 {
    int i;
 
@@ -240,7 +240,7 @@ void jp_free_prefs(prefType prefs[], int count)	// unused function
       }
    }
 }
-#endif
+
 
 /* Get just the formatting for just the hour and am/pm if its set */
 /* datef needs to be preallocated */
