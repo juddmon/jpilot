@@ -41,15 +41,15 @@ Building J-Pilot on Linux/Unix systems
 	to make sure you're enabling all of the options you wish to use.
 
 	You will also need to have your development environment set up, which
-	will require such tools as automake, autoconf, libtool, some system
-	headers, and others to be properly installed and configured on your
-	machine first. If you are running a current Linux or Unix system,
+	will require such tools as automake, autoconf, libtool, intltool, some
+	system headers, and others to be properly installed and configured on
+	your machine first. If you are running a current Linux or Unix system,
 	these common tools are probably packaged for you.
 	You also need to satisfy the dependencies of these libraries:
 		libgtk-3, libusb, libbluetooth, libpisock9, libsqlite3 and
 		libgcrypt or oppenssl
 	On Debian systems you can therefore execute:
-		$ sudo apt install build-essential automake libtool-bin
+		$ sudo apt install build-essential automake libtool-bin intltool
 		$ sudo apt install libgtk-3-dev libpisock-dev libgcrypt20-dev libsqlite3-dev
 
 	If you are using a GIT version of J-Pilot, e.g. from
