@@ -1,5 +1,5 @@
 ==============================================================================
-Last updated: 30 Jan 2002 by jbm
+Last updated: 11 Mar 2025 by Ulf Zibis <Ulf.Zibis@CoSoCo.de>
 ==============================================================================
 
 J-Pilot is a palm pilot desktop for Linux/Unix written by:
@@ -20,6 +20,66 @@ Sunbury, OH 43074
 Information about being a translator can be found at:
 http://www.iro.umontreal.ca/contrib/po/HTML/
 ==============================================================================
+
+==============================================================================
+Building the project
+--------------------
+
+	J-Pilot is developed primarily on Debian GNU/Linux and FreeBSD. It
+	is expected to build cleanly on any POSIX-compliant platform. Some
+	users have reported success building it under Cygwin on Windows. It
+	will also build cleanly under Apple OSX, if you have the proper
+	development environment installed and configured on your machine.
+	Each of these will be explained in detail below.
+
+Building J-Pilot on Linux/Unix systems
+-----------------------------------------
+
+	PLEASE READ THIS CAREFULLY! The worst thing you can do is the
+	overly-common misuse of "configure, make, make install" to build and
+	install J-Pilot. Please make sure you use './configure --help'
+	to make sure you're enabling all of the options you wish to use.
+
+	You will also need to have your development environment set up, which
+	will require such tools as automake, autoconf, libtool, some system
+	headers, and others to be properly installed and configured on your
+	machine first. If you are running a current Linux or Unix system,
+	these common tools are probably packaged for you.
+	You also need to satisfy the dependencies of these libraries:
+		libgtk-3, libusb, libbluetooth, libpisock9, libsqlite3 and
+		libgcrypt or oppenssl
+	On Debian systems you can therefore execute:
+		$ sudo apt install build-essential automake libtool-bin
+		$ sudo apt install libgtk-3-dev libpisock-dev libgcrypt20-dev libsqlite3-dev
+
+	If you are using a GIT version of J-Pilot, e.g. from
+	https://github.com/juddmon/jpilot/, you will have to run
+	'sh autogen.sh' first, from the top-level directory, which will
+	create and bootstrap the "configure" script for you.
+	On modern systems you may alternatively use 'autoupdate' and 
+	'autoreconf -i -s -f' to create the "configure" script.
+
+	If you have downloaded this code from the website, or as a tarball,
+	simply unpack the tarball and run './configure' in the top-level
+	directory with your specific arguments. './configure --help' will
+	describe all of them.
+
+	If you want to install in some place other than the default location of
+	/usr/local, pass configure an argument such as:
+
+		$ ./configure --prefix=/home/fred/pilot
+
+	If configure ran successfully, you should run 'make' to build the
+	software.
+
+		$ make
+	
+	After the source builds, feel free to install J-Pilot.
+
+		$ make install
+
+==============================================================================
+
 
 ==============================================================================
 Plugins:
@@ -46,7 +106,7 @@ If you are using Palm OS > 4.0 and see this message:
 You must upgrade your desktop software or remove the password from the
 handheld."
 
-You need pilot-link > 0.11.5
+You need pilot-link >= 0.13.0
 
 ==============================================================================
 SERIAL PORT SETUP:
