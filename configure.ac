@@ -395,6 +395,11 @@ else
 	crypto_lib="libgcrypt"
 fi
 
+dnl Check for sqlite lib necessary for jpsqlite
+# sqlite_lib="none"
+# AM_PATH_LIBSQLITE
+AC_CHECK_LIB([sqlite], [sqlite3_libversion], have_libsqlite=1, have_libsqlite=0)
+
 dnl ############################################################################
 dnl Check for headers needed
 dnl ############################################################################
@@ -413,6 +418,9 @@ AC_CHECK_HEADERS(termio.h, have_termio=1, have_termio=0)
 dnl Headers needed to build keyring
 AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
 AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
+
+dnl Headers needed to build jpsqlite
+AC_CHECK_HEADERS(sqlite3.h, have_sqlite3=1, have_sqlite3=0)
 
 dnl ############################################################################
 dnl Check for typedefs and structures needed
