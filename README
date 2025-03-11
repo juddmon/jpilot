@@ -96,9 +96,10 @@ being the more common.  The visor driver is also needed.
 I would recommend a fairly new kernel >= 2.4.17 if you are using a USB palm
 other than a visor.
 
-To Sync USB devices other than visors you will need to download pilot-link
-0.10.0 or greater.  As of this release you can only get this from the
-pilot-link CVS website.  http://www.pilot-link.org.
+To Sync USB devices other than visors you will need to download libpisock
+0.13.0 or greater.  As of this release you can only get this from the
+pilot-link GIT website  https://github.com/desrod/pilot-link
+or https://packagecloud.io/judd/jpilot.
 
 
 If you are using Palm OS > 4.0 and see this message:
@@ -106,7 +107,7 @@ If you are using Palm OS > 4.0 and see this message:
 You must upgrade your desktop software or remove the password from the
 handheld."
 
-You need pilot-link >= 0.13.0
+You need libpisock9
 
 ==============================================================================
 SERIAL PORT SETUP:
