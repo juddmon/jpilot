@@ -395,10 +395,12 @@ else
 	crypto_lib="libgcrypt"
 fi
 
-dnl Check for sqlite lib necessary for jpsqlite
-# sqlite_lib="none"
-# AM_PATH_LIBSQLITE
-AC_CHECK_LIB([sqlite], [sqlite3_libversion], have_libsqlite=1, have_libsqlite=0)
+dnl Check for sqlite3 lib, necessary for jpsqlite
+#AC_CHECK_LIB([sqlite3], [sqlite3_libversion], have_libsqlite3=1, have_libsqlite3=0)
+#if test "$have_libsqlite3" = "0"; then
+#	AC_MSG_ERROR(Could not find the sqlite3 library)
+#fi
+AC_CHECK_LIB([sqlite3], [sqlite3_libversion], AC_MSG_RESULT(Found sqlite3 library), AC_MSG_ERROR(Could not find the sqlite3 library))
 
 dnl ############################################################################
 dnl Check for headers needed
@@ -420,7 +422,11 @@ AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
 AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
 
 dnl Headers needed to build jpsqlite
-AC_CHECK_HEADERS(sqlite3.h, have_sqlite3=1, have_sqlite3=0)
+#AC_CHECK_HEADERS(sqlite3.h, have_sqlite3_h=1, have_sqlite3_h=0)
+#if test "$have_sqlite3_h" = "0"; then
+#	AC_MSG_ERROR(Could not find sqlite3.h)
+#fi
+AC_CHECK_HEADERS(sqlite3.h, , AC_MSG_ERROR(Could not find sqlite3.h))
 
 dnl ############################################################################
 dnl Check for typedefs and structures needed
