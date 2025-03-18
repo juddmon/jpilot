@@ -13,7 +13,7 @@ rm -f config.log config.status
 #(cat m4/*.m4 > acinclude.m4 2> /dev/null)
 cp INSTALL INSTALL.bak
 cp ABOUT-NLS ABOUT-NLS.bak
-autoreconf --verbose --install --force $@
+autoreconf --verbose --install --symlink --force $@
 mv INSTALL.bak INSTALL
 mv ABOUT-NLS.bak ABOUT-NLS
 #./configure
