@@ -51,7 +51,7 @@ static int t_fmt_ampm = TRUE;
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 /*static*/ prefType glob_prefs[NUM_PREFS] = {
-   {"jpilotcss", CHARTYPE, CHARTYPE, 0, "jpilotcss.default", 16},
+   {"jpilotcss", CHARTYPE, CHARTYPE, 0, EPN"css.default", 16},
    {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
@@ -60,7 +60,7 @@ static int t_fmt_ampm = TRUE;
    {"show_modified", INTTYPE, INTTYPE, 0, NULL, 0},
    {"todo_hide_completed", INTTYPE, INTTYPE, 0, NULL, 0},
    {"datebook_highlight_days", INTTYPE, INTTYPE, 1, NULL, 0},
-   {"port", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"port", CHARTYPE, CHARTYPE, 0, "usb:", 0},
    {"rate", CHARTYPE, INTTYPE, 8, NULL, 0},
    {"user", CHARTYPE, CHARTYPE, 0, NULL, 0},
    {"user_id", INTTYPE, INTTYPE, 0, NULL, 0},
@@ -77,7 +77,7 @@ static int t_fmt_ampm = TRUE;
    {"print_this_many", INTTYPE, INTTYPE, 3, NULL, 0},
    {"print_one_per_page", INTTYPE, INTTYPE, 0, NULL ,0},
    {"print_blank_lines", INTTYPE, INTTYPE, 1, NULL, 0},
-   {"print_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"print_command", CHARTYPE, CHARTYPE, 0, "lpr -h", 0},
    {"char_set", INTTYPE, INTTYPE, CHAR_SET_1252_UTF , NULL, 0},
    {"sync_datebook", INTTYPE, INTTYPE, 1, NULL, 0},
    {"sync_address", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -88,11 +88,11 @@ static int t_fmt_ampm = TRUE;
    {"output_height", INTTYPE, INTTYPE, 60, NULL, 0},
    {"open_alarm_windows", INTTYPE, INTTYPE, 1, NULL, 0},
    {"do_alarm_command", INTTYPE, INTTYPE, 0, NULL, 0},
-   {"alarm_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
-   {"remind_in", INTTYPE, INTTYPE, 0, NULL, 0},
+   {"alarm_command", CHARTYPE, CHARTYPE, 0, "echo %t %d", 0},
+   {"remind_in", INTTYPE, INTTYPE, 0, "5", 0},
    {"remind_units", INTTYPE, INTTYPE, 0, NULL, 0},
    /* This is actually the password, but I wanted to name it something more discreet */
-   {"session_id", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"session_id", CHARTYPE, CHARTYPE, 0, "09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88", 0},
    {"memo32_mode", INTTYPE, INTTYPE, 0, NULL, 0},
    {"paper_size", INTTYPE, INTTYPE, 0, NULL, 0},
    {"datebook_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
@@ -112,7 +112,7 @@ static int t_fmt_ampm = TRUE;
    {"phone_prefix2_on", INTTYPE, INTTYPE, 0, NULL, 0},
    {"phone_prefix3", CHARTYPE, CHARTYPE, 0, NULL, 0},
    {"phone_prefix3_on", INTTYPE, INTTYPE, 0, NULL, 0},
-   {"dial_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"dial_command", CHARTYPE, CHARTYPE, 0, "jpilot-dial --lv 0 --rv 50 %n", 0},
    {"datebook_todo_pane", INTTYPE, INTTYPE, 350, NULL, 0},
    {"datebook_todo_show", INTTYPE, INTTYPE, 0, NULL, 0},
    {"todo_hide_not_due", INTTYPE, INTTYPE, 0, NULL, 0},
@@ -126,7 +126,7 @@ static int t_fmt_ampm = TRUE;
    {"last_addr_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
    {"last_todo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
    {"last_memo_category", INTTYPE, INTTYPE, CATEGORY_ALL, NULL, 0},
-   {"mail_command", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"mail_command", CHARTYPE, CHARTYPE, 0, "mozilla-thunderbird -remote \"mailto(%s)\"", 0},
    {"version", CHARTYPE, CHARTYPE, 0, NULL, 0},
    {"utf_encoding", INTTYPE, INTTYPE, 0, NULL, 0},
    {"confirm_file_install", INTTYPE, INTTYPE, 1, NULL, 0},
@@ -151,7 +151,7 @@ static int t_fmt_ampm = TRUE;
    {"expense_sort_column", INTTYPE, INTTYPE, 0, NULL, 0},
    {"expense_sort_order", INTTYPE, INTTYPE, 0, NULL, 0},
    {"keyr_export_filename", CHARTYPE, CHARTYPE, 0, NULL, 0},
-   {"external_editor", CHARTYPE, CHARTYPE, 0, NULL, 0},
+   {"external_editor", CHARTYPE, CHARTYPE, 0, "gvim -f", 0},
 };
 
 
@@ -169,74 +169,24 @@ void pref_init(void)
       t_fmt_ampm = strcmp(nl_langinfo(T_FMT_AMPM), "");
 #  endif
 
-   for (i=0; i<NUM_PREFS; i++) {
-      switch (i) {
-       case PREF_PORT:
-         glob_prefs[i].svalue=strdup("usb:");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_RCFILE:
-         glob_prefs[i].svalue=strdup(EPN"css.default");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_PRINT_COMMAND:
-         glob_prefs[i].svalue=strdup("lpr -h");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_ALARM_COMMAND:
-         glob_prefs[i].svalue=strdup("echo %t %d");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_REMIND_IN:
-         glob_prefs[i].svalue=strdup("5");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_PASSWORD:
-         glob_prefs[i].svalue=strdup("09021345070413440c08135a3215135dd217ead3b5df556322e9a14a994b0f88");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_DIAL_COMMAND:
-         glob_prefs[i].svalue=strdup("jpilot-dial --lv 0 --rv 50 %n");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_MAIL_COMMAND:
-         glob_prefs[i].svalue=strdup("mozilla-thunderbird -remote \"mailto(%s)\"");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       case PREF_EXTERNAL_EDITOR:
-         glob_prefs[i].svalue=strdup("gvim -f");
-         glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
-         break;
-       default:
-         glob_prefs[i].svalue=strdup("");
-         glob_prefs[i].svalue_size=1;
-      }
-   }
+   jp_pref_init(glob_prefs, NUM_PREFS);
 }
 
 
 void jp_pref_init(prefType prefs[], int count)
 {
-   int i;
-
-   for (i=0; i<count; i++) {
-      if (prefs[i].svalue) {
-         prefs[i].svalue=strdup(prefs[i].svalue);
-      } else {
-         prefs[i].svalue=strdup("");
-      }
-      prefs[i].svalue_size=strlen(prefs[i].svalue)+1;
+   for (int i=0; i<count; i++) {
+      prefs[i].svalue = strdup(prefs[i].svalue ? prefs[i].svalue : "");
+      prefs[i].svalue_size = strlen(prefs[i].svalue) + 1;
    }
 }
 
 void jp_free_prefs(prefType prefs[], int count)
 {
-   int i;
-
-   for (i=0; i<count; i++) {
+   for (int i=0; i<count; i++) {
       if (prefs[i].svalue) {
          free(prefs[i].svalue);
-         prefs[i].svalue=NULL;
+         prefs[i].svalue = NULL;
       }
    }
 }
