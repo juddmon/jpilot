@@ -187,6 +187,7 @@ void jp_free_prefs(prefType prefs[], int count)
       if (prefs[i].svalue) {
          free(prefs[i].svalue);
          prefs[i].svalue = NULL;
+         prefs[i].svalue_size = 0;
       }
    }
 }
@@ -493,32 +494,15 @@ long get_pref_int_default(int which, long defval)
 static char *pref_lstrncpy_realloc(char **dest, const char *src, 
                                    int *size, int max_size)
 {
-   int new_size, len;
-   const char null_str[]="";
-   const char *Psrc;
-
-   if (!src) {
-      Psrc=null_str;
-   } else {
-      Psrc=src;
-   }
-   len=strlen(Psrc)+1;
-   new_size=*size;
-   if (len > *size) {
-      new_size=len;
-   }
-   if (new_size > max_size) new_size=max_size;
+   const char *Psrc = src ? src : "";
+   int new_size = (strlen(Psrc)+1 > *size) ? strlen(Psrc)+1 : *size;
+   if (new_size > max_size)  new_size = max_size;
 
    if (new_size > *size) {
-      if (*size == 0) {
-         *dest=malloc(new_size);
-      } else {
-         *dest=realloc(*dest, new_size);
-      }
-      if (!(*dest)) {
-         return "";
-      }
-      *size=new_size;
+      if (!(*dest = realloc(*dest, new_size)))
+         return "";     // ***Problem***: This results in a static return value anyway !!
+                        // So maybe better return `int -1` as error code, because the real value is never used.
+      *size = new_size;
    }
    g_strlcpy(*dest, Psrc, new_size);
 
