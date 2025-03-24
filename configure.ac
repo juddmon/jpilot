@@ -3,8 +3,8 @@ dnl Process this file with autoconf to produce a configure script.
 dnl ############################################################################
 
 dnl boilerplate to initialize autoconf(AC) and automake(AM)
-AC_PREREQ([2.58])
-AC_INIT(jpilot, 2.0.2)
+AC_PREREQ([2.71])
+AC_INIT([jpilot],[2.0.2])
 AM_INIT_AUTOMAKE([1.8])
 
 dnl use a config.h file rather than string of -DXXX args to compiler
@@ -18,10 +18,10 @@ dnl Check for programs needed during configure or build
 dnl ############################################################################
 AC_CANONICAL_HOST # determine build host
 AC_PROG_CC
-dnl AC_ISC_POSIX only needed for Interacive Systems UNIX which Sun
+dnl AC_SEARCH_LIBS([strerror],[cposix]) only needed for Interacive Systems UNIX which Sun
 dnl is discontinuing support on as of 7/23/2006.
 dnl This obsolete macro should probably be removed.
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 dnl Need intltool for i18n support
 AC_PROG_INTLTOOL()
 AC_PROG_INSTALL
@@ -73,7 +73,7 @@ dnl Process Enable/Disable configure arguments
 dnl ############################################################################
 
 AC_ARG_ENABLE(plugins,
-   AC_HELP_STRING([--disable-plugins],[Do not compile plugin support]),
+   AS_HELP_STRING([--disable-plugins],[Do not compile plugin support]),
    enable_plugins=$enableval,
    enable_plugins=yes)
 
@@ -104,7 +104,7 @@ fi
 dnl ************************************************************
 
 AC_ARG_ENABLE(private,
-   AC_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
+   AS_HELP_STRING([--disable-private],[Do not use private records feature (password not needed to see private records)]),
    enable_private=$enableval,
    enable_private=yes)
 
@@ -117,7 +117,7 @@ fi
 dnl ************************************************************
 
 AC_ARG_ENABLE(datebk,
-   AC_HELP_STRING([--disable-datebk],[Disable Datebk support]),
+   AS_HELP_STRING([--disable-datebk],[Disable Datebk support]),
    enable_datebk=$enableval,
    enable_datebk=yes)
 
@@ -130,7 +130,7 @@ fi
 dnl ************************************************************
 
 AC_ARG_ENABLE(manana,
-   AC_HELP_STRING([--disable-manana],[Disable Manana support]),
+   AS_HELP_STRING([--disable-manana],[Disable Manana support]),
    enable_manana=$enableval,
    enable_manana=yes)
 
@@ -143,7 +143,7 @@ fi
 dnl ************************************************************
 
 AC_ARG_ENABLE(prometheon,
-   AC_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
+   AS_HELP_STRING([--enable-prometheon],[For use with Prometheon: http://www.prometheon.net]),
    enable_prometheon=$enableval,
    enable_prometheon=no)
 
@@ -160,7 +160,7 @@ AC_SUBST(PROGNAME)
 dnl ************************************************************
 
 AC_ARG_ENABLE(alarm-shell-danger,
-   AC_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
+   AS_HELP_STRING([--enable-alarm-shell-danger],[Allow alarm descriptions and notes to be used in alarm shell commands]),
    enable_alarm_shell_danger=$enableval,
    enable_alarm_shell_danger=no;
    )
@@ -172,7 +172,7 @@ fi
 dnl ************************************************************
 
 AC_ARG_ENABLE(stock_buttons,
-   AC_HELP_STRING([--disable-stock-buttons],[Disable stock buttons (icons on GUI buttons)]),
+   AS_HELP_STRING([--disable-stock-buttons],[Disable stock buttons (icons on GUI buttons)]),
    enable_stock_buttons=$enableval,
    enable_stock_buttons=yes)
 
@@ -197,7 +197,7 @@ dnl * pilot-link libs
 dnl ******************************
 pilot_prefix=""
 AC_ARG_WITH(pilot_prefix,
-            AC_HELP_STRING([--with-pilot-prefix=PFX],[Prefix to top level of pilot-link files (e.g., = /usr/local if the pilot-link includes are in /usr/local/include and libs are in /usr/local/lib)]))
+            AS_HELP_STRING([--with-pilot-prefix=PFX],[Prefix to top level of pilot-link files (e.g., = /usr/local if the pilot-link includes are in /usr/local/include and libs are in /usr/local/lib)]))
 
 if test "x$with_pilot_prefix" != "x"; then
    pilot_prefix=$with_pilot_prefix
@@ -275,7 +275,7 @@ AC_SUBST(PILOT_FLAGS)
 dnl ************************************************************
 
 AC_ARG_ENABLE(pl-test,
-   AC_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
+   AS_HELP_STRING([--disable-pl-test],[Do not try to compile a test pilot-link program]),
    enable_pl_test=$enableval,
    enable_pl_test=yes)
 
@@ -293,8 +293,8 @@ if test "x$enable_pl_test" = "xyes"; then
    save_LIBS="$LIBS"
    LIBS="$LIBS $PILOT_LIBS"
 
-   AC_TRY_LINK([#include "pi-version.h"
-#include "pi-socket.h"], [pi_close (0);] , pilotcompile=yes, , )
+   AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include "pi-version.h"
+#include "pi-socket.h"]], [[pi_close (0); ]])],[pilotcompile=yes],[])
 
    if test "$pilotcompile" = "no" ; then
       AC_MSG_RESULT(no)
@@ -306,20 +306,18 @@ if test "x$enable_pl_test" = "xyes"; then
    dnl Try to run a pilot-link program (tests dynamic linking)
 
    AC_MSG_CHECKING(if I can run a pilot-link program)
-   AC_TRY_RUN([
+   AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <pi-version.h>
 int main()
 {
    return 0;
 }
-],
-   AC_MSG_RESULT([ok]),
-   AC_MSG_ERROR([
+]])],[AC_MSG_RESULT(ok)],[AC_MSG_ERROR(
 * Can not run a pilot-link test program
 * Make sure libpisock can be found by ld
 * Check /etc/ld.so.conf and run ldconfig
-* This test can be disabled by the --disable-pl-test option])
-   , [ error ])
+* This test can be disabled by the --disable-pl-test option)
+   ],[ error ])
 
    dnl restore variables after pilot-link testing
    CFLAGS="$save_CFLAGS"
@@ -336,14 +334,13 @@ CFLAGS="$CFLAGS $PILOT_FLAGS"
 save_LIBS="$LIBS"
 LIBS="$LIBS $PILOT_LIBS"
 
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
 #include <pi-version.h>
-], [
+]], [[
    exit(0);
-], ,
- AC_MSG_ERROR([pilot-link header pi-version.h not found])
-)
+]])],[],[AC_MSG_ERROR(pilot-link header pi-version.h not found)
+])
 
 dnl * Pilot-link version variations, USB support, 12.0, etc.
 
@@ -388,7 +385,7 @@ crypto_lib="none"
 AM_PATH_LIBGCRYPT
 AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
 AC_ARG_WITH(openssl,
-   AC_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
+   AS_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
    have_libgcrypt="0")
 if test "$have_libgcrypt" = "0"; then
 dnl Check for OpenSSL libs necessary for Keyring
@@ -425,7 +422,20 @@ AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
-AC_HEADER_TIME
+m4_warn([obsolete],
+[Update your code to rely only on HAVE_SYS_TIME_H,
+then remove this warning and the obsolete code below it.
+All current systems provide time.h; it need not be checked for.
+Not all systems provide sys/time.h, but those that do, all allow
+you to include it and time.h simultaneously.])dnl
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+# Obsolete code to be removed.
+if test $ac_cv_header_sys_time_h = yes; then
+  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+	     and <time.h>.  This macro is obsolete.])
+fi
+# End of obsolete code.
+
 dnl 10/2/06: This is obsolescent on most systems now as the tm struct is in time.h
 AC_STRUCT_TM
 
@@ -435,11 +445,10 @@ dnl ******************************
 
 # _NL_TIME_FIRST_WEEKDAY is an enum and not a define
 AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
-AC_TRY_LINK([#include <langinfo.h>], [
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <langinfo.h>]], [[
 char c;
 c = *((unsigned char *)  nl_langinfo(_NL_TIME_FIRST_WEEKDAY));
-],
-nl_ok=yes, nl_ok=no)
+]])],[nl_ok=yes],[nl_ok=no])
 AC_MSG_RESULT($nl_ok)
 
 if test "$nl_ok" = "yes"; then
@@ -451,7 +460,19 @@ dnl ############################################################################
 dnl Check for individual functions needed
 dnl ############################################################################
 dnl Checks for library functions.
-AC_TYPE_SIGNAL
+m4_warn([obsolete],
+[your code may safely assume C89 semantics that RETSIGTYPE is void.
+Remove this warning and the `AC_CACHE_CHECK' when you adjust the code.])dnl
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[AC_COMPILE_IFELSE(
+[AC_LANG_PROGRAM([#include <sys/types.h>
+#include <signal.h>
+],
+		 [return *(signal (0, 0)) (0) == 1;])],
+		   [ac_cv_type_signal=int],
+		   [ac_cv_type_signal=void])])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers
+		    (`int' or `void').])
+
 AC_FUNC_STRCOLL
 #AC_FUNC_MALLOC
 #AC_FUNC_REALLOC
@@ -459,7 +480,7 @@ AC_FUNC_STRCOLL
 AC_CHECK_FUNCS(setenv)
 
 AC_ARG_WITH(with_flock,
-   AC_HELP_STRING([--with-flock],[Substitute flock instead of fnctl for file locking (for NFS)]),
+   AS_HELP_STRING([--with-flock],[Substitute flock instead of fnctl for file locking (for NFS)]),
    with_flock=yes)
 
 if test "x$with_flock" = "xyes"; then
