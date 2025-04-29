@@ -395,6 +395,11 @@ else
 	crypto_lib="libgcrypt"
 fi
 
+dnl Check for sqlite3 lib, necessary for jpsqlite
+AC_CHECK_LIB([sqlite3], [sqlite3_libversion], have_libsqlite3=1, have_libsqlite3=0)
+#AC_CHECK_LIB([sqlite3], [sqlite3_libversion], AC_MSG_RESULT(Found sqlite3 library),
+#		AC_MSG_ERROR(Could not find the sqlite3 library))
+
 dnl ############################################################################
 dnl Check for headers needed
 dnl ############################################################################
@@ -404,7 +409,7 @@ AC_CHECK_HEADERS([fcntl.h langinfo.h locale.h stdlib.h string.h sys/socket.h sys
 # Headers required for plugins
 AC_CHECK_HEADERS(netinet/in.h, have_netinet=1, have_netinet=0)
 if test "$plugin_support" = "yes" -a "$have_netinet" = "0"; then
-   plugin_support = "no"
+	plugin_support = "no"
 fi
 
 # jpilot-dial required headers
@@ -413,6 +418,10 @@ AC_CHECK_HEADERS(termio.h, have_termio=1, have_termio=0)
 dnl Headers needed to build keyring
 AC_CHECK_HEADERS(openssl/md5.h, have_openssl_md5=1, have_openssl_md5=0)
 AC_CHECK_HEADERS(openssl/des.h, have_openssl_des=1, have_openssl_des=0)
+
+dnl Headers needed to build jpsqlite
+AC_CHECK_HEADERS(sqlite3.h, have_sqlite3_h=1, have_sqlite3_h=0)
+#AC_CHECK_HEADERS(sqlite3.h, , AC_MSG_ERROR(Could not find sqlite3.h))
 
 dnl ############################################################################
 dnl Check for typedefs and structures needed
@@ -518,9 +527,21 @@ if test "x$make_keyring" = "xyes" -a "x$plugin_support" = "xyes"; then
    keyring_plugin=yes;
 fi
 
+
+make_sqlite=no
+if test "$have_libsqlite3" = "1" -a "$have_sqlite3_h" = "1"; then
+	make_sqlite=yes
+else
+	AC_MSG_WARN([Sqlite library not found, jpsqlite will not be built])
+fi
+sqlite_plugin=no;
+if test "x$make_sqlite" = "xyes" -a "x$plugin_support" = "xyes"; then
+	sqlite_plugin=yes;
+fi
+
 AM_CONDITIONAL(MAKE_KEYRING, test "x$keyring_plugin" = "xyes")
 AM_CONDITIONAL(MAKE_EXPENSE, test "x$plugin_support" = "xyes")
-AM_CONDITIONAL(MAKE_JPSQLITE, test "x$plugin_support" = "xyes")
+AM_CONDITIONAL(MAKE_JPSQLITE, test "x$sqlite_plugin" = "xyes")
 AM_CONDITIONAL(MAKE_SYNCTIME, test "x$plugin_support" = "xyes")
 
 dnl * Work out whether dialer can be built
@@ -594,7 +615,7 @@ AC_MSG_RESULT(Compiling with Datebk support..........   $enable_datebk)
 AC_MSG_RESULT(Compiling with Manana support..........   $enable_manana)
 AC_MSG_RESULT(Compiling with Prometheon support......   $enable_prometheon)
 AC_MSG_RESULT(Compiling Expense plugin...............   $plugin_support)
-AC_MSG_RESULT(Compiling jpsqlite plugin..............   $plugin_support)
+AC_MSG_RESULT(Compiling jpsqlite plugin..............   $sqlite_plugin)
 AC_MSG_RESULT(Compiling SyncTime plugin..............   $plugin_support)
 AC_MSG_RESULT(Compiling KeyRing plugin...............   $keyring_plugin)
 AC_MSG_RESULT(Compiling dialer add-on................   $dialer)
