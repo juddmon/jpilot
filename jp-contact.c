@@ -56,7 +56,11 @@ int jp_pack_Contact(struct Contact *c, pi_buffer_t *buf)
 
 int jp_Contact_add_blob(struct Contact *c, Blob_t *blob)
 {
-   return Contact_add_blob(c, blob);
+   struct ContactBlob cblob;
+   memcpy(cblob.type, blob->type, sizeof(cblob.type));
+   cblob.length = blob->length;
+   cblob.data = blob->data;
+   return Contact_add_blob(c, &cblob);
 }
 
 int jp_Contact_add_picture(struct Contact *c, struct ContactPicture *p)
