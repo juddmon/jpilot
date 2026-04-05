@@ -1509,7 +1509,7 @@ int main(int argc, char *argv[]) {
     int filedesc[2];
     long ivalue;
     const char *svalue;
-    int c, i, height;
+    int c, height;
     char title[MAX_PREF_LEN + 256];
     long pref_width, pref_height, show_tooltips;
     long char_set;
@@ -1590,6 +1590,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 #if 0
+    {
+    int i;
     for (i = 1; i < argc; i++) {
         if (!strncasecmp(argv[i], "-v", 3)) {
             char options[1024];
@@ -1645,6 +1647,7 @@ int main(int argc, char *argv[]) {
             fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n");
             fprintf(stdout, "J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
         }
+    }
     }
 #endif
 

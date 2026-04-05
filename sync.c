@@ -3071,12 +3071,10 @@ static int jp_sync(struct my_sync_info *sync_info)
 #endif
 
    device = NULL;
-   if (sync_info->port) {
-      if (sync_info->port[0]) {
-         /* A port was passed in to use */
-         device=sync_info->port;
-         found = 1;
-      }
+   if (sync_info->port[0]) {
+      /* A port was passed in to use */
+      device=sync_info->port;
+      found = 1;
    }
    if (!found) {
       /* No port was passed in, look in env */

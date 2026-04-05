@@ -1119,7 +1119,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                  * field but instead has a flag and a tm struct field */
                         if (schema[i].type == ADDRESS_GUI_BIRTHDAY) {
                             if (mcont->cont.birthdayFlag) {
-                                fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field]
+                                fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field][0]
                                                         ? contact_app_info.labels[schema[i].record_field] : "");
                                 birthday_str[0] = '\0';
                                 get_pref(PREF_SHORTDATE, NULL, &pref_date);
@@ -1159,7 +1159,7 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                                             contact_app_info.addrLabels[mcont->cont.addressLabel[index]]);
                                     break;
                                 default:
-                                    fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field]
+                                    fprintf(out, _("%s: "), contact_app_info.labels[schema[i].record_field][0]
                                                             ? contact_app_info.labels[schema[i].record_field] : "");
                             }
                             /* Next print the entry field */
@@ -3535,7 +3535,7 @@ int address_cycle_cat(void) {
             address_category = CATEGORY_ALL;
             break;
         }
-        if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+        if (sort_l[new_cat].Pcat[0]) {
             address_category = sort_l[new_cat].cat_num;
             break;
         }

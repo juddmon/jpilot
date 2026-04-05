@@ -2869,7 +2869,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                 keyr_category = CATEGORY_ALL;
                 break;
             }
-            if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+            if (sort_l[new_cat].Pcat[0]) {
                 keyr_category = sort_l[new_cat].cat_num;
                 break;
             }
