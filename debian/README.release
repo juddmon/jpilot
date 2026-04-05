@@ -13,7 +13,7 @@ Prerequisites
 
 Release steps
 -------------
-1. Set the upstream version in configure.in: update AC_INIT([jpilot],[X.Y.Z])
+1. Set the upstream version in configure.ac: update AC_INIT([jpilot],[X.Y.Z])
    to the release version.
 
 2. Update debian/changelog: add a new entry at the top for the new version,
@@ -34,20 +34,26 @@ Release steps
      ./build-debian.sh
 
    This script will:
-   - Read the version from configure.in
-   - Run "make dist" to create jpilot-X.Y.Z.tar.gz
-   - Copy it to jpilot_X.Y.Z.orig.tar.gz (Debian orig tarball)
-   - Unpack, copy debian/ into the unpacked tree, and run dpkg-buildpackage
+   - Read the version from configure.ac
+   - Run "make dist" (Automake writes jpilot-X.Y.Z.tar.gz in the project root)
+   - Copy that to jpilot_X.Y.Z.orig.tar.gz, unpack from .orig, remove the
+     duplicate jpilot-X.Y.Z.tar.gz from the clone, rsync debian/ into the tree,
+     and run dpkg-buildpackage
+   - In the artifact directory, hard-link jpilot-X.Y.Z.tar.gz to the .orig so
+     both the Debian and Automake tarball names exist (same file, no extra disk)
 
-4. Outputs appear in the parent directory:
+4. Outputs appear in the parent of the repository directory (one level above
+   the project root), not inside the clone:
    - jpilot_X.Y.Z-1_amd64.deb (main package)
    - jpilot-plugins_X.Y.Z-1_amd64.deb (plugins package)
-   - jpilot_X.Y.Z-1.dsc, jpilot_X.Y.Z.orig.tar.gz (source)
+   - jpilot_X.Y.Z-1.dsc, jpilot_X.Y.Z.orig.tar.gz, jpilot-X.Y.Z.tar.gz (source)
    - jpilot_X.Y.Z-1_amd64.changes (for upload/signing)
 
 Optional: signing and upload
 ----------------------------
-- To sign the .changes file: debsign jpilot_X.Y.Z-1_amd64.changes
+- To sign the .changes file (from the artifact directory):
+  debsign ../jpilot_X.Y.Z-1_amd64.changes
+  if your clone is in .../jpilot (or use the full path to the .changes file).
 - To build with a different Debian revision (e.g. -2): edit debian/changelog
   before running build-debian.sh; the script uses whatever is in the
   unpacked debian/ directory.
