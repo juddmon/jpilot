@@ -1,0 +1,1302 @@
+jpilot (2.0.2-1) unstable; urgency=medium
+
+  * Added sqlite support (Elmar.Klausmeier@gmail.com) https://github.com/eklausme
+  * Misc bug fixes and improvements
+
+ -- Judd Montgomery <judd@jpilot.org>  Mon, 21 Oct 2024 21:53:11 -0400
+
+jpilot (2.0.1-1) unstable; urgency=medium
+
+  *  Fixed the crash when searching
+  * Increased vertical spacing in lists (address entries)
+  * Made hidden directories show by default in the import and export windows
+
+ -- Judd Montgomery <judd@jpilot.org>  Fri, 02 Apr 2021 20:32:50 -0500
+
+jpilot (2.0.0-1) unstable; urgency=medium
+
+  * Fairly major changes done to migrate from GTK2 to GTK3.
+  * Credit to David Malia for much of the GTK3 work.
+
+ -- Judd Montgomery <judd@jpilot.org>  Sat, 02 Jan 2021 19:17:50 -0500
+
+jpilot (1.8.2-2) unstable; urgency=medium
+
+  * Fix "Please stop Build-Depending on libgcrypt11-dev transition
+    package" use libgcrypt20-dev instead (Closes: #864107)
+  * debian/rules: enable hardening=+all
+  * remove debian/menu to fix lintian command-in-menu-file-and-desktop-file
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 09 Jun 2017 09:18:17 +0200
+
+jpilot (1.8.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Remove debian/patches/avoid_recursive_log included upstream
+  * debian/rules: use --parallel to build in parallel
+  * Fix "[jpilot] /usr/share/jpilot/Ma?anaDB.pdb not found" the file has been
+    renamed upstream (Closes: #747843)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 30 May 2014 20:48:18 +0200
+
+jpilot (1.8.1.2-5) unstable; urgency=medium
+
+  * Use autotools-dev to update config.{sub,guess} for new arches.
+    Use the patch from Ubuntu jpilot 1.8.1.2-4ubuntu1
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 30 May 2014 20:36:26 +0200
+
+jpilot (1.8.1.2-4) unstable; urgency=low
+
+  * Fix "run dh-autoreconf to update config.{sub,guess} and
+    {libtool,aclocal}.m4" use dh --with autoreconf (Closes: #744597)
+  * Do not install the /usr/share/jpilot/MañaDB.pdb file since the filename is
+    not in UTF-8
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 16 Apr 2014 15:52:52 +0200
+
+jpilot (1.8.1.2-3) unstable; urgency=low
+
+  * Fix "update config.{sub,guess} for the AArch64 port"
+    use dh --with autotools_dev (Closes: #727908)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 27 Oct 2013 20:55:40 +0100
+
+jpilot (1.8.1.2-2) unstable; urgency=low
+
+  * Fix "[Mayhem] Bug report on jpilot: jpilot-sync crashes with exit
+    status 139" avoid a infinite recursion in log (Closes: #716045)
+  * Fix "[Mayhem] Bug report on jpilot: jpilot crashes with exit status
+    139" same fix as above (Closes: #716090)
+  * debian/compat: upgrade from 7 to 9 to get automatic hardening
+  * debian/control: Standards-Version: 3.9.2 -> 3.9.4. No change needed.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 02 Aug 2013 13:45:21 +0200
+
+jpilot (1.8.1.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Add support of vCard format for Gmail/Android
+  * Add support of B-Folders for Memo and Keyring
+  * debian/control: remove Build-Depends: libreadline-dev. No more needed
+  * debian/control: Standards-Version: 3.9.1 -> 3.9.2. No change needed.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 08 Jan 2012 13:49:42 +0100
+
+jpilot (1.8.1.1-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/jpilot.manpages: include jpilot-merge.1
+  * debian/rules: no need to update config.{guess,sub}
+  * debian/rules: remove override_dh_auto_clean rule
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 06 Apr 2011 16:59:55 +0200
+
+jpilot (1.8.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 06 Apr 2011 08:47:35 +0200
+
+jpilot (1.8.0.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 09 Feb 2011 23:15:53 +0100
+
+jpilot (1.8.0.3-1) experimental; urgency=low
+
+  * New upstream release
+  * Fix "implement cancelling hotsync from within jpilot" implemented upstream
+    (Closes: #590288)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 10 Oct 2010 12:26:58 +0200
+
+jpilot (1.8.0.2-1) unstable; urgency=low
+
+  * New upstream release
+   - Fix "iCalendar export error" (Closes: #585927)
+  * debian/control: Standards-Version: 3.8.4 -> 3.9.1. No change needed.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 03 Aug 2010 22:12:50 +0200
+
+jpilot (1.8.0.1-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #574030: jpilot: can't delete appointments
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 27 Mar 2010 16:37:07 +0100
+
+jpilot (1.8.0-1) unstable; urgency=low
+
+  * New upstream release
+  * update Build-Depends: libpisock-dev to >= 0.12.5~
+  * debian/control: remove the Conflicts: with old versions of jpilot plugins
+    (no more available in stable/lenny)
+  * deban/control: Standards-Version: 3.8.3 -> 3.8.4. No change needed.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 02 Mar 2010 21:46:44 +0100
+
+jpilot (1.6.2.9-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: #565817 "jpilot-plugins: Libgcrypt warning: missing
+   initialization in syslog"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 20 Jan 2010 15:12:43 +0100
+
+jpilot (1.6.2.8-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * Move to source format "3.0 (quilt)"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 12 Dec 2009 17:07:57 +0100
+
+jpilot (1.6.2.7-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * debian/rules: use dh
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 20 Sep 2009 10:55:37 +0200
+
+jpilot (1.6.2.6-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * Fix "please support categories on datebook records" fixed upstream
+    (Closes: #531905)
+  * debian/control: use libreadline-dev instead of libreadline5-dev
+    http://lists.debian.org/debian-devel/2009/09/msg00549.html
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 16 Sep 2009 14:19:27 +0200
+
+jpilot (1.6.2.5-2) unstable; urgency=low
+
+  * revert DEB_*_ARCH change.  The build fails on kfreebsd-*
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 27 Aug 2009 18:39:35 +0200
+
+jpilot (1.6.2.5-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * Fix "vcard/ldif export needs RFC2426 mapping for pilot fields, esp.
+    custom" fixed upstream (Closes: #246234)
+  * Fix "inconsistent Cyrillic translation policy: PDB file names not
+    recoded" fixed upstream (Closes: #246024)
+  * Fix "makes palm Z22 crash after Restore Hanheld" fixed upstream
+    (Closes: #502164)
+  * debian/control: Standards-Version: 3.8.1 -> 3.8.3
+    use DEB_HOST_ARCH and DEB_BUILD_ARCH
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 26 Aug 2009 19:05:44 +0200
+
+jpilot (1.6.2.4-2) unstable; urgency=low
+
+  * debian/control: Build-Depends: libpisock-dev (>= 0.12.4~)
+    Depends: libpisock9 (>= 0.12.4~)
+    - Fix "version 1.6.2.4 should depend on libpisock9 >= 0.12.4" Force the
+    use of pilot-link >= 0.12.4 at build and run time (Closes: #532798)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 12 Jun 2009 13:25:53 +0000
+
+jpilot (1.6.2.4-1) unstable; urgency=low
+
+  * New upstream release
+    add support of pilot-link 0.12.4
+  * debian/rules: remove call to deprecated dh_desktop
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 31 May 2009 11:58:13 +0200
+
+jpilot (1.6.2.3-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: Ubuntu bug 366543
+     https://bugs.launchpad.net/ubuntu/+source/jpilot/+bug/366543
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 26 Apr 2009 17:21:41 +0200
+
+jpilot (1.6.2.2-1) unstable; urgency=low
+
+  * New upstream release
+   - Fix "unconvertable character damages memo text" (Closes: #520135)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 20 Mar 2009 21:47:58 +0000
+
+jpilot (1.6.2.1-2) unstable; urgency=low
+
+  * Fix "jpilot_1.6.2.1-1(mips/unstable): FTBFS on mips. missing build
+    dependency ?" add Build-Depends: intltool (Closes: #520159)
+  * Build-Depends: use libgcrypt11-dev instead of libssl-dev to avoid licence
+    problems mixing OpenSSL and GPL code.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 18 Mar 2009 16:38:03 +0100
+
+jpilot (1.6.2.1-1) unstable; urgency=low
+
+  * New upstream release
+   - Fix "some ComboBoxes do not show UTF8 strings correctly"
+    (Closes: #519120)
+  * use debhelper version 7 instead of 4
+  * use Standards-Version: 3.8.1 instead of 3.7.3
+   - add support of parallel in DEB_BUILD_OPTIONS
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 15 Mar 2009 21:07:18 +0000
+
+jpilot (1.6.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 18 Feb 2009 15:52:21 +0100
+
+jpilot (1.6.1-1) unstable; urgency=low
+
+  * New upstream release
+   - Import of contacts into datebook works but corrupts database.
+     (Closes: #422093)
+   - broken ical export (Closes: #370331)
+   - Error message implies wrong sync order (Closes: #404294)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 15 Feb 2009 15:03:44 +0100
+
+jpilot (1.6.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 31 May 2008 12:18:11 +0200
+
+jpilot (1.5.99-pre4-1) unstable; urgency=low
+
+  * New upstream release
+   - The real upstream version is 1.6.0-pre4-1 but upgrading to a non-pre
+   version would fail
+   - makes palm Z22 crash after sync (Closes: #477421)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 21 May 2008 15:58:30 +0200
+
+jpilot (0.99.9.22-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: #453444 "jpilot: Contacts exports fail to put contact data into
+   file"
+  * debian/rules: use dh_desktop and dh_icons
+  * debian/control: change Build-Depends: version for debhelper (>= 5.0.51~)
+    since we now use dh_icons
+  * debian/copyright: add a Copyright Holder: line
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 10 Feb 2008 18:06:31 +0100
+
+jpilot (0.99.9.21-1) unstable; urgency=low
+
+  * New upstream release
+   - Fixed Export of Text, and CSV for Contacts.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 23 Jan 2008 15:21:51 +0100
+
+jpilot (0.99.9.20-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: #451205: "jpilot: I10n bug in phonebook entry-type"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 19 Jan 2008 16:30:11 +0100
+
+jpilot (0.99.9.19-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: #459973: "jpilot: Fails to sync ContactsDB"
+  * debian/rules:
+   - compile with -O2 again since a corrected gcc is now in testing (see
+     #443576)
+   - install ChangeLog.cvs in usr/share/doc/jpilot/ so that users can get a
+     list of changes
+   - remove empty directory usr/lib/ in jpilot package
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 13 Jan 2008 22:31:04 +0100
+
+jpilot (0.99.9.18-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * debian/control: Standards-Version: 3.7.2 -> 3.7.3: no change needed
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 15 Dec 2007 14:23:59 +0100
+
+jpilot (0.99.9.17-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #451868 "jpilot: Modifying ToDo on PC causes sync conflict"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 25 Nov 2007 23:03:25 +0100
+
+jpilot (0.99.9.16-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+  * debian/control
+    - use Homepage: field
+    - do not use XS-Vcs-* fields since it is _not_ for upstream VCS
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 23 Nov 2007 22:06:26 +0100
+
+jpilot (0.99.9.15-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - supporting the new Contacts, and Memos Databases
+  * debian/control: build against libpisock-dev (>= 0.12.2-11) to avoid bug
+    #451200 "libpisock-dev: 64bitness problem causing inaccessible private
+    records". Only 64-bits architecture were impacted
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 14 Nov 2007 23:28:24 +0100
+
+jpilot (0.99.9.14-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #228131 "syncs address when told not to"
+   - Closes: #211425 "jpilot-plugins: jpilot ignores 'Sync Keyring' option
+   when doing a slow sync"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 21 Oct 2007 12:54:22 +0200
+
+jpilot (0.99.9.13-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 03 Oct 2007 17:18:33 +0200
+
+jpilot (0.99.9.12-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #439299 "doesn't update mtime on .jpilot/*.pdb when syncing"
+  * debian/rules: do not build with -O2 to avoid bug #443576
+    (selecting a category in the KeyRing plugin was broken)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 23 Sep 2007 14:21:19 +0200
+
+jpilot (0.99.9.11-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #397962 "jpilot: Fails to sync with Handspring Visor Neo"
+   - Closes: #412662 "jpilot: Alarms are not removed timely when a calendar
+   appointment is removed."
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 21 Sep 2007 22:23:16 +0200
+
+jpilot (0.99.9.10-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #436499: "jpilot segfaults on startup"
+  * debian/menu: change section from "Apps/Tools" to "Applications/Mobile
+    Devices" to comply with the new Debian menu policy
+    http://lists.debian.org/debian-devel-announce/2007/07/msg00000.html
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 11 Aug 2007 21:59:52 +0200
+
+jpilot (0.99.9.9-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 15 Jun 2007 16:07:15 +0200
+
+jpilot (0.99.9.8-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #315322 jpilot: crashes when clicking over "Restore Handheld"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 08 May 2007 15:26:21 +0200
+
+jpilot (0.99.9.7-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - correctly solve #420792
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 04 May 2007 14:17:33 +0200
+
+jpilot (0.99.9.6-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #420792: "jpilot: man page wrong dir"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 03 May 2007 22:28:16 +0200
+
+jpilot (0.99.9.5-1) unstable; urgency=low
+
+  * New upstream release (CVS snapshot)
+   - Closes: #306909 "UTF8/cp1251(pilot) <-> KOI8-R host: contacts sorting
+   broken"
+   The labels are no more truntacted when UTF-8 is used
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 13 Apr 2007 15:19:29 +0200
+
+jpilot (0.99.9.4-2) unstable; urgency=low
+
+  * debian/control: remove Suggests: on jpilot-syncmal since jpilot-syncmal
+    is not more available in Debian
+  * debian/control: add XS-Vcs-Browser: and Xs-Vcs-Cvs: fields
+  * debian/control: Build-Depends: debhelper (>= 4.0.0) instead of (>= 3.0.18)
+    since we use debian/compat at 4
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 25 Mar 2007 16:33:00 +0200
+
+jpilot (0.99.9.4-1) unstable; urgency=low
+
+  * new upstream (CVS snapshot)
+   - jpilot sometimes crashed on startup
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 16 Feb 2007 15:19:06 +0100
+
+jpilot (0.99.9.3-1) unstable; urgency=low
+
+  * new upstream (CVS snapshot)
+   - Closes: #404918 "missing showpage on postscript output"
+   - Closes: #406416 "It'd be really nice to share access to a jpilot database"
+     This bug is only partly solved since the files are still created and then
+     chmod 0600. What is done is use a locking system on the database files
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri,  9 Feb 2007 18:26:10 +0100
+
+jpilot (0.99.9.2-1) unstable; urgency=low
+
+  * new upstream (CVS snapshot)
+   - Closes: #392787 "Buttons 'Clear' and 'Remove' right of sync progress
+   window are too small"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 11 Nov 2006 14:26:00 +0100
+
+jpilot (0.99.9.1-2) unstable; urgency=low
+
+  * Change Build-Depends libpisock-dev from 0.12.1-1 to 0.12.1-5 so that
+    libpisock-dev has a depends on libusb-dev
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 22 Sep 2006 12:01:40 +0200
+
+jpilot (0.99.9.1-1) unstable; urgency=low
+
+  * new upstream (CVS snapshot)
+   - Closes: #388481 "jpilot: Address book always sorts by company first, no
+   matter what the title bar says"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 21 Sep 2006 22:19:27 +0200
+
+jpilot (0.99.9-2) unstable; urgency=low
+
+  * remove the debconf question since /dev/pilot is no more used by libpisock9
+  * Build-Depends on libpisock-dev (>= 0.12.1-1) to be sure to use libpisock9
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 15 Sep 2006 14:57:29 +0200
+
+jpilot (0.99.9-1) unstable; urgency=low
+
+  * new upstream release
+   - Closes: #205140 "jpilot does not handle date right under non-C locales"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri,  1 Sep 2006 14:26:34 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060730-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #375532 "jpilot: incorrect Name/Company label in address book"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 30 Jul 2006 17:44:18 +0000
+
+jpilot (0.99.8-0.99.9-pre-20060625-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #372761 "jpilot: Do not update the time if iconified". The bug is
+   partly solved. Time is always updated even if the application is iconified
+   but only every 60 seconds if the time does not display seconds.  See
+   comment in http://bugs.jpilot.org/1679
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 25 Jun 2006 12:29:10 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060623-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #374495 "segmentation fault when clicking weekly/monthly view
+     while in memo pad"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 23 Jun 2006 17:03:50 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060518-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #355759 "jpilot-plugins: files Keys-Gtkr.p* should have
+     permissions 600"
+
+     The files are now created with no access rights for the group or the
+     world, only read/write for the user.  you may do a "chmod -R go-rwx
+     ~/.jpilot" since jpilot will not change _already_ created
+     files/directories.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 18 May 2006 16:35:03 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060509-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #366063 "incorrect start of week in "week" and "month" views"
+  * debian/{control,rules}: do not use dpatch since we have no Debian specific
+    patches
+  * debian/control: Standards-Version: 3.6.2.1 -> 3.7.2, no change
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue,  9 May 2006 22:21:50 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060420-2) unstable; urgency=low
+
+  * debian/po/da.po: update. Closes: #365543: "jpilot: [INTL;da] Updated
+    Danish debconf translation"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue,  2 May 2006 22:59:16 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060420-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #363452: "jpilot: deleting current appointment cuts text at first
+     non-ascii character."
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 20 Apr 2006 14:48:33 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060417-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #362462 "alarm doesn't wrap text, leading to extra large window"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Mon, 17 Apr 2006 14:32:08 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060413-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #358963 "jpilot: Menus broken under German locale"
+   - Closes: #350196 "jpilot-sync reboots palm on "Syncing Keys-Gtkr""
+   - Closes: #356065 "Changes to keyring in jpilot cause DataMgr.c error
+   ("invalid unique ID")"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 13 Apr 2006 21:06:46 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060225-4) unstable; urgency=low
+
+  * debian/po/cs.po: update. Closes: #360312 "[l10n] Updated Czech translation
+    of jpilot debconf messages"
+  * debian/rules: clean rule calls upstream distclean instead of clean
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  2 Apr 2006 20:54:46 +0200
+
+jpilot (0.99.8-0.99.9-pre-20060225-3) unstable; urgency=low
+
+  * rebuild with a clean version. Closes: #354943: "FTBFS: please remove
+    Makefile"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu,  2 Mar 2006 21:12:58 +0100
+
+jpilot (0.99.8-0.99.9-pre-20060225-2) unstable; urgency=low
+
+  * rebuild to solve the: checking whether build environment is sane...
+    configure: error: newly created file is older than distributed files!
+    Check your system clock
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 28 Feb 2006 20:55:26 +0100
+
+jpilot (0.99.8-0.99.9-pre-20060225-1) unstable; urgency=low
+
+  * new upstream version (CVS snapshot)
+   - Closes: #352716 "jpilot-dump is off by 1 day"
+  * debian/po/it.po:
+   - Closes: #353208: Please add Italian translation
+   - Closes: #353209: Please add Italian translation
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 26 Feb 2006 16:31:36 +0100
+
+jpilot (0.99.8-0.99.9-pre-20060214-1) unstable; urgency=low
+
+  * new upstream version
+   - Closes: #140891 "Poor handling of 24 hour clocks"
+   - Closes: #271610 "scroll position overridden during hotsync"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 14 Feb 2006 23:15:35 +0100
+
+jpilot (0.99.8-0.99.9-pre2-1) unstable; urgency=low
+
+  * new upstream version
+   - Closes: #346337 "jpilot: "Clear" and "Remove" button always visible"
+  * debian/po/de.po: update. Closes: #345849 "Updated German translation of
+    the debconf templates"
+  * debian/po/sv.po: update. Closes: #341632 "Swedish debconf templates
+    translation"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 15 Jan 2006 13:31:02 +0100
+
+jpilot (0.99.8-0.99.9-pre1-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 18 Dec 2005 20:07:16 +0100
+
+jpilot (0.99.8-4) unstable; urgency=low
+
+  * regenerate .diff.gz file. Closes: #341815 "FTBFS: Makefile:550:
+    .deps/address.Po: No such file or directory"
+  * debian/control: remove Build-Depends: on xlibs-dev as requested in
+    http://lists.debian.org/debian-devel-announce/2005/11/msg00022.html
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat,  3 Dec 2005 16:38:00 +0100
+
+jpilot (0.99.8-3) unstable; urgency=low
+
+  * debian/jpilot.templates:  change the Description: text to be compliant
+    with the developers reference, section 6.5
+  * debian/po/fr.po: update
+  * debian/compat: 3 -> 4
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 29 Nov 2005 23:15:33 +0100
+
+jpilot (0.99.8-2) unstable; urgency=low
+
+  * debian/rules: use --enable-stock-buttons to have nive GTK+2 stock buttons
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed,  2 Nov 2005 17:56:31 +0100
+
+jpilot (0.99.8-1) unstable; urgency=low
+
+  * new upstream version
+  * debian/sv.po: Swedish debconf translation. Closes: #333799
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue,  1 Nov 2005 21:28:02 +0100
+
+jpilot (0.99.7-0.99.8-pre11-2) unstable; urgency=low
+
+  * debian/control: add Build-Depends: libreadline5-dev
+    Closes: #332684 "jpilot - fails to build"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri,  7 Oct 2005 23:50:04 +0200
+
+jpilot (0.99.7-0.99.8-pre11-1) unstable; urgency=low
+
+  * new upstream version
+  * debian/patches/63_jpilotrc.default.dpatch: correct upstream
+    jpilotrc.default
+  * debian/patches/64_fr.po.dpatch: translate some missing french strings
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri,  7 Oct 2005 21:38:12 +0200
+
+jpilot (0.99.7-0.99.8-pre10-2) unstable; urgency=low
+
+  * debian/patches/02_otherconv.c.dpatch: patch from upstream.
+    Closes: #322701 "problems with letter n"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 13 Aug 2005 14:37:05 +0200
+
+jpilot (0.99.7-0.99.8-pre10-1) unstable; urgency=low
+
+  * new upstream version
+   - Closes: #317038 "jpilot-sync crashes when jpilot-plugins are installed"
+  * debian/po/pt_BR.po: new Brasilian debconf translation. Closes: #310906
+  * debian/po/vi.po: new Vietnamese debconf translation. Closes: #312097
+  * debian/control: use ${misc:Depends} instead of "debconf" as requested in
+    http://lists.debian.org/debian-devel/2005/08/msg00136.html and
+    http://lists.debian.org/debian-devel/2005/08/msg00361.html
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue,  9 Aug 2005 20:12:43 +0200
+
+jpilot (0.99.7-0.99.8-pre9-2) unstable; urgency=low
+
+  * debian/po/pt_BR.po was incorrect, removed. Closes: #310855 "jpilot: broken
+    pt_BR translation inverts the sense of a security admonition"
+  * debian/patches/01_otherconv.c.dpatch: patch from upstream, closes: #309082
+    "jpilot: cuts the last char of Hebrew strings"
+  * debian/control: Standards-Version: 3.6.1.0 -> 3.6.2.1
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 30 Jun 2005 22:49:26 +0200
+
+jpilot (0.99.7-0.99.8-pre9-1) unstable; urgency=low
+
+  * new upstream version
+  * Add Debconf Brazilian Portuguese (pt_BR) l10n. Closes: #306503
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue,  3 May 2005 22:28:31 +0200
+
+jpilot (0.99.7-0.99.8-pre8-1) unstable; urgency=high
+
+  * urgency=high since this version correct security bug #295971
+  * new upstream version
+   - Closes: #295971 "Hidden records can be viewed/modified without password"
+   - Closes: #278635 "cut and paste does not works if you switch from memo to
+     the phonebook"
+  * add debconf Czech translation. Closes: #293004
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 19 Feb 2005 18:04:34 +0100
+
+jpilot (0.99.7-0.99.8-pre7-1) unstable; urgency=low
+
+  * new upstream version
+  * debian/control: remove jpilot-mail suggestion since it is not available in
+    sarge. Closes: #286676 "Suggests jpilot-mail which does not exist"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat,  8 Jan 2005 13:55:02 +0100
+
+jpilot (0.99.7-0.99.8-pre6-1) unstable; urgency=medium
+
+  * new upstream version
+  * urgency=medium to (try to) get it in to sarge
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 27 Nov 2004 14:45:41 +0100
+
+jpilot (0.99.7-0.99.8-pre5-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 26 Nov 2004 10:15:52 +0100
+
+jpilot (0.99.7-0.99.8-pre4-1) unstable; urgency=low
+
+  * new upstream version
+   - Closes: #282761 "Datebook entries for day not sorted by time"
+   - Closes: #266537 "Todo category name truncated"
+   - Closes: #282069 "use GBK as the charset of Simplified Chinese intead of
+    GB2312"
+   - Closes: #270609 "Various minor usability suggestions"
+    . Remove the 'Quit!' button
+    . Change 'Hide-Show-Mask' to three menu entries
+    . In the date view make the barrier between the event's description box
+    and the event's note box movable
+    . In the todo view, move the preferences to a tab in File/Preferences
+  * debian/po/zh_CN.po: Add Simplified Chinese translation for po-debconf
+    Closes: #282066
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 24 Nov 2004 22:18:17 +0100
+
+jpilot (0.99.7-0.99.8-pre3-1) unstable; urgency=low
+
+  * new upstream version
+   - Closes: #265854 "UTF-8 host <-> Palm iso8859-2 conversion option is
+   lacking"
+   - Closes: #263899 "can not display chinese characters if compile jpilot
+   with --enable-gtk2"
+   - Closes: #112593 "wishlist: keyboard shortcuts for buttons"
+   - Closes: #205261 "jpilot: Restoring deleted records?"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 17 Nov 2004 21:09:37 +0100
+
+jpilot (0.99.7-10) unstable; urgency=medium
+
+  * urgency set to medium to (try to) have this version in sarge and avoid a
+    lot of bug reports from users when upgrading
+  * 24_address_gui.c.dpatch: make the "Dial" button work with GTK2
+  * 25_utf_dialog.dpatch: display a dialog box asking to change the charset
+    encoding to UTF-8.
+    Closes: #269151 "bullet in memo causes entire memo not to be displayed"
+    Closes: #261894 "cannot display latin1 characters like Umlaut a, etc"
+  * update debian/README.Debian: The "Latin1 / No conversion" UTF-8 equivalent
+    is "Host UTF-8 <-> Palm Windows 1252"
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 10 Sep 2004 10:41:50 +0200
+
+jpilot (0.99.7-9) unstable; urgency=medium
+
+  * 18_log.c.dpatch: update my patch to avoid crash when charaters not in the
+    local encoding are entered. Closes: #267525 "Entering eastern european
+    characters in western european mode makes Jpilot crash"
+  * urgency=medium since previous versions (0.99.7-6 to 0.99.7-8) are a
+    regression regarding upstream version. It would be better to have this
+    version in Sarge.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 28 Aug 2004 22:19:38 +0200
+
+jpilot (0.99.7-8) unstable; urgency=low
+
+  * 21_print.c.dpatch: escape ( and ) when printing todos. Closes: #261812
+  * 22_prefs_gui.c.dpatch: remove the configuration "The first day of the week
+    is" since the first day of the week is now selected by the locale with
+    GTK2.  Closes: #265277
+  * debian/po/de.po: add German translation of the debconf templates.
+    Closes: #264607
+  * 23_prefs_gui.c.dpatch: convert long date format in UTF-8 in the preference
+    window
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 28 Aug 2004 21:34:20 +0200
+
+jpilot (0.99.7-7) unstable; urgency=low
+
+  * debian/patches/19_keyring.c.dpatch: patch for "Keyring plugin truncates
+    new passwords", Closes: #261194
+  * debian/patches/20_datebook_gui_utils.c.dpatch: avoid truncation of
+    non-UTF-8 dates in datebook GUI
+  * debian/control: Standards-Version: 3.6.0 -> 3.6.1.0: no change needed
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 25 Jul 2004 23:21:46 +0200
+
+jpilot (0.99.7-6) unstable; urgency=low
+
+  * compile with GTK+ 2.0 support
+
+   IMPORTANT:
+   if you use accents or non ASCII characters you shall use the
+   "Host UTF-8 <-> Palm Windows 1250 (EE)" instead of "Latin1 / No conversion"
+   in File -> Preferences -> Locale
+
+   - Closes: #196821 "compile jpilot with --enable-gtk2"
+   - Closes: #148386 "Calendar clicking on a "disabled" date doesn't work as
+   it should"
+  * debian/patches/16_expense.c.dpatch: correctly use UTF-8 strings
+  * debian/patches/17_jpilot.c.dpatch: convert to UTF-8 messages for the
+    jpilot console
+  * debian/patches/18_log.c.dpatch: convert to local encoding message for the
+    terminal (stderr)
+  * debian/control: jpilot conflicts with plugins without GTK2 support
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 20 Jul 2004 22:04:14 +0200
+
+jpilot (0.99.7-5) unstable; urgency=low
+
+  * debian/po/it.po: Italian debconf template translation. Closes: #252451
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  6 Jun 2004 14:50:15 +0200
+
+jpilot (0.99.7-4) unstable; urgency=low
+
+  * debian/patches/13_datebook.c.dpatch: Apply two patches from upstream CVS
+    "F for floating appt as well as f"
+    "DateBk5 patch for completed events (tag is 'C' and 'c' now)"
+  * debian/patches/10_po.dpatch: remove a "fuzzy" attribute to avoid an empty
+    "File" menu entry in Russian. Closes: #246020
+  * debian/patches/14_print_logo.c.dpatch: Use "." instead of "," for decimal
+    separator in the generated postscript file. Closes: #246142
+  * debian/patches/15_print.c.dpatch: do not truncate the "Printed on: date"
+    to only "Pri" in the postscript daily printout.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  2 May 2004 15:49:57 +0200
+
+jpilot (0.99.7-3) unstable; urgency=low
+
+  * debian/patches/10_po.dpatch: get new upstream po files
+   - update es.po (spanish) and remove all the fuzzy strings
+   - patch tr.po (turkish)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 17 Apr 2004 16:16:40 +0200
+
+jpilot (0.99.7-2) unstable; urgency=low
+
+  * debian/patches/11_keyring.c.dpatch: Closes: #223741,  keyring truncates
+    certain passwords (might be UTF-8 related)
+  * debian/patches/10_po.dpatch: Closes: #236258, GUI: Some menues are
+    doubled...
+    This was a problem with the po files (translation). I did not corrected
+    for all the languages. Contact me to provide a correct po file if the one
+    for your language is incorrect
+  * debian/patches/12_search_gui.c.dpatch: Closes: #239616, jpilot: Find
+    dialog not usable for mouse users
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 28 Mar 2004 19:41:56 +0200
+
+jpilot (0.99.7-1) unstable; urgency=low
+
+  * New upstream release
+   - Closes: #219812: runs out of memory when deleting many addresses
+   - Closes: #146492: highlighting of overdue todo list items
+   - Closes: #198159: remembers by last contact or todo list
+  * debian/patches: all the patches are now included in the upstream version
+    so are removed from debian/patches/
+  * debian/jpilot-dump.1: this manpage is now included in the upstream version
+  * debian/patches/10_po_fr.po.dpatch: translate "/Help/PayBack program" menu
+    entry.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Mon,  1 Mar 2004 19:24:54 +0100
+
+jpilot (0.99.6-10) unstable; urgency=low
+
+  * add Danish debconf translation. Thanks to Claus Hindsgaul. Closes: #232938
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Mon, 16 Feb 2004 17:46:17 +0100
+
+jpilot (0.99.6-9) unstable; urgency=low
+
+  * debian/patches/62_memo_gui.dpatch: upstream patch to correct "The name of
+    'Unfiled' category in Memo gets corrupted". Closes: #229441
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 31 Jan 2004 22:50:42 +0100
+
+jpilot (0.99.6-8) unstable; urgency=low
+
+  * debian/po/ja.po: add debconf Japanese translation. Closes: #229289
+  * debian/rules: add support of nostrip in DEB_BUILD_OPTIONS
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 24 Jan 2004 11:15:53 +0100
+
+jpilot (0.99.6-7) unstable; urgency=low
+
+  * debian/patches/60_address_gui_kana.dpatch: upstream patch to correct "seg
+    fault when moving focus from Japanese Kana text filed of address book".
+    Closes: #222884
+  * debian/patches/61_todo_hide_memo_prefs.dpatch: upstream patch to correct
+    "Move 'Use Manana database & Hide completed ToDos' to Preferences".
+    Closes: #205260
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  4 Jan 2004 23:57:17 +0100
+
+jpilot (0.99.6-6) unstable; urgency=medium
+
+  * urgency=medium since it correct an important bug that was downgraded from
+    grave.
+  * debian/patches/50_delete_button.dpatch: Delete and Copy buttons are no
+    more active when editing a record. Closes: #220637
+  * debian/po/nl.po: new Dutch Debconf translation. Thanks to Tim Dijkstra.
+    Closes: #220696
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 18 Nov 2003 18:30:22 +0100
+
+jpilot (0.99.6-5) unstable; urgency=low
+
+  * debian/control: correct package short description, closes: #220042.
+  * debian/rules: install empty databases, closes: #217935.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 11 Nov 2003 16:49:47 +0100
+
+jpilot (0.99.6-4) unstable; urgency=low
+
+  * sync_debug: jpilot-sync also print messages normally only sent to the
+    jpilot log window. Closes: #212218
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 23 Sep 2003 23:18:38 +0200
+
+jpilot (0.99.6-3) unstable; urgency=low
+
+  * keyring_search.patch: allow search in Keyring plugin. Closes: #158523
+  * unable_to_open.patch: make the "Unable to open" message a bit more
+    informative. Closes: #105653
+  * plugin_order.patch: load plugins in the alphabetical order and not in the
+    order files are stored on disk
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 21 Sep 2003 22:45:00 +0200
+
+jpilot (0.99.6-2) unstable; urgency=low
+
+  * sync debconf question with pilot-link 0.11.8-4
+  * install jpilotrc.* skins. Closes: #206002
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 24 Aug 2003 19:12:39 +0200
+
+jpilot (0.99.6-1) unstable; urgency=low
+
+  * New upstream release
+   - New version available, Closes: #203331
+   - pressing "Home" deletes last active entry: corrected, Closes: #187570
+   - in "Name/Company" display the Company doesn't appear: corrected,
+     Closes: #198478
+   - silly "jpilot crashed..." dialog: I do not apply the Debian patch since
+     it brings more problems than solutions, Closes: #201765, #196317. Maybe
+     bugs #146942 and #152652 should be resubmited?
+   - Need Japanese translation for some menu items: should be OK now,
+     Closes: #202166
+  * debian/menu: Modify the Debian menu file and the jpilot icon.
+    Closes: #192761
+  * debian/control:
+   - Standards-Version: 3.5.8 -> 3.6.0
+   - Add Suggests: for jpilot-backup
+  * add debconf management of /dev/pilot (got it from pilot-link)
+    updated debian/README.Debian to include a security warning (see #205125).
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 15 Aug 2003 13:37:53 +0200
+
+jpilot (0.99.5-3) unstable; urgency=low
+
+  * Apply patch taken from upstream CVS to avoid a seg fault. Closes: #186346
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat, 29 Mar 2003 21:49:40 +0100
+
+jpilot (0.99.5-2) unstable; urgency=low
+
+  * Rewrite jpilot.desktop and add an icon so that the J-Pilot entry appears
+    in the correct menu in Gnome2. Closes: #183188
+  * Remove "Web" menu
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Mon,  3 Mar 2003 14:49:34 +0000
+
+jpilot (0.99.5-1) unstable; urgency=low
+
+  * New upstream version
+   - new version available: Closes: #182495
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu, 27 Feb 2003 23:30:47 +0100
+
+jpilot (0.99.4-3) unstable; urgency=low
+
+  * Add a AM_MAINTAINER_MODE in configure.in to avoid auto* dependency
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 21 Jan 2003 06:55:22 +0000
+
+jpilot (0.99.4-2) unstable; urgency=low
+
+  * Regenerate configure with recent libtool to allow correct behavior under
+    mips/mipsel. Closes: #177050
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 19 Jan 2003 18:59:12 +0000
+
+jpilot (0.99.4-1) unstable; urgency=low
+
+  * New upstream version
+   - new version available : Closes: #176588
+   - can create new address group : Closes: #165930
+  * Build-Depends on libreadline4-dev since libpisock8 uses libreadline.
+  * Add the new command /usr/bin/jpilot-dial
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 15 Jan 2003 21:31:15 +0000
+
+jpilot (0.99.3-3) unstable; urgency=low
+
+  * debian/control:
+   - correctly add the homepage URL to conform to developers-reference (v3.2)
+   - remove dependency on pilot-link. Only the libpisock? is needed.
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Thu,  9 Jan 2003 21:11:40 +0100
+
+jpilot (0.99.3-2) unstable; urgency=low
+
+  * Include po/ja.po file from Yasuhiro Hayase. Thanks!
+    Closes: #171715
+  * debian/control:
+    - Standards-Version: 3.5.0 -> 3.5.8
+    - add J-Pilot URL in the packages description
+  * debian/rules: add support of "noopt" in DEB_BUILD_OPTIONS
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 20 Dec 2002 22:09:50 +0000
+
+jpilot (0.99.3-1) unstable; urgency=low
+
+  * New upstream version
+  * Thanks to Christian Jullien for testing OS 4.X passwords
+  * only use libpng3 in every plugins. Closes: #160352
+  * debian/control: Conflicts with every jpilot-* n-1 version to avoid any
+    libpng or libpisock mixing
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed,  9 Oct 2002 21:53:15 +0200
+
+jpilot (0.99.2-cvs-20020810-3) unstable; urgency=low
+
+  * Correct a localisation bug when printing
+  * debian/control: Build-Depends: on libpisock-dev (>= 0.11.3-2) to force the
+    use of libpisock8
+  * debian/control: Build-Depends: on libpng3-dev instead of libpng2-dev
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 28 Aug 2002 22:33:08 +0000
+
+jpilot (0.99.2-cvs-20020810-2) unstable; urgency=low
+
+  * Add a "wrong password" dialog in the KeyRing plugin. Closes: #157107
+  * Add the KeyRing/README.txt in the jpilot-plugins package
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 18 Aug 2002 13:49:59 +0200
+
+jpilot (0.99.2-cvs-20020810-1) unstable; urgency=low
+
+  * New upstream version (CVS)
+  * debian/control: Build-Depends: on libpng2-dev
+  * check if an associated note exists before getting its length
+    (Closes: #156076)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 11 Aug 2002 18:29:15 +0200
+
+jpilot (0.99.2-cvs-20020718-1) unstable; urgency=low
+
+  * New upstream version (CVS)
+  * Print a dialog box when another instance of jpilot is already running
+    (Closes: #152652)
+  * Print a "Wrong password" dialog in case of... wrong password.
+    Change "Hide-Show Private Records" to "Hide-Show-Mask..." menu entry
+    (Closes: #153767)
+  * Update French translation
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  4 Aug 2002 21:34:08 +0200
+
+jpilot (0.99.2-cvs-20020610-4) unstable; urgency=low
+
+  * Remove the "command=xyz" outputs
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 30 Jun 2002 00:54:49 +0200
+
+jpilot (0.99.2-cvs-20020610-3) unstable; urgency=low
+
+  * Recompile against libpisock5 (0.10.99) with USB support
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun, 30 Jun 2002 00:29:10 +0200
+
+jpilot (0.99.2-cvs-20020610-2) unstable; urgency=low
+
+  * Move jpilot-syncmal and jpilot-mail from Recommends: to Suggests:
+    (Closes: #150216)
+  * Do not exit if ~/.jpilot/ does not exist (debug bug #146942 correction)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Fri, 21 Jun 2002 18:50:18 +0200
+
+jpilot (0.99.2-cvs-20020610-1) unstable; urgency=low
+
+  * New upstream version
+  * Closes: #149404
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Tue, 11 Jun 2002 23:01:48 +0200
+
+jpilot (0.99.2-cvs-20020516-2) unstable; urgency=low
+
+  * Solve bug #149404 (Closes: #149404)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  9 Jun 2002 21:22:09 +0200
+
+jpilot (0.99.2-cvs-20020516-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  2 Jun 2002 19:18:40 +0200
+
+jpilot (0.99.2-cvs-20020506-1) unstable; urgency=low
+
+  * datebook_gui.c: larger field for time pulldown menu
+  * print.c: correct a small setlocale() bug
+  * Expense/expense.c, KeyRing/keyring.c, SyncTime/synctime.c: let GTK set the
+    window size
+  * jpilot-dump.c: -B now works
+  * debian/control: Recommends: jpilot-syncmal and jpilot-mail
+  * libplugin.c: when the search was case sensitive jpilot crashed during
+    search in plugins
+  * check if jpilot is already running (Closes: #146942)
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sun,  2 Jun 2002 16:58:04 +0200
+
+jpilot (0.99.2-3) unstable; urgency=low
+
+  * debian/README.Debian: correct and clarify (Closes: #145491)
+  * debian/control: indent the bulleted lists so that frontends can
+  format it properly (Closes: #132739)
+  * patch to only sync databases marked as to sync (Closes: #142487)
+  * debian/menu: add jpilot in Apps/Tools menu
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Sat,  4 May 2002 16:51:50 +0200
+
+jpilot (0.99.2-2) unstable; urgency=low
+
+  * Add KeyRing plugin since libssl-dev is now in main
+  * Add -Wall -O2 compilation flags
+  * Update debian/README.Debian regarding access rights to the serial port
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Mon,  1 Apr 2002 14:10:25 +0200
+
+jpilot (0.99.2-1) unstable; urgency=low
+
+  * New upstream version (Closes: #134420)
+  * New maintainer. Thanks to Pablo Averbuj for the previous packages.
+  * Modified the package descriptions
+  * jpilot recommends jpilot-plugins
+  * removed KeyRing plugins building. Will add it later when libssl-dev is in
+    tesing/main
+
+ -- Ludovic Rousseau <rousseau@debian.org>  Wed, 27 Mar 2002 21:02:19 +0100
+
+jpilot (0.99-9) unstable; urgency=low
+
+  * Fixed typo in jpilot-dump manpage (Closes: #117597)
+  * Applied plugin patch from Marco Kuhlmann (Closes: #62150, #112697) 
+
+ -- Pablo Averbuj <pablo@debian.org>  Mon, 17 Dec 2001 01:28:18 -0500
+
+jpilot (0.99-8) unstable; urgency=low
+
+  * Fixing lintian errors:
+  * Changed standards-version to 3.5.0
+  * Changed permissions on /usr/share/jpilot/* to 644 (from 755) in Makefile.in
+  * Removed COPYING and INSTALL from the document installation
+  * Created jpilot-dump.1
+  * Fixed extended description so it wraps at 75th column (Closes: #114504)
+
+ -- Pablo Averbuj <pablo@debian.org>  Fri,  7 Sep 2001 16:23:56 -0400
+
+jpilot (0.99-7) unstable; urgency=low
+
+  * Updated config.{guess,sub} (Closes: #110069) 
+
+ -- Pablo Averbuj <pablo@debian.org>  Thu, 30 Aug 2001 02:07:52 -0400
+
+jpilot (0.99-6) unstable; urgency=low
+
+  * Rebuild against new libpisock-dev/libpisock4. (Closes: #102968) 
+
+ -- Pablo Averbuj <pablo@debian.org>  Sun,  1 Jul 2001 15:21:21 -0400
+
+jpilot (0.99-5) unstable; urgency=low
+
+  * Added Build-depend on debhelper. (Closes: #102507)
+  * Removed dependency on gettext. (Closes: #99436)
+
+ -- Pablo Averbuj <pablo@debian.org>  Sun,  1 Jul 2001 00:42:25 -0400
+
+jpilot (0.99-4) unstable; urgency=low
+
+  * Applied Japanese support fix backported by 
+  Masayuki Hatta <mhatta@debian.org> (Closes: #95232)
+
+ -- Pablo Averbuj <pablo@debian.org>  Sun, 29 Apr 2001 01:15:04 -0400
+
+jpilot (0.99-3) unstable; urgency=low
+
+  * Recompiled against new pilot-link. 
+
+ -- Pablo Averbuj <pablo@debian.org>  Thu, 29 Mar 2001 14:09:23 -0500
+
+jpilot (0.99-2) unstable; urgency=low
+
+  * Sigh. Still more Build-deps. (Closes: #87358) 
+
+ -- Pablo Averbuj <pablo@debian.org>  Sat, 24 Feb 2001 02:07:11 -0500
+
+jpilot (0.99-1) unstable; urgency=low
+
+  * Added libpisock-dev to Build-depends.
+  * New upstream release. (Closes: #86054, #75131, #49290, #83388)
+
+ -- Pablo Averbuj <pablo@debian.org>  Fri, 16 Feb 2001 00:23:37 -0500
+
+jpilot (0.98.1-2) unstable; urgency=low
+
+  * Added Build-depends. (Closes: #84500) 
+
+ -- Pablo Averbuj <pablo@debian.org>  Sun,  4 Feb 2001 18:44:12 -0500
+
+jpilot (0.98.1-1) unstable; urgency=low
+
+  * New upstream version (Closes: #64930)
+
+ -- Pablo Averbuj <pablo@debian.org>  Sat,  3 Jun 2000 11:27:38 -0400
+
+jpilot (0.98-1) unstable; urgency=low
+
+  * New upstream version 
+
+ -- Pablo Averbuj <pablo@debian.org>  Sat,  1 Apr 2000 15:25:05 -0500
+
+jpilot (0.97-1) unstable; urgency=low
+
+  * New upstream version 
+
+ -- Pablo Averbuj <pablo@debian.org>  Wed, 22 Dec 1999 21:37:06 -0500
+
+jpilot (0.96-2) unstable; urgency=low
+
+  * Disabling Japanese support since it's not entirely functional and breaks
+    8bit European characters (Bug#49175) 
+  * Fixing control file for better Alpha support (libc dependencies)
+
+ -- Pablo Averbuj <pablo@debian.org>  Tue, 23 Nov 1999 11:43:12 -0500
+
+jpilot (0.96-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Pablo Averbuj <pablo@debian.org>  Thu,  4 Nov 1999 22:31:55 -0500
+
+jpilot (0.95-2) unstable; urgency=low
+
+  * Fixed permissions on items in /usr/share/jpilot 
+
+ -- Pablo Averbuj <pablo@debian.org>  Sun, 24 Oct 1999 11:53:46 -0400
+
+jpilot (0.95-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Pablo Averbuj <pablo@debian.org>  Fri, 10 Sep 1999 02:19:28 -0400
+
+jpilot (0.94-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Pablo Averbuj <pablo@debian.org>  Thu,  2 Sep 1999 14:16:59 -0400

@@ -1,0 +1,3 @@
+version=2
+# Full-site-with-pattern  [Version  [Action]]
+http://jpilot.org/download.html http://jpilot.org/jpilot.*-([\d+\.]+|\d+)\.tar(\.gz|\.bz2) debian uupdate
