@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build Debian package(s) for jpilot.
-# Run from the project root. Version is taken from configure.in (AC_INIT).
+# Run from the project root. Version is taken from configure.ac (AC_INIT).
 # Requires: build-essential, devscripts, and Build-Depends from debian/control.
 
 set -e
@@ -8,10 +8,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Extract version from configure.in (e.g. AC_INIT([jpilot],[2.0.2]) -> 2.0.2)
-VERSION=$(sed -n 's/^AC_INIT(\[jpilot\],\[\([^]]*\)\].*/\1/p' configure.in)
+# Extract version from configure.ac (e.g. AC_INIT([jpilot],[2.0.2]) -> 2.0.2)
+VERSION=$(sed -n 's/^AC_INIT(\[jpilot\],\[\([^]]*\)\].*/\1/p' configure.ac)
 if [[ -z "$VERSION" ]]; then
-  echo "Could not determine version from configure.in (expected AC_INIT([jpilot],[X.Y.Z]))." >&2
+  echo "Could not determine version from configure.ac (expected AC_INIT([jpilot],[X.Y.Z]))." >&2
   exit 1
 fi
 
