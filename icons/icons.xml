@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="./">
+    <file>address.xpm</file>
+    <file>backup.xpm</file>
+    <file>cancel_sync.xpm</file>
+    <file>datebook.xpm</file>
+    <file>jpilot-icon1.xpm</file>
+    <file>jpilot-icon2.xpm</file>
+    <file>jpilot-icon3.xpm</file>
+    <file>jpilot-icon4.xpm</file>
+    <file>memo.xpm</file>
+    <file>sync.xpm</file>
+    <file>todo.xpm</file>
+  </gresource>
+</gresources>

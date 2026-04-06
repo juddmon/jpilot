@@ -1,0 +1,5 @@
+debian/tmp/usr/bin/*
+debian/tmp/usr/share/locale/*
+debian/tmp/usr/share/jpilot/*
+debian/tmp/usr/share/applications/*
+debian/jpilot.xpm usr/share/pixmaps/

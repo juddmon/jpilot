@@ -3119,7 +3119,7 @@ void rename_dbnames(char dbname[][32]) {
     get_pref(PREF_ADDRESS_VERSION, &address_version, NULL);
     get_pref(PREF_TODO_VERSION, &todo_version, NULL);
     get_pref(PREF_MEMO_VERSION, &memo_version, NULL);
-    for (i = 0; dbname[i] && dbname[i][0]; i++) {
+    for (i = 0; dbname[i][0]; i++) {
         if (datebook_version == 1) {
             if (!strcmp(dbname[i], "DatebookDB.pdb")) {
                 strcpy(dbname[i], "CalendarDB-PDat.pdb");

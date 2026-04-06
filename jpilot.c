@@ -886,7 +886,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
             Pstr1++;
         }
 #ifdef PIPE_DEBUG
-        printf("command=%d [%s]\n", command, Pstr1);
+        printf("command=%d [%s]\n", command, Pstr1 ? Pstr1 : "");
 #endif
         if (Pstr1) {
             switch (command) {
@@ -1458,7 +1458,7 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data) 
 static gint cb_check_version(gpointer main_window) {
     int major, minor, micro;
     int r;
-    char str_ver[8];
+    char str_ver[16];
 
     jp_logf(JP_LOG_DEBUG, "cb_check_version\n");
 
@@ -1472,7 +1472,8 @@ static gint cb_check_version(gpointer main_window) {
     minor %= 100;
     micro %= 100;
 
-    sprintf(str_ver, "%02d%02d%02d", major, minor, micro);
+    snprintf(str_ver, sizeof(str_ver), "%02d%02d%02d", major, minor, micro);
+    str_ver[sizeof(str_ver) - 1] = '\0';
 
     set_pref(PREF_VERSION, 0, str_ver, 1);
 
@@ -1509,7 +1510,7 @@ int main(int argc, char *argv[]) {
     int filedesc[2];
     long ivalue;
     const char *svalue;
-    int c, i, height;
+    int c, height;
     char title[MAX_PREF_LEN + 256];
     long pref_width, pref_height, show_tooltips;
     long char_set;
@@ -1590,6 +1591,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 #if 0
+    {
+    int i;
     for (i = 1; i < argc; i++) {
         if (!strncasecmp(argv[i], "-v", 3)) {
             char options[1024];
@@ -1645,6 +1648,7 @@ int main(int argc, char *argv[]) {
             fprintf(stdout, "Geometry handling in GTK is deprecated as of version 3.20\n");
             fprintf(stdout, "J-Pilot can be compiled with define PARSE_GEOMETRY to use it if its available.\n");
         }
+    }
     }
 #endif
 

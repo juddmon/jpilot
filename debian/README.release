@@ -1,0 +1,61 @@
+Creating a Debian package release
+================================
+
+This document describes how to build the jpilot Debian packages for a release.
+
+Prerequisites
+-------------
+- Build environment: install build-essential, devscripts, and the packages
+  listed in Build-Depends in debian/control (libpisock-dev, libgtk-3-dev,
+  libc6-dev, libpthread-stubs0-dev, intltool, libcrypt-dev).
+- The project must already be configured (./configure has been run) so that
+  "make dist" can run.
+
+Release steps
+-------------
+1. Set the upstream version in configure.ac: update AC_INIT([jpilot],[X.Y.Z])
+   to the release version.
+
+2. Update debian/changelog: add a new entry at the top for the new version,
+   for example:
+
+     jpilot (X.Y.Z-1) unstable; urgency=medium
+
+       * Summary of changes in this release
+
+     -- Your Name <email@example.com>  Thu, 12 Feb 2025 12:00:00 +0000
+
+   Use "dch -i" from the devscripts package to edit the changelog, or edit
+   it by hand. The version in the first line must be X.Y.Z-1 (upstream
+   version plus Debian revision).
+
+3. From the project root, run:
+
+     ./build-debian.sh
+
+   This script will:
+   - Read the version from configure.ac
+   - Run "make dist" (Automake writes jpilot-X.Y.Z.tar.gz in the project root)
+   - Copy that to jpilot_X.Y.Z.orig.tar.gz, unpack from .orig, remove the
+     duplicate jpilot-X.Y.Z.tar.gz from the clone, rsync debian/ into the tree,
+     and run dpkg-buildpackage
+   - In the artifact directory, hard-link jpilot-X.Y.Z.tar.gz to the .orig so
+     both the Debian and Automake tarball names exist (same file, no extra disk)
+
+4. Outputs appear in the parent of the repository directory (one level above
+   the project root), not inside the clone:
+   - jpilot_X.Y.Z-1_amd64.deb (main package)
+   - jpilot-plugins_X.Y.Z-1_amd64.deb (plugins package)
+   - jpilot_X.Y.Z-1.dsc, jpilot_X.Y.Z.orig.tar.gz, jpilot-X.Y.Z.tar.gz (source)
+   - jpilot_X.Y.Z-1_amd64.changes (for upload/signing)
+
+Optional: signing and upload
+----------------------------
+- To sign the .changes file (from the artifact directory):
+  debsign ../jpilot_X.Y.Z-1_amd64.changes
+  if your clone is in .../jpilot (or use the full path to the .changes file).
+- To build with a different Debian revision (e.g. -2): edit debian/changelog
+  before running build-debian.sh; the script uses whatever is in the
+  unpacked debian/ directory.
+- To clean the build tree after building: run "fakeroot debian/rules clean"
+  inside the jpilot-X.Y.Z directory, or remove the jpilot-X.Y.Z directory.

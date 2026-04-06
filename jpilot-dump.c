@@ -984,7 +984,7 @@ static void dumpcontact()
                if ((contact_schema[i].type == ADDRESS_GUI_BIRTHDAY) &&
                    mcont->cont.birthdayFlag)
                {
-                  printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field] ? contact_app_info.labels[contact_schema[i].record_field] : "");
+                  printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field][0] ? contact_app_info.labels[contact_schema[i].record_field] : "");
                   birthday_str[0]='\0';
                   get_pref(PREF_SHORTDATE, NULL, &pref_date);
                   strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
@@ -1007,7 +1007,7 @@ static void dumpcontact()
                         address_i++;
                         break;
                      default:
-                        printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field] ? contact_app_info.labels[contact_schema[i].record_field] : "");
+                        printf(("%s: "), contact_app_info.labels[contact_schema[i].record_field][0] ? contact_app_info.labels[contact_schema[i].record_field] : "");
                   }
                   /* Next print the entry field */
                   switch (contact_schema[i].type) {

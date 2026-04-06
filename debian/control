@@ -1,0 +1,38 @@
+Source: jpilot
+Section: otherosfs
+Priority: extra
+Maintainer: Judd Montgomery <judd@jpilot.org>
+Build-Depends: debhelper-compat (= 12), libpisock-dev (>= 0.12.5~), libgtk-3-dev, libc6-dev, libpthread-stubs0-dev, intltool, libcrypt-dev
+Standards-Version: 4.4.1
+Homepage: http://jpilot.org/
+#Vcs-Browser: https://salsa.debian.org/debian/jpilot
+#Vcs-Git: https://salsa.debian.org/debian/jpilot.git
+
+Package: jpilot
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libpisock9 (>= 0.12.5~)
+Recommends: jpilot-plugins
+Suggests: jpilot-backup
+Description: graphical app. to modify the contents of your Palm Pilot's DBs
+ J-Pilot is a desktop organizer application for PalmOS devices. It is
+ meant to be an alternative to the Palm Desktop provided by Palm.
+ .
+ You have access to the following applications:
+  o Datebook
+  o Address book
+  o ToDo list
+  o Memos
+ .
+ Plug-ins are available in the jpilot-plugins package.
+
+Package: jpilot-plugins
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, jpilot (= ${binary:Version})
+Description: plugins for jpilot (Palm Pilot desktop)
+ J-Pilot is a desktop organizer application for PalmOS devices. It is
+ meant to be an alternative to the Palm Desktop provided by Palm.
+ .
+ This package includes three plugins for jpilot:
+  o Expenses
+  o SyncTime
+  o KeyRing

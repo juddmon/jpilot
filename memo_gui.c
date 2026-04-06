@@ -1668,7 +1668,7 @@ int memo_cycle_cat(void) {
             memo_category = CATEGORY_ALL;
             break;
         }
-        if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+        if (sort_l[new_cat].Pcat[0]) {
             memo_category = sort_l[new_cat].cat_num;
             break;
         }

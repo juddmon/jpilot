@@ -161,7 +161,7 @@ static int search_datebook(const char *needle, GtkListStore *listStore, GtkTreeI
             if (svalue1 == NULL) {
                 strcpy(datef, "%x");
             } else {
-                strncpy(datef, svalue1, sizeof(datef));
+                g_strlcpy(datef, svalue1, sizeof(datef));
             }
             strftime(date_str, sizeof(date_str), datef, &temp_cel->mcale.cale.begin);
             date_str[sizeof(date_str) - 1] = '\0';

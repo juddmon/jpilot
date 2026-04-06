@@ -1122,7 +1122,7 @@ int print_contacts(ContactList *contact_list,
                address_i++;
                break;
              default:
-               if (contact_app_info->labels[schema[i].record_field]) {
+               if (contact_app_info->labels[schema[i].record_field][0]) {
                   utf = charset_p2newj(contact_app_info->labels[schema[i].record_field], 16, char_set);
                   g_snprintf(str, 18, "%s:%s", utf, spaces);
                   fprintf(out, "%s", str);
@@ -1147,7 +1147,7 @@ int print_contacts(ContactList *contact_list,
                   birthday_str[0]='\0';
                   get_pref(PREF_SHORTDATE, NULL, &pref_date);
                   strftime(birthday_str, sizeof(birthday_str), pref_date, &(mcont->cont.birthday));
-                  g_snprintf(str, 18, "%s:%s", contact_app_info->labels[schema[i].record_field] ? contact_app_info->labels[schema[i].record_field] : "",
+                  g_snprintf(str, 18, "%s:%s", contact_app_info->labels[schema[i].record_field][0] ? contact_app_info->labels[schema[i].record_field] : "",
                              spaces);
                   fprintf(out, "%s", str);
                   f_indent_print(out, 17, birthday_str);
