@@ -150,7 +150,7 @@ static int jp_vlogf (int level, const char *format, va_list val) {
          sprintf(cmd, "%d:", PIPE_PRINT);
          len = strlen(cmd);
          buf = buf-len;
-         strncpy(buf, cmd, len);
+         memcpy(buf, cmd, len);
          size += len;
          buf[size]='\0';
          buf[size+1]='\n';
@@ -200,7 +200,7 @@ int write_to_parent(int command, const char *format, ...)
    sprintf(cmd, "%d:", command);
    len = strlen(cmd);
    buf = buf-len;
-   strncpy(buf, cmd, len);
+   memcpy(buf, cmd, len);
    size += len;
    /* The pipe doesn't flush unless a CR is written */
    /* This is our key to the parent for a record separator */

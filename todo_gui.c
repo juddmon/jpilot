@@ -1981,7 +1981,7 @@ int todo_cycle_cat(void) {
             todo_category = CATEGORY_ALL;
             break;
         }
-        if ((sort_l[new_cat].Pcat) && (sort_l[new_cat].Pcat[0])) {
+        if (sort_l[new_cat].Pcat[0]) {
             todo_category = sort_l[new_cat].cat_num;
             break;
         }

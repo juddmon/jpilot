@@ -1,10 +1,10 @@
 ### What J-Pilot is
-J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 1.8.2
+J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 2.0.2
 ### J-Pilot plugins
 J-Pilot has a few plugins written for it.  They allow jpilot to have an interface and sync with Palm apps.
-[Pcs&Videos](https://github.com/danbodoh/picsnvideos-jpilot)
-[Manana page](http://bill.sexton.tripod.com/download.htm)  
-[KeyRing page](http://gnukeyring.sourceforge.net)
+- [Pcs&Videos](https://github.com/danbodoh/picsnvideos-jpilot)
+- [Manana page](http://bill.sexton.tripod.com/download.htm)  
+- [KeyRing page](http://gnukeyring.sourceforge.net)
 
 ### Ubuntu install for 20.04 (focal) and 22.04 (jammy)
 This will install the package and create an apt source so that it will be updated when new code is released.
@@ -27,7 +27,7 @@ JPILOT_HOME=/home/judd/palm2
 jpilot
 ```
 ### Syncing
-Most users find it easiest to sync by pressing the sync button on the PalmOS device and then within a second or a few pressing the sync button on jpilot.
+Some users find that timing matters for getting the Palm to start syncing.  It seems to succedd more often by pressing the sync button on the PalmOS device and then within a second or two pressing the sync button in jpilot.
 
 ### BACKUP and SYNC
 Just a warning that a sync DOES NOT backup your palm.  
@@ -40,3 +40,29 @@ If you get an error saying that you have a NULL user ID, then you need to run in
 install-user /dev/pilot Judd 1234
 ```
 Of course replace "Judd" and "1234" with you favorite name and number.
+
+### Building a Debian (or ubuntu) package
+From the repo root, with the tree already configured (e.g. after ./configure):
+
+1. Ensure debian/changelog has an entry for the version in configure.in (e.g. 2.0.2-1).
+2. Run:
+   ./build-debian.sh
+3. Collect the built artifacts in the current directory:
+	jpilot-1.8.2.tar.gz
+	jpilot-1.8.2.tar.gz.asc
+	jpilot-1.8.2.tar.gz.md5sum
+	jpilot-2.0.2.tar.gz
+	jpilot-dbgsym_2.0.2-1_amd64.ddeb
+	jpilot-plugins-dbgsym_2.0.2-1_amd64.ddeb
+	jpilot-plugins_2.0.2-1_amd64.deb
+	jpilot_2.0.2-1.debian.tar.xz
+	jpilot_2.0.2-1.dsc
+	jpilot_2.0.2-1_amd64.buildinfo
+	jpilot_2.0.2-1_amd64.changes
+	jpilot_2.0.2-1_amd64.deb
+	jpilot_2.0.2.orig.tar.gz
+
+#### For a new upstream version
+1. update the jpilot version in configure.ac in the AC_INIT function.
+2. Add a change in debian/changelog
+3. run ./build-debian.sh.

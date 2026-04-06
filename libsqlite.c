@@ -24,7 +24,7 @@
 // Get bit 5 of x
 #define IS_PRIVATE(x)	((((x) & 0xF0) >> 4) & 0x01)
 // Check if strdup() failed: if pointer returned from SQLite is not NULL, then strdup() it and check for allocation failure
-#define ALLOCN(x,y,E)	{ const char *s=y; if (s) { if ((s=strdup(s))!=NULL) x=(char*)s; else { sqlErr=E; goto errAlloc; } } }
+#define ALLOCN(x,y,E)	{ const unsigned char *_sqlite_col=(const unsigned char *)(y); if (_sqlite_col) { const char *s=strdup((const char *)(const void *)_sqlite_col); if (s) x=(char*)s; else { sqlErr=E; goto errAlloc; } } }
 // Run SQLite command/function x and store error text E
 #define CHK(x,E)	if ((sqlRet = x) != SQLITE_OK) { sqlErr=E; goto err; }
 #define CHKDONE(x,E)	if ((sqlRet = x) != SQLITE_DONE) { sqlErr=E; goto err; }
@@ -615,7 +615,7 @@ int jpsqlite_DatebookUPD(struct CalendarEvent *cale, PCRecType rt, unsigned char
 
 	// Data cleansing
 	if (cale->repeatEnd.tm_year < 2  ||  cale->repeatEnd.tm_year > 2050
-	|| cale->repeatEnd.tm_year == 70 && cale->repeatEnd.tm_mon == 0 && cale->repeatEnd.tm_mday == 1)	// 01-Jan-1970
+	|| (cale->repeatEnd.tm_year == 70 && cale->repeatEnd.tm_mon == 0 && cale->repeatEnd.tm_mday == 1))	// 01-Jan-1970
 		pRepeatEnd = NULL;
 	else
 		strftime(pRepeatEnd=repeatEnd,32,"%F",&cale->repeatEnd);
@@ -634,10 +634,10 @@ int jpsqlite_DatebookUPD(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	// pRepeatEnd && (cale->repeatEnd.tm_year*366 + cale->repeatEnd.tm_yday > cale->begin.tm_year*366 + cale->begin.tm_yday)
 	// && pRepeatEnd == NULL
 	repeatForever = cale->repeatForever & 0x01;
-	if (cale->repeatFrequency == 0 && cale->repeatDay == 0 && cale->repeatDays[0] == 0
+	if ((cale->repeatFrequency == 0 && cale->repeatDay == 0 && cale->repeatDays[0] == 0
 	&& cale->repeatDays[1] == 0 && cale->repeatDays[2] == 0 && cale->repeatDays[3] == 0
-	&& cale->repeatDays[4] == 0 && cale->repeatDays[5] == 0 && cale->repeatDays[6] == 0
-	|| cale->repeatFrequency && pRepeatEnd == NULL)
+	&& cale->repeatDays[4] == 0 && cale->repeatDays[5] == 0 && cale->repeatDays[6] == 0)
+	|| (cale->repeatFrequency && pRepeatEnd == NULL))
 		repeatForever = 1;
 	else if (pRepeatEnd && cale->repeatEnd.tm_year*366 + cale->repeatEnd.tm_yday > cale->end.tm_year*366 + cale->end.tm_yday)
 		repeatForever = 0;
@@ -702,7 +702,7 @@ int jpsqlite_DatebookINS(struct CalendarEvent *cale, PCRecType rt, unsigned char
 
 	// Data cleansing
 	if (cale->repeatEnd.tm_year < 2  ||  cale->repeatEnd.tm_year > 2050
-	|| cale->repeatEnd.tm_year == 70 && cale->repeatEnd.tm_mon == 0 && cale->repeatEnd.tm_mday == 1)	// 01-Jan-1970
+	|| (cale->repeatEnd.tm_year == 70 && cale->repeatEnd.tm_mon == 0 && cale->repeatEnd.tm_mday == 1))	// 01-Jan-1970
 		pRepeatEnd = NULL;
 	else
 		strftime(pRepeatEnd=repeatEnd,32,"%F",&cale->repeatEnd);
@@ -719,10 +719,11 @@ int jpsqlite_DatebookINS(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	// old: 1 - (cale->repeatForever & 0x01)
 	// pRepeatEnd && (cale->repeatEnd.tm_year*366 + cale->repeatEnd.tm_yday > cale->begin.tm_year*366 + cale->begin.tm_yday)
 	// && pRepeatEnd == NULL
-	if (cale->repeatFrequency == 0 && cale->repeatDay == 0 && cale->repeatDays[0] == 0
+	repeatForever = cale->repeatForever & 0x01;
+	if ((cale->repeatFrequency == 0 && cale->repeatDay == 0 && cale->repeatDays[0] == 0
 	&& cale->repeatDays[1] == 0 && cale->repeatDays[2] == 0 && cale->repeatDays[3] == 0
-	&& cale->repeatDays[4] == 0 && cale->repeatDays[5] == 0 && cale->repeatDays[6] == 0
-	|| cale->repeatFrequency && pRepeatEnd == NULL)
+	&& cale->repeatDays[4] == 0 && cale->repeatDays[5] == 0 && cale->repeatDays[6] == 0)
+	|| (cale->repeatFrequency && pRepeatEnd == NULL))
 		repeatForever = 1;
 	else if (pRepeatEnd && cale->repeatEnd.tm_year*366 + cale->repeatEnd.tm_yday > cale->end.tm_year*366 + cale->end.tm_yday)
 		repeatForever = 0;
@@ -777,6 +778,7 @@ int jpsqlite_MemoUPD(struct Memo *memo, PCRecType rt, unsigned char attrib, unsi
 	const char *sqlErr = "";
 
 	jp_logf(JP_LOG_DEBUG,"jpsqlite_MemoUPD(): rt=%d, category=%d, unique_id=%u\n",rt,attrib&0X0F,*unique_id);
+	errId = *unique_id;
 
 	CHK(sqlite3_bind_int(db.stmtMemoUPD,1,attrib & 0x0F),"MemoUpdB1")
 	CHK(sqlite3_bind_int(db.stmtMemoUPD,2,IS_PRIVATE(attrib)),"MemoUpdB2")
@@ -916,6 +918,7 @@ int jpsqlite_ExpenseUPD(struct Expense *ex, PCRecType rt, unsigned char attrib, 
 	char date[32];
 
 	jp_logf(JP_LOG_DEBUG,"jpsqlite_ExpenseUPD(): rt=%d, category=%d, unique_id=%u\n",rt,attrib&0X0F,*unique_id);
+	errId = *unique_id;
 
 	CHK(sqlite3_bind_int(db.stmtExpenseUPD,1,attrib & 0x0F),"ExpenseUpdB1")
 	strftime(date,32,"%F",&(ex->date));
@@ -1033,7 +1036,7 @@ int jpsqlite_Delete(AppType app_type, void *VP) {
 			CHK(sqlite3_clear_bindings(db.stmtMemoDEL),"MemoDelCL")
 			CHK(sqlite3_reset(db.stmtMemoDEL),"MemoDelRST")
 			break;
-		case MEMOS+2:	// hacky: should be part of AppType enum
+		case EXPENSE:
 			mex = (struct MyExpense*) VP;
 			CHK(sqlite3_bind_int(db.stmtExpenseDEL,1,errId=mex->unique_id),"ExpenseDelB1")
 			CHKDONE(sqlite3_step(db.stmtExpenseDEL),"ExpenseDelST")
@@ -1512,7 +1515,7 @@ int jpsqlite_DatebookSEL(CalendarEventList **calendar_event_list, struct tm *now
 		tm->mcale.cale.exceptions = sqlite3_column_int(db.stmtDatebookSEL,20);
 		if (tm->mcale.cale.exceptions == 0) {
 			tm->mcale.cale.exception = NULL;
-		} else if ((excp = sqlite3_column_text(db.stmtDatebookSEL,21)) != NULL) {
+		} else if ((excp = (const char *)(const void *)sqlite3_column_text(db.stmtDatebookSEL,21)) != NULL) {
 			if ((tm->mcale.cale.exception = calloc(tm->mcale.cale.exceptions,sizeof(struct tm))) == NULL) {
 				sqlErr = "tm->mcale.cale.exception";
 				goto errAlloc;
@@ -1691,7 +1694,7 @@ errAlloc:
  * Elmar Klausmeier, 14-Oct-2022
  */
 int jpsqlite_ExpenseSEL(struct MyExpense **expense_list) {
-	int sqlRet=0, errId=0, id, private0=0, private1=0, recs_returned=0, cat, priv;
+	int sqlRet=0, errId=0, id, recs_returned=0;
 	const char *sqlErr="", *date;
 	struct MyExpense *tm, *tmprev=NULL;
 
@@ -1845,13 +1848,13 @@ int jpsqlite_PrefSEL(prefType prefs[], int count) {
 		id = sqlite3_column_int(db.stmtPrefSEL,0);
 		if (errId != id) { errId = id; jp_logf(JP_LOG_FATAL,"jpsqlite_PrefSEL(),stmtPrefSEL: errId != id"); }
 		//ALLOCN(prefs[errId].name,sqlite3_column_text(db.stmtPrefSEL,1),"pref[errId].name")
-		if (strcmp(name=sqlite3_column_text(db.stmtPrefSEL,1),prefs[errId].name) != 0) {
+		if (strcmp(name=(const char *)(const void *)sqlite3_column_text(db.stmtPrefSEL,1),prefs[errId].name) != 0) {
 			jp_logf(JP_LOG_FATAL,"jpsqlite_PrefSEL(),stmtPrefSEL: prefs[%d].name != %s\n",errId,name);
 		}
-		usertype = sqlite3_column_text(db.stmtPrefSEL,2);
-		filetype = sqlite3_column_text(db.stmtPrefSEL,3);
+		usertype = (const char *)(const void *)sqlite3_column_text(db.stmtPrefSEL,2);
+		filetype = (const char *)(const void *)sqlite3_column_text(db.stmtPrefSEL,3);
 		prefs[errId].ivalue = sqlite3_column_int(db.stmtPrefSEL,4);
-		svalue = sqlite3_column_text(db.stmtPrefSEL,5);
+		svalue = (const char *)(const void *)sqlite3_column_text(db.stmtPrefSEL,5);
 		prefs[errId].usertype = (strcmp(usertype,"int") == 0) ? 1 : 2;
 		prefs[errId].filetype = (strcmp(filetype,"int") == 0) ? 1 : 2;
 		if (svalue == NULL) {
@@ -1902,8 +1905,7 @@ errAlloc:
 
 int jpsqlite_PrefDELINS(prefType prefs[], int count) {
 	int sqlRet=0, errId=0, id;
-	const char *sqlErr="", *type, *value;
-	char prefLong[32];
+	const char *sqlErr="";
 
 	jp_logf(JP_LOG_DEBUG,"jpsqlite_PrefDELINS()\n");
 
@@ -1966,7 +1968,7 @@ int jpsqlite_AlarmsSEL(int *year, int *mon, int *day, int *hour, int *min) {
 	CHK(sqlite3_prepare_v2(db.conn, "select UpToDate from Alarms",
 		-1, &dbpstmt, NULL), "jpsqlite_AlarmsSEL")
 	if ((sqlRet = sqlite3_step(dbpstmt)) == SQLITE_ROW) {
-		upToDate = sqlite3_column_text(dbpstmt,0);
+		upToDate = (const char *)(const void *)sqlite3_column_text(dbpstmt,0);
 		sscanf(upToDate,"%d-%d-%dT%d:%d",year,mon,day,hour,min);
 	}
 	jp_logf(JP_LOG_DEBUG,"jpsqlite_AlarmsSEL(): year=%04d, month=%02d, day=%02d, hour=%02d, min=%02d\n",*year,*mon,*day,*hour,*min);

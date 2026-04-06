@@ -168,7 +168,8 @@ typedef enum {
    CONTACTS,
    TASKS,
    MEMOS,
-   REDRAW
+   REDRAW,
+   EXPENSE = MEMOS + 2
 } AppType;
 
 typedef struct {

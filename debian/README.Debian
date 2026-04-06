@@ -1,0 +1,35 @@
+jpilot for Debian
+-----------------
+
+Character encoding:
+===================
+
+IMPORTANT:
+If you use accents or non ASCII characters you shall use the
+"UTF: Latin1, Western Europe (CP1252)" instead of "Latin1 / No conversion"
+in File -> Preferences -> Locale -> Character Set
+
+If you use "Latin1 / No conversion" (or anoth non UTF-8 encoding) you
+will see messages on the console like:
+** (jpilot:22053): WARNING **: Invalid UTF8 string passed to pango_layout_set_text()
+
+THIS IS NOT A BUG! With GTK+ 2.0 you HAVE to use a UTF-8 character set.
+
+
+Communication port:
+===================
+
+The libpisock library used to use the /dev/pilot symbolic link to point
+to the real device used by the Palm.  This is no longer the case
+(starting wit pilot-link 0.12.0) and you must explicitly use the a
+device name now.
+
+If you have a USB connected PDA you may use "usb:".
+If you have a serial connected PDA you may use "/dev/ttyS0" (use 0 if
+the PDA is connected to the first serial port)
+
+Read /usr/share/doc/pilot-link/README.libusb.gz for more information on
+the USB connection.
+
+ -- Pablo Averbuj <pablo@debian.org>, Thu,  2 Sep 1999 14:16:59 -0400
+ updated Ludovic Rousseau <rousseau@debian.org>, Sep 15 2006
