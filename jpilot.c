@@ -1173,6 +1173,22 @@ static void cb_install_gui(GtkWidget *widget, gpointer data) {
     install_gui_and_size(window);
 }
 
+static GtkWidget *
+jp_image_from_xpm_data(const char * const *xpm_data)
+{
+    GdkPixbuf *pixbuf;
+    GtkWidget *image;
+
+    pixbuf = jp_pixbuf_new_from_xpm_data(xpm_data);
+    if (pixbuf) {
+        image = gtk_image_new_from_pixbuf(pixbuf);
+        g_object_unref(pixbuf);
+    } else {
+        image = gtk_image_new_from_icon_name("image-missing", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    }
+    return image;
+}
+
 static GtkWidget* create_menu_item(GtkWidget *menu,
                                    GtkAccelGroup *accel_group,
                                    gchar *icon_name,
@@ -1196,14 +1212,16 @@ static GtkWidget* create_menu_item(GtkWidget *menu,
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 
     if (pixbuf_data) {
-        GtkWidget *image;
         GdkPixbuf *pixbuf;
 
-        pixbuf = gdk_pixbuf_new_from_xpm_data(pixbuf_data);
-        image = gtk_image_new_from_pixbuf(pixbuf);
-        gtk_container_add(GTK_CONTAINER(box), image);
-        // FIX - Do I need to unref?
-        // g_object_unref(pixbuf);
+        pixbuf = jp_pixbuf_new_from_xpm_data((const char * const *)pixbuf_data);
+        if (pixbuf) {
+            gtk_container_add(GTK_CONTAINER(box), gtk_image_new_from_pixbuf(pixbuf));
+            g_object_unref(pixbuf);
+        } else {
+            gtk_container_add(GTK_CONTAINER(box), gtk_image_new_from_icon_name(
+                (icon_name && icon_name[0]) ? icon_name : "image-missing", GTK_ICON_SIZE_MENU));
+        }
     } else {
         icon = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
         gtk_container_add(GTK_CONTAINER(box), icon);
@@ -1488,7 +1506,6 @@ int main(int argc, char *argv[]) {
     GtkWidget *separator;
     //gtk2 GtkStyle *style;
     GtkWidget *pixbufwid;
-    GdkPixbuf *pixbuf;
     GtkWidget *menubar = NULL;
     GtkWidget *menubar_help = NULL;
     GtkAccelGroup *accel_group;
@@ -2080,29 +2097,25 @@ int main(int argc, char *argv[]) {
     gdk_window_set_icon_name(gtk_widget_get_window(window), PN);
 
     /* Create "Datebook" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) datebook_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) datebook_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_datebook), pixbufwid);
     gtk_button_set_relief(GTK_BUTTON(button_datebook), GTK_RELIEF_NONE);
 
     /* Create "Address" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) address_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) address_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_address), pixbufwid);
     gtk_button_set_relief(GTK_BUTTON(button_address), GTK_RELIEF_NONE);
 
     /* Create "Todo" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) todo_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) todo_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_todo), pixbufwid);
     gtk_button_set_relief(GTK_BUTTON(button_todo), GTK_RELIEF_NONE);
 
     /* Create "Memo" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) memo_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) memo_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_memo), pixbufwid);
     gtk_button_set_relief(GTK_BUTTON(button_memo), GTK_RELIEF_NONE);
@@ -2119,42 +2132,36 @@ int main(int argc, char *argv[]) {
 #endif
 
     /* Create "locked" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) locked_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) locked_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_locked), pixbufwid);
 
     /* Create "masked" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) masklocked_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) masklocked_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_masklocked), pixbufwid);
 
     /* Create "unlocked" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) unlocked_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) unlocked_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_unlocked), pixbufwid);
 
     /* Create "sync" pixbuf */
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) sync_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) sync_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_sync), pixbufwid);
 
     /* Create "cancel sync" pixbuf */
     /* Hide until sync process started */
     gtk_widget_hide(button_cancel_sync);
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) cancel_sync_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) cancel_sync_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_cancel_sync), pixbufwid);
 
 
     /* Create "backup" pixbuf */
     gtk_widget_hide(button_cancel_sync);
-    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) backup_xpm);
-    pixbufwid = gtk_image_new_from_pixbuf(pixbuf);
+    pixbufwid = jp_image_from_xpm_data((const char * const *) backup_xpm);
     gtk_widget_show(pixbufwid);
     gtk_container_add(GTK_CONTAINER(button_backup), pixbufwid);
 

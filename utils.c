@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "config.h"
+#include <gio/gio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <utime.h>
@@ -2123,6 +2124,106 @@ int get_next_unique_pc_id(unsigned int *next_unique_id) {
     return EXIT_SUCCESS;
 }
 
+/* XPM arrays in this project are char*[] with no trailing NULL; line count comes from the header. */
+static int
+jp_xpm_line_count(const char * const *xpm_data)
+{
+    int w, h, ncolors, cpp;
+
+    if (!xpm_data || !xpm_data[0]) {
+        return 0;
+    }
+    if (sscanf(xpm_data[0], " %d %d %d %d", &w, &h, &ncolors, &cpp) != 4) {
+        return 0;
+    }
+    if (w < 1 || h < 1 || ncolors < 1 || cpp < 1 || cpp > 4) {
+        return 0;
+    }
+    if (w > 8192 || h > 8192 || ncolors > 4096) {
+        return 0;
+    }
+    return 1 + ncolors + h;
+}
+
+GdkPixbuf *
+jp_pixbuf_new_from_xpm_data(const char * const *xpm_data)
+{
+    int i, nlines;
+    GString *str;
+    guchar *raw;
+    gsize len;
+    GdkPixbufLoader *loader;
+    GdkPixbuf *pixbuf;
+    GError *error = NULL;
+
+    if (!xpm_data) {
+        return NULL;
+    }
+
+    nlines = jp_xpm_line_count(xpm_data);
+    if (nlines < 1) {
+        return NULL;
+    }
+
+    /* File-style XPM so the xpm loader accepts it reliably */
+    str = g_string_new("/* XPM */\n");
+    for (i = 0; i < nlines; i++) {
+        if (!xpm_data[i]) {
+            g_string_free(str, TRUE);
+            return NULL;
+        }
+        g_string_append(str, xpm_data[i]);
+        g_string_append_c(str, '\n');
+    }
+
+    len = str->len;
+    raw = (guchar *) g_string_free(str, FALSE);
+
+    pixbuf = NULL;
+    loader = gdk_pixbuf_loader_new_with_type("xpm", &error);
+    if (loader) {
+        gboolean ok = gdk_pixbuf_loader_write(loader, raw, len, &error);
+
+        if (ok) {
+            ok = gdk_pixbuf_loader_close(loader, &error);
+        } else {
+            gdk_pixbuf_loader_close(loader, NULL);
+        }
+        if (ok) {
+            pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+            if (pixbuf) {
+                g_object_ref(pixbuf);
+            }
+        } else {
+            g_clear_error(&error);
+        }
+        g_object_unref(loader);
+    } else {
+        g_clear_error(&error);
+    }
+
+    g_free(raw);
+
+    if (pixbuf) {
+        return pixbuf;
+    }
+
+    /* Built-in path (deprecated API); works when the xpm loader module is missing */
+#if defined(__GNUC__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) xpm_data);
+#if defined(__GNUC__)
+#  pragma GCC diagnostic pop
+#endif
+
+    if (!pixbuf) {
+        g_warning("jp_pixbuf_new_from_xpm_data: could not load XPM");
+    }
+    return pixbuf;
+}
+
 int get_pixbufs(int which_pixbuf,
                 GdkPixbuf **out_pixbuf) {
 
@@ -2146,25 +2247,25 @@ int get_pixbufs(int which_pixbuf,
 
         /* Make the note pixmap */
 
-        pixbuf_note = gdk_pixbuf_new_from_xpm_data(xpm_note);
+        pixbuf_note = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_note);
 
         /* Make the alarm pixmap */
-        pixbuf_alarm = gdk_pixbuf_new_from_xpm_data(xpm_alarm);
+        pixbuf_alarm = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_alarm);
 
         /* Make the check pixmap */
-        pixbuf_check = gdk_pixbuf_new_from_xpm_data(xpm_check);
+        pixbuf_check = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_check);
 
         /* Make the checked pixmap */
-        pixbuf_checked = gdk_pixbuf_new_from_xpm_data(xpm_checked);
+        pixbuf_checked = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_checked);
 
         /* Make the float_checked pixmap */
-        pixbuf_float_check = gdk_pixbuf_new_from_xpm_data(xpm_float_check);
+        pixbuf_float_check = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_float_check);
 
         /* Make the float_checked pixmap */
-        pixbuf_float_checked = gdk_pixbuf_new_from_xpm_data(xpm_float_checked);
+        pixbuf_float_checked = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_float_checked);
 
         /* Make the sdcard pixmap */
-        pixbuf_sdcard = gdk_pixbuf_new_from_xpm_data(xpm_sdcard);
+        pixbuf_sdcard = jp_pixbuf_new_from_xpm_data((const char * const *)xpm_sdcard);
 
     }   /* End initialization of pixmaps */
 

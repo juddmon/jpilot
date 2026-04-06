@@ -294,6 +294,8 @@ int get_timeout_interval(void);
 gint timeout_sync_up(gpointer data);
 gint timeout_date(gpointer data);
 
+GdkPixbuf *jp_pixbuf_new_from_xpm_data(const char * const *xpm_data);
+
 int get_pixbufs(int which_one,
                 GdkPixbuf **out_pixbuf);
 int get_rcfile_name(int n, char *rc_copy);
