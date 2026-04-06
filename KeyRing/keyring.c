@@ -505,7 +505,7 @@ static int set_password_hash(unsigned char *buf, int buf_size, char *passwd) {
     /* Must wipe passwd out of memory after using it */
     memset(buffer, 0, MESSAGE_BUF_SIZE);
     memcpy(buffer, buf, SALT_SIZE);
-    strncpy((char *) (buffer + SALT_SIZE), passwd, MESSAGE_BUF_SIZE - SALT_SIZE - 1);
+    snprintf((char *) (buffer + SALT_SIZE), MESSAGE_BUF_SIZE - SALT_SIZE -1, "%s", passwd);
 #ifdef HAVE_LIBGCRYPT
     gcry_md_hash_buffer(GCRY_MD_MD5, md, buffer, MESSAGE_BUF_SIZE);
 #else
@@ -1265,7 +1265,7 @@ static void cb_gen_password(GtkWidget *widget, gpointer data) {
  * the screen.
  */
 static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
-    char temp[8];
+    char temp[32];
     char *nameTxt;
     char *accountTxt;
     const char *svalue;
@@ -1303,7 +1303,7 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
     }
 
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
-        sprintf(temp, "#%03d", row);
+        snprintf(temp, sizeof(temp), "#%d", row);
         nameTxt = temp;
     } else {
         nameTxt = mkr->kr.name;
@@ -1329,13 +1329,13 @@ static int display_record(struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
 
 static int
 display_record_export(GtkListStore *pListStore, struct MyKeyRing *mkr, int row, GtkTreeIter *iter) {
-    char temp[8];
+    char temp[32];
     char *nameTxt;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: display_record_export\n");
 
     if ((!(mkr->kr.name)) || (mkr->kr.name[0] == '\0')) {
-        sprintf(temp, "#%03d", row);
+        snprintf(temp, sizeof(temp), "#%d", row);
         nameTxt = temp;
     } else {
         nameTxt = mkr->kr.name;
@@ -1693,7 +1693,7 @@ static int dialog_password(GtkWindow *main_window,
     if (Pdata.button_hit == DIALOG_SAID_2) {
         ret = 2;
     }
-    strncpy(ascii_password, Pdata.text, PASSWD_LEN);
+    g_strlcpy(ascii_password, Pdata.text, PASSWD_LEN);
     memset(Pdata.text, 0, PASSWD_LEN);
 
     return ret;
@@ -2116,8 +2116,11 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
         } else {
             /* We'll need to remove the last part of the XML file */
             fseek(out, -12L, SEEK_END);
-            fread(text, 11, 1, out);
-            text[11] = '\0';
+            if (fread(text, 11, 1, out) != 1) {
+                text[0] = '\0';
+            } else {
+                text[11] = '\0';
+            }
             if (strncmp(text, "</database>", 11)) {
                 jp_logf(JP_LOG_WARN, _("This doesn't look like a KeePassX XML file\n"));
                 fseek(out, 0L, SEEK_END);

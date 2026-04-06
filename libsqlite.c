@@ -719,6 +719,7 @@ int jpsqlite_DatebookINS(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	// old: 1 - (cale->repeatForever & 0x01)
 	// pRepeatEnd && (cale->repeatEnd.tm_year*366 + cale->repeatEnd.tm_yday > cale->begin.tm_year*366 + cale->begin.tm_yday)
 	// && pRepeatEnd == NULL
+	repeatForever = cale->repeatForever & 0x01;
 	if ((cale->repeatFrequency == 0 && cale->repeatDay == 0 && cale->repeatDays[0] == 0
 	&& cale->repeatDays[1] == 0 && cale->repeatDays[2] == 0 && cale->repeatDays[3] == 0
 	&& cale->repeatDays[4] == 0 && cale->repeatDays[5] == 0 && cale->repeatDays[6] == 0)

@@ -886,7 +886,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
             Pstr1++;
         }
 #ifdef PIPE_DEBUG
-        printf("command=%d [%s]\n", command, Pstr1);
+        printf("command=%d [%s]\n", command, Pstr1 ? Pstr1 : "");
 #endif
         if (Pstr1) {
             switch (command) {
@@ -1458,7 +1458,7 @@ static gint cb_output2(GtkWidget *widget, GdkEventButton *event, gpointer data) 
 static gint cb_check_version(gpointer main_window) {
     int major, minor, micro;
     int r;
-    char str_ver[8];
+    char str_ver[16];
 
     jp_logf(JP_LOG_DEBUG, "cb_check_version\n");
 
@@ -1472,7 +1472,8 @@ static gint cb_check_version(gpointer main_window) {
     minor %= 100;
     micro %= 100;
 
-    sprintf(str_ver, "%02d%02d%02d", major, minor, micro);
+    snprintf(str_ver, sizeof(str_ver), "%02d%02d%02d", major, minor, micro);
+    str_ver[sizeof(str_ver) - 1] = '\0';
 
     set_pref(PREF_VERSION, 0, str_ver, 1);
 

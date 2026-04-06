@@ -1869,9 +1869,9 @@ static int sync_categories(char *DB_name,
             r = edit_cats_swap_cats_pc3(DB_name, Li, found_name_at);
             /* Swap name, ID, and renamed attributes in local table */
             g_strlcpy(tmp_name, local_cai.name[found_name_at], PILOTCAT_NAME_SZ);
-            strncpy(local_cai.name[found_name_at],
+            g_strlcpy(local_cai.name[found_name_at],
                     local_cai.name[Li], PILOTCAT_NAME_SZ);
-            strncpy(local_cai.name[Li], tmp_name, PILOTCAT_NAME_SZ);
+            g_strlcpy(local_cai.name[Li], tmp_name, PILOTCAT_NAME_SZ);
 
             tmp_int = local_cai.ID[found_name_at]; 
             local_cai.ID[found_name_at] = local_cai.ID[Li];
@@ -3357,16 +3357,7 @@ static int jp_sync(struct my_sync_info *sync_info)
    U.successfulSyncDate = time(NULL);
    U.lastSyncDate = U.successfulSyncDate;
    dlp_WriteUserInfo(sd, &U);
-   if (strncpy(buf,_("Thank you for using J-Pilot."),1024) == NULL) {
-      jp_logf(JP_LOG_DEBUG, "memory allocation internal error\n");
-      dlp_EndOfSync(sd, 0);
-      pi_close(sd);
-#ifdef ENABLE_PLUGINS
-      if (!(SYNC_NO_FORK & sync_info->flags)) 
-         free_plugin_list(&plugin_list);
-#endif
-      return 0;
-   }
+   g_strlcpy(buf, _("Thank you for using J-Pilot."), sizeof(buf));
    get_pref(PREF_CHAR_SET, &char_set, NULL);
    charset_j2p(buf,1023,char_set);
 
