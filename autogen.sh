@@ -12,8 +12,16 @@ rm -f configure Makefile Makefile.in config.h.in
 autopoint --force
 # Copy over scripts to allow internationalization
 intltoolize --force --copy --automake
-# Copy over scripts for libtool
-libtoolize --force --copy --automake
+# Copy over scripts for libtool (glibtoolize on macOS, libtoolize elsewhere)
+if command -v libtoolize >/dev/null 2>&1; then
+   LIBTOOLIZE=libtoolize
+elif command -v glibtoolize >/dev/null 2>&1; then
+   LIBTOOLIZE=glibtoolize
+else
+   echo "Error: neither libtoolize nor glibtoolize found in PATH" >&2
+   exit 1
+fi
+$LIBTOOLIZE --force --copy --automake
 
 # Update aclocal after other scripts have run
 aclocal -I m4
