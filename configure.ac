@@ -23,7 +23,7 @@ dnl is discontinuing support on as of 7/23/2006.
 dnl This obsolete macro should probably be removed.
 AC_SEARCH_LIBS([strerror],[cposix])
 dnl Need intltool for i18n support
-AC_PROG_INTLTOOL()
+IT_PROG_INTLTOOL([])
 AC_PROG_INSTALL
 AC_PATH_PROG([SED], [sed], [ AC_MSG_ERROR([sed is required for configure script]) ])
 AC_PATH_PROG([GREP], [grep], [ AC_MSG_ERROR([grep is required for configure script]) ])
@@ -34,8 +34,11 @@ dnl Libtool setup
 dnl ******************************
 dnl enable shared library building, turn off static libraries
 AC_DISABLE_STATIC
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
+_LT_SET_OPTION([LT_INIT],[dlopen])
+m4_warn([obsolete],[AC_LIBTOOL_DLOPEN: Remove this warning and the call to _LT_SET_OPTION when you
+put the 'dlopen' option into LT_INIT's first parameter.])
+
+LT_INIT
 AC_SUBST(LIBTOOL_DEPS)
 
 dnl ******************************
@@ -233,7 +236,7 @@ PILOT_LIBS="-lpisock"
 
 if test "$pilotlibs" = "no" ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ /usr/local/lib64 \
-   /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
+   /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 /usr/lib/x86_64-linux-gnu ; do
    if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
@@ -382,18 +385,19 @@ dnl ******************************
 
 dnl Check for gnu crypt lib necessary for Keyring
 crypto_lib="none"
-AM_PATH_LIBGCRYPT
-AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
-AC_ARG_WITH(openssl,
-   AS_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
-   have_libgcrypt="0")
-if test "$have_libgcrypt" = "0"; then
+dnl AM_PATH_LIBGCRYPT
+dnl AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
+dnl AC_ARG_WITH(openssl,
+dnl    AS_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
+dnl    have_libgcrypt="0")
+dnl if test "$have_libgcrypt" = "0"; then
 dnl Check for OpenSSL libs necessary for Keyring
-   AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
-else
-	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
-	crypto_lib="libgcrypt"
-fi
+dnl    AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
+dnl else
+dnl 	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
+dnl 	crypto_lib="libgcrypt"
+dnl fi
+AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
 
 dnl Check for sqlite3 lib, necessary for jpsqlite
 AC_CHECK_LIB([sqlite3], [sqlite3_libversion], have_libsqlite3=1, have_libsqlite3=0)
@@ -431,18 +435,18 @@ AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
-m4_warn([obsolete],
-[Update your code to rely only on HAVE_SYS_TIME_H,
-then remove this warning and the obsolete code below it.
-All current systems provide time.h; it need not be checked for.
-Not all systems provide sys/time.h, but those that do, all allow
-you to include it and time.h simultaneously.])dnl
-AC_CHECK_HEADERS_ONCE([sys/time.h])
-# Obsolete code to be removed.
-if test $ac_cv_header_sys_time_h = yes; then
-  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
-	     and <time.h>.  This macro is obsolete.])
-fi
+dnl m4_warn([obsolete],
+dnl [Update your code to rely only on HAVE_SYS_TIME_H,
+dnl then remove this warning and the obsolete code below it.
+dnl All current systems provide time.h; it need not be checked for.
+dnl Not all systems provide sys/time.h, but those that do, all allow
+dnl you to include it and time.h simultaneously.])dnl
+dnl AC_CHECK_HEADERS_ONCE([sys/time.h])
+dnl # Obsolete code to be removed.
+dnl if test $ac_cv_header_sys_time_h = yes; then
+dnl   AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+dnl 	     and <time.h>.  This macro is obsolete.])
+dnl fi
 # End of obsolete code.
 
 dnl 10/2/06: This is obsolescent on most systems now as the tm struct is in time.h
