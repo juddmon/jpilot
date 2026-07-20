@@ -34,7 +34,6 @@
 
 /******************************* Global vars **********************************/
 static GtkWidget *window;
-static GtkWidget *main_window;
 static GtkWidget *port_entry;
 static GtkWidget *backups_entry;
 static GtkWidget *ext_editor_entry;
@@ -60,38 +59,6 @@ static const char *port_choices[] = {
 static GtkWidget *rate_menu;
 
 /****************************** Main Code *************************************/
-#ifdef COLORS
-
-/* This doesn't work quite right.  There is supposedly no way to do it in GTK. */
-static void r(GtkWidget *w, gpointer data)
-{
-  /* GtkStyle *style;
-
-   style = gtk_rc_get_style(GTK_WIDGET(w));
-   if (style) gtk_rc_style_unref(style);
-   if (GTK_IS_CONTAINER(w)) {
-      gtk_container_foreach(GTK_CONTAINER(w), r, w);
-   } */
-}
-
-static void set_colors()
-{
- /*  GtkStyle* style;
-   int i;
-
-   r(main_window, NULL);
-   r(window, NULL);
-
-   gtk_rc_reparse_all();
-   read_gtkrc_file();
-   gtk_rc_reparse_all();
-   gtk_widget_reset_rc_styles(window);
-   gtk_widget_reset_rc_styles(main_window);
-   gtk_rc_reparse_all();
-   gtk_widget_queue_draw(window);
-   gtk_widget_queue_draw(main_window); */
-}
-#endif /* #ifdef COLORS */
 
 /* Sync Port menu code */
 static void cb_serial_port_menu(GtkComboBox *widget,
@@ -162,11 +129,16 @@ static void cb_pref_menu(GtkComboBox *widget, gpointer data) {
     set_pref_possibility(pref, gtk_combo_box_get_active(GTK_COMBO_BOX(widget)), TRUE);
     
     jp_logf(JP_LOG_DEBUG, "pref %d, value %d\n", pref, GPOINTER_TO_INT(data) & 0xFF);
-#ifdef COLORS
-    if (pref==PREF_RCFILE) {
-       set_colors();
+
+    /* Apply a new theme immediately.  set_pref_possibility() above has
+     * already stored the new PREF_RCFILE value, so re-reading it here
+     * picks up the selection.  GTK restyles every widget on screen when
+     * the provider is reloaded, so both this window and the main window
+     * update without a restart. */
+    if (pref == PREF_RCFILE) {
+        read_gtkrc_file();
     }
-#endif
+
     return;
 }
 
@@ -423,8 +395,6 @@ void cb_prefs_gui(GtkWidget *widget, gpointer data) {
         gtk_window_present(GTK_WINDOW(window));
         return;
     }
-
-    main_window = data;
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);

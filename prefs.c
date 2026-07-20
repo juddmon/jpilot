@@ -51,7 +51,7 @@ static int t_fmt_ampm = TRUE;
 /* These are the default settings */
 /* name, usertype, filetype, ivalue, char *svalue, svalue_size; */
 /*static*/ prefType glob_prefs[NUM_PREFS] = {
-   {"jpilotcss", CHARTYPE, CHARTYPE, 0, "jpilotcss.default", 16},
+   {"jpilotcss", CHARTYPE, CHARTYPE, 0, "default.css", 12},
    {"time", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"sdate", CHARTYPE, INTTYPE, 0, NULL, 0},
    {"ldate", CHARTYPE, INTTYPE, 0, NULL, 0},
@@ -176,7 +176,7 @@ void pref_init(void)
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_RCFILE:
-         glob_prefs[i].svalue=strdup(EPN"css.default");
+         glob_prefs[i].svalue=strdup("default.css");
          glob_prefs[i].svalue_size=strlen(glob_prefs[i].svalue)+1;
          break;
        case PREF_PRINT_COMMAND:
@@ -818,13 +818,22 @@ int jp_pref_read_rc_file(char *filename, prefType prefs[], int num_prefs)
       if ((Pc = (char *)index(field2, '\n'))) {
          Pc[0]='\0';
       }
+      /* Migrate a theme setting written by an older version before
+       * trying to match it.  Two earlier naming schemes exist:
+       *
+       *   jpilotrc   jpilotrc.blue     GTK2 gtkrc themes
+       *   jpilotcss  jpilotcss.blue    earlier GTK3 CSS themes
+       *
+       * Both are stored under the jpilotcss key now and name a
+       * <theme>.css file. */
+      if (using_old_rc_name_in_pref_file(field1)) {
+         field1 = "jpilotcss";
+         field2 = get_new_css_name(field2);
+      } else if (field1 != NULL && !strcmp(field1, "jpilotcss")) {
+         field2 = get_new_css_name(field2);
+      }
+
       for(i=0; i<num_prefs; i++) {
-          //attempt to convert to new css file if
-          // pref file has old rc name in it.
-         if(using_old_rc_name_in_pref_file(field1)){
-             field1 = "jpilotcss";
-             field2 = get_new_css_name(field2);
-         }
          if (!strcmp(prefs[i].name, field1)) {
             if (prefs[i].filetype == INTTYPE) {
                prefs[i].ivalue = atoi(field2);
@@ -849,23 +858,49 @@ gboolean using_old_rc_name_in_pref_file(const char *field1) {
     return (gboolean) (field1 != NULL && strcmp("jpilotrc", field1) == 0);
 }
 
+/* Convert a theme name written by an older version to the current
+ * <theme>.css form.  Returns field2 unchanged when it is already
+ * current, so this is safe to call on every read.
+ *
+ * jpilotcss.<name> came from a version that already used CSS, so any
+ * name carries over, including a user's own theme.
+ *
+ * jpilotrc.<name> named a GTK2 gtkrc theme.  Only the four that shipped
+ * have a CSS equivalent; anything else was a hand-written gtkrc file
+ * with no counterpart, so those fall back to the default.
+ */
 char *get_new_css_name(char *field2) {
-    if(field2 != NULL){
-        if(strcmp(field2, "jpilotrc.green") == 0){
-            field2 = "jpilotcss.green";
-        }else if(strcmp(field2,"jpilotrc.blue") == 0){
-           field2 = "jpilotcss.blue";
-        }else if(strcmp(field2,"jpilotrc.purple") == 0){
-            field2 = "jpilotcss.purple";
-        }else if(strcmp(field2,"jpilotrc.steel") == 0){
-            field2 = "jpilotcss.steel";
-        }else {
-            // not using one of the old default rc files,
-            // so revert to default.
-            field2 = "jpilotcss.default";
-        }
+    static char converted[MAX_PREF_LEN];
+    const char *base;
+    size_t len;
+
+    if (field2 == NULL) {
+        return field2;
     }
-    return field2;
+
+    /* Already in the current form. */
+    len = strlen(field2);
+    if (len > 4 && !strcmp(field2 + len - 4, ".css")) {
+        return field2;
+    }
+
+    if (!strncmp(field2, EPN "css.", strlen(EPN "css."))) {
+        base = field2 + strlen(EPN "css.");
+    } else if (!strncmp(field2, EPN "rc.", strlen(EPN "rc."))) {
+        base = field2 + strlen(EPN "rc.");
+        if (strcmp(base, "green") && strcmp(base, "blue") &&
+            strcmp(base, "purple") && strcmp(base, "steel") &&
+            strcmp(base, "default")) {
+            base = "default";
+        }
+    } else {
+        base = "default";
+    }
+
+    g_snprintf(converted, sizeof(converted), "%s.css", base);
+    jp_logf(JP_LOG_DEBUG, "converted theme name %s to %s\n", field2, converted);
+
+    return converted;
 }
 
 int pref_read_rc_file(void)

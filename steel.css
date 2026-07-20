@@ -1,0 +1,30 @@
+/***********************************************************************
+ * steel.css - J-Pilot steel theme
+ *
+ * A desaturated blue-gray.
+ *
+ * Only the accent is fixed here; every surface, border and text color
+ * is derived from the system GTK theme in jpilot-common.css, so this
+ * theme follows the desktop's light/dark setting.  To retint J-Pilot,
+ * change jp_accent below -- nothing else needs to be touched.
+ *
+ * NOTE: this theme is not self-contained.  If you copy it into
+ * ~/.jpilot/ to customize it, copy jpilot-common.css alongside it --
+ * the @import below is resolved relative to this file's directory.
+ ***********************************************************************/
+
+@define-color jp_accent    #6a629d;
+@define-color jp_accent_fg #ffffff;
+
+/* Tint the window and its chrome with the theme hue.  Raise the
+   factor for a stronger wash, or set this to plain @theme_bg_color
+   for an untinted, neutral look. */
+@define-color jp_chrome    mix(@theme_bg_color, @jp_accent, 0.32);
+
+/* A much lighter wash for the surfaces the user reads: the record
+   list, text entries, note fields and the calendar grid.  Kept far
+   weaker than the chrome tint so text contrast stays high -- this
+   is the pale tint the classic themes used for content. */
+@define-color jp_content   mix(@theme_base_color, @jp_accent, 0.10);
+
+@import url("jpilot-common.css");

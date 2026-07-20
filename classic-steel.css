@@ -1,3 +1,16 @@
+/***********************************************************************
+ * classic-steel.css - J-Pilot classic steel theme
+ *
+ * The steel theme as it appeared before the themes were rewritten as
+ * thin overlays on the system GTK theme.  Kept for anyone who prefers
+ * the older look.
+ *
+ * Unlike steel.css this file is self-contained: it carries a full copy
+ * of the widget styling and does not import jpilot-common.css, so it
+ * overrides the system theme rather than building on it.  It does not
+ * follow the desktop's light/dark setting.
+ ***********************************************************************/
+
 /***************
   defined colors in this theme.
   If you want to change the colors, here is the appropriate place.
