@@ -1,0 +1,19 @@
+/***********************************************************************
+ * purple.css - J-Pilot purple theme
+ *
+ * A soft violet.
+ *
+ * Only the accent is fixed here; every surface, border and text color
+ * is derived from the system GTK theme in jpilot-common.css, so this
+ * theme follows the desktop's light/dark setting.  To retint J-Pilot,
+ * change jp_accent below -- nothing else needs to be touched.
+ *
+ * NOTE: this theme is not self-contained.  If you copy it into
+ * ~/.jpilot/ to customize it, copy jpilot-common.css alongside it --
+ * the @import below is resolved relative to this file's directory.
+ ***********************************************************************/
+
+@define-color jp_accent    #9141ac;
+@define-color jp_accent_fg #ffffff;
+
+@import url("jpilot-common.css");

@@ -22,8 +22,10 @@ jpsqlite_DATA = jpsqlite/jptables.sql
 # The skin files for changing jpilot appearance
 colordir = $(pkgdatadir)
 color_DATA = \
-	jpilotcss.blue jpilotcss.default jpilotcss.green jpilotcss.purple \
-	jpilotcss.steel
+	blue.css default.css green.css purple.css steel.css \
+	jpilot-common.css \
+	classic-blue.css classic-default.css classic-green.css \
+	classic-purple.css classic-steel.css
 
 # Instructions for the code to build begins here
 

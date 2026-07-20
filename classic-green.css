@@ -1,3 +1,16 @@
+/***********************************************************************
+ * classic-green.css - J-Pilot classic green theme
+ *
+ * The green theme as it appeared before the themes were rewritten as
+ * thin overlays on the system GTK theme.  Kept for anyone who prefers
+ * the older look.
+ *
+ * Unlike green.css this file is self-contained: it carries a full copy
+ * of the widget styling and does not import jpilot-common.css, so it
+ * overrides the system theme rather than building on it.  It does not
+ * follow the desktop's light/dark setting.
+ ***********************************************************************/
+
 /***************
   defined colors in this theme.
   If you want to change the colors, here is the appropriate place.
@@ -5,24 +18,24 @@
 
 @define-color theme_fg_color #3D3D3D;
 
-@define-color button_hover_bg_color #7339ac;
+@define-color button_hover_bg_color #008f8f;
 /*-
 text color for entries, views and content in general */
-@define-color theme_text_color #000ecc;
+@define-color theme_text_color #033300;
 /*-
 widget base background color */
-@define-color theme_bg_color  #663399;
+@define-color theme_bg_color  #007F7F;
 
-@define-color theme_bg_color_grad  #8c53c6;
+@define-color theme_bg_color_grad  #00a3a3;
 /*-
 text widgets and the like base background color */
-@define-color theme_base_color #d6e9ff;
+@define-color theme_base_color #c1e6e6;
 /*-
 base background color of selections */
-@define-color theme_selected_bg_color #5162c2;
+@define-color theme_selected_bg_color #00b3b3;
 /*-
 text/foreground color of selections */
-@define-color theme_selected_fg_color #d6e9ff;
+@define-color theme_selected_fg_color #c1e6e6;
 /*-
 base background color of insensitive widgets */
 @define-color insensitive_bg_color #f9fafa;
@@ -31,7 +44,7 @@ text foreground color of insensitive widgets */
 @define-color insensitive_fg_color #999a9a;
 /*-
 insensitive text widgets and the like base background color */
-@define-color insensitive_base_color #d6e9ff;
+@define-color insensitive_base_color #c1e6e6;
 /*-
 widget text/foreground color on backdrop windows */
 @define-color theme_unfocused_fg_color white;
@@ -40,25 +53,25 @@ text color for entries, views and content in general on backdrop windows */
 @define-color theme_unfocused_text_color white;
 /*-
 widget base background color on backdrop windows */
-@define-color theme_unfocused_bg_color #663399;
+@define-color theme_unfocused_bg_color #007F7F;
 /*-
 text widgets and the like base background color on backdrop windows */
-@define-color theme_unfocused_base_color #d6e9ff;
+@define-color theme_unfocused_base_color #c1e6e6;
 /*-
 base background color of selections on backdrop windows */
-@define-color theme_unfocused_selected_bg_color #5162c2;
+@define-color theme_unfocused_selected_bg_color #00b3b3;
 /*-
 text/foreground color of selections on backdrop windows */
-@define-color theme_unfocused_selected_fg_color #d6e9ff;
+@define-color theme_unfocused_selected_fg_color #c1e6e6;
 /*-
 insensitive color on backdrop windows*/
-@define-color unfocused_insensitive_color #663399;
+@define-color unfocused_insensitive_color #007F7F;
 /*-
 widgets main borders color */
-@define-color borders #c87caf;
+@define-color borders #72b7b7;
 /*-
 widgets main borders color on backdrop windows */
-@define-color unfocused_borders #729cc5;
+@define-color unfocused_borders #72b7b7;
 /*-
 these are pretty self explicative */
 @define-color warning_color #F89B0F;
@@ -75,11 +88,11 @@ these are pretty self explicative */
 
 
 @define-color notebook_stack @theme_bg_color ;
-@define-color notebook_unselected_tab #4e1983;
-@define-color notebook_unselected_tab_text #645b6f;
+@define-color notebook_unselected_tab #007575;
+@define-color notebook_unselected_tab_text #5f9b8a;
 
-@define-color calendar_header #7f4cb3;
-@define-color calendar_header_text #e5dbef;
+@define-color calendar_header #00b3b3;
+@define-color calendar_header_text #004033;
 
 #label_high {
     background-color: rgb(90%, 90%, 50%);

@@ -3045,78 +3045,71 @@ void print_string(char *str, int len) {
     jp_logf(JP_LOG_STDOUT, "\n");
 }
 
+/* Load the theme named by PREF_RCFILE and apply it immediately.
+ *
+ * Safe to call at any time: calling it again after PREF_RCFILE changes
+ * switches the theme live, with no restart.  GTK recomputes the style
+ * of every widget on screen whenever a provider's content changes, so
+ * simply reloading the provider is all that is required.
+ *
+ * The provider is created once and kept for the lifetime of the
+ * program.  It must not be recreated per call -- a new provider would
+ * be stacked on top of the previous one on the screen rather than
+ * replacing it, leaving the old theme's rules in effect for anything
+ * the new theme does not explicitly override.
+ */
 int read_gtkrc_file(void) {
     char filename[FILENAME_MAX];
     char fullname[FILENAME_MAX];
     struct stat buf;
     const char *svalue;
+    GError *error = NULL;
 
-    GtkCssProvider *provider;
-    //GtkCssProvider *providerold;
+    static GtkCssProvider *provider = NULL;
 
-    provider = gtk_css_provider_new ();
-    //providerold = gtk_css_provider_new ();
+    if (provider == NULL) {
+        provider = gtk_css_provider_new();
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                                  GTK_STYLE_PROVIDER (provider),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
 
     get_pref(PREF_RCFILE, NULL, &svalue);
     if (svalue) {
         jp_logf(JP_LOG_DEBUG, "rc file from prefs is %s\n", svalue);
     } else {
         jp_logf(JP_LOG_DEBUG, "rc file from prefs is NULL\n");
+        return EXIT_FAILURE;
     }
 
     g_strlcpy(filename, svalue, sizeof(filename));
 
-    /* Try to read the file out of the home directory first */
+    /* Try to read the file out of the home directory first, so a user
+     * copy overrides the installed one, then fall back to the
+     * system-wide theme directory. */
     get_home_file_name(filename, fullname, sizeof(fullname));
 
-    if (stat(fullname, &buf) == 0) {
-        jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
-     /*   char loadedFullName[MAX_PREF_LEN];
-        for (int i = 0; i < MAX_NUM_PREFS; i++) {
-            get_rcfile_name(i, loadedFullName);
-            if(loadedFullName != NULL && strncmp(loadedFullName, "jpilotcss", strlen("jpilotcss")) == 0) {
-                gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (providerold),
-                                                loadedFullName, NULL);
-                gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(providerold));
-            }
+    if (stat(fullname, &buf) != 0) {
+        g_snprintf(fullname, sizeof(fullname), "%s/%s/%s/%s",
+                   BASE_DIR, "share", EPN, filename);
+        if (stat(fullname, &buf) != 0) {
+            jp_logf(JP_LOG_DEBUG, "could not find theme file %s\n", filename);
+            return EXIT_FAILURE;
         }
-
-        GtkSettings *settings;
-        gchar *theme_name;
-
-        settings = gtk_settings_get_default();
-        g_object_get(settings, "gtk-theme-name", &theme_name, NULL);
-
-        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_get_named(theme_name,NULL)));
-        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_new()));
-        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                        fullname, NULL);
-        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(gtk_css_provider_new()),GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-                                                  GTK_STYLE_PROVIDER (gtk_css_provider_get_named(theme_name,NULL)),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);*/
-        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                        fullname, NULL);
-        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-                                                  GTK_STYLE_PROVIDER (provider),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-        g_object_unref (provider);
-        //g_object_unref (providerold);
-        return EXIT_SUCCESS;
     }
 
-    g_snprintf(fullname, sizeof(fullname), "%s/%s/%s/%s", BASE_DIR, "share", EPN, filename);
-    if (stat(fullname, &buf) == 0) {
-        jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
-        gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
-                                        fullname, NULL);
-        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-                                                  GTK_STYLE_PROVIDER (provider),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-        g_object_unref (provider);
-        return EXIT_SUCCESS;
+    jp_logf(JP_LOG_DEBUG, "parsing %s\n", fullname);
+    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER (provider),
+                                    fullname, &error);
+    if (error) {
+        /* Previously the error was discarded, so a typo in a theme file
+         * failed silently and looked like the theme had no effect. */
+        jp_logf(JP_LOG_WARN, "CSS error in %s: %s\n", fullname, error->message);
+        g_error_free(error);
+        return EXIT_FAILURE;
     }
-    return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
 }
 
 /* Parse the string and replace CR and LFs with spaces */
@@ -3132,67 +3125,110 @@ void remove_cr_lfs(char *str) {
         }
     }
 }
-int get_rcfile_name(int n, char *rc_copy)
-{
+/* Scan one directory for theme files and add them to dir_list.
+ *
+ * Entries are kept sorted by name and duplicates are skipped, so a
+ * theme present in both the system directory and the user's ~/.jpilot
+ * is listed once.  That matters because read_gtkrc_file() prefers the
+ * home directory copy: listing the name twice would give two entries
+ * that both load the same file.
+ *
+ * Sorting also keeps the list order stable.  PREF_RCFILE stores the
+ * selected theme as an index as well as a name, and readdir() order is
+ * arbitrary and can differ between filesystems, so an unsorted list
+ * could leave the saved index pointing at a different theme.
+ */
+/* True for a file that is a selectable theme.
+ *
+ * A theme is any *.css file, except that the jpilot- prefix is reserved
+ * for shared support files that themes @import rather than themes the
+ * user can pick.  jpilot-common.css is one such file: selecting it
+ * would apply the shared rules with no palette defined.
+ */
+static int is_theme_file(const char *name) {
+    size_t len = strlen(name);
+    const char *suffix = ".css";
+    size_t suffix_len = strlen(suffix);
+
+    if (len <= suffix_len) {
+        return 0;
+    }
+    if (strcmp(name + len - suffix_len, suffix)) {
+        return 0;
+    }
+    if (!strncmp(name, EPN "-", strlen(EPN "-"))) {
+        return 0;
+    }
+    return 1;
+}
+
+static int add_rcfiles_from_dir(const char *dirname) {
     DIR *dir;
     struct dirent *dirent;
+    struct name_list *new_entry, **pprev;
+
+    jp_logf(JP_LOG_DEBUG, "opening dir %s\n", dirname);
+    dir = opendir(dirname);
+    if (!dir) {
+        return EXIT_SUCCESS;
+    }
+
+    while ((dirent = readdir(dir))) {
+        if (!is_theme_file(dirent->d_name)) {
+            continue;
+        }
+
+        /* Find the sorted insertion point. */
+        for (pprev = &dir_list;
+             *pprev && strcmp((*pprev)->name, dirent->d_name) < 0;
+             pprev = &(*pprev)->next) {
+        }
+
+        /* A name already listed came from the system directory; the
+         * home directory copy would resolve to the same list entry. */
+        if (*pprev && !strcmp((*pprev)->name, dirent->d_name)) {
+            jp_logf(JP_LOG_DEBUG, "skipping duplicate %s\n", dirent->d_name);
+            continue;
+        }
+
+        jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
+        new_entry = malloc(sizeof(struct name_list));
+        if (!new_entry) {
+            jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
+            closedir(dir);
+            return EXIT_FAILURE;
+        }
+        new_entry->name = strdup(dirent->d_name);
+        new_entry->next = *pprev;
+        *pprev = new_entry;
+    }
+
+    closedir(dir);
+    return EXIT_SUCCESS;
+}
+
+int get_rcfile_name(int n, char *rc_copy)
+{
     char full_name[FILENAME_MAX];
     int i;
-    char filename[FILENAME_MAX];
-    int found, count;
-    struct name_list *temp_list, *new_entry;
-
+    char dirname[FILENAME_MAX];
+    int found;
+    struct name_list *temp_list;
 
     if (dir_list == NULL) {
-        i = found = count = 0;
-        sprintf(filename, "%s/%s/%s/", BASE_DIR, "share", EPN);
-        jp_logf(JP_LOG_DEBUG, "opening dir %s\n", filename);
-        dir = opendir(filename);
-        if (dir) {
-            for(i=0; (dirent = readdir(dir)); i++) {
-                sprintf(filename, "%s%s", EPN, "css");
-                if (strncmp(filename, dirent->d_name, strlen(filename))) {
-                    continue;
-                } else {
-                    jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-                    new_entry = malloc(sizeof(struct name_list));
-                    if (!new_entry) {
-                        jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s\n", _("Out of memory"));
-                        return EXIT_FAILURE;
-                    }
-                    new_entry->name = strdup(dirent->d_name);
-                    new_entry->next = dir_list;
-                    dir_list = new_entry;
-                }
-            }
-        }
-        if (dir) {
-            closedir(dir);
+        /* System-wide themes. */
+        g_snprintf(dirname, sizeof(dirname), "%s/%s/%s/", BASE_DIR, "share", EPN);
+        if (add_rcfiles_from_dir(dirname) != EXIT_SUCCESS) {
+            return EXIT_FAILURE;
         }
 
+        /* The user's own themes in ~/.jpilot.  This previously searched
+         * for the prefix <EPN>rc ("jpilotrc"), the name used by the GTK2
+         * gtkrc themes, so no theme kept here was ever listed even
+         * though read_gtkrc_file() will happily load one. */
         get_home_file_name("", full_name, sizeof(full_name));
-        jp_logf(JP_LOG_DEBUG, "opening dir %s\n", full_name);
-        dir = opendir(full_name);
-        if (dir) {
-            for(; (dirent = readdir(dir)); i++) {
-                sprintf(filename, "%s%s", EPN, "rc");
-                if (strncmp(filename, dirent->d_name, strlen(filename))) {
-                    continue;
-                } else {
-                    jp_logf(JP_LOG_DEBUG, "found %s\n", dirent->d_name);
-                    new_entry = malloc(sizeof(struct name_list));
-                    if (!new_entry) {
-                        jp_logf(JP_LOG_FATAL, "get_rcfile_name(): %s 2\n", _("Out of memory"));
-                        return EXIT_FAILURE;
-                    }
-                    new_entry->name = strdup(dirent->d_name);
-                    new_entry->next = dir_list;
-                    dir_list = new_entry;
-                }
-            }
-        }
-        if (dir) {
-            closedir(dir);
+        if (add_rcfiles_from_dir(full_name) != EXIT_SUCCESS) {
+            return EXIT_FAILURE;
         }
     }
 

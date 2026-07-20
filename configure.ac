@@ -23,7 +23,7 @@ dnl is discontinuing support on as of 7/23/2006.
 dnl This obsolete macro should probably be removed.
 AC_SEARCH_LIBS([strerror],[cposix])
 dnl Need intltool for i18n support
-AC_PROG_INTLTOOL()
+IT_PROG_INTLTOOL([])
 AC_PROG_INSTALL
 AC_PATH_PROG([SED], [sed], [ AC_MSG_ERROR([sed is required for configure script]) ])
 AC_PATH_PROG([GREP], [grep], [ AC_MSG_ERROR([grep is required for configure script]) ])
@@ -34,8 +34,7 @@ dnl Libtool setup
 dnl ******************************
 dnl enable shared library building, turn off static libraries
 AC_DISABLE_STATIC
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
+LT_INIT([dlopen])
 AC_SUBST(LIBTOOL_DEPS)
 
 dnl ******************************
@@ -227,13 +226,38 @@ fi
 
 dnl pilot-link headers are installed.  Now check for libraries
 
+dnl Located before the library check below so its own "checking ..."
+dnl output does not print in the middle of that check's message.
+AC_PATH_PROG([PKG_CONFIG], [pkg-config], [no])
+
 AC_MSG_CHECKING(for pilot library files)
 pilotlibs=${FORCE_PILOT_LIBS:-no}
 PILOT_LIBS="-lpisock"
 
+dnl Ask pkg-config first.  pilot-link ships a .pc file, and on distros
+dnl that install to a multiarch or otherwise non-standard libdir this is
+dnl the only reliable way to locate it.  Skipped when the user has named
+dnl an explicit prefix, since that should win.  AC_PATH_PROG is used
+dnl rather than PKG_PROG_PKG_CONFIG so this adds no pkg.m4 dependency.
+if test "$pilotlibs" = "no" && test "x$pilot_prefix" = "x" \
+   && test "x$PKG_CONFIG" != "xno" ; then
+   if $PKG_CONFIG --exists pilot-link 2>/dev/null ; then
+      pilotlibs=yes
+      PILOT_LIBS=`$PKG_CONFIG --libs pilot-link`
+      pilot_libs="pkg-config"
+   fi
+fi
+
+dnl On multiarch systems (Debian, Ubuntu) the libraries are in
+dnl /usr/lib/<triplet>, not /usr/lib, so search there too.
+pilot_multiarch=`$CC -print-multiarch 2>/dev/null`
+
 if test "$pilotlibs" = "no" ; then
 for pilot_libs in $pilot_prefix/lib /usr/lib /usr/local/lib/ /usr/local/lib64 \
-   /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 ; do
+   /usr/extra/pilot/lib $pilot_prefix/lib64 /usr/lib64 \
+   ${pilot_multiarch:+$pilot_prefix/lib/$pilot_multiarch} \
+   ${pilot_multiarch:+/usr/lib/$pilot_multiarch} \
+   ${pilot_multiarch:+/usr/local/lib/$pilot_multiarch} ; do
    if test -r $pilot_libs/libpisock.so >/dev/null 2>&1 ; then
       pilotlibs=yes
       PILOT_LIBS="-L$pilot_libs $PILOT_LIBS"
@@ -382,17 +406,50 @@ dnl ******************************
 
 dnl Check for gnu crypt lib necessary for Keyring
 crypto_lib="none"
-AM_PATH_LIBGCRYPT
-AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer], have_libgcrypt=1, have_libgcrypt=0)
+have_libgcrypt=0
+have_libcrypto=0
+
 AC_ARG_WITH(openssl,
    AS_HELP_STRING([--with-openssl],[Use OpenSSL instead of GNU libgcrypt]),
-   have_libgcrypt="0")
+   [use_openssl=yes], [use_openssl=no])
+
+if test "$use_openssl" != "yes"; then
+   dnl Detect libgcrypt with pkg-config rather than AM_PATH_LIBGCRYPT.
+   dnl That macro shells out to libgcrypt-config, which Debian and other
+   dnl distributions no longer ship, so it fails on current systems even
+   dnl when libgcrypt itself is installed.  AC_CHECK_LIB is kept as a
+   dnl fallback for platforms without the .pc file.
+   AC_MSG_CHECKING(for libgcrypt)
+   if test "x$PKG_CONFIG" != "xno" && $PKG_CONFIG --exists libgcrypt 2>/dev/null ; then
+      LIBGCRYPT_CFLAGS=`$PKG_CONFIG --cflags libgcrypt`
+      LIBGCRYPT_LIBS=`$PKG_CONFIG --libs libgcrypt`
+      have_libgcrypt=1
+      AC_MSG_RESULT(yes)
+   else
+      AC_MSG_RESULT(not found by pkg-config, trying to link)
+      AC_CHECK_LIB([gcrypt], [gcry_md_hash_buffer],
+                   [have_libgcrypt=1
+                    LIBGCRYPT_LIBS="-lgcrypt"],
+                   [have_libgcrypt=0])
+   fi
+
+   if test "$have_libgcrypt" = "1"; then
+      AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
+      crypto_lib="libgcrypt"
+   fi
+fi
+
+dnl KeyRing/Makefile.am references both of these, so they must be
+dnl substituted even when libgcrypt was not found.
+AC_SUBST(LIBGCRYPT_CFLAGS)
+AC_SUBST(LIBGCRYPT_LIBS)
+
 if test "$have_libgcrypt" = "0"; then
-dnl Check for OpenSSL libs necessary for Keyring
-   AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)
-else
-	AC_DEFINE(HAVE_LIBGCRYPT, 1, [ Use GNU libgcrypt instead of OpenSSL ])
-	crypto_lib="libgcrypt"
+dnl Check for OpenSSL libs necessary for Keyring.  SSLeay_version was
+dnl removed in OpenSSL 3, so probe the current symbol first and fall
+dnl back to the old one for OpenSSL 1.0.x.
+   AC_CHECK_LIB([crypto], [OPENSSL_init_crypto], have_libcrypto=1,
+      [AC_CHECK_LIB([crypto], [SSLeay_version], have_libcrypto=1, have_libcrypto=0)])
 fi
 
 dnl Check for sqlite3 lib, necessary for jpsqlite
@@ -431,19 +488,11 @@ AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
-m4_warn([obsolete],
-[Update your code to rely only on HAVE_SYS_TIME_H,
-then remove this warning and the obsolete code below it.
-All current systems provide time.h; it need not be checked for.
-Not all systems provide sys/time.h, but those that do, all allow
-you to include it and time.h simultaneously.])dnl
+dnl task.c selects its time headers on HAVE_SYS_TIME_H, so this check
+dnl must stay.  The obsolete TIME_WITH_SYS_TIME define that used to
+dnl accompany it has been dropped: every current system allows
+dnl <sys/time.h> and <time.h> to be included together.
 AC_CHECK_HEADERS_ONCE([sys/time.h])
-# Obsolete code to be removed.
-if test $ac_cv_header_sys_time_h = yes; then
-  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
-	     and <time.h>.  This macro is obsolete.])
-fi
-# End of obsolete code.
 
 dnl 10/2/06: This is obsolescent on most systems now as the tm struct is in time.h
 AC_STRUCT_TM

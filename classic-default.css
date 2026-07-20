@@ -1,3 +1,16 @@
+/***********************************************************************
+ * classic-default.css - J-Pilot classic default theme
+ *
+ * The default theme as it appeared before the themes were rewritten as
+ * thin overlays on the system GTK theme.  Kept for anyone who prefers
+ * the older look.
+ *
+ * Unlike default.css this file is self-contained: it carries a full copy
+ * of the widget styling and does not import jpilot-common.css, so it
+ * overrides the system theme rather than building on it.  It does not
+ * follow the desktop's light/dark setting.
+ ***********************************************************************/
+
 @define-color object_border #44ac53;
 @define-color disabled_checked #b4deba;
 @define-color object_border_bottom  #b1b9c1;

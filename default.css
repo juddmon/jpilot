@@ -1,0 +1,20 @@
+/***********************************************************************
+ * default.css - J-Pilot default theme
+ *
+ * The default theme deliberately has no hue of its own: it borrows the
+ * desktop's own selection color as the accent, so J-Pilot looks like a
+ * native application of whatever GTK theme the user is running, light
+ * or dark.  The named themes (blue.css, green.css, purple.css, steel.css) override the
+ * accent with a fixed hue instead.
+ *
+ * All of the shared widget rules live in jpilot-common.css.
+ *
+ * NOTE: this theme is not self-contained.  If you copy it into
+ * ~/.jpilot/ to customize it, copy jpilot-common.css alongside it --
+ * the @import below is resolved relative to this file's directory.
+ ***********************************************************************/
+
+@define-color jp_accent    @theme_selected_bg_color;
+@define-color jp_accent_fg @theme_selected_fg_color;
+
+@import url("jpilot-common.css");

@@ -1,3 +1,16 @@
+/***********************************************************************
+ * classic-blue.css - J-Pilot classic blue theme
+ *
+ * The blue theme as it appeared before the themes were rewritten as
+ * thin overlays on the system GTK theme.  Kept for anyone who prefers
+ * the older look.
+ *
+ * Unlike blue.css this file is self-contained: it carries a full copy
+ * of the widget styling and does not import jpilot-common.css, so it
+ * overrides the system theme rather than building on it.  It does not
+ * follow the desktop's light/dark setting.
+ ***********************************************************************/
+
 /***************
   defined colors in this theme.
   If you want to change the colors, here is the appropriate place.
@@ -5,24 +18,24 @@
 
 @define-color theme_fg_color #3D3D3D;
 
-@define-color button_hover_bg_color #008f8f;
+@define-color button_hover_bg_color #006aba;
 /*-
 text color for entries, views and content in general */
-@define-color theme_text_color #033300;
+@define-color theme_text_color #2b3aff;
 /*-
 widget base background color */
-@define-color theme_bg_color  #007F7F;
+@define-color theme_bg_color  #004C99;
 
-@define-color theme_bg_color_grad  #00a3a3;
+@define-color theme_bg_color_grad  #005ebd;
 /*-
 text widgets and the like base background color */
-@define-color theme_base_color #c1e6e6;
+@define-color theme_base_color #d9e6ff;
 /*-
 base background color of selections */
-@define-color theme_selected_bg_color #00b3b3;
+@define-color theme_selected_bg_color #0066b3;
 /*-
 text/foreground color of selections */
-@define-color theme_selected_fg_color #c1e6e6;
+@define-color theme_selected_fg_color #d9e6ff;
 /*-
 base background color of insensitive widgets */
 @define-color insensitive_bg_color #f9fafa;
@@ -31,7 +44,7 @@ text foreground color of insensitive widgets */
 @define-color insensitive_fg_color #999a9a;
 /*-
 insensitive text widgets and the like base background color */
-@define-color insensitive_base_color #c1e6e6;
+@define-color insensitive_base_color #d9e6ff;
 /*-
 widget text/foreground color on backdrop windows */
 @define-color theme_unfocused_fg_color white;
@@ -40,25 +53,25 @@ text color for entries, views and content in general on backdrop windows */
 @define-color theme_unfocused_text_color white;
 /*-
 widget base background color on backdrop windows */
-@define-color theme_unfocused_bg_color #007F7F;
+@define-color theme_unfocused_bg_color #004C99;
 /*-
 text widgets and the like base background color on backdrop windows */
-@define-color theme_unfocused_base_color #c1e6e6;
+@define-color theme_unfocused_base_color #d9e6ff;
 /*-
 base background color of selections on backdrop windows */
-@define-color theme_unfocused_selected_bg_color #00b3b3;
+@define-color theme_unfocused_selected_bg_color #0066b3;
 /*-
 text/foreground color of selections on backdrop windows */
-@define-color theme_unfocused_selected_fg_color #c1e6e6;
+@define-color theme_unfocused_selected_fg_color #d9e6ff;
 /*-
 insensitive color on backdrop windows*/
-@define-color unfocused_insensitive_color #007F7F;
+@define-color unfocused_insensitive_color #004C99;
 /*-
 widgets main borders color */
-@define-color borders #72b7b7;
+@define-color borders #729cc5;
 /*-
 widgets main borders color on backdrop windows */
-@define-color unfocused_borders #72b7b7;
+@define-color unfocused_borders #729cc5;
 /*-
 these are pretty self explicative */
 @define-color warning_color #F89B0F;
@@ -75,11 +88,11 @@ these are pretty self explicative */
 
 
 @define-color notebook_stack @theme_bg_color ;
-@define-color notebook_unselected_tab #007575;
-@define-color notebook_unselected_tab_text #5f9b8a;
+@define-color notebook_unselected_tab #00408d;
+@define-color notebook_unselected_tab_text #616b6d;
 
-@define-color calendar_header #00b3b3;
-@define-color calendar_header_text #004033;
+@define-color calendar_header #666699;
+@define-color calendar_header_text #F7F904;
 
 #label_high {
     background-color: rgb(90%, 90%, 50%);
@@ -5908,7 +5921,7 @@ expander title > arrow:disabled:backdrop {
  * Calendar *
  ***********/
 calendar {
-    color: @theme_unfocused_text_color;
+     color: @theme_unfocused_text_color;
     border: 1px solid @borders;
 }
 calendar.view {

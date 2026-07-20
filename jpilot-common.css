@@ -1,0 +1,407 @@
+/***********************************************************************
+ * jpilot-common.css - shared widget rules for all J-Pilot themes
+ *
+ * This file is not a theme by itself, and is deliberately named with
+ * the jpilot- prefix so it does not appear in the theme picker: the
+ * preferences list offers every *.css file except that prefix, which is
+ * reserved for shared support files.
+ *
+ * Each <theme>.css file defines its palette and then imports this file:
+ *
+ *     @define-color jp_accent    #3584e4;
+ *     @define-color jp_accent_fg #ffffff;
+ *     @import url("jpilot-common.css");
+ *
+ * Everything here is layered on top of the user's system GTK theme
+ * rather than replacing it, so J-Pilot picks up the current platform
+ * look (including the dark variant) automatically.  All surfaces are
+ * derived from the system colors -- @theme_bg_color, @theme_base_color,
+ * @theme_fg_color, @borders -- so switching the desktop between light
+ * and dark needs no changes here.  Only the accent hue is a literal,
+ * and it is supplied by the theme file.
+ *
+ * Required from the theme file:
+ *   @jp_accent      the theme hue, used for selection, focus, the
+ *                   active tab underline and the today marker
+ *   @jp_accent_fg   text drawn on top of @jp_accent
+ ***********************************************************************/
+
+/*-------------------------------------------------------------------
+ * Derived colors.  Defined in terms of the system theme so that the
+ * light and dark variants both work without a separate palette.
+ *-----------------------------------------------------------------*/
+
+/* A surface slightly raised from the window background.  mix() toward
+   the foreground darkens on light themes and lightens on dark ones. */
+@define-color jp_surface        mix(@theme_bg_color, @theme_fg_color, 0.04);
+@define-color jp_surface_sunken mix(@theme_bg_color, @theme_fg_color, 0.08);
+
+/* Hairline separators, quieter than the system @borders. */
+@define-color jp_border      alpha(@borders, 0.7);
+@define-color jp_border_soft alpha(@borders, 0.4);
+
+/* Accent washes.  alpha() keeps these legible on light and dark. */
+@define-color jp_accent_wash   alpha(@jp_accent, 0.12);
+@define-color jp_accent_wash_2 alpha(@jp_accent, 0.20);
+
+/* Secondary text: dimmed foreground rather than a fixed gray, so it
+   stays readable when the desktop switches to dark. */
+@define-color jp_dim_fg mix(@theme_fg_color, @theme_bg_color, 0.35);
+
+/*-------------------------------------------------------------------
+ * Base spacing
+ *
+ * The single biggest visual problem with the old themes was that
+ * nothing had padding -- every widget butted directly against its
+ * neighbour.  These give the layout room to breathe.
+ *-----------------------------------------------------------------*/
+
+entry {
+    /* The vertical margin is what separates stacked fields in the
+       record forms.  Without it the entries share edges, the rounded
+       corners never show, and the form reads as one solid block. */
+    margin: 2px 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid @jp_border;
+    background-color: @theme_base_color;
+    caret-color: @jp_accent;
+}
+
+entry:focus {
+    border-color: @jp_accent;
+    box-shadow: inset 0 0 0 1px @jp_accent;
+}
+
+entry:disabled {
+    color: @jp_dim_fg;
+    background-color: @jp_surface;
+}
+
+/* The multi-line description and note fields.  Styled to match entry
+   so a record form reads as one set of controls. */
+textview {
+    background-color: @theme_base_color;
+}
+
+textview.view {
+    padding: 4px;
+    border-radius: 6px;
+    background-color: @theme_base_color;
+}
+
+textview text {
+    background-color: @theme_base_color;
+}
+
+textview text selection {
+    background-color: @jp_accent;
+    color: @jp_accent_fg;
+}
+
+/* GtkTextView is wrapped in a scrolledwindow frame; round the frame
+   rather than the text node so the border follows the corner.  Only
+   the radius is set here -- the system theme already draws the border,
+   and adding one would put boxes around frames elsewhere in J-Pilot
+   that are meant to be invisible. */
+scrolledwindow.frame,
+frame > border {
+    border-radius: 6px;
+}
+
+button {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid @jp_border;
+    background-image: none;
+    background-color: @jp_surface;
+}
+
+button:hover {
+    background-color: @jp_accent_wash;
+    border-color: @jp_accent;
+}
+
+button:active,
+button:checked {
+    background-color: @jp_accent;
+    border-color: @jp_accent;
+    color: @jp_accent_fg;
+}
+
+button:disabled {
+    color: @jp_dim_fg;
+    background-color: @theme_bg_color;
+}
+
+/* Combo boxes read as one control rather than a button glued to a box. */
+combobox button.combo {
+    padding: 5px 8px;
+    border-radius: 6px;
+}
+
+/*-------------------------------------------------------------------
+ * Record list (GtkTreeView)
+ *
+ * The list of records is the widget the user spends the most time
+ * reading, so it gets a quiet header, roomy rows and an accent
+ * selection instead of a saturated slab of color.
+ *-----------------------------------------------------------------*/
+
+treeview.view {
+    background-color: @theme_base_color;
+    border-radius: 6px;
+}
+
+treeview.view:hover {
+    background-color: @jp_accent_wash;
+}
+
+treeview.view:selected,
+treeview.view:selected:focus {
+    background-color: @jp_accent;
+    color: @jp_accent_fg;
+}
+
+/* Keep the selection visible, just muted, when focus moves away. */
+treeview.view:selected:backdrop {
+    background-color: @jp_accent_wash_2;
+    color: @theme_fg_color;
+}
+
+treeview.view header button {
+    padding: 6px 8px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid @jp_border;
+    background-color: @theme_bg_color;
+    background-image: none;
+    color: @jp_dim_fg;
+    font-weight: bold;
+}
+
+treeview.view header button:hover {
+    background-color: @jp_surface;
+    color: @theme_fg_color;
+}
+
+/*-------------------------------------------------------------------
+ * Notebook (the Name / Addr(W) / Addr(H) ... tab strip)
+ *
+ * The active tab is marked with an accent underline -- the current
+ * GNOME idiom -- rather than by filling it with color.  Unselected
+ * tabs stay at readable contrast; the old themes dimmed them so far
+ * that they looked disabled.
+ *-----------------------------------------------------------------*/
+
+notebook {
+    background-color: @theme_bg_color;
+}
+
+notebook > header {
+    background-color: @theme_bg_color;
+    border-color: @jp_border;
+}
+
+notebook > header.top {
+    border-bottom: 1px solid @jp_border;
+}
+
+/* No negative margins: the old themes pulled the tab row into the
+   page below it, which let tab text bleed over the first form row. */
+notebook > header > tabs {
+    margin: 0;
+}
+
+notebook > header > tabs > tab {
+    padding: 8px 16px;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    /* Reserve the underline up front so the label does not shift by
+       2px when the tab becomes active. */
+    box-shadow: inset 0 -2px transparent;
+    color: @jp_dim_fg;
+    font-weight: normal;
+}
+
+notebook > header > tabs > tab:hover {
+    box-shadow: inset 0 -2px @jp_border;
+    color: @theme_fg_color;
+}
+
+notebook > header > tabs > tab:checked {
+    box-shadow: inset 0 -2px @jp_accent;
+    background-color: transparent;
+    color: @jp_accent;
+    font-weight: bold;
+}
+
+/* The old rules used tab:not(checked) -- a missing colon, so "checked"
+   parsed as a type selector and the rule never matched.  These two
+   replace it and are what actually control the tab label colors. */
+notebook > header > tabs > tab:not(:checked) label {
+    color: @jp_dim_fg;
+    background-color: transparent;
+}
+
+notebook > header > tabs > tab:checked label {
+    color: @jp_accent;
+    background-color: transparent;
+}
+
+/* The page body.  An opaque background here is what stops the
+   inactive tab labels from showing through the form. */
+notebook > stack {
+    background-color: @theme_bg_color;
+}
+
+/*-------------------------------------------------------------------
+ * Calendar
+ *-----------------------------------------------------------------*/
+
+calendar {
+    padding: 4px;
+    border: 1px solid @jp_border;
+    border-radius: 6px;
+    background-color: @theme_base_color;
+    color: @theme_fg_color;
+}
+
+calendar.header {
+    background-color: @theme_bg_color;
+    color: @theme_fg_color;
+    border-bottom: 1px solid @jp_border_soft;
+    font-weight: bold;
+}
+
+calendar.button {
+    padding: 2px;
+    border: none;
+    background-color: transparent;
+}
+
+calendar.button:hover {
+    background-color: @jp_accent_wash;
+    border-radius: 4px;
+}
+
+calendar.button:disabled {
+    color: @jp_dim_fg;
+    background-color: transparent;
+}
+
+/* Day names row and days spilling in from the adjacent month. */
+calendar:indeterminate {
+    color: alpha(@theme_fg_color, 0.35);
+}
+
+calendar:selected {
+    background-color: @jp_accent;
+    color: @jp_accent_fg;
+    border-radius: 4px;
+}
+
+/* Days carrying an appointment. */
+calendar.highlight {
+    color: @jp_accent;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+/*-------------------------------------------------------------------
+ * J-Pilot specific widgets
+ *
+ * These four names are set from the C source:
+ *   button_app   jpilot.c      the application launcher buttons
+ *   button_label address_gui.c
+ *   label_high   address_gui.c a highlighted field label
+ *   today        datebook      the "Today is ..." banner
+ *-----------------------------------------------------------------*/
+
+/* Launcher buttons down the left edge.  Flat until pointed at, so the
+   icons read as a toolbar rather than a column of raised boxes. */
+#button_app {
+    padding: 4px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    background-image: none;
+}
+
+#button_app:hover {
+    background-color: @jp_accent_wash;
+}
+
+#button_app:active,
+#button_app:checked {
+    background-color: @jp_accent_wash_2;
+}
+
+#button_label {
+    font-size: 100%;
+}
+
+/* Highlighted field label -- accent text instead of a blue block. */
+#label_high {
+    color: @jp_accent;
+    font-weight: bold;
+    background-color: transparent;
+}
+
+/* The "Today is <date>" banner.  A tinted bar reads as information;
+   the old solid navy slab read as a selected control. */
+#today {
+    background-color: @jp_accent_wash;
+    border-radius: 6px;
+}
+
+#today text {
+    color: @jp_accent;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+/*-------------------------------------------------------------------
+ * Misc chrome
+ *-----------------------------------------------------------------*/
+
+menubar {
+    background-color: @theme_bg_color;
+    border-bottom: 1px solid @jp_border_soft;
+}
+
+menubar > menuitem {
+    padding: 4px 10px;
+}
+
+menubar > menuitem:hover {
+    background-color: @jp_accent_wash;
+    color: @theme_fg_color;
+}
+
+scrolledwindow viewport,
+scrolledwindow {
+    border-radius: 6px;
+}
+
+checkbutton,
+radiobutton {
+    padding: 2px 4px;
+}
+
+check:checked,
+radio:checked {
+    background-color: @jp_accent;
+    border-color: @jp_accent;
+    color: @jp_accent_fg;
+}
+
+separator {
+    background-color: @jp_border_soft;
+}
+
+progressbar progress {
+    background-color: @jp_accent;
+    border-radius: 3px;
+}
