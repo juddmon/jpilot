@@ -211,9 +211,13 @@ combobox button.combo {
  * selection instead of a saturated slab of color.
  *-----------------------------------------------------------------*/
 
+/* No border-radius here.  A treeview renders this node once per cell,
+   not once for the whole list, so a radius rounds every cell corner and
+   lets the window background show through where four cells meet -- the
+   gaps read as small plus signs down each column boundary.  The list's
+   outer corners are rounded by the scrolledwindow frame instead. */
 treeview.view {
     background-color: @jp_content;
-    border-radius: 6px;
 }
 
 treeview.view:hover {
