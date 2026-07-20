@@ -2722,27 +2722,50 @@ static void cb_check_button_reminder(GtkWidget *widget, gpointer data) {
 
 /* Photo Code */
 
+/* Decode an in-memory image (the JPEG held in a contact's picture blob)
+ * into a GtkImage.  Returns NULL if the data could not be decoded, so
+ * callers must check before adding the result to a container.
+ *
+ * The loader must be closed before the pixbuf is fetched.  Older
+ * versions of gdk-pixbuf made a partial pixbuf available part-way
+ * through a write, but current ones only produce it once the loader is
+ * closed, so fetching it first returned NULL and
+ * gtk_image_new_from_pixbuf(NULL) silently produced a blank image --
+ * which looked like the contact simply had no photo.
+ */
 static GtkWidget *image_from_data(void *buf, size_t size) {
     GdkPixbufLoader *loader;
-    GError *error;
+    GError *error = NULL;
     GdkPixbuf *pb;
     GtkWidget *tmp_image = NULL;
 
-    error = NULL;
     loader = gdk_pixbuf_loader_new();
-    gdk_pixbuf_loader_write(loader, buf, size, &error);
-    pb = gdk_pixbuf_loader_get_pixbuf(loader);
-    tmp_image = g_object_ref(gtk_image_new_from_pixbuf(pb));
 
-    if (loader) {
-        gdk_pixbuf_loader_close(loader, &error);
+    if (!gdk_pixbuf_loader_write(loader, buf, size, &error)) {
+        jp_logf(JP_LOG_WARN, "image_from_data(): %s\n", error->message);
+        g_error_free(error);
+        gdk_pixbuf_loader_close(loader, NULL);
         g_object_unref(loader);
+        return NULL;
     }
 
-    /* Force down reference count to prevent memory leak */
-    if (tmp_image) {
-        g_object_unref(tmp_image);
+    if (!gdk_pixbuf_loader_close(loader, &error)) {
+        jp_logf(JP_LOG_WARN, "image_from_data(): %s\n", error->message);
+        g_error_free(error);
+        g_object_unref(loader);
+        return NULL;
     }
+
+    /* The pixbuf belongs to the loader; gtk_image_new_from_pixbuf()
+     * takes its own reference, so it outlives the unref below. */
+    pb = gdk_pixbuf_loader_get_pixbuf(loader);
+    if (pb) {
+        tmp_image = gtk_image_new_from_pixbuf(pb);
+    } else {
+        jp_logf(JP_LOG_WARN, "image_from_data(): could not decode image\n");
+    }
+
+    g_object_unref(loader);
 
     return tmp_image;
 }
@@ -2803,8 +2826,10 @@ static int change_photo(char *filename) {
     contact_picture.length = total_read;
     contact_picture.dirty = 0;
     image = image_from_data(contact_picture.data, contact_picture.length);
-    gtk_container_add(GTK_CONTAINER(picture_button), image);
-    gtk_widget_show(image);
+    if (image) {
+        gtk_container_add(GTK_CONTAINER(picture_button), image);
+        gtk_widget_show(image);
+    }
 
     signal(SIGCHLD, old_sighandler);
 
@@ -3802,10 +3827,13 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             contact_picture.dirty = 0;
             if (image) {
                 gtk_widget_destroy(image);
+                image = NULL;
             }
             image = image_from_data(contact_picture.data, contact_picture.length);
-            gtk_container_add(GTK_CONTAINER(picture_button), image);
-            gtk_widget_show(image);
+            if (image) {
+                gtk_container_add(GTK_CONTAINER(picture_button), image);
+                gtk_widget_show(image);
+            }
         } else {
             if (image) {
                 gtk_widget_destroy(image);
