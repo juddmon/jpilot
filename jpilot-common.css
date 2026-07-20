@@ -24,6 +24,28 @@
  *   @jp_accent      the theme hue, used for selection, focus, the
  *                   active tab underline and the today marker
  *   @jp_accent_fg   text drawn on top of @jp_accent
+ *   @jp_chrome      background for the window and its chrome -- menus,
+ *                   buttons, tabs, list headers.  Set it to a mix of
+ *                   @theme_bg_color and the hue to tint the interface,
+ *                   or to plain @theme_bg_color for no tint.
+ *   @jp_content     background for the surfaces the user reads -- text
+ *                   entries, note fields, the record list, the calendar
+ *                   grid.  A mix of @theme_base_color and the hue, or
+ *                   plain @theme_base_color for no tint.
+ *
+ * Each theme chooses its own strengths; deriving them here would fix
+ * one strength for every theme, because mix() takes a literal factor
+ * and GTK has no way to parameterise it.
+ *
+ * Chrome vs content
+ * -----------------
+ * The two are tinted separately and to very different degrees.  Chrome
+ * is what the user looks past, so it carries the hue strongly.  Content
+ * is what the user reads, so it takes only a light wash -- enough to
+ * belong to the theme, not enough to hurt text contrast.  The classic
+ * themes tinted content this way too (a pale #d9e6ff rather than
+ * white); what made them hard to read was tinting it as heavily as the
+ * chrome, which this split avoids.
  ***********************************************************************/
 
 /*-------------------------------------------------------------------
@@ -31,10 +53,12 @@
  * light and dark variants both work without a separate palette.
  *-----------------------------------------------------------------*/
 
-/* A surface slightly raised from the window background.  mix() toward
-   the foreground darkens on light themes and lightens on dark ones. */
-@define-color jp_surface        mix(@theme_bg_color, @theme_fg_color, 0.04);
-@define-color jp_surface_sunken mix(@theme_bg_color, @theme_fg_color, 0.08);
+/* A surface slightly raised from the chrome background, used for
+   controls that need to read as distinct from the window behind them.
+   mix() toward the foreground darkens on light themes and lightens on
+   dark ones, so one definition serves both. */
+@define-color jp_surface        mix(@jp_chrome, @theme_fg_color, 0.06);
+@define-color jp_surface_sunken mix(@jp_chrome, @theme_fg_color, 0.12);
 
 /* Hairline separators, quieter than the system @borders. */
 @define-color jp_border      alpha(@borders, 0.7);
@@ -45,8 +69,40 @@
 @define-color jp_accent_wash_2 alpha(@jp_accent, 0.20);
 
 /* Secondary text: dimmed foreground rather than a fixed gray, so it
-   stays readable when the desktop switches to dark. */
-@define-color jp_dim_fg mix(@theme_fg_color, @theme_bg_color, 0.35);
+   stays readable when the desktop switches to dark.  Mixed toward
+   @jp_chrome rather than @theme_bg_color so that it dims against the
+   surface it is actually drawn on -- with a strong tint the two differ,
+   and mixing toward the untinted background loses contrast. */
+@define-color jp_dim_fg mix(@theme_fg_color, @jp_chrome, 0.35);
+
+/*-------------------------------------------------------------------
+ * Chrome
+ *
+ * The window background, and the containers that inherit from it.
+ * Content widgets override this with @jp_content further down, so the
+ * strong tint here does not reach anything the user reads.
+ *-----------------------------------------------------------------*/
+
+window,
+dialog,
+messagedialog {
+    background-color: @jp_chrome;
+    color: @theme_fg_color;
+}
+
+/* Layout containers are left transparent so they show the window
+   colour rather than each needing its own rule. */
+box,
+grid,
+paned,
+viewport {
+    background-color: transparent;
+}
+
+/* The panel divider, visible against a tinted window. */
+paned > separator {
+    background-color: @jp_border_soft;
+}
 
 /*-------------------------------------------------------------------
  * Base spacing
@@ -61,10 +117,15 @@ entry {
        record forms.  Without it the entries share edges, the rounded
        corners never show, and the form reads as one solid block. */
     margin: 2px 0;
-    padding: 6px 8px;
+    /* Height comes from min-height rather than vertical padding.  The
+       system theme already sets a min-height on entries; adding vertical
+       padding on top of it stacks, which made these 46px tall and
+       squeezed the gaps out of the multi-row record forms. */
+    min-height: 24px;
+    padding: 2px 8px;
     border-radius: 6px;
     border: 1px solid @jp_border;
-    background-color: @theme_base_color;
+    background-color: @jp_content;
     caret-color: @jp_accent;
 }
 
@@ -81,17 +142,17 @@ entry:disabled {
 /* The multi-line description and note fields.  Styled to match entry
    so a record form reads as one set of controls. */
 textview {
-    background-color: @theme_base_color;
+    background-color: @jp_content;
 }
 
 textview.view {
     padding: 4px;
     border-radius: 6px;
-    background-color: @theme_base_color;
+    background-color: @jp_content;
 }
 
 textview text {
-    background-color: @theme_base_color;
+    background-color: @jp_content;
 }
 
 textview text selection {
@@ -110,7 +171,8 @@ frame > border {
 }
 
 button {
-    padding: 6px 14px;
+    min-height: 28px;
+    padding: 2px 12px;
     border-radius: 6px;
     border: 1px solid @jp_border;
     background-image: none;
@@ -131,12 +193,13 @@ button:checked {
 
 button:disabled {
     color: @jp_dim_fg;
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
 }
 
 /* Combo boxes read as one control rather than a button glued to a box. */
 combobox button.combo {
-    padding: 5px 8px;
+    min-height: 28px;
+    padding: 2px 8px;
     border-radius: 6px;
 }
 
@@ -149,7 +212,7 @@ combobox button.combo {
  *-----------------------------------------------------------------*/
 
 treeview.view {
-    background-color: @theme_base_color;
+    background-color: @jp_content;
     border-radius: 6px;
 }
 
@@ -170,11 +233,12 @@ treeview.view:selected:backdrop {
 }
 
 treeview.view header button {
-    padding: 6px 8px;
+    min-height: 28px;
+    padding: 2px 8px;
     border-radius: 0;
     border: none;
     border-bottom: 1px solid @jp_border;
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
     background-image: none;
     color: @jp_dim_fg;
     font-weight: bold;
@@ -195,11 +259,11 @@ treeview.view header button:hover {
  *-----------------------------------------------------------------*/
 
 notebook {
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
 }
 
 notebook > header {
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
     border-color: @jp_border;
 }
 
@@ -214,7 +278,8 @@ notebook > header > tabs {
 }
 
 notebook > header > tabs > tab {
-    padding: 8px 16px;
+    min-height: 32px;
+    padding: 4px 14px;
     margin: 0;
     border: none;
     background-color: transparent;
@@ -253,7 +318,7 @@ notebook > header > tabs > tab:checked label {
 /* The page body.  An opaque background here is what stops the
    inactive tab labels from showing through the form. */
 notebook > stack {
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
 }
 
 /*-------------------------------------------------------------------
@@ -264,12 +329,12 @@ calendar {
     padding: 4px;
     border: 1px solid @jp_border;
     border-radius: 6px;
-    background-color: @theme_base_color;
+    background-color: @jp_content;
     color: @theme_fg_color;
 }
 
 calendar.header {
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
     color: @theme_fg_color;
     border-bottom: 1px solid @jp_border_soft;
     font-weight: bold;
@@ -367,7 +432,7 @@ calendar.highlight {
  *-----------------------------------------------------------------*/
 
 menubar {
-    background-color: @theme_bg_color;
+    background-color: @jp_chrome;
     border-bottom: 1px solid @jp_border_soft;
 }
 

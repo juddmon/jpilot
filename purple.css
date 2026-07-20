@@ -13,7 +13,18 @@
  * the @import below is resolved relative to this file's directory.
  ***********************************************************************/
 
-@define-color jp_accent    #9141ac;
+@define-color jp_accent    #6426d9;
 @define-color jp_accent_fg #ffffff;
+
+/* Tint the window and its chrome with the theme hue.  Raise the
+   factor for a stronger wash, or set this to plain @theme_bg_color
+   for an untinted, neutral look. */
+@define-color jp_chrome    mix(@theme_bg_color, @jp_accent, 0.32);
+
+/* A much lighter wash for the surfaces the user reads: the record
+   list, text entries, note fields and the calendar grid.  Kept far
+   weaker than the chrome tint so text contrast stays high -- this
+   is the pale tint the classic themes used for content. */
+@define-color jp_content   mix(@theme_base_color, @jp_accent, 0.10);
 
 @import url("jpilot-common.css");

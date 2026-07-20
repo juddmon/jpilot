@@ -17,4 +17,10 @@
 @define-color jp_accent    @theme_selected_bg_color;
 @define-color jp_accent_fg @theme_selected_fg_color;
 
+/* No tint: the default theme stays the plain system background so
+   J-Pilot looks like a native application.  The named themes wash
+   their chrome with their hue instead. */
+@define-color jp_chrome    @theme_bg_color;
+@define-color jp_content   @theme_base_color;
+
 @import url("jpilot-common.css");
