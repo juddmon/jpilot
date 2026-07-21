@@ -2303,9 +2303,16 @@ int todo_gui_cleanup(void) {
     set_pref(PREF_LAST_TODO_CATEGORY, todo_category, NULL, TRUE);
     set_pref(PREF_TODO_SORT_COLUMN, column_selected, NULL, TRUE);
 
-    set_pref(PREF_TODO_SORT_ORDER,
-             gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected)),
-             NULL, TRUE);
+    /* gtk_tree_view_get_column() returns NULL for an out-of-range index, and
+     * gtk_tree_view_column_get_sort_order(NULL) trips a GTK_IS_TREE_VIEW_COLUMN
+     * assertion.  Only save the sort order when the column really exists. */
+    GtkTreeViewColumn *sortColumn =
+        gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), column_selected);
+    if (sortColumn) {
+        set_pref(PREF_TODO_SORT_ORDER,
+                 gtk_tree_view_column_get_sort_order(sortColumn),
+                 NULL, TRUE);
+    }
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     gtk_tree_selection_set_select_function(treeSelection, NULL, NULL, NULL);
     todo_liststore_clear(listStore);
@@ -2558,6 +2565,12 @@ int todo_gui(GtkWidget *vbox, GtkWidget *hbox) {
     /* Restore previous sorting configuration */
     get_pref(PREF_TODO_SORT_COLUMN, &ivalue, NULL);
     column_selected = (int) ivalue;
+    /* A stale or corrupt pref can be out of range; passing it to
+     * gtk_tree_view_get_column() below would return NULL and trip a
+     * GTK_IS_TREE_VIEW_COLUMN assertion.  Clamp to a valid view column. */
+    if (column_selected < 0 || column_selected >= TODO_NUM_COLS - 5) {
+        column_selected = 0;
+    }
 
     for (int x = 0; x < TODO_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());

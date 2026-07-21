@@ -360,6 +360,26 @@ static int pack_KeyRing(struct KeyRing *kr,
     return n;
 }
 
+/* jp_charset_p2newj() does not guarantee valid UTF-8: with a Latin-1 char set
+ * it passes high bytes through unchanged, and KeyRing fields are decrypted, so
+ * a note/account/password can hold arbitrary bytes.  GTK/Pango warns and can
+ * crash (SIGSEGV) when handed invalid UTF-8, so scrub each field to valid UTF-8
+ * before it can reach a tree cell, entry, or search result.  Consumes str
+ * (freed here) and returns a newly allocated string. */
+static char *keyr_ensure_utf8(char *str) {
+    char *valid;
+
+    if (!str) {
+        return NULL;
+    }
+    if (g_utf8_validate(str, -1, NULL)) {
+        return str;
+    }
+    valid = g_utf8_make_valid(str, -1);
+    free(str);
+    return valid;
+}
+
 static int unpack_KeyRing(struct KeyRing *kr,
                           unsigned char *buf,
                           int buf_size) {
@@ -443,10 +463,10 @@ static int unpack_KeyRing(struct KeyRing *kr,
     kr->note=strdup((char *)Pstr[2]);
     */
 
-    kr->name = jp_charset_p2newj((char *) buf, -1);
-    kr->account = jp_charset_p2newj((char *) Pstr[0], -1);
-    kr->password = jp_charset_p2newj((char *) Pstr[1], -1);
-    kr->note = jp_charset_p2newj((char *) Pstr[2], -1);
+    kr->name = keyr_ensure_utf8(jp_charset_p2newj((char *) buf, -1));
+    kr->account = keyr_ensure_utf8(jp_charset_p2newj((char *) Pstr[0], -1));
+    kr->password = keyr_ensure_utf8(jp_charset_p2newj((char *) Pstr[1], -1));
+    kr->note = keyr_ensure_utf8(jp_charset_p2newj((char *) Pstr[2], -1));
 
     packed_date = get_short(Pstr[3]);
     kr->last_changed.tm_year = ((packed_date & 0xFE00) >> 9) + 4;
@@ -1393,6 +1413,16 @@ static gboolean handleKeyringRowSelection(GtkTreeSelection *selection,
     unsigned int unique_id = 0;
 
     jp_logf(JP_LOG_DEBUG, "KeyRing: handleKeyringRowSelection\n");
+
+    /* During window teardown plugin_gui_cleanup() clears the list store, which
+     * emits this selection callback.  By then the MyKeyRing records the model
+     * points at may already be freed, so dereferencing mkr below would be a
+     * use-after-free (crashes inside gtk_entry_set_text).  plugin_active is
+     * FALSE during teardown, so bail out before touching any record data. */
+    if (!plugin_active) {
+        return TRUE;
+    }
+
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
         int *i = gtk_tree_path_get_indices(path);
         row_selected = i[0];
@@ -2377,8 +2407,6 @@ int plugin_gui_cleanup(void) {
 
     connect_changed_signals(DISCONNECT_SIGNALS);
 
-    free_mykeyring_list(&glob_keyring_list);
-
     /* if the password was correct */
     if (plugin_last_time && (TRUE == plugin_active)) {
         plugin_last_time = time(NULL);
@@ -2398,8 +2426,14 @@ int plugin_gui_cleanup(void) {
 
         pane = NULL;
 
+        /* Clear the list store before freeing the records below: the model
+         * holds pointers to the MyKeyRing structs, so freeing them first would
+         * leave the store (and the selection callback fired while clearing)
+         * dereferencing freed memory. */
         gtk_list_store_clear(listStore);
     }
+
+    free_mykeyring_list(&glob_keyring_list);
 
     return EXIT_SUCCESS;
 }
@@ -2647,6 +2681,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
                                     GINT_TO_POINTER(KEYRING_CHANGED_COLUMN_ENUM), NULL);
     gtk_tree_sortable_set_sort_func(sortable, KEYRING_NAME_COLUMN_ENUM, GtkTreeModelKeyrCompareNocase,
                                     GINT_TO_POINTER(KEYRING_NAME_COLUMN_ENUM), NULL);
+    /* Guard against an out-of-range column index reaching
+     * gtk_tree_view_get_column() (would return NULL and trip a
+     * GTK_IS_TREE_VIEW_COLUMN assertion). */
+    if (column_selected < 0 || column_selected >= KEYRING_NUM_COLS - 5) {
+        column_selected = 0;
+    }
     for (int x = 0; x < KEYRING_NUM_COLS - 5; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
     }

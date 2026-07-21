@@ -173,6 +173,9 @@ static GObject *note_buffer;
 /* This is the category that is currently being displayed */
 static int exp_category = CATEGORY_ALL;
 static time_t plugin_last_time = 0;
+/* TRUE while the GUI is live.  Set FALSE during teardown so the row-selection
+ * callback bails out instead of dereferencing records that are being freed. */
+static gboolean plugin_active = FALSE;
 
 static int record_changed;
 static int row_selected;
@@ -419,6 +422,25 @@ static void connect_changed_signals(int con_or_dis) {
         g_signal_handlers_disconnect_by_func(note_buffer,
                                              G_CALLBACK(cb_record_changed), NULL);
     }
+}
+
+/* unpack_Expense() returns the raw Palm bytes, which for a Latin-1 char set (or
+ * stray high bytes) are not valid UTF-8.  GTK/Pango warns and can crash when
+ * handed invalid UTF-8, so replace any invalid field with a valid copy.  The
+ * field is freed with free() by free_Expense(), matching g_malloc on modern
+ * GLib. */
+static void exp_ensure_utf8(char **str) {
+    char *valid;
+
+    if (!str || !*str) {
+        return;
+    }
+    if (g_utf8_validate(*str, -1, NULL)) {
+        return;
+    }
+    valid = g_utf8_make_valid(*str, -1);
+    free(*str);
+    *str = valid;
 }
 
 static void free_myexpense_list(struct MyExpense **PPmexp) {
@@ -921,11 +943,15 @@ static void display_records(void) {
 
     records = NULL;
 
-    free_myexpense_list(&glob_myexpense_list);
-
     /* Clear left-hand side of window */
     exp_clear_details();
+
+    /* Clear the list store before freeing the records: the store holds pointers
+     * to the MyExpense structs, and clearing it emits the selection callback, so
+     * freeing first would leave that callback dereferencing freed memory. */
     gtk_list_store_clear(GTK_LIST_STORE(listStore));
+
+    free_myexpense_list(&glob_myexpense_list);
 
 
     /* This function takes care of reading the Database for us */
@@ -968,6 +994,12 @@ static void display_records(void) {
          * unpack_Expense is already written in pilot-link, but normally
          * an unpack must be written for each type of application */
         if (unpack_Expense(&(mexp->ex), br->buf, br->size) != 0) {
+            /* Guarantee the displayed fields are valid UTF-8 (see exp_ensure_utf8) */
+            exp_ensure_utf8(&(mexp->ex.amount));
+            exp_ensure_utf8(&(mexp->ex.vendor));
+            exp_ensure_utf8(&(mexp->ex.city));
+            exp_ensure_utf8(&(mexp->ex.attendees));
+            exp_ensure_utf8(&(mexp->ex.note));
             display_record(mexp, entries_shown, dateformat, &iter);
             entries_shown++;
         }
@@ -1127,6 +1159,14 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
     int index, sorted_position;
     int currency_position;
     unsigned int unique_id = 0;
+
+    /* During teardown the list store is cleared, which emits this callback after
+     * the MyExpense records may already be freed; dereferencing mexp below would
+     * be a use-after-free.  plugin_active is FALSE by then, so bail out early. */
+    if (!plugin_active) {
+        return TRUE;
+    }
+
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *i = gtk_tree_path_get_indices(path);
@@ -1450,6 +1490,7 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
 
     jp_logf(JP_LOG_DEBUG, "Expense: plugin gui started, unique_id=%d\n", unique_id);
 
+    plugin_active = TRUE;
     record_changed = CLEAR_FLAG;
 
     if (difftime(time(NULL), plugin_last_time) > PLUGIN_MAX_INACTIVE_TIME) {
@@ -1579,6 +1620,12 @@ int plugin_gui(GtkWidget *vbox, GtkWidget *hbox, unsigned int unique_id) {
     /* Restore previous sorting configuration */
     get_pref(PREF_EXPENSE_SORT_COLUMN, &ivalue, NULL);
     column_selected = (int) ivalue;
+    /* A stale or corrupt pref can be out of range; passing it to
+     * gtk_tree_view_get_column() below would return NULL and trip a
+     * GTK_IS_TREE_VIEW_COLUMN assertion.  Clamp to a valid view column. */
+    if (column_selected < 0 || column_selected >= EXPENSE_NUM_COLS - 3) {
+        column_selected = 0;
+    }
 
     for (int x = 0; x < EXPENSE_NUM_COLS - 3; x++) {
         gtk_tree_view_column_set_sort_indicator(gtk_tree_view_get_column(GTK_TREE_VIEW(treeView), x), gtk_false());
@@ -1942,7 +1989,7 @@ int plugin_gui_cleanup(void) {
 
     connect_changed_signals(DISCONNECT_SIGNALS);
 
-    free_myexpense_list(&glob_myexpense_list);
+    plugin_active = FALSE;
 
     if (pane) {
         /* Remove the accelerators */
@@ -1951,10 +1998,28 @@ int plugin_gui_cleanup(void) {
 #endif
 
         set_pref(PREF_EXPENSE_PANE, gtk_paned_get_position(GTK_PANED(pane)), NULL, TRUE);
+
+        set_pref(PREF_EXPENSE_SORT_COLUMN, column_selected, NULL, TRUE);
+        /* column_selected (not row_selected) is the column index here; passing a
+         * row index made gtk_tree_view_get_column() return NULL, tripping a
+         * GTK_IS_TREE_VIEW_COLUMN assertion.  NULL-check as well, in case the
+         * column is still out of range. */
+        GtkTreeViewColumn *sortColumn =
+            gtk_tree_view_get_column(treeView, column_selected);
+        if (sortColumn) {
+            set_pref(PREF_EXPENSE_SORT_ORDER,
+                     gtk_tree_view_column_get_sort_order(sortColumn), NULL, TRUE);
+        }
+
         pane = NULL;
+
+        /* Clear the list store before freeing the records so the model never
+         * points at freed memory (the selection callback is also guarded by
+         * plugin_active above). */
+        gtk_list_store_clear(GTK_LIST_STORE(listStore));
     }
-    set_pref(PREF_EXPENSE_SORT_COLUMN, column_selected, NULL, TRUE);
-    set_pref(PREF_EXPENSE_SORT_ORDER, gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(treeView, row_selected)), NULL, TRUE);
+
+    free_myexpense_list(&glob_myexpense_list);
 
     plugin_last_time = time(NULL);
 
