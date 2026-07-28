@@ -17,6 +17,9 @@
 @define-color jp_accent    @theme_selected_bg_color;
 @define-color jp_accent_fg @theme_selected_fg_color;
 
+/* Checkmark/dot glyph: black, independent of the selection accent text above. */
+@define-color jp_check_fg  #000000;
+
 /* No tint: the default theme stays the plain system background so
    J-Pilot looks like a native application.  The named themes wash
    their chrome with their hue instead. */
