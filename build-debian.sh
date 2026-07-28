@@ -22,6 +22,13 @@ BUILD_DIR="jpilot-${VERSION}"
 
 echo "Building Debian package for jpilot ${VERSION}"
 
+# A fresh checkout only has configure.ac/Makefile.am, not the generated
+# build system, so make dist has nothing to run. Configure it first.
+if [[ ! -f Makefile ]]; then
+  echo "Build tree not configured; running autogen.sh..."
+  ./autogen.sh
+fi
+
 # Create distribution tarball (requires automake, configured tree)
 make dist
 
