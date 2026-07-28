@@ -756,8 +756,8 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
         if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
             if (!mtodo) {
+                jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), i + 1);
                 continue;
-                jp_logf(JP_LOG_WARN, _("Can't export todo %d\n"), (long) temp_list->data + 1);
             }
             switch (type) {
                 case EXPORT_TYPE_CSV:
@@ -785,7 +785,7 @@ static void cb_todo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                         str_to_csv_str(csv_text, mtodo->todo.note);
                         fprintf(out, "\"%s\"\n", csv_text);
                     } else {
-                        fprintf(out, "\"\",");
+                        fprintf(out, "\"\"\n");
                     }
                     break;
 
@@ -2088,7 +2088,7 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
             (temp_todo->mtodo.attrib & dlpRecAttrSecret)) {
             gtk_list_store_append(pListStore, &iter);
             gtk_list_store_set(pListStore, &iter,
-                               TODO_CHECK_COLUMN_ENUM, "---",
+                               TODO_CHECK_COLUMN_ENUM, FALSE,
                                TODO_PRIORITY_COLUMN_ENUM, "---",
                                TODO_TEXT_COLUMN_ENUM, "--------------------",
                                TODO_DATE_COLUMN_ENUM, "----------",
