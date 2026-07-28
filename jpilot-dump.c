@@ -187,22 +187,22 @@ static char *vCardMapType(int label)
 static void fprint_jpd_usage_string(FILE *out)
 {
    fprintf(out, "%s-dump [ +format [-v] || [-h] || [-f] || [-D] || [-i] || [-A] || [-C] || [-T] || [-M] || [-N] ]\n", EPN);
-   fprintf(out, _(" +D +A +T +M format like date +format.\n"));
-   fprintf(out, _(" -v displays version and exits.\n"));
-   fprintf(out, _(" -h displays help and exits.\n"));
-   fprintf(out, _(" -f displays help for format codes.\n"));
-   fprintf(out, _(" -D dump DateBook.\n"));
-   fprintf(out, _(" -i dump DateBook in iCalendar format.\n"));
-   fprintf(out, _(" -N dump appts for today in DateBook.\n"));
-   fprintf(out, _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"));
-   fprintf(out, _(" -A dump Address book.\n"));
-   fprintf(out, _(" -C dumps Contacts database:-\n"));
-   fprintf(out, _("    -Ct dumps as text (default).\n"));
-   fprintf(out, _("    -Cc dumps as csv.\n"));
-   fprintf(out, _("    -Cv dumps as vcard.\n"));
-   fprintf(out, _("    -Cl dumps as ldif.\n"));
-   fprintf(out, _(" -T dump ToDo list as CSV.\n"));
-   fprintf(out, _(" -M dump Memos.\n"));
+   fprintf(out, "%s", _(" +D +A +T +M format like date +format.\n"));
+   fprintf(out, "%s", _(" -v displays version and exits.\n"));
+   fprintf(out, "%s", _(" -h displays help and exits.\n"));
+   fprintf(out, "%s", _(" -f displays help for format codes.\n"));
+   fprintf(out, "%s", _(" -D dump DateBook.\n"));
+   fprintf(out, "%s", _(" -i dump DateBook in iCalendar format.\n"));
+   fprintf(out, "%s", _(" -N dump appts for today in DateBook.\n"));
+   fprintf(out, "%s", _(" -NYYYY/MM/DD dump appts on YYYY/MM/DD in DateBook.\n"));
+   fprintf(out, "%s", _(" -A dump Address book.\n"));
+   fprintf(out, "%s", _(" -C dumps Contacts database:-\n"));
+   fprintf(out, "%s", _("    -Ct dumps as text (default).\n"));
+   fprintf(out, "%s", _("    -Cc dumps as csv.\n"));
+   fprintf(out, "%s", _("    -Cv dumps as vcard.\n"));
+   fprintf(out, "%s", _("    -Cl dumps as ldif.\n"));
+   fprintf(out, "%s", _(" -T dump ToDo list as CSV.\n"));
+   fprintf(out, "%s", _(" -M dump Memos.\n"));
 }
 
 /* convert from UTF8 to local encoding */

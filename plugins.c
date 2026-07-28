@@ -68,14 +68,27 @@ void write_plugin_sync_file(void)
    fclose(out);
 }
 
+/* Free the strings that get_plugin_info() allocated into a plugin_s.
+ * Shared by the discard paths in load_plugins_sub1() (plugins we won't keep)
+ * and free_plugin_list() (teardown) so both stay in sync. */
+static void free_plugin_fields(struct plugin_s *p)
+{
+   if (p->full_path) { free(p->full_path); p->full_path = NULL; }
+   if (p->name)      { free(p->name);      p->name = NULL; }
+   if (p->menu_name) { free(p->menu_name); p->menu_name = NULL; }
+   if (p->help_name) { free(p->help_name); p->help_name = NULL; }
+   if (p->db_name)   { free(p->db_name);   p->db_name = NULL; }
+}
+
 /* This is just a repeated subroutine to load_plugins not needing
  * a name of its own.
  * Assumes dir has already been checked */
-static int load_plugins_sub1(DIR *dir, char *path, int *number, 
+static int load_plugins_sub1(DIR *dir, char *path, int *number,
                              unsigned char user_only)
 {
    int i, r;
    int count;
+   size_t nlen;
    struct dirent *dirent;
    char full_name[FILENAME_MAX];
    struct plugin_s temp_plugin, *new_plugin;
@@ -88,10 +101,14 @@ static int load_plugins_sub1(DIR *dir, char *path, int *number,
          jp_logf(JP_LOG_WARN, "load_plugins_sub1(): %s\n", _("infinite loop"));
          return 0;
       }
-      /* If the filename has either of these extensions then plug it in */
-      if ((strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".so")) &&
-          (strcmp(&(dirent->d_name[strlen(dirent->d_name)-3]), ".sl")) &&
-          (strcmp(&(dirent->d_name[strlen(dirent->d_name)-6]), ".dylib"))) {
+      /* If the filename has one of these extensions then plug it in.
+       * Guard the length first: entries like "." and ".." are shorter than
+       * the suffixes, and indexing d_name[strlen-3] on them underflows the
+       * pointer (out-of-bounds read). */
+      nlen = strlen(dirent->d_name);
+      if (!((nlen >= 3 && strcmp(dirent->d_name + nlen - 3, ".so") == 0) ||
+            (nlen >= 3 && strcmp(dirent->d_name + nlen - 3, ".sl") == 0) ||
+            (nlen >= 6 && strcmp(dirent->d_name + nlen - 6, ".dylib") == 0))) {
          continue;
       } else {
          jp_logf(JP_LOG_DEBUG, "found plugin %s\n", dirent->d_name);
@@ -108,14 +125,27 @@ static int load_plugins_sub1(DIR *dir, char *path, int *number,
                new_plugin = malloc(sizeof(struct plugin_s));
                if (!new_plugin) {
                   jp_logf(JP_LOG_WARN, "load plugins(): %s\n", _("Out of memory"));
+                  /* discard the plugin we just parsed but can't store */
+                  free_plugin_fields(&temp_plugin);
+                  if (temp_plugin.handle) dlclose(temp_plugin.handle);
                   return count;
                }
+               /* ownership of temp_plugin's strings/handle moves to new_plugin */
                memcpy(new_plugin, &temp_plugin, sizeof(struct plugin_s));
                plugins = g_list_prepend(plugins, new_plugin);
                plugin_names = g_list_prepend(plugin_names, g_strdup(temp_plugin.name));
                count++;
                (*number)++;
+            } else {
+               /* duplicate plugin already loaded — free this copy's strings
+                * and close its library handle so neither leaks */
+               free_plugin_fields(&temp_plugin);
+               if (temp_plugin.handle) dlclose(temp_plugin.handle);
             }
+         } else {
+            /* get_plugin_info() failed; it already closed any handle, but
+             * full_path/name it strdup'd before failing would otherwise leak */
+            free_plugin_fields(&temp_plugin);
          }
       }
    }
@@ -246,6 +276,8 @@ static int get_plugin_info(struct plugin_s *p, char *path)
    p->handle = NULL;
    p->sync_on = 1;
    p->name = NULL;
+   p->menu_name = NULL;
+   p->help_name = NULL;
    p->db_name = NULL;
    p->number = 0;
    p->plugin_get_name = NULL;
@@ -416,12 +448,7 @@ void free_plugin_list(GList **plugin_list)
    for (temp_list = *plugin_list; temp_list; temp_list = temp_list->next) {
       if (temp_list->data) {
          p=temp_list->data;
-         if (p->full_path) free(p->full_path);
-         if (p->name)      free(p->name);
-         if (p->menu_name) free(p->menu_name);
-         if (p->help_name) free(p->help_name);
-         if (p->db_name)   free(p->db_name);
-
+         free_plugin_fields(p);
          free(p);
       }
    }

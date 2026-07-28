@@ -367,7 +367,7 @@ int jp_read_DB_files(const char *DB_name, GList **records)
    int num_records, recs_returned, i, num, r;
    long offset, prev_offset, next_offset, rec_size;
    int out_of_order;
-   long fpos, fend;
+   long fpos, fend, db_file_len;
    int ret;
    unsigned char attrib;
    unsigned int unique_id;
@@ -478,6 +478,10 @@ int jp_read_DB_files(const char *DB_name, GList **records)
             unique_id = mem_rh->unique_id;
          }
       }
+      /* Record the real end of file once so we can bound record sizes that
+       * come from untrusted (possibly corrupt or crafted) header offsets. */
+      fseek(in, 0, SEEK_END);
+      db_file_len = ftell(in);
       fseek(in, next_offset, SEEK_SET);
       while(!feof(in)) {
          fpos = ftell(in);
@@ -508,16 +512,27 @@ int jp_read_DB_files(const char *DB_name, GList **records)
          }
          rec_size = next_offset - fpos;
 #ifdef JPILOT_DEBUG
-         jp_logf(JP_LOG_DEBUG, "rec_size = %u\n",rec_size);
-         jp_logf(JP_LOG_DEBUG, "fpos,next_offset = %u %u\n",fpos,next_offset);
+         jp_logf(JP_LOG_DEBUG, "rec_size = %ld\n",rec_size);
+         jp_logf(JP_LOG_DEBUG, "fpos,next_offset = %ld %ld\n",fpos,next_offset);
          jp_logf(JP_LOG_DEBUG, "----------\n");
 #endif
+         /* rec_size is derived from file-supplied offsets and is untrusted.
+          * A corrupt or crafted PDB/PC3 can make it <= 0 (out-of-order
+          * offsets) or larger than the file itself (huge malloc / DoS).
+          * Reject the former and clamp the latter to the bytes actually left. */
+         if (rec_size < 1) {
+            break;
+         }
+         if (db_file_len > fpos && rec_size > db_file_len - fpos) {
+            rec_size = db_file_len - fpos;
+         }
          buf = malloc(rec_size);
          if (!buf) break;
          num = fread(buf, 1, rec_size, in);
          if (num<rec_size) {
+            char *shrunk = realloc(buf, num > 0 ? (size_t)num : 1);
+            if (shrunk) buf = shrunk;
             rec_size=num;
-            buf = realloc(buf, rec_size);
          }
          if ((num < 1)) {
             if (ferror(in)) {
@@ -658,7 +673,10 @@ int jp_undelete_record(const char *DB_name, buf_rec *br, int flag)
    char filename2[FILENAME_MAX];
    FILE *pc_file  = NULL;
    FILE *pc_file2 = NULL;
-   PC3RecordHeader header;
+   /* Zero-init: read_header() can return without populating every field on a
+    * short read or corrupt header_len; the loop below ignores its return and
+    * would otherwise read uninitialised unique_id/rec_len. */
+   PC3RecordHeader header = {0};
    char *record;
    unsigned int unique_id;
    int found;
@@ -789,7 +807,9 @@ static int pack_header(PC3RecordHeader *header, unsigned char *packed_header)
 
 int pc_read_next_rec(FILE *in, buf_rec *br)
 {
-   PC3RecordHeader header;
+   /* Zero-init so a short read / corrupt header can't leave rec_len
+    * uninitialised for the malloc below. */
+   PC3RecordHeader header = {0};
    int rec_len, num;
    char *record;
 
@@ -797,13 +817,29 @@ int pc_read_next_rec(FILE *in, buf_rec *br)
       return JPILOT_EOF;
    }
    num = read_header(in, &header);
-   if (num < 1) {
+   if (num != 1) {
       if (ferror(in)) {
          jp_logf(JP_LOG_WARN, _("Error reading PC file 1\n"));
-         return JPILOT_EOF;
       }
-      if (feof(in)) {
-         return JPILOT_EOF;
+      /* read_header() did not fully populate the header (EOF, short read, or
+       * a header_len it rejected); don't fabricate a record from it. */
+      return JPILOT_EOF;
+   }
+   /* rec_len comes from the untrusted record header.  Reject a length that
+    * can't fit in the remaining file so a corrupt/crafted .pc3 can't drive a
+    * huge malloc, and so a short read can't leave an uninitialised tail that
+    * gets copied back out (heap info leak). */
+   {
+      long cur = ftell(in), fend;
+      if (cur >= 0) {
+         fseek(in, 0, SEEK_END);
+         fend = ftell(in);
+         fseek(in, cur, SEEK_SET);
+         if (fend >= cur && header.rec_len > (unsigned long)(fend - cur)) {
+            jp_logf(JP_LOG_WARN, "pc_read_next_rec(): %s\n",
+                    _("record length exceeds file size"));
+            return JPILOT_EOF;
+         }
       }
    }
    rec_len = header.rec_len;

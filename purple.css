@@ -16,6 +16,9 @@
 @define-color jp_accent    #6426d9;
 @define-color jp_accent_fg #ffffff;
 
+/* Checkmark/dot glyph: black, independent of the white accent text above. */
+@define-color jp_check_fg  #000000;
+
 /* Tint the window and its chrome with the theme hue.  Raise the
    factor for a stronger wash, or set this to plain @theme_bg_color
    for an untinted, neutral look. */

@@ -472,7 +472,7 @@ void charset_p2j(char *const buf, int max_len, int char_set) {
 
     g_strlcpy(buf, newbuf, max_len);
 
-    if (strlen(newbuf) >= max_len) {
+    if (strlen(newbuf) >= (size_t)max_len) {
         jp_logf(JP_LOG_WARN, "charset_p2j: buffer too small - original string before truncation [%s]\n", newbuf);
         if (char_set > CHAR_SET_UTF) {
             /* truncate the string on a UTF-8 character boundary */
@@ -499,7 +499,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set) {
                 max_len = 2 * strlen(buf) + 1;
                 newbuf = g_malloc(max_len);
             } else {
-                newbuf = g_malloc(min(2 * strlen(buf) + 1, max_len));
+                newbuf = g_malloc(min(2 * strlen(buf) + 1, (size_t)max_len));
             }
             if (newbuf) {
                 /* be safe, though string should fit into buf */
@@ -514,7 +514,7 @@ char *charset_p2newj(const char *buf, int max_len, int char_set) {
                 max_len = strlen(buf) + 1;
                 newbuf = g_malloc(max_len);
             } else {
-                newbuf = g_malloc(min(strlen(buf) + 1, max_len));
+                newbuf = g_malloc(min(strlen(buf) + 1, (size_t)max_len));
             }
             if (newbuf) {
                 /* be safe, though string should fit into buf */
@@ -663,6 +663,24 @@ void cleanup_path(char *path) {
     path[d] = '\0';
 }
 
+/* Sanity-check a record length that came from an untrusted file header
+ * (header.rec_len) against the number of bytes actually remaining in the
+ * file.  A corrupt or crafted .pc3 file can claim a huge rec_len, leading to
+ * an enormous malloc (DoS) or a short read whose uninitialised tail then gets
+ * written back out (heap info leak).  Returns 1 if the length is plausible,
+ * 0 if it cannot possibly fit in the remaining file. */
+static int rec_len_fits_file(FILE *f, unsigned long rec_len) {
+    long cur, end;
+
+    cur = ftell(f);
+    if (cur < 0) return 1;                 /* non-seekable; malloc guards size */
+    if (fseek(f, 0, SEEK_END)) return 1;
+    end = ftell(f);
+    fseek(f, cur, SEEK_SET);
+    if (end < cur) return 1;
+    return rec_len <= (unsigned long)(end - cur);
+}
+
 /* Compacts pc3 file by removing records which have been synced */
 static int cleanup_pc_file(char *DB_name, unsigned int *max_id) {
     PC3RecordHeader header;
@@ -752,6 +770,12 @@ static int cleanup_pc_file(char *DB_name, unsigned int *max_id) {
                 && (header.rt != REPLACEMENT_PALM_REC)
                     ) {
                 *max_id = header.unique_id;
+            }
+            if (!rec_len_fits_file(pc_file, header.rec_len)) {
+                jp_logf(JP_LOG_WARN, "cleanup_pc_file(): %s\n",
+                        _("record length exceeds file size; skipping corrupt record"));
+                r = -1;
+                break;
             }
             record = malloc(header.rec_len);
             if (!record) {
@@ -1830,20 +1854,20 @@ int forward_backward_in_ce_time(const struct CalendarEvent *cale,
 /* Displays usage string on supplied file handle */
 void fprint_usage_string(FILE *out) {	// only called from jpilot.c
     fprintf(out, "%s [ -v || -h || [-d] [-p] [-a || -A] [-r] [-S] [-s] [-i] [-g] ]\n", EPN);
-    fprintf(out, _(" -v display version and compile options\n"));
-    fprintf(out, _(" -h display help text\n"));
-    fprintf(out, _(" -d display debug info to stdout\n"));
-    fprintf(out, _(" -p skip loading plugins\n"));
-    fprintf(out, _(" -a ignore missed alarms since the last time program was run\n"));
-    fprintf(out, _(" -A ignore all alarms past and future\n"));
-    fprintf(out, _(" -r no writing to rc-file or PREF table\n"));
-    fprintf(out, _(" -S store data in SQLite database\n"));
-    fprintf(out, _(" -s start sync using existing instance of GUI\n"));
-    fprintf(out, _(" -i iconify program immediately after launch\n"));
-    fprintf(out, _(" -g {X geometry} use specified geometry for main window\n\n"));
-    fprintf(out, _(" The PILOTPORT and PILOTRATE environment variables specify\n"));
-    fprintf(out, _(" which port to sync on, and at what speed.\n"));
-    fprintf(out, _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
+    fprintf(out, "%s", _(" -v display version and compile options\n"));
+    fprintf(out, "%s", _(" -h display help text\n"));
+    fprintf(out, "%s", _(" -d display debug info to stdout\n"));
+    fprintf(out, "%s", _(" -p skip loading plugins\n"));
+    fprintf(out, "%s", _(" -a ignore missed alarms since the last time program was run\n"));
+    fprintf(out, "%s", _(" -A ignore all alarms past and future\n"));
+    fprintf(out, "%s", _(" -r no writing to rc-file or PREF table\n"));
+    fprintf(out, "%s", _(" -S store data in SQLite database\n"));
+    fprintf(out, "%s", _(" -s start sync using existing instance of GUI\n"));
+    fprintf(out, "%s", _(" -i iconify program immediately after launch\n"));
+    fprintf(out, "%s", _(" -g {X geometry} use specified geometry for main window\n\n"));
+    fprintf(out, "%s", _(" The PILOTPORT and PILOTRATE environment variables specify\n"));
+    fprintf(out, "%s", _(" which port to sync on, and at what speed.\n"));
+    fprintf(out, "%s", _(" If PILOTPORT is not set then it defaults to /dev/pilot.\n"));
 }
 
 void free_mem_rec_header(mem_rec_header **mem_rh) {
@@ -1871,8 +1895,12 @@ int get_app_info_size(FILE *in, int *size) {
     unsigned char raw_header[LEN_RAW_DB_HEADER];
     DBHeader dbh;
     unsigned int offset;
+    unsigned long end;
+    long file_len;
     record_header rh;
 
+    fseek(in, 0, SEEK_END);
+    file_len = ftell(in);
     fseek(in, 0, SEEK_SET);
 
     if (fread(raw_header, LEN_RAW_DB_HEADER, 1, in) < 1) {
@@ -1889,21 +1917,37 @@ int get_app_info_size(FILE *in, int *size) {
         *size = 0;
         return EXIT_SUCCESS;
     }
-    if (dbh.sort_info_offset != 0) {
-        *size = dbh.sort_info_offset - dbh.app_info_offset;
-        return EXIT_SUCCESS;
-    }
-    if (dbh.number_of_records == 0) {
-        fseek(in, 0, SEEK_END);
-        *size = ftell(in) - dbh.app_info_offset;
-        return EXIT_SUCCESS;
+
+    /* app_info_offset and the offsets used below all come from the file and
+     * are untrusted.  Without bounds checks the size computed as
+     * (end - app_info_offset) can go negative / wrap, yielding a huge malloc
+     * (see jp_get_app_info()).  Validate every offset against the file. */
+    if (file_len < 0 || dbh.app_info_offset > (unsigned long)file_len) {
+        jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n",
+                _("invalid app info offset"));
+        return EXIT_FAILURE;
     }
 
-    if (fread(&rh, sizeof(record_header), 1, in) < 1) {
-        jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+    if (dbh.sort_info_offset != 0) {
+        end = dbh.sort_info_offset;
+    } else if (dbh.number_of_records == 0) {
+        end = (unsigned long)file_len;
+    } else {
+        if (fread(&rh, sizeof(record_header), 1, in) < 1) {
+            jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+            return EXIT_FAILURE;
+        }
+        offset = ((rh.Offset[0] * 256 + rh.Offset[1]) * 256 + rh.Offset[2]) * 256 + rh.Offset[3];
+        end = offset;
     }
-    offset = ((rh.Offset[0] * 256 + rh.Offset[1]) * 256 + rh.Offset[2]) * 256 + rh.Offset[3];
-    *size = offset - dbh.app_info_offset;
+
+    if (end < dbh.app_info_offset || end > (unsigned long)file_len) {
+        jp_logf(JP_LOG_WARN, "get_app_info_size(): %s\n",
+                _("invalid app info size"));
+        return EXIT_FAILURE;
+    }
+
+    *size = (int)(end - dbh.app_info_offset);
 
     return EXIT_SUCCESS;
 }
@@ -2620,7 +2664,10 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len) {
 
         p = (char *) src;
         q = dst;
-        while ((*p) && (n < (len - 2))) {
+        /* len is size_t; the old (len - 2) underflowed to a huge value when
+         * len < 2, making the guard always true and overflowing dst.  Compare
+         * with n promoted so small len values stop the loop correctly. */
+        while ((*p) && ((size_t)n + 2 < len)) {
             if ((*p) & 0x80) {
                 *q++ = *p++;
                 n++;
@@ -2635,7 +2682,7 @@ char *multibyte_safe_memccpy(char *dst, const char *src, int c, size_t len) {
             if (*(p - 1) == (char) (c & 0xff))
                 return q;
         }
-        if (!(*p & 0x80) && (n < len - 1))
+        if (!(*p & 0x80) && ((size_t)n + 1 < len))
             *q++ = *p++;
 
         *q = '\0';
@@ -2657,7 +2704,9 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len) {
         int n = 0;
         p = src;
         q = dst;
-        while ((*p) && n < (len - 2)) {
+        /* Same underflow guard as multibyte_safe_memccpy(): avoid (len - 2)
+         * wrapping when len < 2. */
+        while ((*p) && ((size_t)n + 2 < len)) {
             if ((*p) & 0x80) {
                 *q++ = *p++;
                 n++;
@@ -2670,7 +2719,7 @@ void multibyte_safe_strncpy(char *dst, char *src, size_t len) {
                 n++;
             }
         }
-        if (!(*p & 0x80) && (n < len - 1))
+        if (!(*p & 0x80) && ((size_t)n + 1 < len))
             *q++ = *p++;
 
         *q = '\0';
@@ -3818,6 +3867,12 @@ int undelete_pc_record(AppType app_type, void *VP, int flag) {
         }
 
         /* Otherwise, keep whatever is there by copying it to the new pc3 file */
+        if (!rec_len_fits_file(pc_file, header.rec_len)) {
+            jp_logf(JP_LOG_WARN, "%s\n",
+                    _("record length exceeds file size; skipping corrupt record"));
+            ret = -1;
+            break;
+        }
         record = malloc(header.rec_len);
         if (!record) {
             jp_logf(JP_LOG_WARN, "cleanup_pc_file(): Out of memory\n");

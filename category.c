@@ -484,6 +484,7 @@ static void cb_edit_button(GtkWidget *widget, gpointer data) {
     get_pref(PREF_CHAR_SET, &char_set, NULL); /* JPA be prepared to make conversions */
     button = GPOINTER_TO_INT(data);
     Pdata =  g_object_get_data(G_OBJECT(gtk_widget_get_toplevel(widget)), "dialog_cats_data");
+    if (!Pdata) return;  /* nothing to operate on; avoids NULL deref below */
 
     /* JPA get the selected category number */
     catnum = 0;

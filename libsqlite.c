@@ -93,7 +93,7 @@ int jpsqlite_open(void) {	// return database handle
 			strerror(errno));
 		return EXIT_FAILURE;
 	}
-	if (fread(p0,1,sqlFStat.st_size,fp) != sqlFStat.st_size) {
+	if (fread(p0,1,sqlFStat.st_size,fp) != (size_t)sqlFStat.st_size) {
 		jp_logf(JP_LOG_FATAL,
 			"jpsqlite_open(): Cannot read jptables.sql: %s\n",
 			strerror(errno));
@@ -553,7 +553,7 @@ int jpsqlite_AddrINS(struct Address *addr, PCRecType rt, unsigned char attrib, u
 	if (rt == REPLACEMENT_PALM_REC)
 		return jpsqlite_AddrUPD(addr,rt,attrib,unique_id);
 		
-	jp_logf(JP_LOG_DEBUG,"jpsqlite_AddrINS(): rt=%d, category=%d, unique_id=%u, maxIdAddr=%d\n",rt,attrib&0x0F,unique_id?*unique_id:(-1),db.maxIdAddr);
+	jp_logf(JP_LOG_DEBUG,"jpsqlite_AddrINS(): rt=%d, category=%d, unique_id=%u, maxIdAddr=%d\n",rt,attrib&0x0F,unique_id?*unique_id:(unsigned)-1,db.maxIdAddr);
 
 	errId = db.maxIdAddr;
 	if (unique_id) *unique_id = db.maxIdAddr;
@@ -656,7 +656,7 @@ int jpsqlite_DatebookUPD(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	for (nRealExcp=0,i=0; i<cale->exceptions; ++i)
 		if (cale->exception[i].tm_year != 0) ++nRealExcp;
 	CHK(sqlite3_bind_int(db.stmtDatebookUPD,20,nRealExcp),"DatebookUpdB20")
-	if (nRealExcp * 11 > sizeof(exceptionString)) {
+	if ((size_t)nRealExcp > sizeof(exceptionString) / 11) {
 		jp_logf(JP_LOG_FATAL,"jpsqlite_DatebookUPD(): too many exceptions");
 		exceptionString[0] = '\0';
 	} else {
@@ -693,7 +693,7 @@ int jpsqlite_DatebookINS(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	const char *sqlErr = "";
 	char begin[32], end[32], repeatEnd[32], *pRepeatEnd, exceptionString[2048];
 
-	jp_logf(JP_LOG_DEBUG,"jpsqlite_DatebookINS(): rt=%d, unique_id=%u, maxIdDatebook=%d\n",rt,unique_id?*unique_id:(-1),db.maxIdDatebook);
+	jp_logf(JP_LOG_DEBUG,"jpsqlite_DatebookINS(): rt=%d, unique_id=%u, maxIdDatebook=%d\n",rt,unique_id?*unique_id:(unsigned)-1,db.maxIdDatebook);
 	errId = db.maxIdDatebook;	// ignore provided unique_id, instead get it from database
 	if (unique_id) *unique_id = db.maxIdDatebook;
 
@@ -742,7 +742,7 @@ int jpsqlite_DatebookINS(struct CalendarEvent *cale, PCRecType rt, unsigned char
 	for (nRealExcp=0,i=0; i<cale->exceptions; ++i)
 		if (cale->exception[i].tm_year != 0) ++nRealExcp;
 	CHK(sqlite3_bind_int(db.stmtDatebookINS,21,nRealExcp),"DatebookInsB21")
-	if (nRealExcp * 11 > sizeof(exceptionString)) {
+	if ((size_t)nRealExcp > sizeof(exceptionString) / 11) {
 		jp_logf(JP_LOG_FATAL,"jpsqlite_DatebookINS(): too many exceptions");
 		exceptionString[0] = '\0';
 	} else {
@@ -805,7 +805,7 @@ int jpsqlite_MemoINS(struct Memo *memo, PCRecType rt, unsigned char attrib, unsi
 	int sqlRet = 0, errId;
 	const char *sqlErr = "";
 
-	jp_logf(JP_LOG_DEBUG,"jpsqlite_MemoINS(): rt=%d, category=%d, unique_id=%u, maxIdMemo=%d\n",rt,attrib&0X0F,unique_id?*unique_id:(-1),db.maxIdMemo);
+	jp_logf(JP_LOG_DEBUG,"jpsqlite_MemoINS(): rt=%d, category=%d, unique_id=%u, maxIdMemo=%d\n",rt,attrib&0X0F,unique_id?*unique_id:(unsigned)-1,db.maxIdMemo);
 	errId = db.maxIdMemo;
 	if (unique_id) *unique_id = db.maxIdMemo;
 
@@ -874,7 +874,7 @@ int jpsqlite_ToDoINS(struct ToDo *todo, PCRecType rt, unsigned char attrib, unsi
 	const char *sqlErr = "";
 	char due[32];
 
-	jp_logf(JP_LOG_DEBUG,"jpsqlite_ToDoINS(): rt=%d, category=%d, unique_id=%u, maxIdToDo=%d\n",rt,attrib&0X0F,unique_id?*unique_id:(-1),db.maxIdToDo);
+	jp_logf(JP_LOG_DEBUG,"jpsqlite_ToDoINS(): rt=%d, category=%d, unique_id=%u, maxIdToDo=%d\n",rt,attrib&0X0F,unique_id?*unique_id:(unsigned)-1,db.maxIdToDo);
 
 	errId = db.maxIdToDo;
 	if (unique_id) *unique_id = db.maxIdToDo;

@@ -1129,7 +1129,7 @@ static int fetch_extra_DBs(int sd, char *palm_dbname[])
 
    /* Pilot-link 0.12 can return multiple db infos if the DLP is 1.2 and above */
    while(dlp_ReadDBList(sd, cardno, dlpDBListRAM | dlpDBListMultiple, start, buffer)>0) {
-      for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
+      for (dbIndex=0; (size_t)dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
          memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
          start=info.index+1;
          fetch_extra_DBs2(sd, info, palm_dbname);
@@ -1236,7 +1236,7 @@ static int sync_fetch(int sd, unsigned int flags,
    buffer = pi_buffer_new(32 * sizeof(struct DBInfo));
 
    while( (r=dlp_ReadDBList(sd, cardno, dlpDBListRAM | dlpDBListMultiple, start, buffer)) > 0) {
-      for (dbIndex=0; dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
+      for (dbIndex=0; (size_t)dbIndex < (buffer->used / sizeof(struct DBInfo)); dbIndex++) {
          memcpy(&info, buffer->data + (dbIndex * sizeof(struct DBInfo)), sizeof(struct DBInfo));
 
       start=info.index+1;
@@ -1755,7 +1755,7 @@ static int sync_categories(char *DB_name,
    /* buffer size passed in cannot be any larger than 0xffff */
    remote_cai_size = dlp_ReadAppBlock(sd, db, 0, -1, buffer);
    jp_logf(JP_LOG_DEBUG, "readappblock r=%d\n", remote_cai_size);
-   if ((remote_cai_size<=0) || (remote_cai_size > sizeof(buf))) {
+   if ((remote_cai_size<=0) || ((size_t)remote_cai_size > sizeof(buf))) {
       jp_logf(JP_LOG_WARN, _("Error reading appinfo block for %s\n"), DB_name);
       dlp_CloseDB(sd, db);
       pi_buffer_free(buffer);
@@ -3146,7 +3146,7 @@ static int jp_sync(struct my_sync_info *sync_info)
          return SYNC_ERROR_NULL_USERID;
       }
    }
-   if ((sync_info->userID != U.userID) &&
+   if (((unsigned long)sync_info->userID != (unsigned long)U.userID) &&
        (sync_info->userID != 0) &&
        (!(SYNC_OVERRIDE_USER & sync_info->flags)) &&
        (!(SYNC_RESTORE & sync_info->flags))) {
@@ -3267,7 +3267,7 @@ static int jp_sync(struct my_sync_info *sync_info)
 
    /* Do a fast, or a slow sync on each application in the arrays */
    if ( (!(SYNC_OVERRIDE_USER & sync_info->flags)) &&
-        (U.lastSyncPC == sync_info->PC_ID) ) {
+        ((unsigned long)U.lastSyncPC == (unsigned long)sync_info->PC_ID) ) {
       fast_sync=1;
       jp_logf(JP_LOG_GUI, _("Doing a fast sync.\n"));
       for (i=0; dbname[i][0]; i++) {
@@ -3551,7 +3551,7 @@ static int pi_file_install_VFS(const int fd, const char *basename, const int soc
     /* Calculate free space but leave last 64k free on card */
     freespace  = total - used - 65536 ;
 
-    if ((unsigned long)sbuf.st_size > freespace)
+    if ((unsigned long)sbuf.st_size > (unsigned long)freespace)
     {
         fprintf(stderr, "\n\n");
         fprintf(stderr, "   Insufficient space to install this file on your Palm.\n");
@@ -3810,7 +3810,7 @@ findVFSPath(int sd, const char *path, long *volume, char *rpath, int *rpathlen)
 
     if ((NULL == path) || (NULL == rpath) || (NULL == rpathlen))
         return -1;
-    if (*rpathlen < strlen(path))
+    if (*rpathlen < 0 || (size_t)*rpathlen < strlen(path))
         return -1;
 
     memset(rpath,0,*rpathlen);

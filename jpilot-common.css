@@ -24,6 +24,9 @@
  *   @jp_accent      the theme hue, used for selection, focus, the
  *                   active tab underline and the today marker
  *   @jp_accent_fg   text drawn on top of @jp_accent
+ *   @jp_check_fg    the checkmark/dot glyph in a checked check or radio;
+ *                   usually black, separate from @jp_accent_fg so the
+ *                   checkmark can be dark while accent text stays light
  *   @jp_chrome      background for the window and its chrome -- menus,
  *                   buttons, tabs, list headers.  Set it to a mix of
  *                   @theme_bg_color and the hue to tint the interface,
@@ -463,7 +466,10 @@ check:checked,
 radio:checked {
     background-color: @jp_accent;
     border-color: @jp_accent;
-    color: @jp_accent_fg;
+    /* The checkmark/dot glyph.  Kept separate from @jp_accent_fg (used for
+       selected-row and button text) so a theme can use a black checkmark on a
+       light accent without darkening its other accent text. */
+    color: @jp_check_fg;
 }
 
 separator {

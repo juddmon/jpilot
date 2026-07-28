@@ -145,7 +145,7 @@ sqlite3 *openSQLite(void) {	// return database handle
 			strerror(errno));
 		return NULL;
 	}
-	if (fread(p0,1,sqlFStat.st_size,fp) != sqlFStat.st_size) {
+	if (fread(p0,1,sqlFStat.st_size,fp) != (size_t)sqlFStat.st_size) {
 		jp_logf(JP_LOG_FATAL,
 			"Cannot read jptables.sql: %s\n",
 			strerror(errno));
@@ -544,7 +544,7 @@ static int copy_sqlite(void) {
 		CHK(sqlite3_bind_int(dbpstmt,19,c->mcale.cale.repeatDays[5]),"DB19")
 		CHK(sqlite3_bind_int(dbpstmt,20,c->mcale.cale.repeatDays[6]),"DB20")
 		CHK(sqlite3_bind_int(dbpstmt,21,c->mcale.cale.exceptions),"DB21")
-		if (c->mcale.cale.exceptions * 11 > sizeof(exceptionString)) {
+		if ((size_t)c->mcale.cale.exceptions > sizeof(exceptionString) / 11) {
 			strcpy(exceptionString,"Too many exceptions");
 		} else {
 			for (i=0,offset=0; i<c->mcale.cale.exceptions; ++i,offset+=11) {

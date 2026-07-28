@@ -658,7 +658,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
                 new_cale.exception[i].tm_mday = day;
                 new_cale.exception[i].tm_isdst = -1;
                 mktime(&(new_cale.exception[i]));
-                for (; (str_i < sizeof(text)) && (text[str_i]); str_i++) {
+                for (; (str_i < (int)sizeof(text)) && (text[str_i]); str_i++) {
                     if (text[str_i] == ',') {
                         str_i++;
                         break;
@@ -3925,7 +3925,7 @@ static void cb_cal_changed(GtkWidget *widget,
 
     /* Handle modified record before switching to new date */
     if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
-        if (current_day == cal_day) { return; }
+        if (current_day == (int)cal_day) { return; }
 
         b = dialog_save_changed_record_with_cancel(pane, record_changed);
         if (b == DIALOG_SAID_1) { /* Cancel */
@@ -3985,16 +3985,16 @@ static void cb_cal_changed(GtkWidget *widget,
                                   cal_month, 2037);
     }
 
-    if (current_year != cal_year - 1900) {
+    if (current_year != (int)(cal_year - 1900)) {
         current_year = cal_year - 1900;
         year_changed = 1;
         mon_changed = 1;
     }
-    if (current_month != cal_month) {
+    if (current_month != (int)cal_month) {
         current_month = cal_month;
         mon_changed = 1;
     }
-    day_changed = (current_day != cal_day);
+    day_changed = (current_day != (int)cal_day);
     current_day = cal_day;
 
     jp_logf(JP_LOG_DEBUG, "cb_cal_changed, %02d/%02d/%02d\n",

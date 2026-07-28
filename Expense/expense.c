@@ -1449,7 +1449,7 @@ findExpenseRecord (GtkTreeModel *model,
         struct MyExpense *mexp = NULL;
 
         gtk_tree_model_get(model,iter,EXPENSE_DATA_COLUMN_ENUM,&mexp,-1);
-        if(mexp->unique_id == uniqueId){
+        if(mexp->unique_id == (unsigned)uniqueId){
             GtkTreeSelection * selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             if(gtk_tree_selection_get_select_function(selection) == NULL) {

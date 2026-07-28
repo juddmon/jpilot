@@ -2016,7 +2016,7 @@ findKeyRingRecord(GtkTreeModel *model,
         struct MyKeyRing *mkr = NULL;
 
         gtk_tree_model_get(model, iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
-        if (mkr->unique_id == uniqueId) {
+        if (mkr->unique_id == (unsigned)uniqueId) {
             GtkTreeSelection *selection = NULL;
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
             gtk_tree_selection_select_path(selection, path);

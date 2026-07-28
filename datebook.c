@@ -661,7 +661,7 @@ unsigned int calendar_isApptOnDate(struct CalendarEvent *cale, struct tm *date)
       }
       /* If the days of the week match - good */
       /* e.g. Monday or Thur, etc. */
-      if (cale->repeatDay%7 != date->tm_wday) {
+      if ((int)(cale->repeatDay%7) != date->tm_wday) {
          ret = FALSE;
          break;
       }

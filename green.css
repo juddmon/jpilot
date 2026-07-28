@@ -22,6 +22,9 @@
    5.54:1.  If the accent is ever darkened, switch this back to #ffffff. */
 @define-color jp_accent_fg #1a1a1a;
 
+/* Checkmark/dot glyph: green's accent text is already dark, so reuse it. */
+@define-color jp_check_fg  @jp_accent_fg;
+
 /* Tint the window and its chrome with the theme hue.  Raise the
    factor for a stronger wash, or set this to plain @theme_bg_color
    for an untinted, neutral look. */

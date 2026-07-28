@@ -588,7 +588,7 @@ static int alarms_do_one(struct CalendarEvent *cale,
             }
 #endif
          }
-         if (len<sizeof(command)-4) {
+         if (len < (int)(sizeof(command)-4)) {
             command[len++]=c1;
             command[len]='\0';
          }
