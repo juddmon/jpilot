@@ -669,8 +669,8 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
         if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
             if (!mmemo) {
+                jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), i + 1);
                 continue;
-                jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
             }
             switch (type) {
                 case EXPORT_TYPE_CSV:
@@ -697,11 +697,9 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                         len = (unsigned int) strlen(mmemo->memo.text) * 2 + 4;
                     }
                     if (len < 256) len = 256;
-                    printf("\"RAW %d %s\"\n", mmemo->attrib & 0x0F, memo_app_info.category.name[mmemo->attrib & 0x0F]);
                     utf = charset_p2newj(memo_app_info.category.name[mmemo->attrib & 0x0F], 16, (int) char_set);
                     str_to_csv_str(csv_text, utf);
                     fprintf(out, "\"Memos > %s\"\n", csv_text);
-                    printf("\"Memos > %s\"\n", utf);
                     g_free(utf);
                     break;
 
@@ -755,8 +753,8 @@ static void cb_memo_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                 if (gtk_tree_model_get_iter(model, &iter, path)) {
                     gtk_tree_model_get(model, &iter, MEMO_DATA_COLUMN_ENUM, &mmemo, -1);
                     if (!mmemo) {
+                        jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), i + 1);
                         continue;
-                        jp_logf(JP_LOG_WARN, _("Can't export memo %d\n"), (long) temp_list->data + 1);
                     }
                     if ((mmemo->attrib & 0x0F) != cat) {
                         continue;

@@ -2175,8 +2175,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
         if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
             if (!mkr) {
+                jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), i + 1);
                 continue;
-                jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
             }
             switch (type) {
                 case EXPORT_TYPE_CSV:
@@ -2258,8 +2258,8 @@ static void cb_keyr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
                 if (gtk_tree_model_get_iter(model, &iter, path)) {
                     gtk_tree_model_get(model, &iter, KEYRING_DATA_COLUMN_ENUM, &mkr, -1);
                     if (!mkr) {
+                        jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), i + 1);
                         continue;
-                        jp_logf(JP_LOG_WARN, _("Can't export key %d\n"), (long) temp_list->data + 1);
                     }
                     if ((mkr->attrib & 0x0F) != cat) {
                         continue;
