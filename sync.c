@@ -2100,7 +2100,7 @@ static int slow_sync_application(char *DB_name, int sd)
    }
 
    g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
-   jp_logf(JP_LOG_GUI, log_entry);
+   jp_logf(JP_LOG_GUI, "%s", log_entry);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 
@@ -2818,7 +2818,7 @@ static int fast_sync_application(char *DB_name, int sd)
    }
 
    g_snprintf(log_entry, sizeof(log_entry), _("Syncing %s\n"), DB_name);
-   jp_logf(JP_LOG_GUI, log_entry);
+   jp_logf(JP_LOG_GUI, "%s", log_entry);
 
    get_pref(PREF_CHAR_SET, &char_set, NULL);
 

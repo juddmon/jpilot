@@ -689,7 +689,7 @@ static int cb_dbook_import(GtkWidget *parent_window, const char *file_path, int 
                 if (glob_sqlite) jpsqlite_DatebookINS(&new_cale, NEW_PC_REC, attrib, NULL); // SQLite does not have this severe restriction on description length
                 else {
                     if (strlen(new_cale.description) + 1 > MAX_DESC_LEN) {
-                        new_cale.description[MAX_DESC_LEN + 1] = '\0';
+                        new_cale.description[MAX_DESC_LEN - 1] = '\0';
                         jp_logf(JP_LOG_WARN, _("cb_dbook_import(): Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN,
                                 MAX_DESC_LEN);
                     }
@@ -2315,7 +2315,7 @@ static int appt_get_details(struct CalendarEvent *cale, unsigned char *attrib) {
 			cale->description = strdup(" ");
 		}
 		if (strlen(cale->description) + 1 > MAX_DESC_LEN) {
-			cale->description[MAX_DESC_LEN + 1] = '\0';
+			cale->description[MAX_DESC_LEN - 1] = '\0';
 			jp_logf(JP_LOG_WARN, _("appt_get_details(): Appointment description text > %d, truncating to %d\n"), MAX_DESC_LEN, MAX_DESC_LEN);
 		}
 		if (cale->description) {
@@ -5908,7 +5908,9 @@ void selectFirstTodoRow() {
     GtkTreeSelection *treeSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW(todo_treeView));
     GtkTreeIter iter;
 
-    gtk_tree_model_get_iter_first(GTK_TREE_MODEL(todo_listStore), &iter);
+    if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(todo_listStore), &iter)) {
+        return;
+    }
     GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(todo_listStore), &iter);
     gtk_tree_selection_select_path(treeSelection, path);
     gtk_tree_path_free(path);
@@ -5920,13 +5922,18 @@ gint cb_todo_treeview_selection_event(GtkWidget *widget,
     GtkTreeSelection *selection;
     GtkTreeModel *model;
     GtkTreeIter iter;
-    MyToDo *mtodo;
+    MyToDo *mtodo = NULL;
     if (!event) return 1;
 
     selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
     if(selection != NULL) {
-        gtk_tree_selection_get_selected(selection, &model, &iter);
+        if (!gtk_tree_selection_get_selected(selection, &model, &iter)) {
+            return 1;
+        }
         gtk_tree_model_get(model, &iter, TODO_DATA_COLUMN_ENUM, &mtodo, -1);
+        if (mtodo == NULL) {
+            return 1;
+        }
         glob_find_id = mtodo->unique_id;
         //gtk_selection_data_free(selection);
         cb_app_button(NULL, GINT_TO_POINTER(TODO));

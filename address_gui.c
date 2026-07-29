@@ -1102,8 +1102,8 @@ static void cb_addr_export_ok(GtkWidget *export_window, GtkWidget *treeView,
         if (gtk_tree_model_get_iter(model, &iter, path)) {
             gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
             if (!mcont) {
+                jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), record_num + 1);
                 continue;
-                jp_logf(JP_LOG_WARN, _("Can't export address %d\n"), (long) temp_list->data + 1);
             }
 
             switch (type) {

@@ -1086,12 +1086,15 @@ int print_contacts(ContactList *contact_list,
          }
          if (temp_cl->mcont.cont.entry[show1] && ! temp_cl->mcont.cont.entry[show2]) {
             strncpy(str, temp_cl->mcont.cont.entry[show1], 48);
+            str[48] = '\0';
          }
          if (! temp_cl->mcont.cont.entry[show1] && temp_cl->mcont.cont.entry[show2]) {
             strncpy(str, temp_cl->mcont.cont.entry[show2], 48);
+            str[48] = '\0';
          }
       } else if (temp_cl->mcont.cont.entry[show3]) {
             strncpy(str, temp_cl->mcont.cont.entry[show3], 48);
+            str[48] = '\0';
       } else {
             strcpy(str, "-Unnamed-");
       }
