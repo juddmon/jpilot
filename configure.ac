@@ -170,6 +170,28 @@ fi
 
 dnl ************************************************************
 
+dnl Optional audit/hardening build: AddressSanitizer + UBSan + LeakSanitizer
+dnl plus extra warnings and stack/FORTIFY hardening.  Off by default; intended
+dnl for memory-safety auditing, not for release builds.
+AC_ARG_ENABLE(asan,
+   AS_HELP_STRING([--enable-asan],[Build with AddressSanitizer/UBSan, LeakSanitizer, extra warnings and hardening (for auditing; not for release)]),
+   enable_asan=$enableval,
+   enable_asan=no)
+
+if test "x$enable_asan" = "xyes"; then
+   dnl -O1 keeps ASan reports readable; frame pointers give usable backtraces.
+   dnl -Wextra/-Wformat=2/-Wshadow surface bugs at compile time.
+   SANITIZE_CFLAGS="-g -O1 -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector-strong -Wextra -Wformat=2 -Wshadow"
+   SANITIZE_LDFLAGS="-fsanitize=address,undefined"
+   dnl _FORTIFY_SOURCE requires optimization; only define it when not already set.
+   SANITIZE_CFLAGS="$SANITIZE_CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
+   CFLAGS="$CFLAGS $SANITIZE_CFLAGS"
+   LDFLAGS="$LDFLAGS $SANITIZE_LDFLAGS"
+   AC_MSG_RESULT(AddressSanitizer/UBSan audit build enabled)
+fi
+
+dnl ************************************************************
+
 AC_ARG_ENABLE(stock_buttons,
    AS_HELP_STRING([--disable-stock-buttons],[Disable stock buttons (icons on GUI buttons)]),
    enable_stock_buttons=$enableval,

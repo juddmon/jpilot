@@ -62,14 +62,14 @@ void cb_cancel_sync(GtkWidget *widget, unsigned int flags) { return; }
 static void fprint_jps_usage_string(FILE *out)
 {
    fprintf(out, "%s-sync [ -v || -h || [-d] [-P] [-b] [-l] [-p port] ]\n", EPN);
-   fprintf(out, _(" J-Pilot preferences are read to get sync info such as port, rate, number of backups, etc.\n"));
-   fprintf(out, _(" -v display version and compile options\n"));
-   fprintf(out, _(" -h display help text\n"));
-   fprintf(out, _(" -d display debug info to stdout\n"));
-   fprintf(out, _(" -P skip loading plugins\n"));
-   fprintf(out, _(" -b sync, and then do a backup\n"));
-   fprintf(out, _(" -l loop, otherwise sync once and exit\n"));
-   fprintf(out, _(" -p {port} use this port to sync on instead of default\n"));
+   fprintf(out, "%s", _(" J-Pilot preferences are read to get sync info such as port, rate, number of backups, etc.\n"));
+   fprintf(out, "%s", _(" -v display version and compile options\n"));
+   fprintf(out, "%s", _(" -h display help text\n"));
+   fprintf(out, "%s", _(" -d display debug info to stdout\n"));
+   fprintf(out, "%s", _(" -P skip loading plugins\n"));
+   fprintf(out, "%s", _(" -b sync, and then do a backup\n"));
+   fprintf(out, "%s", _(" -l loop, otherwise sync once and exit\n"));
+   fprintf(out, "%s", _(" -p {port} use this port to sync on instead of default\n"));
 }
 
 static void sig_handler(int sig)

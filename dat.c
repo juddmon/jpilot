@@ -114,7 +114,11 @@ static int get_CString(FILE *in, char **PStr)
    }
    /* malloc an extra byte just to be safe */
    *PStr=malloc(size+2);
-   if (fread(*PStr, size, 1, in) < 1) {
+   if (*PStr == NULL) {
+      jp_logf(JP_LOG_WARN, "malloc failed %s %d\n", __FILE__, __LINE__);
+      return -1;
+   }
+   if (size > 0 && fread(*PStr, size, 1, in) < 1) {
       jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
    }
    (*PStr)[size]='\0';
@@ -142,34 +146,48 @@ static int get_categories(FILE *in, struct CategoryAppInfo *ai)
    }
    ai->lastUniqueID=0;
 
+   /* The count comes straight from the file and is untrusted.  The
+    * CategoryAppInfo arrays are fixed at 16 entries, so we must never index
+    * past 15 no matter what the file claims.  We still consume the stream for
+    * every declared entry (up to a sane cap) so later fields stay aligned. */
    for (i=0; i<count; i++) {
+      PStr = NULL;
+
       /* category index */
       if (fread(str_long, 4, 1, in) < 1) {
          jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+         break;
       }
 
       /* category ID */
       if (fread(str_long, 4, 1, in) < 1) {
          jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+         break;
       }
-      ai->ID[i] = x86_long(str_long);
+      if (i < 16) {
+         ai->ID[i] = x86_long(str_long);
+      }
 
       /* category dirty flag */
       if (fread(str_long, 4, 1, in) < 1) {
          jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+         break;
       }
 
       /* long category name */
       get_CString(in, &PStr);
-      strncpy(ai->name[i], PStr, 16);
-      ai->name[i][15]='\0';
+      if (i < 16 && PStr != NULL) {
+         strncpy(ai->name[i], PStr, 16);
+         ai->name[i][15]='\0';
+      }
       free(PStr);
 
       /* short category name */
+      PStr = NULL;
       get_CString(in, &PStr);
       free(PStr);
    }
-   return count;
+   return (count > 16) ? 16 : count;
 }
 
 static int get_repeat(FILE *in, struct Appointment *appt)

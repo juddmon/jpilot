@@ -271,7 +271,7 @@ void UTF_to_other(char *const buf, int buf_len)
    inptr = buf;
 
   /* Most strings can be converted without recourse to malloc */
-   if (buf_len > sizeof(buf_out)) {
+   if ((size_t)buf_len > sizeof(buf_out)) {
       buf_out_ptr = malloc(buf_len);
       if (NULL == buf_out_ptr) {
          jp_logf(JP_LOG_WARN, _("UTF_to_other: %s\n"), _("Out of memory"));
