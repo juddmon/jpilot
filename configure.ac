@@ -261,8 +261,7 @@ PILOT_LIBS="-lpisock"
 dnl Ask pkg-config first.  pilot-link ships a .pc file, and on distros
 dnl that install to a multiarch or otherwise non-standard libdir this is
 dnl the only reliable way to locate it.  Skipped when the user has named
-dnl an explicit prefix, since that should win.  AC_PATH_PROG is used
-dnl rather than PKG_PROG_PKG_CONFIG so this adds no pkg.m4 dependency.
+dnl an explicit prefix, since that should win.
 if test "$pilotlibs" = "no" && test "x$pilot_prefix" = "x" \
    && test "x$PKG_CONFIG" != "xno" ; then
    if $PKG_CONFIG --exists pilot-link 2>/dev/null ; then
