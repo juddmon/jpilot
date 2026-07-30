@@ -1,5 +1,5 @@
 # Ukrainian translation to jpilot
-# Copyright (C) YEAR Judd Montgomery
+# Copyright (C) 2005 Judd Montgomery
 # Copyright (C) 2004 Free Software Foundation, Inc.
 # This file is distributed under the same license as the jpilot package.
 # Maxim V. Dziumanenko <mvd@mylinux.com.ua>, 2004-2005.

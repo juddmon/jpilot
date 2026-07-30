@@ -2,7 +2,7 @@
  * pi-task.h
  * A module of J-Pilot http://jpilot.org
  *
- * Copyright (C) 2004-2015 by Judd Montgomery
+ * Copyright (C) 2004-2026 by Judd Montgomery
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
