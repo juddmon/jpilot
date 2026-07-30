@@ -1,3 +1,21 @@
+2.1.0 - 2026-07-29
+ New modern CSS color themes that update live when selected
+ Replaced deprecated gdk_pixbuf XPM loader for the contacts photo
+ Fixed a crash when checking a to-do from the left-most checkbox column
+ Fixed a crash in the Calendar's embedded to-do pane when the to-do list is empty
+ Fixed a segfault in the Expense and KeyRing plugins
+ Fixed corrupted to-do CSV export when using the SQLite backend
+ Security/robustness hardening: fixed a format-string flaw in the HotSync log, an uninitialized-pointer read, a buffer over-read when printing addresses, and assorted dead/incorrect code
+ Fixed a preferences memory bug by reactivating jp_pref_init()/jp_free_prefs() (issue #61)
+ Fixed the build against OpenSSL 3 in the KeyRing plugin (HodsonTech)
+ Fixed configure on modern autotools: replaced the removed AM_PATH_GTK_3_0 with PKG_CHECK_MODULES and cleaned up obsolete macros (HodsonTech)
+ macOS build support: pilot-link Blob_t API, glibtoolize fallback, and related fixes (desrod, PapayaJackal)
+ Made the jpsqlite plugin optional and fail clearly when SQLite is missing (CoSoCo)
+ Added Debian packaging: debian/ directory, build-debian.sh
+ Add Debian 12 build documentation and configure.ac advisory (ThaGuMath)
+ Fixed many compiler warnings under -Wall -O2
+ Updated copyright dates to 2026
+
 2.0.2 - 2024-04-21
  Added sqlite support (Elmar.Klausmeier@gmail.com) https://github.com/eklausme
  Misc bug fixes and improvements

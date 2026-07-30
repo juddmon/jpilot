@@ -1,6 +1,15 @@
 jpilot (2.1.0-1) unstable; urgency=medium
 
-  * New upstream release.
+  * New CSS color themes with live preview.
+  * Fixed crashes: to-do left-column checkbox, empty Calendar to-do pane,
+    and the Expense/KeyRing plugins.
+  * Fixed corrupted to-do CSV export with the SQLite backend.
+  * Security/robustness hardening in the sync, GUI, and print paths
+    (format-string, uninitialised pointer, buffer over-read, dead code).
+  * Fixed build against OpenSSL 3 (KeyRing) and modern autotools
+    (PKG_CHECK_MODULES in place of the removed AM_PATH_GTK_3_0).
+  * macOS build fixes; jpsqlite plugin now optional.
+  * Updated image/icon loading and numerous compiler warnings.
 
  -- Judd Montgomery <judd@jpilot.org>  Wed, 29 Jul 2026 22:27:50 -0400
 
