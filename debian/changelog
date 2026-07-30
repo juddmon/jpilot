@@ -1,3 +1,9 @@
+jpilot (2.1.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Judd Montgomery <judd@jpilot.org>  Wed, 29 Jul 2026 22:27:50 -0400
+
 jpilot (2.0.2-1) unstable; urgency=medium
 
   * Added sqlite support (Elmar.Klausmeier@gmail.com) https://github.com/eklausme

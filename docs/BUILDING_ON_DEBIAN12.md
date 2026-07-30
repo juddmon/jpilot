@@ -1,4 +1,4 @@
-# Building J-Pilot 2.0.2 on Debian 12 (Bookworm)
+# Building J-Pilot 2.1.0 on Debian 12 (Bookworm)
 
 **Prepared:** March 2026  
 **Author:** Neil Sinclair  
@@ -15,7 +15,7 @@ Both J-Pilot and its dependency `pilot-link` must be built from source on Debian
 Pre-built `.deb` packages produced by this process are available alongside this document:
 
 - `pilot-link_0.12.5-1_amd64.deb`
-- `jpilot_2.0.2-1_amd64.deb`
+- `jpilot_2.1.0-1_amd64.deb`
 
 ---
 
@@ -25,7 +25,7 @@ If you just want to install on a Debian 12 machine without building from source:
 
 ```bash
 sudo dpkg -i pilot-link_0.12.5-1_amd64.deb
-sudo dpkg -i jpilot_2.0.2-1_amd64.deb
+sudo dpkg -i jpilot_2.1.0-1_amd64.deb
 sudo apt-get install -f   # pulls in GTK, GLib, SQLite and other runtime dependencies automatically
 sudo /sbin/ldconfig
 sudo usermod -aG dialout $USER
@@ -148,7 +148,7 @@ sudo mkdir -p /usr/local/share/doc/jpilot/icons \
               /usr/local/share/doc/jpilot/manual \
               /usr/local/share/jpilot
 
-sudo checkinstall --pkgname=jpilot --pkgversion=2.0.2 --pkgrelease=1 \
+sudo checkinstall --pkgname=jpilot --pkgversion=2.1.0 --pkgrelease=1 \
   --pkglicense=GPL --pkggroup=utils \
   --pkgsource="https://github.com/juddmon/jpilot" \
   --nodoc \

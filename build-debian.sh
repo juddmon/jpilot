@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARTIFACT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$SCRIPT_DIR"
 
-# Extract version from configure.ac (e.g. AC_INIT([jpilot],[2.0.2]) -> 2.0.2)
+# Extract version from configure.ac (e.g. AC_INIT([jpilot],[2.1.0]) -> 2.1.0)
 VERSION=$(sed -n 's/^AC_INIT(\[jpilot\],\[\([^]]*\)\].*/\1/p' configure.ac)
 if [[ -z "$VERSION" ]]; then
   echo "Could not determine version from configure.ac (expected AC_INIT([jpilot],[X.Y.Z]))." >&2
