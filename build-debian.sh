@@ -44,7 +44,21 @@ cp "$DIST_TAR" "$ORIG_TAR"
 rm -rf "$BUILD_DIR"
 tar xf "$ORIG_TAR"
 rm -f "$DIST_TAR"
-rsync -a debian/ "$BUILD_DIR/debian/"
+# Copy debian/ into the build tree, excluding machine-local debhelper build
+# state. A dirty working tree can carry a stale debian/.debhelper/ from an
+# earlier build (even of a different version); its bucket index references old
+# paths and makes dh_clean fail with "No such file or directory". A clean git
+# clone has none of this, which is why it only breaks in a reused tree.
+rsync -a \
+  --exclude='.debhelper/' \
+  --exclude='*.debhelper.log' \
+  --exclude='*.substvars' \
+  --exclude='debhelper-build-stamp' \
+  --exclude='files' \
+  --exclude='/jpilot/' \
+  --exclude='/jpilot-plugins/' \
+  --exclude='/tmp/' \
+  debian/ "$BUILD_DIR/debian/"
 
 # Build packages (-us -uc = do not sign; use -sa to include .orig in .dsc).
 # dpkg-buildpackage writes into SCRIPT_DIR (parent of the build tree).
