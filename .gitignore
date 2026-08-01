@@ -56,5 +56,5 @@ po/remove-potcdate.sin
 dists
 
 myconfigure
-jpilot-2.0.2
+jpilot-[0-9.]*
 jpilot.code-workspace
