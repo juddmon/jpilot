@@ -7,6 +7,7 @@
  Fixed corrupted to-do CSV export when using the SQLite backend
  Security/robustness hardening: fixed a format-string flaw in the HotSync log, an uninitialized-pointer read, a buffer over-read when printing addresses, and assorted dead/incorrect code
  Fixed a preferences memory bug by reactivating jp_pref_init()/jp_free_prefs() (issue #61)
+ Now requires pilot-link 0.15.0 or greater (Contacts blob API change)
  Fixed the build against OpenSSL 3 in the KeyRing plugin (HodsonTech)
  Fixed configure on modern autotools: replaced the removed AM_PATH_GTK_3_0 with PKG_CHECK_MODULES and cleaned up obsolete macros (HodsonTech)
  macOS build support: pilot-link Blob_t API, glibtoolize fallback, and related fixes (desrod, PapayaJackal)

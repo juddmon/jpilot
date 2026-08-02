@@ -11,7 +11,7 @@ URL:       http://www.jpilot.org
 Packager:  Judd Montgomery <judd@jpilot.org>
 Prefix:    /usr
 BuildRoot: %{_tmppath}/%{name}-@VERSION@-root
-Requires:  pilot-link >= 0.12.5
+Requires:  pilot-link >= 0.15.0
 
 %description
 J-Pilot is a desktop organizer application for the palm pilot that runs

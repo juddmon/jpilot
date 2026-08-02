@@ -403,20 +403,17 @@ pl_patch=`$GREP "define PILOT_LINK_PATCH" "$pilot_incl/pi-version.h" | \
 $CUT -d " " -f 3 | $SED -e 's/"//g'`
 AC_MSG_RESULT([pi-version indicates $pl_version.$pl_major.$pl_minor])
 
-dnl *** check for pilot-link 0.12.5 and up
+dnl *** check for pilot-link 0.15.0 and up
+dnl *** 0.15.0 changed the Contact blob API that this release codes against
 
 if test $pl_version -eq 0 ; then
-   if test $pl_major -ge 12 ; then
-      if test $pl_minor -ge 0 ; then
-         pl_version_check_done=yes;
-         AC_MSG_RESULT([pilot-link has USB])
-         AC_MSG_RESULT([pilot-link has card support (>12.0)])
-         AC_MSG_RESULT([pilot-link has Calendar support (>12.5)])
-      fi
+   if test $pl_major -ge 15 ; then
+      pl_version_check_done=yes;
+      AC_MSG_RESULT([pilot-link has USB, card, and Calendar support])
    fi
 fi
 if test $pl_version_check_done != yes; then
-   AC_MSG_ERROR([pilot-link version >= 0.12.5 is required])
+   AC_MSG_ERROR([pilot-link version >= 0.15.0 is required])
 fi
 
 dnl restore variables after pilot-link testing

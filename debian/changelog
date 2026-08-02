@@ -8,6 +8,7 @@ jpilot (2.1.0-1) unstable; urgency=medium
     (format-string, uninitialised pointer, buffer over-read, dead code).
   * Fixed build against OpenSSL 3 (KeyRing) and modern autotools
     (PKG_CHECK_MODULES in place of the removed AM_PATH_GTK_3_0).
+  * Now requires pilot-link 0.15.0 or greater (Contacts blob API change).
   * macOS build fixes; jpsqlite plugin now optional.
   * Updated image/icon loading and numerous compiler warnings.
 
