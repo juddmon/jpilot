@@ -1940,6 +1940,22 @@ void addNewAddressRecordToDataStructure(MyContact *mcont, gpointer data) {
             jp_Contact_add_picture(&cont, &contact_picture);
         }
 
+        /* Preserve blobs the GUI cannot edit, such as the anniversary
+         * blob (Bd01).  The picture blob (Bd00) is excluded because it
+         * was re-added above from contact_picture, so photo changes and
+         * removals take effect. */
+        if (((flag == MODIFY_FLAG) || (flag == COPY_FLAG)) && mcont) {
+            for (i = 0; i < MAX_BLOBS; i++) {
+                if (mcont->cont.blob[i] &&
+                    mcont->cont.blob[i]->data &&
+                    memcmp(mcont->cont.blob[i]->type, BLOB_TYPE_PICTURE_ID, 4)) {
+                    if (jp_Contact_add_blob(&cont, mcont->cont.blob[i])) {
+                        jp_logf(JP_LOG_WARN, _("Could not preserve a contact blob\n"));
+                    }
+                }
+            }
+        }
+
         /* Get the attributes */
         get_address_attrib(&attrib);
 
