@@ -10,7 +10,7 @@ Homepage: http://jpilot.org/
 
 Package: jpilot
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libpisock9 (>= 0.15.0~)
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: jpilot-plugins
 Suggests: jpilot-backup
 Description: graphical app. to modify the contents of your Palm Pilot's DBs

@@ -1,5 +1,6 @@
 jpilot (2.1.0-1) unstable; urgency=medium
 
+  [ Judd Montgomery ]
   * New CSS color themes with live preview.
   * Fixed crashes: to-do left-column checkbox, empty Calendar to-do pane,
     and the Expense/KeyRing plugins.
@@ -12,7 +13,7 @@ jpilot (2.1.0-1) unstable; urgency=medium
   * macOS build fixes; jpsqlite plugin now optional.
   * Updated image/icon loading and numerous compiler warnings.
 
- -- Judd Montgomery <judd@jpilot.org>  Wed, 29 Jul 2026 22:27:50 -0400
+ -- Judd Montgomery <judd@jpilot.org>  Sat, 08 Aug 2026 18:31:23 -0400
 
 jpilot (2.0.2-1) unstable; urgency=medium
 
