@@ -1,4 +1,4 @@
-2.1.0 - 2026-07-29
+2.1.0 - 2026-08-08
  New modern CSS color themes that update live when selected
  Replaced deprecated gdk_pixbuf XPM loader for the contacts photo
  Fixed a crash when checking a to-do from the left-most checkbox column
