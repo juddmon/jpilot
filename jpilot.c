@@ -87,8 +87,6 @@
 #define MASK_HEIGHT 0x04
 #define MASK_X      0x02
 #define MASK_Y      0x01
-#define PIPE_DEBUG 1
-/* #define PIPE_DEBUG */
 /******************************* Global vars **********************************/
 /* Application-wide globals */
 int pipe_from_child, pipe_to_parent;
@@ -815,6 +813,25 @@ void output_to_pane(const char *str) {
 }
 
 
+const char * pipe_command_to_text(int command) {
+    switch (command) {
+    case PIPE_PRINT:
+        return "PRINT";
+    case PIPE_USERID:
+        return "USERID";
+    case PIPE_USERNAME:
+        return "USERNAME";
+    case PIPE_PASSWORD:
+        return "PASSWORD";
+    case PIPE_WAITING_ON_USER:
+        return "WAITING_ON_USER";
+    case PIPE_FINISHED:
+        return "FINISHED";
+    default:
+        return "UNKNOWN";
+    }
+}
+
 gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointer data) {
     int num;
     char buf_space[1026];
@@ -837,6 +854,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
     char title[MAX_PREF_LEN + 256];
     char *user_name;
     gint in = g_io_channel_unix_get_fd(channel);
+    const char *cmd_str;
 
     /* This is so we can always look at the previous char in buf */
     buf = &buf_space[1];
@@ -885,9 +903,18 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
         if (Pstr1 != NULL) {
             Pstr1++;
         }
-#ifdef PIPE_DEBUG
-        printf("command=%d [%s]\n", command, Pstr1 ? Pstr1 : "");
-#endif
+
+        /* Trim trailing CR/LF so the command prints on one line.
+           Only the printout is trimmed; Pstr1/buf are left untouched
+           for the switch cases below. */
+        cmd_str = Pstr1 ? Pstr1 : "";
+        size_t cmd_len = strlen(cmd_str);
+        while (cmd_len > 0 && (cmd_str[cmd_len - 1] == '\n' ||
+                               cmd_str[cmd_len - 1] == '\r')) {
+            cmd_len--;
+        }
+        jp_logf(JP_LOG_DEBUG, "pipe_read %s:%.*s\n", pipe_command_to_text(command), (int) cmd_len, cmd_str);
+
         if (Pstr1) {
             switch (command) {
                 case PIPE_PRINT:
@@ -898,7 +925,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
                     /* Save user ID as pref */
                     num = sscanf(Pstr1, "%lu", &user_id);
                     if (num > 0) {
-                        jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
+                        //jp_logf(JP_LOG_DEBUG, "pipe_read: user id = %lu\n", user_id);
                         set_pref(PREF_USER_ID, user_id, NULL, TRUE);
                     } else {
                         jp_logf(JP_LOG_DEBUG, "pipe_read: trouble reading user id\n");
@@ -916,7 +943,7 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
                                 user_len = MAX_PREF_LEN;
                             }
                             g_strlcpy(user, Pstr2, user_len + 1);
-                            jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
+                            // jp_logf(JP_LOG_DEBUG, "pipe_read: user = %s\n", user);
                             set_pref(PREF_USER, 0, user, TRUE);
                         }
                     }
@@ -933,20 +960,15 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
                                 password_len = MAX_PREF_LEN;
                             }
                             g_strlcpy(password, Pstr2, password_len + 1);
-                            jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
+                            // jp_logf(JP_LOG_DEBUG, "pipe_read: password = %s\n", password);
                             set_pref(PREF_PASSWORD, 0, password, TRUE);
                         }
                     }
                     break;
                 case PIPE_WAITING_ON_USER:
-#ifdef PIPE_DEBUG
-                    printf("waiting on user\n");
-#endif
+                    jp_logf(JP_LOG_DEBUG, "waiting on user\n");
                     /* Look for the reason */
                     num = sscanf(Pstr1, "%d", &reason);
-#ifdef PIPE_DEBUG
-                    printf("reason %d\n", reason);
-#endif
                     if (num > 0) {
                         jp_logf(JP_LOG_DEBUG, "pipe_read: reason = %d\n", reason);
                     } else {
@@ -959,9 +981,6 @@ gboolean cb_read_pipe_from_child(GIOChannel *channel, GIOCondition cond, gpointe
                         /* This is where to add an option for adding user or
                          user id to possible ids to sync with. */
                         ret = bad_sync_exit_status(reason);
-#ifdef PIPE_DEBUG
-                        printf("ret=%d\n", ret);
-#endif
                         if (ret == DIALOG_SAID_2) {
                             sprintf(command_str, "%d:\n", PIPE_SYNC_CONTINUE);
                         } else {
