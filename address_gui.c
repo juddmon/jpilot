@@ -2858,16 +2858,19 @@ static void cb_photo_browse_cancel(GtkWidget *widget, gpointer data) {
 }
 
 static void cb_photo_browse_ok(GtkWidget *widget, gpointer data) {
-    const char *sel;
+    gchar *sel;
     char **Pselection;
 
     sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
-    set_pref(PREF_CONTACTS_PHOTO_FILENAME, 0, sel, TRUE);
+    if (sel) {
+        set_pref(PREF_CONTACTS_PHOTO_FILENAME, 0, sel, TRUE);
 
-    Pselection = g_object_get_data(G_OBJECT(GTK_FILE_CHOOSER(widget)), "selection");
-    if (Pselection) {
-        jp_logf(JP_LOG_DEBUG, "setting selection to %s\n", sel);
-        *Pselection = strdup(sel);
+        Pselection = g_object_get_data(G_OBJECT(GTK_FILE_CHOOSER(widget)), "selection");
+        if (Pselection) {
+            jp_logf(JP_LOG_DEBUG, "setting selection to %s\n", sel);
+            *Pselection = strdup(sel);
+        }
+        g_free(sel);
     }
 
     gtk_widget_destroy(widget);

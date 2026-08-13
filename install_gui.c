@@ -168,7 +168,7 @@ static gboolean cb_destroy(GtkWidget *widget) {
 /* FIXME: find out why this is no longer used */
 #if 0
 static void cb_quit(GtkWidget *widget, gpointer data) {
-    const gchar *sel;
+    gchar *sel;
     char dir[MAX_PREF_LEN + 2];
     struct stat statb;
     int i;
@@ -176,28 +176,30 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
     jp_logf(JP_LOG_DEBUG, "Quit\n");
 
     sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    if (sel) {
+        g_strlcpy(dir, sel, MAX_PREF_LEN);
 
-    g_strlcpy(dir, sel, MAX_PREF_LEN);
+        if (stat(sel, &statb)) {
+            jp_logf(JP_LOG_WARN, "File selected was not stat-able\n");
+        }
+        g_free(sel);
 
-    if (stat(sel, &statb)) {
-        jp_logf(JP_LOG_WARN, "File selected was not stat-able\n");
-    }
-
-    if (S_ISDIR(statb.st_mode)) {
-        /* For directory, add '/' indicator to path */
-        i = strlen(dir);
-        dir[i] = '/', dir[i + 1] = '\0';
-    } else {
-        /* Otherwise, strip off filename to find actual directory */
-        for (i = strlen(dir); i >= 0; i--) {
-            if (dir[i] == '/') {
-                dir[i + 1] = '\0';
-                break;
+        if (S_ISDIR(statb.st_mode)) {
+            /* For directory, add '/' indicator to path */
+            i = strlen(dir);
+            dir[i] = '/', dir[i + 1] = '\0';
+        } else {
+            /* Otherwise, strip off filename to find actual directory */
+            for (i = strlen(dir); i >= 0; i--) {
+                if (dir[i] == '/') {
+                    dir[i + 1] = '\0';
+                    break;
+                }
             }
         }
-    }
 
-    set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
+        set_pref(PREF_INSTALL_PATH, 0, dir, TRUE);
+    }
 
     gtk_widget_destroy(GTK_WIDGET(widget));
 }
@@ -206,25 +208,32 @@ static void cb_quit(GtkWidget *widget, gpointer data) {
 static void cb_add(GtkWidget *widget, gpointer data) {
 
 
-    const char *sel;
+    gchar *sel;
     struct stat statb;
 
     jp_logf(JP_LOG_DEBUG, "install: cb_add\n");
     sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    if (!sel) {
+        jp_logf(JP_LOG_DEBUG, "install: cb_add: no file selected\n");
+        return;
+    }
     jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
     /* Check to see if its a regular file */
     if (stat(sel, &statb)) {
         jp_logf(JP_LOG_DEBUG, "File selected was not stat-able\n");
+        g_free(sel);
         return;
     }
     if (!S_ISREG(statb.st_mode)) {
         jp_logf(JP_LOG_DEBUG, "File selected was not a regular file\n");
+        g_free(sel);
         return;
     }
 
     install_append_line(sel);
     install_update_listStore();
+    g_free(sel);
 }
 
 static void cb_remove(GtkWidget *widget, gpointer data) {

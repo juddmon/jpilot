@@ -82,8 +82,11 @@ static void cb_export_browse_ok(GtkWidget *widget, gpointer data) {
     glob_export_browse_pressed = BROWSE_OK;
     if (pref) {
         sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (widget));
-        set_pref(pref, 0, sel, TRUE);
-        gtk_entry_set_text(GTK_ENTRY(save_as_entry), sel);
+        if (sel) {
+            set_pref(pref, 0, sel, TRUE);
+            gtk_entry_set_text(GTK_ENTRY(save_as_entry), sel);
+            g_free(sel);
+        }
     }
     gtk_widget_destroy(widget);
 }
