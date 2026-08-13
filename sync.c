@@ -67,7 +67,6 @@
 
 #define USE_LOCKING
 
-/* #define PIPE_DEBUG */
 /* #define JPILOT_DEBUG */
 /* #define SYNC_CAT_DEBUG */
 
@@ -316,11 +315,9 @@ static int wait_for_response(int sd)
    int buf_len, ret;
    fd_set fds;
    struct timeval tv;
-   int command;
+   int command = PIPE_SYNC_CANCEL;   /* safe default if we time out with no reply */
 
-#ifdef PIPE_DEBUG
-   printf("child: wait_for_response()\n");
-#endif
+   jp_logf(JP_LOG_DEBUG, "wait_for_response: waiting for parent (user) response\n");
 
    /* For jpilot-sync */
    /* We should never get to this function, but just in case. */
@@ -332,10 +329,6 @@ static int wait_for_response(int sd)
    pi_watchdog(sd, 7);
    /* 120 iterations is 2 minutes */
    for (i=0; i<120; i++) {
-#ifdef PIPE_DEBUG
-      printf("child wait_for_response() for\n");
-      printf("pipe_from_parent = %d\n", pipe_from_parent);
-#endif
       /* Linux modifies tv in the select call */
       tv.tv_sec=1;
       tv.tv_usec=0;
@@ -350,9 +343,6 @@ static int wait_for_response(int sd)
       /* this happens when waiting, probably a signal in pilot-link */
 
       if (!FD_ISSET(pipe_from_parent, &fds)) {
-#ifdef PIPE_DEBUG
-         printf("sync !FD_ISSET\n");
-#endif
          continue;
       }
       buf[0]='\0';
@@ -363,21 +353,9 @@ static int wait_for_response(int sd)
          /* Error */
          if (ret<1) {
             int err=errno;
-            printf("ret<1\n");
-            printf("read from parent: %s\n", strerror(err));
             jp_logf(JP_LOG_WARN, "read from parent %s\n", strerror(err));
             break;
          }
-#ifdef PIPE_DEBUG
-         printf("ret=%d read %d[%d]\n", ret, buf[i], buf[i]);
-#endif
-         /* EOF */
-#ifdef PIPE_DEBUG
-         if (ret==0) {
-            printf("ret==0\n");
-            break;
-         }
-#endif
          buf_len++;
          if ((buf[i]=='\n')) break;
       }
@@ -391,10 +369,7 @@ static int wait_for_response(int sd)
 
       /* Look for the command */
       sscanf(buf, "%d:", &command);
-#ifdef PIPE_DEBUG
-      printf("command from parent=%d\n", command);
-      printf("buf=[%s]\n", buf);
-#endif
+      jp_logf(JP_LOG_DEBUG, "wait_for_response: got command %d from parent\n", command);
       break;
    }
 
