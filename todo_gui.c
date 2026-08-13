@@ -2193,11 +2193,14 @@ void todo_update_liststore(GtkListStore *pListStore, GtkWidget *tooltip_widget,
 
             if (comp_due < comp_now) {
                 fgColor = get_color(LIST_OVERDUE_RED, LIST_OVERDUE_GREEN, LIST_OVERDUE_BLUE);
-
+                showFgColor = TRUE;
             } else if (comp_due == comp_now) {
                 fgColor = get_color(LIST_DUENOW_RED, LIST_DUENOW_GREEN, LIST_DUENOW_BLUE);
+                showFgColor = TRUE;
             }
-            showFgColor = TRUE;
+            /* A todo due in the future keeps the default text color; fgColor
+             * is left unset, so showFgColor must stay FALSE here -- otherwise
+             * gdk_rgba_to_string() would serialize an uninitialized struct. */
         }
         gtk_list_store_set(pListStore, &iter,
                            TODO_CHECK_COLUMN_ENUM, checkColumnDisplay,
