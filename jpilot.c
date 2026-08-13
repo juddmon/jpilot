@@ -765,7 +765,10 @@ void output_to_pane(const char *str) {
         set_pref(PREF_OUTPUT_HEIGHT, ivalue, NULL, TRUE);
     }
     //w = gdk_window_get_width(gtk_widget_get_window(window));
-    h = gdk_window_get_height(gtk_widget_get_window(window));
+    /* window may not be realized yet if a message is logged during GUI
+     * construction (before gtk_widget_show_all); get_window() is NULL then. */
+    h = gtk_widget_get_window(window) ?
+        gdk_window_get_height(gtk_widget_get_window(window)) : 0;
     new_y = h - ivalue;
     gtk_paned_set_position(GTK_PANED(output_pane), new_y);
 

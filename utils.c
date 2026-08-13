@@ -1189,10 +1189,16 @@ int dialog_generic(GtkWindow *main_window,
      * from the callback routine of a treeView.
      */
 #if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION >= 20
-    GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(main_window));
-    GdkDisplay *display = gdk_window_get_display(GDK_WINDOW(gdk_window));
-    GdkSeat *seat = gdk_display_get_default_seat(display);
-    gdk_seat_ungrab(seat);
+    /* main_window may legitimately be NULL here (see the guard below, and
+     * dialog_generic_ok(NULL, ...)).  Only ungrab via its seat when it is
+     * present and realized; otherwise there is no grab of ours to release. */
+    GdkWindow *gdk_window = main_window ?
+        gtk_widget_get_window(GTK_WIDGET(main_window)) : NULL;
+    if (gdk_window) {
+        GdkDisplay *display = gdk_window_get_display(GDK_WINDOW(gdk_window));
+        GdkSeat *seat = gdk_display_get_default_seat(display);
+        gdk_seat_ungrab(seat);
+    }
 #else
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
 #endif
