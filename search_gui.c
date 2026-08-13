@@ -544,7 +544,10 @@ void selectFirstRow(const GtkTreeView *treeView) {
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
     GtkTreePath  *path = NULL;
     GtkTreeIter firstIter;
-    gtk_tree_model_get_iter_first(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
+    /* Empty list (no rows): nothing to select, and firstIter would be garbage. */
+    if (!gtk_tree_model_get_iter_first(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter)) {
+        return;
+    }
     path = gtk_tree_model_get_path(gtk_tree_view_get_model(GTK_TREE_VIEW(treeView)), &firstIter);
     gtk_tree_selection_select_path(selection, path);
     gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(treeView), path, NULL, FALSE, 1.0, 0.0);

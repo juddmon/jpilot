@@ -2614,9 +2614,12 @@ int make_category_menu(GtkWidget **category_menu,
 int findSortedPostion(int sorted_position,GtkComboBox * box) {
     GtkTreeModel * model = gtk_combo_box_get_model(GTK_COMBO_BOX(box));
     GtkTreeIter iter;
-    gtk_tree_model_get_iter_first(model,&iter);
     int  pos;
     gchar * label;
+    /* An empty model has no first row; iter would be uninitialized. */
+    if (!gtk_tree_model_get_iter_first(model,&iter)) {
+        return -1;
+    }
     gtk_tree_model_get(model,&iter,0,&label,1,&pos,-1);
     while(pos != sorted_position && gtk_tree_model_iter_next(model,&iter)){
         gtk_tree_model_get(model,&iter,0,&label,1,&pos,-1);
@@ -3069,11 +3072,15 @@ motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
             GtkTreeSelection *selection = NULL;
             model = gtk_tree_view_get_model(GTK_TREE_VIEW(widget));
             selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
-            gtk_tree_selection_get_selected(selection,&model,&iter);
-            path = gtk_tree_model_get_path(model,&iter);
-            if(gtk_tree_path_prev(path)){
-                gtk_tree_selection_select_path(selection, path);
-                gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget),path,0, FALSE, 1.0, 0.0);
+            /* Only walk up from the current selection if there is one.
+             * When nothing is selected, get_selected() returns FALSE and
+             * leaves iter uninitialized; using it would deref garbage. */
+            if (gtk_tree_selection_get_selected(selection,&model,&iter)) {
+                path = gtk_tree_model_get_path(model,&iter);
+                if(path != NULL && gtk_tree_path_prev(path)){
+                    gtk_tree_selection_select_path(selection, path);
+                    gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget),path,0, FALSE, 1.0, 0.0);
+                }
             }
         }
         gtk_tree_path_free(path);

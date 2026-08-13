@@ -2117,7 +2117,9 @@ int main(int argc, char *argv[]) {
     //pixbuf = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, jpilot_icon4_xpm);
     //this method no longer exists in gtk3.  X11 handles this anyway.
     // gdk_window_set_icon(window->window, NULL, pixbuf, mask);
-    gdk_window_set_icon_name(gtk_widget_get_window(window), PN);
+    if (gtk_widget_get_window(window)) {
+        gdk_window_set_icon_name(gtk_widget_get_window(window), PN);
+    }
 
     /* Create "Datebook" pixbuf */
     pixbufwid = jp_image_from_xpm_data((const char * const *) datebook_xpm);
