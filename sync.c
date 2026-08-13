@@ -84,21 +84,29 @@ static int findVFSPath(int sd, const char *path, long *volume, char *rpath, int 
 
 /****************************** Main Code *************************************/
 
-static void sig_handler(int sig)
+/* Called from the GTK main loop (NOT from signal context) when the forked
+ * sync child terminates.  The previous implementation did this work in an
+ * asynchronous SIGCHLD handler, where it called jp_logf() and cb_cancel_sync()
+ * -- i.e. GTK, stdio and malloc, none of which are async-signal-safe.  If the
+ * child exited while the main thread was already inside malloc/GTK (e.g.
+ * writing the rc file during quit) the reentrancy corrupted the heap or
+ * deadlocked, giving an intermittent crash on sync completion.
+ * g_child_watch_add() reaps the child and dispatches this from the main loop,
+ * where these calls are safe.  It also fires only on real termination, so the
+ * old "innocuous events like suspend/resume" special case is no longer needed. */
+static void on_sync_child_exit(GPid pid, gint status, gpointer data)
 {
-   int status = 0;
+   (void) data;
 
-   jp_logf(JP_LOG_DEBUG, "caught signal SIGCHLD\n");
+   jp_logf(JP_LOG_DEBUG, "sync child (pid %d) exited, status 0x%x\n",
+           (int) pid, (unsigned) status);
 
-   /* wait for any child processes */
-   waitpid(-1, &status, WNOHANG);
+   g_spawn_close_pid(pid);
 
-   /* SIGCHLD status is 0 for innocuous events like suspend/resume. */
-   /* We specifically exit with return code 255 to trigger this cleanup */
-   if (status > 0) {
-      glob_child_pid = 0;
-      cb_cancel_sync(NULL, 0);
-   }
+   /* Zero glob_child_pid *before* cb_cancel_sync() so it just resets the
+    * Sync/Cancel buttons rather than trying to kill an already-dead child. */
+   glob_child_pid = 0;
+   cb_cancel_sync(NULL, 0);
 }
 
 #ifdef USE_LOCKING
@@ -3440,7 +3448,6 @@ int sync_once(struct my_sync_info *sync_info)
 
    if (!(SYNC_NO_FORK & sync_info->flags)) {
       jp_logf(JP_LOG_DEBUG, "forking sync process\n");
-      signal(SIGCHLD, sig_handler);
       glob_child_pid = -1;
       pid = fork();
       switch (pid){
@@ -3451,9 +3458,12 @@ int sync_once(struct my_sync_info *sync_info)
          /* child continues sync */
          break;
        default:
-         /* parent stores child pid and goes back to GUI */
+         /* parent stores child pid and goes back to GUI.  The child is reaped
+            and post-processed from the GTK main loop via g_child_watch_add(),
+            replacing the old async (signal-unsafe) SIGCHLD handler. */
          if (-1 == glob_child_pid)
             glob_child_pid = pid;
+         g_child_watch_add((GPid) pid, on_sync_child_exit, NULL);
          return EXIT_SUCCESS;
       }
    }
