@@ -2928,10 +2928,13 @@ static int jp_install_user(const char *device, int sd,
 {
    struct PilotUser U;
 
+   memset(&U, 0, sizeof(U));
    U.userID=sync_info->userID;
    U.viewerID=0;
    U.lastSyncPC=0;
+   U.lastSyncDate=U.successfulSyncDate=time(NULL);
    strncpy(U.username, sync_info->username, sizeof(U.username));
+   U.username[sizeof(U.username)-1]='\0';
 
    dlp_WriteUserInfo(sd, &U);
 
