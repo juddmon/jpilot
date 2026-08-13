@@ -158,27 +158,31 @@ static gboolean cb_destroy(GtkWidget *widget)
 
 static void cb_quit(GtkWidget *widget, gpointer data)
 {
-   const char *sel;
+   gchar *sel;
    char dir[MAX_PREF_LEN+2];
    int i;
 
    jp_logf(JP_LOG_DEBUG, "import_gui.c:cb_quit(): Quit\n");
 
+   /* NULL when the chooser was cancelled with nothing selected -- don't
+    * dereference it (strncpy of a NULL source segfaults). */
    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-   strncpy(dir, sel, MAX_PREF_LEN);
-   dir[MAX_PREF_LEN]='\0';
-   i=strlen(dir)-1;
-   if (i<0) i=0;
-   if (dir[i]!='/') {
-      for (i=strlen(dir); i>=0; i--) {
-         if (dir[i]=='/') {
-            dir[i+1]='\0';
-            break;
+   if (sel) {
+      strncpy(dir, sel, MAX_PREF_LEN);
+      dir[MAX_PREF_LEN]='\0';
+      g_free(sel);
+      i=strlen(dir)-1;
+      if (i<0) i=0;
+      if (dir[i]!='/') {
+         for (i=strlen(dir); i>=0; i--) {
+            if (dir[i]=='/') {
+               dir[i+1]='\0';
+               break;
+            }
          }
       }
+      set_pref(PREF_MEMO_IMPORT_PATH, 0, dir, TRUE);
    }
-
-   set_pref(PREF_MEMO_IMPORT_PATH, 0, dir, TRUE);
 
    gtk_widget_destroy(widget);
 }
@@ -195,6 +199,10 @@ static void cb_import(GtkWidget *widget, gpointer filesel)
 
    jp_logf(JP_LOG_DEBUG, "import_gui.c:cb_import()\n");
    sel = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+   if (!sel) {
+      jp_logf(JP_LOG_DEBUG, "import_gui.c:cb_import(): no file selected\n");
+      return;
+   }
    jp_logf(JP_LOG_DEBUG, "file selected [%s]\n", sel);
 
    /* Check to see if its a regular file */
