@@ -4044,6 +4044,33 @@ gboolean button_released_for_motion(GtkWidget *widget, GdkEvent  *event, gpointe
     //left mouse button
     if(button == 1) {
         glob_mouse_pressed = 0;
+        /* During a drag-select motion_notify_event() swallows motion events,
+         * so the treeview's prelight ("hover") stays frozen on the last row
+         * it saw.  If the pointer is left still after the drag, that row keeps
+         * its hover paint until the next motion.  Now that glob_mouse_pressed
+         * is cleared, hand the treeview one synthetic motion at the current
+         * pointer position so it refreshes its prelight and drops the stale
+         * row.  On a plain click (no drag) this just re-prelights the row
+         * already under the pointer, so it is harmless. */
+        if (GTK_IS_TREE_VIEW(widget)) {
+            GdkWindow *bin = gtk_tree_view_get_bin_window(GTK_TREE_VIEW(widget));
+            GdkDevice *device = gdk_event_get_device(event);
+            if (bin && device) {
+                gdouble bx = 0, by = 0;
+                gdk_window_get_device_position_double(bin, device, &bx, &by, NULL);
+                GdkEvent *motion = gdk_event_new(GDK_MOTION_NOTIFY);
+                motion->motion.window = g_object_ref(bin);
+                motion->motion.send_event = TRUE;
+                motion->motion.time = gdk_event_get_time(event);
+                motion->motion.x = bx;
+                motion->motion.y = by;
+                motion->motion.state = 0;
+                motion->motion.is_hint = FALSE;
+                gdk_event_set_device(motion, device);
+                gtk_widget_event(widget, motion);
+                gdk_event_free(motion);
+            }
+        }
     }
     return FALSE;
 }
