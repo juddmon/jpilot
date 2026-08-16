@@ -3090,8 +3090,16 @@ motion_notify_event(GtkWidget *widget, GdkEventMotion *event) {
             }
         }
         gtk_tree_path_free(path);
+        /* We handled the drag-select ourselves; stop emission so the
+         * treeview's default handler does not also act on this motion. */
+        return TRUE;
     }
-    return TRUE;
+    /* Not a drag: let GtkTreeView process the motion normally.  Returning
+     * TRUE here (the old behavior) suppressed the treeview's own motion
+     * handler, so it never updated the prelight ("hover") row -- once a
+     * :hover CSS rule was added, the hover highlight stuck on every row the
+     * pointer had crossed until the next expose. */
+    return FALSE;
 }
 void print_string(char *str, int len) {
     unsigned char c;
