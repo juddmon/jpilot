@@ -3815,7 +3815,13 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
                 glob_find_id = unique_id;
                 address_find();
             }
-            return TRUE;
+            /* Only the Save case reaches here (Cancel/No returned above).
+             * cb_add_new_record() rebuilt the list store, freeing the node
+             * GTK is mid-selecting; returning TRUE would complete the
+             * selection on a freed node and crash.  address_find() has
+             * already reselected the saved record, so abandon this stale
+             * selection change. */
+            return FALSE;
         }
 
         if (mcont == NULL) {

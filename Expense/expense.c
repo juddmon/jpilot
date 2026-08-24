@@ -1183,14 +1183,23 @@ static gboolean handleExpenseRowSelection(GtkTreeSelection *selection,
             button_set_for_motion(0);
 
             b = dialog_save_changed_record(scrolled_window, record_changed);
-            if (b == DIALOG_SAID_2) {
+            if (b == DIALOG_SAID_2) { /* Save */
                 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+                set_new_button_to(CLEAR_FLAG);
+                if (unique_id) {
+                    expense_find(unique_id);
+                }
+                /* cb_add_new_record() rebuilt the list store, freeing the
+                 * GtkRBNode GTK is in the middle of selecting.  Returning
+                 * TRUE would complete the selection against that freed node
+                 * and crash.  expense_find() has already reselected the saved
+                 * record, so abandon this stale selection change. */
+                return FALSE;
             }
-            set_new_button_to(CLEAR_FLAG);
 
-            if (unique_id) {
-                expense_find(unique_id);
-            }
+            /* No / discard changes: no rebuild, so it is safe to let the
+             * selection move to the new record. */
+            set_new_button_to(CLEAR_FLAG);
             return TRUE;
         }
         if (mexp == NULL) {

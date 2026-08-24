@@ -1993,12 +1993,22 @@ gboolean handleRowSelectionForMemo(GtkTreeSelection *selection,
 
             b = dialog_save_changed_record_with_cancel(pane, record_changed);
             if (b == DIALOG_SAID_1) { /* Cancel */
-                return TRUE;
+                /* Keep the record being edited selected; do not switch. */
+                return FALSE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
                 cb_add_new_record(NULL, GINT_TO_POINTER(record_changed));
+                set_new_button_to(CLEAR_FLAG);
+                /* cb_add_new_record() rebuilt the list store (clear +
+                 * repopulate), which freed the GtkRBNode GTK is in the middle
+                 * of selecting.  Returning TRUE would make GTK complete the
+                 * selection against that freed node and crash.  Return FALSE
+                 * so GTK abandons this selection change cleanly. */
+                return FALSE;
             }
 
+            /* DIALOG_SAID_2 (No / discard changes): no rebuild happened, so
+             * it is safe to let the selection move to the new record. */
             set_new_button_to(CLEAR_FLAG);
             return TRUE;
         }
