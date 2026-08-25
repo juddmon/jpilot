@@ -207,7 +207,7 @@ static void cb_backups_entry(GtkWidget *widget, gpointer data) {
     sscanf(entry_text, "%d", &num_backups);
 
     if (num_backups < 1) {
-        num_backups = 1;
+        num_backups = 4;
     }
     if (num_backups > 99) {
         num_backups = 99;
