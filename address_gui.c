@@ -3782,7 +3782,6 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         int *path_index = gtk_tree_path_get_indices(path);
-        rowSelected = path_index[0];
         get_pref(PREF_CHAR_SET, &char_set, NULL);
 
         gtk_tree_model_get(model, &iter, ADDRESS_DATA_COLUMN_ENUM, &mcont, -1);
@@ -3803,6 +3802,7 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             }
             if (b == DIALOG_SAID_2) { /* No */
                 set_new_button_to(CLEAR_FLAG);
+                rowSelected = path_index[0];
                 return TRUE;
             }
             if (b == DIALOG_SAID_3) { /* Save */
@@ -3824,6 +3824,11 @@ static gboolean handleRowSelectionForAddress(GtkTreeSelection *selection,
             return FALSE;
         }
 
+        /* No pending edit: now advance rowSelected to the clicked row.  This
+         * must not happen before the Save above -- cb_add_new_record() uses
+         * rowSelected to pick which record to write, so updating it early
+         * saved the edited data onto the newly clicked record instead. */
+        rowSelected = path_index[0];
         if (mcont == NULL) {
             return TRUE;
         }

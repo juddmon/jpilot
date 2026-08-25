@@ -3478,7 +3478,6 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
     if ((gtk_tree_model_get_iter(model, &iter, path)) && (!path_currently_selected)) {
 
         gint *indeces = gtk_tree_path_get_indices(path);
-        row_selected = indeces[0];
         gtk_tree_model_get(model, &iter, DATE_DATA_COLUMN_ENUM, &mcale, -1);
         if ((record_changed == MODIFY_FLAG) || (record_changed == NEW_FLAG)) {
             if (mcale != NULL) {
@@ -3511,9 +3510,15 @@ static gboolean handleDateRowSelection(GtkTreeSelection *selection,
             /* DIALOG_SAID_2 (No / discard changes): no rebuild, so it is
              * safe to let the selection move to the new record. */
             set_new_button_to(CLEAR_FLAG);
+            row_selected = indeces[0];
             return TRUE;
         }
 
+        /* No pending edit: now advance row_selected to the clicked row.  This
+         * must not happen before the Save above -- cb_add_new_record() uses
+         * row_selected to pick which record to write, so updating it early
+         * saved the edited data onto the newly clicked record instead. */
+        row_selected = indeces[0];
 
         if (mcale == NULL) {
             return TRUE;
