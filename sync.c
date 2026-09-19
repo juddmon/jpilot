@@ -28,6 +28,8 @@
 #include <signal.h>
 #include <utime.h>
 #include <dirent.h>
+#include <pwd.h>
+#include <grp.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -67,7 +69,7 @@
 
 /* How long to wait for the handheld before checking the USB bus for an
  * obvious problem, then going back to waiting (seconds). */
-#define SYNC_ACCEPT_SLICE_SECS 10
+#define SYNC_ACCEPT_SLICE_SECS 20
 
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -399,6 +401,50 @@ static void jp_log_permission_help(const char *device)
    jp_logf(JP_LOG_WARN, _("See %s\n"), JP_PERMISSIONS_URL);
 }
 
+/* What we learned about a USB device we are not allowed to open.  The
+ * owner/group/mode are only used to explain the problem: whether we can
+ * actually use the device is decided by access(), which accounts for
+ * supplementary groups and ACLs in a way that reading the mode bits does
+ * not. */
+struct jp_usb_denied {
+   char node[FILENAME_MAX];
+   char owner[64];
+   char group[64];
+   unsigned int mode;
+   int owned_by_root_group;  /* group is root: the udev rule did not apply */
+   int user_in_group;        /* we belong to the owning group */
+};
+
+/* Is the calling user a member of gid? */
+static int jp_user_in_group(gid_t gid)
+{
+   gid_t *groups;
+   int n, i, found = 0;
+
+   if ((getgid() == gid) || (getegid() == gid)) {
+      return 1;
+   }
+   n = getgroups(0, NULL);
+   if (n <= 0) {
+      return 0;
+   }
+   groups = malloc(sizeof(gid_t) * (size_t)n);
+   if (groups == NULL) {
+      return 0;
+   }
+   if (getgroups(n, groups) == n) {
+      for (i = 0; i < n; i++) {
+         if (groups[i] == gid) {
+            found = 1;
+            break;
+         }
+      }
+   }
+   free(groups);
+
+   return found;
+}
+
 #ifdef __linux__
 /* USB vendor ids that have shipped PalmOS handhelds.  Several of these
  * makers (Sony, Samsung, Acer, Kyocera) also sell a great deal of
@@ -455,7 +501,7 @@ static int jp_read_sysfs_attr(const char *dir, const char *attr,
  *
  * Returns 1 and fills in node when such a device is found.  Linux only,
  * since it reads sysfs; elsewhere we simply keep waiting as before. */
-static int jp_find_unopenable_usb_device(char *node, size_t node_size)
+static int jp_find_unopenable_usb_device(struct jp_usb_denied *info)
 {
    DIR *dir;
    struct dirent *ent;
@@ -469,6 +515,7 @@ static int jp_find_unopenable_usb_device(char *node, size_t node_size)
    while (!found && ((ent = readdir(dir)) != NULL)) {
       char devdir[FILENAME_MAX];
       char vendor[32], busnum[32], devnum[32];
+      char node[FILENAME_MAX];
       unsigned int v;
       int i;
 
@@ -499,10 +546,47 @@ static int jp_find_unopenable_usb_device(char *node, size_t node_size)
       if (!jp_read_sysfs_attr(devdir, "devnum", devnum, sizeof(devnum))) {
          continue;
       }
-      g_snprintf(node, node_size, "/dev/bus/usb/%03d/%03d",
+      g_snprintf(node, sizeof(node), "/dev/bus/usb/%03d/%03d",
                  atoi(busnum), atoi(devnum));
 
-      if (access(node, R_OK | W_OK) != 0) {
+      if (access(node, R_OK | W_OK) == 0) {
+         /* We could open this one, so it is not what is stopping the sync.
+          * It may well not be a handheld at all -- several of the vendors
+          * we match on also make tablets, phones and cameras. */
+         jp_logf(JP_LOG_DEBUG, "usb device %s (vendor %04x) is accessible\n",
+                 node, v);
+         continue;
+      }
+
+      /* Cannot open it.  Describe who does own it so the user knows which
+       * part of the setup did not take effect. */
+      {
+         struct stat sbuf;
+         struct passwd *pw;
+         struct group *gr;
+
+         memset(info, 0, sizeof(*info));
+         g_strlcpy(info->node, node, sizeof(info->node));
+         g_strlcpy(info->owner, "?", sizeof(info->owner));
+         g_strlcpy(info->group, "?", sizeof(info->group));
+
+         if (stat(node, &sbuf) == 0) {
+            info->mode = (unsigned int)(sbuf.st_mode & 07777);
+            pw = getpwuid(sbuf.st_uid);
+            if (pw && pw->pw_name) {
+               g_strlcpy(info->owner, pw->pw_name, sizeof(info->owner));
+            } else {
+               g_snprintf(info->owner, sizeof(info->owner), "%d", (int)sbuf.st_uid);
+            }
+            gr = getgrgid(sbuf.st_gid);
+            if (gr && gr->gr_name) {
+               g_strlcpy(info->group, gr->gr_name, sizeof(info->group));
+            } else {
+               g_snprintf(info->group, sizeof(info->group), "%d", (int)sbuf.st_gid);
+            }
+            info->owned_by_root_group = (sbuf.st_gid == 0);
+            info->user_in_group = jp_user_in_group(sbuf.st_gid);
+         }
          found = 1;
       }
    }
@@ -511,10 +595,9 @@ static int jp_find_unopenable_usb_device(char *node, size_t node_size)
    return found;
 }
 #else
-static int jp_find_unopenable_usb_device(char *node, size_t node_size)
+static int jp_find_unopenable_usb_device(struct jp_usb_denied *info)
 {
-   (void)node;
-   (void)node_size;
+   (void)info;
    return 0;
 }
 #endif
@@ -594,15 +677,33 @@ static int jp_pilot_connect(int *Psd, const char *device)
        * only appears there once HotSync is pressed, which may well be
        * after we started waiting. */
       {
-         char node[FILENAME_MAX];
+         struct jp_usb_denied denied;
 
-         if (jp_find_unopenable_usb_device(node, sizeof(node))) {
+         if (jp_find_unopenable_usb_device(&denied)) {
             jp_logf(JP_LOG_WARN, _("Still waiting for the handheld.\n"));
             jp_logf(JP_LOG_WARN,
                     _("A USB device that may be your handheld was found, "
-                      "but J-Pilot is not allowed to open it: %s\n"), node);
+                      "but J-Pilot is not allowed to open it:\n"));
+            jp_logf(JP_LOG_WARN, _("   %s  owner %s:%s  mode %04o\n"),
+                    denied.node, denied.owner, denied.group, denied.mode);
+            if (denied.owned_by_root_group) {
+               /* Nothing changed the group, so no rule matched the device. */
+               jp_logf(JP_LOG_WARN,
+                       _("Its group is still root, so no udev rule has been "
+                         "applied to it.\n"));
+            } else if (!denied.user_in_group) {
+               /* A rule set the group, the user just is not in it. */
+               jp_logf(JP_LOG_WARN,
+                       _("You are not a member of the \"%s\" group that owns "
+                         "it.  Add yourself with:\n"), denied.group);
+               jp_logf(JP_LOG_WARN, _("   sudo usermod -a -G %s %s\n"),
+                       denied.group, g_get_user_name());
+               jp_logf(JP_LOG_WARN,
+                       _("then log out and back in for it to take effect.\n"));
+            }
             jp_logf(JP_LOG_WARN,
-                    _("If that is your handheld, this is a permissions problem.\n"));
+                    _("If that device is not your handheld, this is not the "
+                      "problem.\n"));
             jp_logf(JP_LOG_WARN, _("See %s\n"), JP_PERMISSIONS_URL);
             return SYNC_ERROR_PI_ACCEPT;
          }
