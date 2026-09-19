@@ -61,6 +61,10 @@
 
 #define MAX_DBNAME 50
 
+/* Where setting up device permissions is documented.  Pointed at when the
+ * sync port cannot be opened because the user lacks permission to use it. */
+#define JP_PERMISSIONS_URL "https://github.com/juddmon/jpilot#communication-permissions"
+
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -379,6 +383,16 @@ static int wait_for_response(int sd)
    return command;
 }
 
+/* The sync port could not be opened because of a permissions problem.
+ * Tell the user what went wrong and where the fix is documented, rather
+ * than leaving them with a bare "Permission denied". */
+static void jp_log_permission_help(const char *device)
+{
+   jp_logf(JP_LOG_WARN, _("Permission denied opening the sync port: %s\n"), device);
+   jp_logf(JP_LOG_WARN, _("Your user does not have permission to use this device.\n"));
+   jp_logf(JP_LOG_WARN, _("See %s\n"), JP_PERMISSIONS_URL);
+}
+
 static int jp_pilot_connect(int *Psd, const char *device)
 {
    int sd;
@@ -397,8 +411,14 @@ static int jp_pilot_connect(int *Psd, const char *device)
 
    ret = pi_bind(sd, device);
    if (ret < 0) {
-      jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(errno));
-      jp_logf(JP_LOG_WARN, _("Check your sync port and settings\n"));
+      int err = errno;
+      jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(err));
+      if ((err == EACCES) || (err == EPERM)) {
+         /* The port is probably correct, the user just cannot open it. */
+         jp_log_permission_help(device);
+      } else {
+         jp_logf(JP_LOG_WARN, _("Check your sync port and settings\n"));
+      }
       pi_close(sd);
       return SYNC_ERROR_BIND;
    }
@@ -411,13 +431,20 @@ static int jp_pilot_connect(int *Psd, const char *device)
       return SYNC_ERROR_LISTEN;
    }
 
-   sd = pi_accept(sd, 0, 0);
-   if(sd < 0) {
+   ret = pi_accept(sd, 0, 0);
+   if (ret < 0) {
+      int err = errno;
       perror("pi_accept");
-      jp_logf(JP_LOG_WARN, "pi_accept %s\n", strerror(errno));
+      jp_logf(JP_LOG_WARN, "pi_accept %s\n", strerror(err));
+      if ((err == EACCES) || (err == EPERM)) {
+         /* libusb can report the permission failure here rather than at
+          * bind time, depending on when it opens the device. */
+         jp_log_permission_help(device);
+      }
       pi_close(sd);
       return SYNC_ERROR_PI_ACCEPT;
    }
+   sd = ret;
 
    /* We must do this to take care of the password being required to sync
     * on Palm OS 4.x */
