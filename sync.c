@@ -65,6 +65,10 @@
  * sync port cannot be opened because the user lacks permission to use it. */
 #define JP_PERMISSIONS_URL "https://github.com/juddmon/jpilot#communication-permissions"
 
+/* How long to wait for the handheld before checking the USB bus for an
+ * obvious problem, then going back to waiting (seconds). */
+#define SYNC_ACCEPT_SLICE_SECS 10
+
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -385,7 +389,9 @@ static int wait_for_response(int sd)
 
 /* The sync port could not be opened because of a permissions problem.
  * Tell the user what went wrong and where the fix is documented, rather
- * than leaving them with a bare "Permission denied". */
+ * than leaving them with a bare "Permission denied".  A serial port
+ * reports the problem this way; a libusb "usb:" port does not (see
+ * jp_find_unopenable_usb_device below). */
 static void jp_log_permission_help(const char *device)
 {
    jp_logf(JP_LOG_WARN, _("Permission denied opening the sync port: %s\n"), device);
@@ -393,58 +399,223 @@ static void jp_log_permission_help(const char *device)
    jp_logf(JP_LOG_WARN, _("See %s\n"), JP_PERMISSIONS_URL);
 }
 
+#ifdef __linux__
+/* USB vendor ids that have shipped PalmOS handhelds.  Several of these
+ * makers (Sony, Samsung, Acer, Kyocera) also sell a great deal of
+ * unrelated USB hardware, so a match here only means "this could be the
+ * handheld", which is how the message to the user is worded. */
+static const unsigned int palm_usb_vendors[] = {
+   0x0830,  /* Palm, Inc. / palmOne */
+   0x082d,  /* Handspring */
+   0x054c,  /* Sony (Clie) */
+   0x091e,  /* Garmin (iQue) */
+   0x12ef,  /* Tapwave (Zodiac) */
+   0x081e,  /* AlphaSmart (Dana) */
+   0x04e8,  /* Samsung */
+   0x0502,  /* Acer */
+   0x0c88,  /* Kyocera */
+   0x1453,  /* Aceeca */
+   0
+};
+
+/* Read a one line sysfs attribute into buf.  Returns 1 on success. */
+static int jp_read_sysfs_attr(const char *dir, const char *attr,
+                              char *buf, size_t size)
+{
+   char path[FILENAME_MAX];
+   FILE *f;
+   size_t len;
+
+   g_snprintf(path, sizeof(path), "%s/%s", dir, attr);
+   f = fopen(path, "r");
+   if (f == NULL) {
+      return 0;
+   }
+   if (fgets(buf, (int)size, f) == NULL) {
+      fclose(f);
+      return 0;
+   }
+   fclose(f);
+   len = strlen(buf);
+   while ((len > 0) && ((buf[len-1] == '\n') || (buf[len-1] == '\r'))) {
+      buf[--len] = '\0';
+   }
+   return 1;
+}
+
+/* Look for a USB device that could be the handheld but that we are not
+ * allowed to open.
+ *
+ * A libusb ("usb:") port gives us nothing to test: pi_bind() succeeds even
+ * with nothing plugged in, and pi_accept() then simply waits, so a
+ * permissions problem is indistinguishable from "the user has not pressed
+ * HotSync yet".  Rather than guess, check the bus directly: if something
+ * that looks like a handheld is sitting there with permissions we cannot
+ * use, that is almost certainly why nothing is connecting.
+ *
+ * Returns 1 and fills in node when such a device is found.  Linux only,
+ * since it reads sysfs; elsewhere we simply keep waiting as before. */
+static int jp_find_unopenable_usb_device(char *node, size_t node_size)
+{
+   DIR *dir;
+   struct dirent *ent;
+   int found = 0;
+
+   dir = opendir("/sys/bus/usb/devices");
+   if (dir == NULL) {
+      return 0;
+   }
+
+   while (!found && ((ent = readdir(dir)) != NULL)) {
+      char devdir[FILENAME_MAX];
+      char vendor[32], busnum[32], devnum[32];
+      unsigned int v;
+      int i;
+
+      if (ent->d_name[0] == '.') {
+         continue;
+      }
+      g_snprintf(devdir, sizeof(devdir), "/sys/bus/usb/devices/%s", ent->d_name);
+
+      /* Interfaces have no idVendor, so this also skips them. */
+      if (!jp_read_sysfs_attr(devdir, "idVendor", vendor, sizeof(vendor))) {
+         continue;
+      }
+      if (sscanf(vendor, "%x", &v) != 1) {
+         continue;
+      }
+      for (i = 0; palm_usb_vendors[i]; i++) {
+         if (palm_usb_vendors[i] == v) {
+            break;
+         }
+      }
+      if (palm_usb_vendors[i] == 0) {
+         continue;
+      }
+
+      if (!jp_read_sysfs_attr(devdir, "busnum", busnum, sizeof(busnum))) {
+         continue;
+      }
+      if (!jp_read_sysfs_attr(devdir, "devnum", devnum, sizeof(devnum))) {
+         continue;
+      }
+      g_snprintf(node, node_size, "/dev/bus/usb/%03d/%03d",
+                 atoi(busnum), atoi(devnum));
+
+      if (access(node, R_OK | W_OK) != 0) {
+         found = 1;
+      }
+   }
+   closedir(dir);
+
+   return found;
+}
+#else
+static int jp_find_unopenable_usb_device(char *node, size_t node_size)
+{
+   (void)node;
+   (void)node_size;
+   return 0;
+}
+#endif
+
 static int jp_pilot_connect(int *Psd, const char *device)
 {
    int sd;
    int ret;
+   int logged_wait = 0;
    struct  SysInfo sys_info;
 
    *Psd=0;
 
-   sd = pi_socket(PI_AF_PILOT, PI_SOCK_STREAM, PI_PF_DLP);
-   if (sd < 0) {
-      int err = errno;
-      perror("pi_socket");
-      jp_logf(JP_LOG_WARN, "pi_socket %s\n", strerror(err));
-      return EXIT_FAILURE;
-   }
-
-   ret = pi_bind(sd, device);
-   if (ret < 0) {
-      int err = errno;
-      jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(err));
-      if ((err == EACCES) || (err == EPERM)) {
-         /* The port is probably correct, the user just cannot open it. */
-         jp_log_permission_help(device);
-      } else {
-         jp_logf(JP_LOG_WARN, _("Check your sync port and settings\n"));
+   /* Wait for the handheld in slices instead of forever.  Each time a slice
+    * passes with nothing connecting we get a chance to look for a problem
+    * the transport cannot report, and then go back to waiting -- so this
+    * still waits indefinitely for the user to press HotSync, as it always
+    * has, but it no longer sits silent when the real problem is that the
+    * device cannot be opened. */
+   for (;;) {
+      sd = pi_socket(PI_AF_PILOT, PI_SOCK_STREAM, PI_PF_DLP);
+      if (sd < 0) {
+         int err = errno;
+         perror("pi_socket");
+         jp_logf(JP_LOG_WARN, "pi_socket %s\n", strerror(err));
+         return EXIT_FAILURE;
       }
-      pi_close(sd);
-      return SYNC_ERROR_BIND;
-   }
 
-   ret = pi_listen(sd, 1);
-   if (ret < 0) {
-      perror("pi_listen");
-      jp_logf(JP_LOG_WARN, "pi_listen %s\n", strerror(errno));
-      pi_close(sd);
-      return SYNC_ERROR_LISTEN;
-   }
-
-   ret = pi_accept(sd, 0, 0);
-   if (ret < 0) {
-      int err = errno;
-      perror("pi_accept");
-      jp_logf(JP_LOG_WARN, "pi_accept %s\n", strerror(err));
-      if ((err == EACCES) || (err == EPERM)) {
-         /* libusb can report the permission failure here rather than at
-          * bind time, depending on when it opens the device. */
-         jp_log_permission_help(device);
+      ret = pi_bind(sd, device);
+      if (ret < 0) {
+         int err = errno;
+         jp_logf(JP_LOG_WARN, "pi_bind error: %s %s\n", device, strerror(err));
+         if ((err == EACCES) || (err == EPERM)) {
+            /* The port is probably correct, the user just cannot open it.
+             * This is how a serial port reports the problem. */
+            jp_log_permission_help(device);
+         } else {
+            jp_logf(JP_LOG_WARN, _("Check your sync port and settings\n"));
+         }
+         pi_close(sd);
+         return SYNC_ERROR_BIND;
       }
-      pi_close(sd);
-      return SYNC_ERROR_PI_ACCEPT;
+
+      ret = pi_listen(sd, 1);
+      if (ret < 0) {
+         perror("pi_listen");
+         jp_logf(JP_LOG_WARN, "pi_listen %s\n", strerror(errno));
+         pi_close(sd);
+         return SYNC_ERROR_LISTEN;
+      }
+
+      /* A connected handheld yields a new (positive) socket descriptor.
+       * On timeout libpisock returns 0 rather than PI_ERR_SOCK_TIMEOUT,
+       * and 0 is not a usable socket, so treat anything not positive as
+       * "nothing connected". */
+      ret = pi_accept_to(sd, 0, 0, SYNC_ACCEPT_SLICE_SECS);
+      if (ret > 0) {
+         sd = ret;
+         break;
+      }
+
+      if (ret < 0) {
+         int err = errno;
+         perror("pi_accept");
+         jp_logf(JP_LOG_WARN, "pi_accept %s\n", strerror(err));
+         if ((err == EACCES) || (err == EPERM)) {
+            jp_log_permission_help(device);
+         }
+         pi_close(sd);
+         return SYNC_ERROR_PI_ACCEPT;
+      }
+
+      /* Timed out with no handheld.  pi_accept_to() has closed the socket
+       * for us, so do not close it again here.
+       *
+       * Check the bus after every slice, not just the first: the handheld
+       * only appears there once HotSync is pressed, which may well be
+       * after we started waiting. */
+      {
+         char node[FILENAME_MAX];
+
+         if (jp_find_unopenable_usb_device(node, sizeof(node))) {
+            jp_logf(JP_LOG_WARN, _("Still waiting for the handheld.\n"));
+            jp_logf(JP_LOG_WARN,
+                    _("A USB device that may be your handheld was found, "
+                      "but J-Pilot is not allowed to open it: %s\n"), node);
+            jp_logf(JP_LOG_WARN,
+                    _("If that is your handheld, this is a permissions problem.\n"));
+            jp_logf(JP_LOG_WARN, _("See %s\n"), JP_PERMISSIONS_URL);
+            return SYNC_ERROR_PI_ACCEPT;
+         }
+      }
+
+      /* Only say this once, however long the user takes to press HotSync. */
+      if (!logged_wait) {
+         logged_wait = 1;
+         jp_logf(JP_LOG_DEBUG,
+                 "no handheld after %d seconds, still waiting\n",
+                 SYNC_ACCEPT_SLICE_SECS);
+      }
    }
-   sd = ret;
 
    /* We must do this to take care of the password being required to sync
     * on Palm OS 4.x */
