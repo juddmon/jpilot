@@ -1,3 +1,23 @@
+jpilot (2.1.1-1) unstable; urgency=medium
+
+  [ Judd Montgomery ]
+  * Fixed saving a record onto the wrong one when switching records with
+    unsaved changes, which duplicated the original record.
+  * Fixed a crash when saving an edited record from the save prompt.
+  * Fixed segfaults when cancelling the import, export, photo and install
+    file choosers.
+  * Fixed uninitialised GTK structures left from the GTK2 to GTK3 port.
+  * Fixed an intermittent sync crash caused by an unsafe SIGCHLD handler.
+  * Fixed a crash in install-user from an uninitialised PilotUser.
+  * Fixed the list hover highlight sticking on rows the pointer crossed.
+  * J-Pilot no longer quits when the sync file is locked, and the sync lock
+    is now held by the process performing the sync.
+  * A sync that cannot open the handheld now reports the permissions
+    problem instead of waiting silently.
+  * Default number of backups changed from 3 to 4.
+
+ -- Judd Montgomery <judd@jpilot.org>  Sat, 19 Sep 2026 20:43:32 -0400
+
 jpilot (2.1.0-1) unstable; urgency=medium
 
   [ Judd Montgomery ]

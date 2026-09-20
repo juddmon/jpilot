@@ -1,5 +1,5 @@
 ### What J-Pilot is
-J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 2.1.0
+J-Pilot is a PalmOS device desktop for Linux/Unix.  The latest version is 2.1.1
 ### J-Pilot plugins
 J-Pilot has a few plugins written for it.  They allow jpilot to have an interface and sync with Palm apps.
 - [Pcs&Videos](https://github.com/danbodoh/picsnvideos-jpilot)
@@ -156,23 +156,23 @@ Of course replace "Judd" and "12345" with you favorite name and number.  PalmOS 
 ### Building a Debian (or ubuntu) package
 From the repo root, with the tree already configured (e.g. after ./configure):
 
-1. Ensure debian/changelog has an entry for the version in configure.in (e.g. 2.1.0-1).
+1. Ensure debian/changelog has an entry for the version in configure.in (e.g. 2.1.1-1).
 2. Run:
    ./build-debian.sh
 3. Collect the built artifacts in the current directory:
 	jpilot-1.8.2.tar.gz
 	jpilot-1.8.2.tar.gz.asc
 	jpilot-1.8.2.tar.gz.md5sum
-	jpilot-2.1.0.tar.gz
-	jpilot-dbgsym_2.1.0-1_amd64.ddeb
-	jpilot-plugins-dbgsym_2.1.0-1_amd64.ddeb
-	jpilot-plugins_2.1.0-1_amd64.deb
-	jpilot_2.1.0-1.debian.tar.xz
-	jpilot_2.1.0-1.dsc
-	jpilot_2.1.0-1_amd64.buildinfo
-	jpilot_2.1.0-1_amd64.changes
-	jpilot_2.1.0-1_amd64.deb
-	jpilot_2.1.0.orig.tar.gz
+	jpilot-2.1.1.tar.gz
+	jpilot-dbgsym_2.1.1-1_amd64.ddeb
+	jpilot-plugins-dbgsym_2.1.1-1_amd64.ddeb
+	jpilot-plugins_2.1.1-1_amd64.deb
+	jpilot_2.1.1-1.debian.tar.xz
+	jpilot_2.1.1-1.dsc
+	jpilot_2.1.1-1_amd64.buildinfo
+	jpilot_2.1.1-1_amd64.changes
+	jpilot_2.1.1-1_amd64.deb
+	jpilot_2.1.1.orig.tar.gz
 
 #### For a new upstream version
 1. update the jpilot version in configure.ac in the AC_INIT function.

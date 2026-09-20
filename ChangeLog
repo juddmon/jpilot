@@ -1,3 +1,20 @@
+2.1.1 - 2026-09-19
+ Fixed saving a record onto the wrong one when switching records with unsaved changes, which duplicated the original and corrupted the record that was clicked
+ Fixed a crash when saving an edited record from the "Save Changed Record?" prompt
+ Fixed a segfault when cancelling the Import file chooser, and the same crash in the photo, install and export choosers
+ Fixed uninitialized GTK structures left over from the GTK2 to GTK3 port, including a crash when drag-selecting above an empty list
+ Fixed an intermittent crash while syncing caused by an unsafe SIGCHLD handler
+ Fixed a crash in install-user caused by an uninitialized PilotUser structure
+ Fixed the list hover highlight sticking on every row the pointer crossed
+ Fixed GTK colour warnings for to-dos due in the future
+ J-Pilot no longer quits when the sync file is locked, and it now names the process holding the lock instead of a made up pid
+ The sync lock is now taken by the process performing the sync, so it is released properly and a second J-Pilot can sync afterwards
+ A sync that cannot open the handheld now reports the permissions problem, and which device and group are at fault, instead of waiting silently
+ More detailed HotSync logging of the sync pipe
+ Default number of backups changed from 3 to 4
+ Removed the unused experimental font.c code
+ Documented device permissions, udev rules and the visor module in the README
+
 2.1.0 - 2026-08-08
  New modern CSS color themes that update live when selected
  Replaced deprecated gdk_pixbuf XPM loader for the contacts photo
