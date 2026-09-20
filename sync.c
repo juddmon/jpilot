@@ -69,7 +69,7 @@
 
 /* How long to wait for the handheld before checking the USB bus for an
  * obvious problem, then going back to waiting (seconds). */
-#define SYNC_ACCEPT_SLICE_SECS 20
+#define SYNC_ACCEPT_SLICE_SECS 10
 
 #ifndef min
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -145,18 +145,31 @@ static int sync_lock(int *fd)
    r = flock(*fd, LOCK_EX | LOCK_NB);
 #endif
    if (r == -1){
+      ssize_t n;
+
       jp_logf(JP_LOG_WARN, _("lock failed\n"));
-      if (read(*fd, str, 10) < 0) {
-         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+      /* str must be cleared and terminated before atoi(): the file is
+       * empty whenever the previous holder truncated it on unlock, and
+       * read() would then leave str holding whatever was on the stack. */
+      memset(str, 0, sizeof(str));
+      n = read(*fd, str, sizeof(str) - 1);
+      if (n < 0) {
+         jp_logf(JP_LOG_WARN, "read failed %s %d\n", __FILE__, __LINE__);
+         n = 0;
       }
-      pid = atoi(str);
-      jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), pid);
+      str[n] = '\0';
+      pid = (pid_t) atoi(str);
+      if (pid > 0) {
+         jp_logf(JP_LOG_FATAL, _("sync file is locked by pid %d\n"), (int) pid);
+      } else {
+         jp_logf(JP_LOG_FATAL, _("sync file is locked by another process\n"));
+      }
       close(*fd);
       return EXIT_FAILURE;
    } else {
       jp_logf(JP_LOG_DEBUG, "lock succeeded\n");
       pid=getpid();
-      sprintf(str, "%d\n", pid);
+      g_snprintf(str, sizeof(str), "%d\n", (int) pid);
       if (write(*fd, str, strlen(str)+1) < 0) {
          jp_logf(JP_LOG_WARN, "write failed %s %d\n", __FILE__, __LINE__);
       }
@@ -189,12 +202,22 @@ static int sync_unlock(int fd)
    r = flock(fd, LOCK_UN | LOCK_NB);
 #endif
    if (r == -1) {
+      ssize_t n;
+
       jp_logf(JP_LOG_WARN, _("unlock failed\n"));
-      if (read(fd, str, 10) < 0) {
-         jp_logf(JP_LOG_WARN, "fread failed %s %d\n", __FILE__, __LINE__);
+      memset(str, 0, sizeof(str));
+      n = read(fd, str, sizeof(str) - 1);
+      if (n < 0) {
+         jp_logf(JP_LOG_WARN, "read failed %s %d\n", __FILE__, __LINE__);
+         n = 0;
       }
-      pid = atoi(str);
-      jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), pid);
+      str[n] = '\0';
+      pid = (pid_t) atoi(str);
+      if (pid > 0) {
+         jp_logf(JP_LOG_WARN, _("sync is locked by pid %d\n"), (int) pid);
+      } else {
+         jp_logf(JP_LOG_WARN, _("sync is locked by another process\n"));
+      }
       close(fd);
       return EXIT_FAILURE;
    } else {
@@ -3698,18 +3721,6 @@ int sync_once(struct my_sync_info *sync_info)
    sync_info->flags |= SYNC_NO_FORK;
 #endif
 
-#ifdef USE_LOCKING
-   r = sync_lock(&fd);
-   if (r) {
-      jp_logf(JP_LOG_DEBUG, "Child cannot lock file\n");
-      if (!(SYNC_NO_FORK & sync_info->flags)) {
-         _exit(255);
-      } else {
-         return EXIT_FAILURE;
-      }
-   }
-#endif
-
    /* This should never be reached with new cancel sync code
     * Although, it can be reached through a remote sync. */
    if (glob_child_pid) {
@@ -3744,6 +3755,26 @@ int sync_once(struct my_sync_info *sync_info)
          return EXIT_SUCCESS;
       }
    }
+
+   /* Take the lock here, in whichever process actually performs the sync,
+    * and not before the fork above.
+    *
+    * fcntl() record locks belong to a process and are not inherited across
+    * fork(), so a lock taken before forking stays with the parent -- the
+    * GUI -- for the rest of its life, and the child's sync_unlock() cannot
+    * release it.  Locking here means the kernel drops the lock when this
+    * process exits, however it exits. */
+#ifdef USE_LOCKING
+   r = sync_lock(&fd);
+   if (r) {
+      /* Only ever reached in the child, or when not forking at all, so
+       * _exit() here cannot take the GUI down with it. */
+      if (!(SYNC_NO_FORK & sync_info->flags)) {
+         _exit(255);
+      }
+      return EXIT_FAILURE;
+   }
+#endif
 
    r = jp_sync(&sync_info_copy);
    if (r) {
